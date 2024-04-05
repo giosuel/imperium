@@ -66,16 +66,16 @@
 
     <!-- IDE Assemblies - Easier to Find Source Code -->
     <ItemGroup Condition="$(CI) != 'true'">
-        <Reference Include="Assembly-CSharp" HintPath="..\deps\Assembly-CSharp.dll" Private="False" Publicize="true"/>
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="..\deps\Assembly-CSharp-firstpass.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.Netcode.Runtime" HintPath="..\deps\Unity.Netcode.Runtime.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.InputSystem" HintPath="..\deps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.TextMeshPro" HintPath="..\deps\Unity.TextMeshPro.dll" Private="False" Publicize="true"/>
-        <Reference Include="UnityEngine" HintPath="..\deps\UnityEngine.dll" Private="False" Publicize="true"/>
-        <Reference Include="UnityEngine.UI" HintPath="..\deps\UnityEngine.UI.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.InputSystem" HintPath="..\deps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="..\deps\Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="..\deps\Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Assembly-CSharp" HintPath="..\ldeps\Assembly-CSharp.dll" Private="False" Publicize="true"/>
+        <Reference Include="Assembly-CSharp-firstpass" HintPath="..\ldeps\Assembly-CSharp-firstpass.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.Netcode.Runtime" HintPath="..\ldeps\Unity.Netcode.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.InputSystem" HintPath="..\ldeps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.TextMeshPro" HintPath="..\ldeps\Unity.TextMeshPro.dll" Private="False" Publicize="true"/>
+        <Reference Include="UnityEngine" HintPath="..\ldeps\UnityEngine.dll" Private="False" Publicize="true"/>
+        <Reference Include="UnityEngine.UI" HintPath="..\ldeps\UnityEngine.UI.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.InputSystem" HintPath="..\ldeps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="..\ldeps\Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="..\ldeps\Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true"/>
     </ItemGroup>
 
     <ItemGroup>
