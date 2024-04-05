@@ -27,12 +27,12 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 - Enabling / Disabling of various render layers, post-processing effects, render passes and more.
 - Built-in save file editor for save files (Level options, Furniture location, Player XP, etc.)
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
-- Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (Including mouse look fix).
-- Fully compatible with the public beta v50 of Lethal Company.
+- Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (incl. mouse look fix) and [BetterSaves](https://thunderstore.io/c/lethal-company/p/Pooble/LCBetterSaves/).
+- Fully compatible with the public beta v50 ([ver3](https://steamdb.info/changelist/23032909/)) of Lethal Company.
 
 ## UI System and Keybinds
 
-Imperium is divided into 5 separate main interfaces that can be opened separately with the functional keys **F1** - **F6**.
+Imperium is divided into 6 separate main interfaces that can be opened separately with the keys **F1** - **F6**.
 
 One UI can be opened at a time and opening another UI will result in the others being closed. This also works with the *Unity Explorer*. Many of the UIs consist of separate windows that can be collapsed if needed. It is currently not possible to re-bind any Imperium keybinds.
 

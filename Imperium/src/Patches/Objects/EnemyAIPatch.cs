@@ -35,9 +35,7 @@ internal static class EnemyAIPatch
     private static void KillEnemyPatch(EnemyAI __instance)
     {
         if (!Imperium.IsImperiumReady) return;
-
-        Imperium.Log.LogInfo("ENTITY DIE ORACLE TRIGGER");
-
+        
         Imperium.Oracle.Simulate(
             $"Entity {Imperium.ObjectManager.GetDisplayName(__instance.enemyType.enemyName)} was killed."
         );
