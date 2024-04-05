@@ -32,7 +32,7 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 
 ## UI System and Keybinds
 
-Imperium is divided into 5 separate main interfaces that can be opened separately with the functional keys **<F1\>**-**\<F6\>**. One UI can be opened at a time and opening another UI will result in the others being closed. This also works with the *Unity Explorer*. Many of the UIs consist of separate windows that can be collapsed if needed. It is currently not possible to re-bind any Imperium keybinds.
+Imperium is divided into 5 separate main interfaces that can be opened separately with the functional keys **F1** - **F6**. One UI can be opened at a time and opening another UI will result in the others being closed. This also works with the *Unity Explorer*. Many of the UIs consist of separate windows that can be collapsed if needed. It is currently not possible to re-bind any Imperium keybinds.
 
 | Keybind | Action                                                    |
 | ------- | --------------------------------------------------------- |
@@ -63,10 +63,10 @@ The Main Control Panel allows you to change game and player settings as well as 
 
 The object explorer allows you to easily manage the various game objects currently loaded in a scene.
 
-- Items and Scrap (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/cross_pixel.png?raw=true" style="filter: invert(1); zoom:4%;" /> Despawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/drop.png?raw=true" style="filter: invert(1); zoom:4%;" /> Drop, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To)
-- Entities (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/cross_pixel.png?raw=true" style="filter: invert(1); zoom:4%;" /> Despawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/respawn.png?raw=true" style="filter: invert(1); zoom:4%;" /> Respawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To)
-- Players (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/skull.png?raw=true" style="filter: invert(1); zoom:3%;" /> Kill, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/revive.png?raw=true" style="filter: invert(1); zoom:3%;" /> Revive, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_close.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport Player)
-- Map Hazards (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/cross_pixel.png?raw=true" style="filter: invert(1); zoom:3%;" /> Despawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To)
+- Items and Scrap (Despawn, Drop, Teleport To)
+- Entities (Despawn, Respawn, Teleport To)
+- Players (Kill, Revive, Teleport To, Teleport Player)
+- Map Hazards (Despawn, Teleport To)
 
 ## Moon Settings
 
