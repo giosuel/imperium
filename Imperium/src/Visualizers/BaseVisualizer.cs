@@ -26,7 +26,7 @@ internal abstract class BaseVisualizer<T>
         objectsBinding.onUpdate += Refresh;
     }
 
-    internal void Toggle(bool isOn)
+    internal virtual void Toggle(bool isOn)
     {
         ImpUtils.ToggleGameObjects(indicatorObjects.Values, isOn);
 

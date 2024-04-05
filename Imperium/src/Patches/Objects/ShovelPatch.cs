@@ -13,6 +13,9 @@ namespace Imperium.Patches.Objects;
 [HarmonyPatch(typeof(Shovel))]
 internal static class ShovelPatch
 {
+    private static readonly int ShovelHit = Animator.StringToHash("shovelHit");
+    private static readonly int ReelingUp = Animator.StringToHash("reelingUp");
+
     [HarmonyPostfix]
     [HarmonyPatch("DiscardItem")]
     internal static void DiscardItemPatch(Shovel __instance)
@@ -51,11 +54,10 @@ internal static class ShovelPatch
     /// </summary>
     private static IEnumerator reelUpShovelPatch(Shovel shovel)
     {
-        Imperium.Log.LogInfo("Reel up shwovel");
         shovel.playerHeldBy.activatingItem = true;
         shovel.playerHeldBy.twoHanded = true;
-        shovel.playerHeldBy.playerBodyAnimator.ResetTrigger("shovelHit");
-        shovel.playerHeldBy.playerBodyAnimator.SetBool("reelingUp", value: true);
+        shovel.playerHeldBy.playerBodyAnimator.ResetTrigger(ShovelHit);
+        shovel.playerHeldBy.playerBodyAnimator.SetBool(ReelingUp, value: true);
         shovel.shovelAudio.PlayOneShot(shovel.reelUp);
         shovel.ReelUpSFXServerRpc();
         yield return new WaitUntil(() => !shovel.isHoldingButton || !shovel.isHeld);

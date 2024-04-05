@@ -39,7 +39,10 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
+        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotNear");
+
+        Imperium.Log.LogInfo("YRotationThatFacesTheNearestFromPosition DIE ORACLE TRIGGER");
+
         Imperium.Oracle.Simulate();
     }
 
@@ -50,7 +53,10 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
+        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotFar");
+
+        Imperium.Log.LogInfo("YRotationThatFacesTheFarthestFromPosition DIE ORACLE TRIGGER");
+
         Imperium.Oracle.Simulate();
     }
 
@@ -60,13 +66,16 @@ internal static class RoundManagerPatch
     {
         Imperium.ObjectManager.RefreshLevelEntities();
     }
-    
+
     [HarmonyPrefix]
     [HarmonyPatch("BeginEnemySpawning")]
     private static void BeginEnemySpawningPrefixPatch(RoundManager __instance)
     {
+        Imperium.Log.LogInfo("BEGIN ORSCLE SPAWN TRIGGR");
+        Imperium.Log.LogInfo(
+            $"BEFORE BEGIN SPAWN, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}");
         Imperium.Oracle.Simulate(initial: true, null);
-        
+
         ImpSpawnTracker.StartCycle(__instance);
     }
 
@@ -76,12 +85,14 @@ internal static class RoundManagerPatch
     {
         ImpSpawnTracker.EndCycle(__instance);
     }
-    
+
     [HarmonyPrefix]
     [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPrefixPatch(RoundManager __instance)
     {
         ImpSpawnTracker.StartCycle(__instance);
+
+        Imperium.Oracle.Simulate();
     }
 
     [HarmonyPostfix]
@@ -89,11 +100,53 @@ internal static class RoundManagerPatch
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPostfixPatch(RoundManager __instance)
     {
         Imperium.ObjectManager.RefreshLevelEntities();
-        
+
         ImpSpawnTracker.EndCycle(__instance);
     }
-    
-    
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnRandomDaytimeEnemy")]
+    private static void SpawnRandomDaytimeEnemy(RoundManager __instance, bool __result)
+    {
+        Imperium.Log.LogInfo(
+            $"After spawn single daytime entity, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}, result: {__result}");
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("PositionWithDenialPointsChecked")]
+    private static void PositionWithDenialPointsCheckedPatch(RoundManager __instance, Vector3 spawnPosition)
+    {
+        Imperium.Log.LogInfo($"Spawn position for denial: {ImpUtils.FormatVector(spawnPosition)}");
+        Imperium.Log.LogInfo(
+            $"After SPAWN DENIAL FUNCTION, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}");
+        // Imperium.Log.LogInfo($"After Daytime, Real outside: {ImpUtils.CloneRandom(__instance.OutsideEnemySpawnRandom).Next()}");
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnDaytimeEnemiesOutside")]
+    private static void SpawnDaytimeEnemiesOutsidePostfixPatch(RoundManager __instance)
+    {
+        Imperium.Log.LogInfo($"After Daytime, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}");
+        // Imperium.Log.LogInfo($"After Daytime, Real outside: {ImpUtils.CloneRandom(__instance.OutsideEnemySpawnRandom).Next()}");
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnEnemiesOutside")]
+    private static void SpawnEnemiesOutsidePostfixPatch(RoundManager __instance)
+    {
+        Imperium.Log.LogInfo($"After Outside, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}");
+        // Imperium.Log.LogInfo($"After Outside, Real outside: {ImpUtils.CloneRandom(__instance.OutsideEnemySpawnRandom).Next()}");
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("PlotOutEnemiesForNextHour")]
+    private static void PlotOutEnemiesForNextHourPostfixPatch(RoundManager __instance)
+    {
+        Imperium.Log.LogInfo($"After Indoor, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}");
+        // Imperium.Log.LogInfo($"After Indoor, Real outside: {ImpUtils.CloneRandom(__instance.OutsideEnemySpawnRandom).Next()}");
+    }
+
+
     [HarmonyPrefix]
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
     private static bool PlotOutEnemiesForNextHourPatch()
@@ -112,6 +165,19 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnDaytimeEnemiesOutside")]
     private static bool SpawnDaytimeEnemiesOutsidePatch(RoundManager __instance)
     {
+        Imperium.Log.LogInfo($"BEFORE Daytime, Real anomaly: {ImpUtils.CloneRandom(__instance.AnomalyRandom).Next()}");
+        var currentHour = Reflection.Get<RoundManager, int>(__instance, "currentHour");
+        var num = __instance.timeScript.lengthOfHours * currentHour;
+        var num2 =
+            __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.Evaluate(num / __instance.timeScript.totalTime);
+        Imperium.Log.LogInfo("==================== Daytime Entities Spawned ====================");
+        Imperium.Log.LogInfo($"Daytime entities: {num2}");
+        var anomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
+        var random = anomalySimulator.Next((int)(num2 - __instance.currentLevel.daytimeEnemiesProbabilityRange),
+            (int)(num2 + __instance.currentLevel.daytimeEnemiesProbabilityRange));
+        var entityAmount = Mathf.Clamp(random, 0, 20);
+        Imperium.Log.LogInfo($"Actual daytime amount: {entityAmount}");
+        Imperium.Log.LogInfo($"Actual daytime amount rmg: {random}");
         return !Imperium.GameManager.DaytimeSpawningPaused.Value;
     }
 

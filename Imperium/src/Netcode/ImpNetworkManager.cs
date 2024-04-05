@@ -15,16 +15,18 @@ public abstract class ImpNetworkManager
 
     internal static void OnClientConnected(ulong clientId)
     {
-        Imperium.Log.LogInfo(
-            $"Imperium has detected a connect: {clientId}, is host: {NetworkManager.Singleton.IsHost}");
+        ImpOutput.Log(
+            $"[NET] Imperium has detected a connect: {clientId} (host: {NetworkManager.Singleton.IsHost})"
+        );
         ImpOutput.Send($"A client has connected! ID: {clientId}", "Imperium Networking");
         ConnectedPlayers.Set(ConnectedPlayers.Value + 1);
     }
 
     internal static void OnClientDisconnected(ulong clientId)
     {
-        Imperium.Log.LogInfo(
-            $"Imperium has detected a disconnect: {clientId}, is host: {NetworkManager.Singleton.IsHost}");
+        ImpOutput.Log(
+            $"[NET] Imperium has detected a disconnect: {clientId} (host: {NetworkManager.Singleton.IsHost})"
+        );
         ImpOutput.Send($"A client has disconnected! ID: {clientId}", "Imperium Networking");
 
         ConnectedPlayers.Set(ConnectedPlayers.Value - 1);

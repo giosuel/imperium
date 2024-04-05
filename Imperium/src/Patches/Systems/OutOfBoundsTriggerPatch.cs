@@ -13,7 +13,6 @@ internal static class OutOfBoundsTriggerPatch
     [HarmonyPatch("OnTriggerEnter")]
     private static bool OnTriggerEnterPatch()
     {
-        Imperium.Log.LogInfo("ON TRIGGER ENTERRRRRR");
-        return false;
+        return true;
     }
 }

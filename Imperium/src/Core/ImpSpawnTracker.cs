@@ -1,6 +1,10 @@
+#region
+
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Util;
+
+#endregion
 
 namespace Imperium.Core;
 
@@ -26,7 +30,7 @@ public static class ImpSpawnTracker
                 "Nothing spawned >.<", $"Spawn Report Cycle #{num * 9}",
                 notificationType: NotificationType.SpawnReport
             );
-            ImpUtils.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
+            ImpOutput.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
         }
         else
         {
@@ -34,7 +38,7 @@ public static class ImpSpawnTracker
                 output.Aggregate((a, b) => $"{a}\n{b}"), $"Spawn Report Cycle #{num * 9}",
                 notificationType: NotificationType.SpawnReport
             );
-            ImpUtils.LogBlock(output, title: "Spawn Tracker");
+            ImpOutput.LogBlock(output, title: "Spawn Tracker");
         }
     }
 

@@ -87,7 +87,6 @@ internal class ImpInterfaceManager : MonoBehaviour
 
     public void Close(bool toggleCursorState)
     {
-        Imperium.Log.LogInfo("INETRE ACLOSE ================");
         if (!OpenInterface.Value) return;
 
         OpenInterface.Value.OnUIClose();

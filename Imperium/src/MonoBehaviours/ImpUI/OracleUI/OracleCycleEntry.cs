@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Oracle;
-using Imperium.Types;
 using Imperium.Util;
 using TMPro;
 using UnityEngine;

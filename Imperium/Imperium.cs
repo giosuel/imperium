@@ -33,9 +33,6 @@ using UnityEngine;
 
 namespace Imperium;
 
-/// <summary>
-/// 
-/// </summary>
 [BepInDependency(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
@@ -44,7 +41,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "1.0.0";
+    public const string PLUGIN_VERSION = "0.1.0";
 
     internal static ManualLogSource Log;
     internal static ConfigFile ConfigFile;
@@ -102,7 +99,7 @@ public class Imperium : BaseUnityPlugin
 
         IsImperiumReady = true;
 
-        Log.LogInfo("[OK] Imperium is ready!");
+        ImpOutput.Log("[OK] Imperium is ready!");
     }
 
     internal static void Launch()
@@ -206,7 +203,7 @@ public class Imperium : BaseUnityPlugin
 
         Interface.StartListening();
 
-        Log.LogInfo("[OK] Imperium UIs have been registered! \\o/");
+        ImpOutput.Log("[OK] Imperium UIs have been registered! \\o/");
     }
 
     private static void PreLaunchPatch()

@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -24,6 +23,8 @@ internal class Oracle
     {
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
+
+        Imperium.Log.LogInfo($"Start simulating at {currentHour} (initial: {initial})");
 
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
         var EntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.EnemySpawnRandom);
@@ -62,6 +63,10 @@ internal class Oracle
         {
             State.Value.cycles[i].cycleTime = currentTime;
 
+            Imperium.Log.LogInfo($"Oracle simulating cyele {i}");
+
+            Imperium.Log.LogInfo($"  BEFORE Daytime, Fake anomaly: {ImpUtils.CloneRandom(AnomalySimulator).Next()}");
+
             if (!Imperium.GameManager.DaytimeSpawningPaused.Value)
             {
                 State.Value.daytimeCycles[i] = SimulateDaytimeSpawnCycle(
@@ -73,6 +78,10 @@ internal class Oracle
                 );
             }
 
+            Imperium.Log.LogInfo($"  After Daytime, Fake anomaly: {ImpUtils.CloneRandom(AnomalySimulator).Next()}");
+            // Imperium.Log.LogInfo(
+            //     $"  After Daytime, Fake outside: {ImpUtils.CloneRandom(OutsideEnemySpawnSimulator).Next()}");
+
             if (!Imperium.GameManager.OutdoorSpawningPaused.Value)
             {
                 State.Value.outdoorCycles[i] = SimulateOutdoorSpawnCycle(
@@ -83,6 +92,10 @@ internal class Oracle
                     currentHour, currentTime
                 );
             }
+
+            Imperium.Log.LogInfo($"  After Outside, Fake anomaly: {ImpUtils.CloneRandom(AnomalySimulator).Next()}");
+            // Imperium.Log.LogInfo(
+            //     $"  After Outside, Fake outside: {ImpUtils.CloneRandom(OutsideEnemySpawnSimulator).Next()}");
 
             var spawnTimes = new List<int>();
             if (!Imperium.GameManager.IndoorSpawningPaused.Value)
@@ -97,6 +110,10 @@ internal class Oracle
                 );
                 spawnTimes = State.Value.indoorCycles[i].Select(report => report.spawnTime).ToList();
             }
+
+            Imperium.Log.LogInfo($"  After Indoor, Fake anomaly: {ImpUtils.CloneRandom(AnomalySimulator).Next()}");
+            // Imperium.Log.LogInfo(
+            //     $"  After indoor, Fake outside: {ImpUtils.CloneRandom(OutsideEnemySpawnSimulator).Next()}");
 
             var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
             State.Value.cycles[i].minSpawnTime = (int)(10f + timeUpToCurrentHour);
@@ -180,10 +197,9 @@ internal class Oracle
             {
                 var enemyType = roundManager.currentLevel.Enemies[j].enemyType;
 
-                var entityCannotBeSpawned = 
-                    enemyType.spawningDisabled || 
-                    enemyType.PowerLevel > roundManager.currentMaxInsidePower - currentPower || 
-                    entitySpawnCounts[enemyType] >= enemyType.MaxCount;
+                var entityCannotBeSpawned = enemyType.spawningDisabled ||
+                                            enemyType.PowerLevel > roundManager.currentMaxInsidePower - currentPower ||
+                                            entitySpawnCounts[enemyType] >= enemyType.MaxCount;
 
                 if (firstTimeSpawning)
                 {
@@ -430,9 +446,6 @@ internal class Oracle
         return spawning;
     }
 
-    /// <summary>
-    /// Cloned from <see cref="RoundManager.PositionWithDenialPointsChecked"/> with variable random generator.
-    /// </summary>
     private static Vector3 PositionWithDenialPointsChecked(
         Vector3 spawnPosition,
         IReadOnlyList<GameObject> spawnPoints,

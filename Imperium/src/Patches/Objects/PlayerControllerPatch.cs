@@ -81,7 +81,7 @@ internal static class PlayerControllerPatch
             __result = false;
             return false;
         }
-        
+
         __result = true;
         return false;
     }
