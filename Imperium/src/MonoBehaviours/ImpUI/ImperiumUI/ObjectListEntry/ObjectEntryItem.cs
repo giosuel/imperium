@@ -14,7 +14,9 @@ internal class ObjectEntryItem : ObjectEntry
 {
     protected override bool CanRespawn() => false;
     protected override bool CanDrop() => true;
-    protected override bool CanTeleportHere() => true;
+
+    // TODO(giosuel): Fix updating scrap location
+    protected override bool CanTeleportHere() => false;
 
     private Image buttonIcon;
 
@@ -40,8 +42,6 @@ internal class ObjectEntryItem : ObjectEntry
         Imperium.PositionIndicator.Activate(position =>
         {
             var item = (GrabbableObject)component;
-            Imperium.Log.LogInfo(
-                $"teleported item {item.itemProperties.itemName} from {item.transform.position} to {ImpUtils.FormatVector(position)}");
             item.transform.position = position;
         });
     }

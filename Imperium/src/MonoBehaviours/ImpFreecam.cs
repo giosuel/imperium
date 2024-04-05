@@ -21,7 +21,7 @@ public class ImpFreecam : MonoBehaviour
     private Vector2 lookInput;
     private LayerSelector layerSelector;
 
-    private Vector3 lookOrigin = new();
+    private Vector3 lookOrigin;
 
     internal readonly ImpBinaryBinding IsFreecamEnabled = new(false);
 

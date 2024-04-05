@@ -28,18 +28,22 @@ public class SpikeTrapIndicator : MonoBehaviour
         playerRay.gameObject.SetActive(!slamOnIntervals);
         sphere.SetActive(true);
 
+        var slamInterval = Reflection.Get<SpikeRoofTrap, float>(spikeTrap, "slamInterval");
+        bool isReady;
+
         if (slamOnIntervals)
         {
             sphere.GetComponent<MeshRenderer>().material =
                 !Physics.CheckSphere(spikeTrap.laserEye.position, 8f, 524288, QueryTriggerInteraction.Collide)
                     ? ImpAssets.WireframeRedMaterial
                     : ImpAssets.WireframeGreenMaterial;
+            isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp > slamInterval;
         }
         else
         {
             sphere.SetActive(false);
             spikeTimerCanvas.gameObject.SetActive(false);
-            
+
             var eyeTransform = spikeTrap.laserEye.transform;
             var eyePosition = eyeTransform.position;
             ImpUtils.Geometry.SetLinePositions(
@@ -48,11 +52,10 @@ public class SpikeTrapIndicator : MonoBehaviour
                 eyePosition + eyeTransform.forward * 4.4f
             );
             ImpUtils.Geometry.SetLineColor(playerRay, Color.red);
+            isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp >= 0.75f;
         }
 
-        var isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp >= 0.75;
         var isSlamming = isReady && spikeTrap.trapActive && spikeTrap.slammingDown;
-
         if (isSlamming)
         {
             spikeTimerText.text = "SLAM!";
@@ -64,7 +67,7 @@ public class SpikeTrapIndicator : MonoBehaviour
         else
         {
             var timeLeft = Mathf.Max(
-                Reflection.Get<SpikeRoofTrap, float>(spikeTrap, "slamInterval")
+                slamInterval
                 - Time.realtimeSinceStartup
                 + spikeTrap.timeSinceMovingUp,
                 0

@@ -212,7 +212,7 @@ internal class ObjectManager : ImpLifecycleObject
             var netObject = itemObj.gameObject.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
             CurrentLevelObjects[netObject.NetworkObjectId] = itemObj;
-            
+
             // If player has free slot, place it in hand, otherwise leave it on the ground and play sound
             var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[spawningPlayerId];
             var firstItemSlot = Reflection.Invoke<PlayerControllerB, int>(invokingPlayer, "FirstEmptyItemSlot");
@@ -634,7 +634,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     private void LogObjects()
     {
-        ImpUtils.LogBlock([
+        ImpOutput.LogBlock([
             "Imperium scanned the current level for obstacles.",
             $"   > {CurrentLevelDoors.Value.Count}x Doors",
             $"   > {CurrentLevelSecurityDoors.Value.Count}x Security doors",

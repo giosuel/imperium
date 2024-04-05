@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using BepInEx.Logging;
 using Imperium.Core;
 using JetBrains.Annotations;
 using TMPro;
@@ -164,30 +163,6 @@ internal abstract class ImpUtils
         }
 
         return layerMask | (1 << layer);
-    }
-
-    internal static void LogBlock(List<string> lines, string title = "Imperium Monitoring")
-    {
-        if (!ImpSettings.Preferences.GeneralLogging.Value) return;
-
-        var output = "[MON] Imperium message block :)\n";
-        title = "< " + title + " >";
-        var width = Mathf.Max(lines.Max(line => line.Length) + 4, 20);
-        var fullWidth = string.Concat(Enumerable.Repeat("\u2550", width - 2));
-        var titlePaddingCount = (width - title.Length) / 2 - 1;
-        if ((width - title.Length) / 2 % 2 == 0) titlePaddingCount++;
-
-        var titlePadding = string.Concat(Enumerable.Repeat(" ", titlePaddingCount));
-
-
-        output += "\u2552" + fullWidth + "\u2555\n";
-        output += "\u2502" + titlePadding + title + titlePadding + "\u2502\n";
-        output += "\u255e" + fullWidth + "\u2561\n";
-        output = lines.Aggregate(output,
-            (current, line) => current + $"\u2502 {line}".PadRight(width - 2) + " \u2502\n");
-        output += "\u2558" + fullWidth + "\u255b";
-
-        Imperium.Log.Log(LogLevel.Message, output);
     }
 
     internal abstract class Interface

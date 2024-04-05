@@ -59,8 +59,6 @@ public class ImpNetPlayer : NetworkBehaviour
         Imperium.PlayerManager.AllowPlayerDeathOverride = true;
         if (PlayerManager.IsLocalPlayer(playerId)) Imperium.Player.KillPlayer(Vector3.zero, deathAnimation: 1);
         Imperium.PlayerManager.AllowPlayerDeathOverride = false;
-
-        Imperium.Log.LogInfo($"livingPlayers: {Imperium.StartOfRound.livingPlayers}");
     }
 
     [ServerRpc(RequireOwnership = false)]

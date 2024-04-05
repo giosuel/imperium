@@ -128,9 +128,6 @@ internal class SpawnListsWindow : BaseWindow
 
     private void RefreshEntitySpawnLists()
     {
-        Imperium.Log.LogInfo($"current moon: {MoonManager.Current.IndoorEntities.Count}");
-        Imperium.Log.LogInfo($"current moon: {MoonManager.Current.OutdoorEntities.Count}");
-        Imperium.Log.LogInfo($"current moon: {MoonManager.Current.DaytimeEntities.Count}");
         var objectList = Imperium.ObjectManager.AllEntities.Value.OrderByDescending(
             entry => MoonManager.Current.IsEntityNative(entry.Key));
 

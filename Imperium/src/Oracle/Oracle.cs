@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -24,7 +23,7 @@ internal class Oracle
     {
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
-
+        
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
         var EntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.EnemySpawnRandom);
         var OutsideEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.OutsideEnemySpawnRandom);
@@ -180,10 +179,9 @@ internal class Oracle
             {
                 var enemyType = roundManager.currentLevel.Enemies[j].enemyType;
 
-                var entityCannotBeSpawned = 
-                    enemyType.spawningDisabled || 
-                    enemyType.PowerLevel > roundManager.currentMaxInsidePower - currentPower || 
-                    entitySpawnCounts[enemyType] >= enemyType.MaxCount;
+                var entityCannotBeSpawned = enemyType.spawningDisabled ||
+                                            enemyType.PowerLevel > roundManager.currentMaxInsidePower - currentPower ||
+                                            entitySpawnCounts[enemyType] >= enemyType.MaxCount;
 
                 if (firstTimeSpawning)
                 {
@@ -346,16 +344,13 @@ internal class Oracle
         var baseEntityAmount = roundManager.currentLevel.daytimeEnemySpawnChanceThroughDay.Evaluate(
             timeUpToCurrentHour / Imperium.TimeOfDay.totalTime
         );
-        Imperium.Log.LogInfo($"Oracle daytime amount: {baseEntityAmount}");
         var entityAmount = Mathf.Clamp(
             anomalySimulator.Next((int)(baseEntityAmount - roundManager.currentLevel.daytimeEnemiesProbabilityRange),
                 (int)(baseEntityAmount + roundManager.currentLevel.daytimeEnemiesProbabilityRange)),
             0, 20
         );
         var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
-
-        Imperium.Log.LogInfo($"Oracle actual daytime amount: {entityAmount}");
-
+        
         // Pragma due to daytime entity spawn BUG
 #pragma warning disable CS0162 // Unreachable code detected
         for (var i = 0; i < entityAmount; i++)
@@ -392,7 +387,6 @@ internal class Oracle
 
             float groupSize = Mathf.Max(enemyType.spawnInGroupsOf, 1);
 
-            Imperium.Log.LogInfo($"  Oracle group size: {groupSize}");
 
             for (var j = 0; j < groupSize; j++)
             {
@@ -406,10 +400,6 @@ internal class Oracle
                     position, 10f, default, entitySimulator,
                     roundManager.GetLayermaskForEnemySizeLimit(enemyType)
                 );
-                Imperium.Log.LogInfo($"  Oracle Position for denial: {ImpUtils.FormatVector(position)}");
-                Imperium.Log.LogInfo(
-                    $"  After SPAWN DENIAL FUNCTION, Fake anomaly: {ImpUtils.CloneRandom(anomalySimulator).Next()}");
-
                 position = PositionWithDenialPointsChecked(position, spawnPoints, enemyType, anomalySimulator);
 
                 currentPower += enemyType.PowerLevel;
@@ -419,9 +409,6 @@ internal class Oracle
                     { entity = enemyType, position = position, spawnTime = (int)currentDayTime });
             }
 
-            Imperium.Log.LogInfo(
-                $"  After spawn single daytime entity, Fake anomaly: {ImpUtils.CloneRandom(anomalySimulator).Next()}");
-
             // BUG
             // SpawnRandomDaytimeEnemy returns false in any case, so to simulate this, we break after the first loop.
             break;
@@ -430,9 +417,6 @@ internal class Oracle
         return spawning;
     }
 
-    /// <summary>
-    /// Cloned from <see cref="RoundManager.PositionWithDenialPointsChecked"/> with variable random generator.
-    /// </summary>
     private static Vector3 PositionWithDenialPointsChecked(
         Vector3 spawnPosition,
         IReadOnlyList<GameObject> spawnPoints,

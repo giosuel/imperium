@@ -35,7 +35,7 @@ internal class RenderingUI : StandaloneUI
         ImpToggle.Bind("FrameSettings/SSGI", content, ImpSettings.Rendering.SSGI);
         ImpToggle.Bind("FrameSettings/RayTracing", content, ImpSettings.Rendering.RayTracing);
         ImpToggle.Bind("FrameSettings/VolumetricClouds", content, ImpSettings.Rendering.VolumetricClouds);
-        ImpToggle.Bind("FrameSettings/SubsurfaceScattering", content, ImpSettings.Rendering.SSGI);
+        ImpToggle.Bind("FrameSettings/SubsurfaceScattering", content, ImpSettings.Rendering.SubsurfaceScattering);
         ImpToggle.Bind("FrameSettings/VolumeReprojection", content, ImpSettings.Rendering.VolumeReprojection);
         ImpToggle.Bind("FrameSettings/TransparentPrepass", content, ImpSettings.Rendering.TransparentPrepass);
         ImpToggle.Bind("FrameSettings/TransparentPostpass", content, ImpSettings.Rendering.TransparentPostpass);

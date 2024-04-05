@@ -40,13 +40,13 @@ public static class UnityExplorerIntegration
 
         OnOpenUIInternal(id, active);
     }
-    
+
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     private static void CloseUIInternal()
     {
         UniversalUI.SetUIActive(ExplorerCore.GUID, false);
     }
-    
+
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     private static void PatchFunctionsInternal(Harmony harmony)
     {

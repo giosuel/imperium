@@ -460,7 +460,7 @@ public abstract class ImpSettings
     internal abstract class Preferences
     {
         internal static readonly ImpConfig<bool> GeneralLogging = new("Preferences.General", "GeneralLogging", true);
-        internal static readonly ImpConfig<bool> OracleLogging = new("Preferences.General", "OracleLogging", true);
+        internal static readonly ImpConfig<bool> OracleLogging = new("Preferences.General", "OracleLogging", false);
         internal static readonly ImpConfig<bool> LeftHandedMode = new("Preferences.General", "LeftHandedMode", false);
         internal static readonly ImpConfig<bool> OptimizeLogs = new("Preferences.General", "OptimizeLogsToggle", false);
 

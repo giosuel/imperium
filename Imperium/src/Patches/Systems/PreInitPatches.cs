@@ -3,6 +3,7 @@
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.Netcode;
+using Imperium.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,7 +27,7 @@ internal static class PreInitPatches
             if (ImpSettings.Preferences.QuickloadSkipStart.Value &&
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
             {
-                Imperium.Log.LogInfo("[SYS] Quickload is bypassing start-up sequence...");
+                ImpOutput.Log("[SYS] Quickload is bypassing start-up sequence...");
                 SceneManager.LoadScene("InitScene");
             }
         }
@@ -44,7 +45,7 @@ internal static class PreInitPatches
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
             {
                 var saveNum = ImpSettings.Preferences.QuickloadSaveNumber.Value;
-                Imperium.Log.LogInfo($"[SYS] Quickload is loading level #{saveNum}...");
+                ImpOutput.Log($"[SYS] Quickload is loading level #{saveNum}...");
 
                 var fileName = $"LCSaveFile{saveNum}";
 
@@ -72,9 +73,12 @@ internal static class PreInitPatches
         [HarmonyPatch("Awake")]
         private static void AwakePatch(MenuManager __instance)
         {
-            __instance.versionNumberText.text =
-                $"{__instance.versionNumberText.text} ({Imperium.PLUGIN_NAME} {Imperium.PLUGIN_VERSION})";
-            __instance.versionNumberText.margin = new Vector4(0, 0, -300, 0);
+            if (GameNetworkManager.Instance != null && __instance.versionNumberText != null)
+            {
+                __instance.versionNumberText.text =
+                    $"{__instance.versionNumberText.text} ({Imperium.PLUGIN_NAME} {Imperium.PLUGIN_VERSION})";
+                __instance.versionNumberText.margin = new Vector4(0, 0, -300, 0);
+            }
         }
     }
 }

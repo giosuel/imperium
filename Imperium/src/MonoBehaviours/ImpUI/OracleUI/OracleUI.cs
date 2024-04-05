@@ -1,7 +1,6 @@
 #region
 
 using Imperium.Oracle;
-using Imperium.Types;
 using Imperium.Util;
 
 #endregion

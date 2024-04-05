@@ -39,7 +39,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
+        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotNear");
         Imperium.Oracle.Simulate();
     }
 
@@ -50,7 +50,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
+        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotFar");
         Imperium.Oracle.Simulate();
     }
 
@@ -60,13 +60,13 @@ internal static class RoundManagerPatch
     {
         Imperium.ObjectManager.RefreshLevelEntities();
     }
-    
+
     [HarmonyPrefix]
     [HarmonyPatch("BeginEnemySpawning")]
     private static void BeginEnemySpawningPrefixPatch(RoundManager __instance)
     {
         Imperium.Oracle.Simulate(initial: true, null);
-        
+
         ImpSpawnTracker.StartCycle(__instance);
     }
 
@@ -76,12 +76,14 @@ internal static class RoundManagerPatch
     {
         ImpSpawnTracker.EndCycle(__instance);
     }
-    
+
     [HarmonyPrefix]
     [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPrefixPatch(RoundManager __instance)
     {
         ImpSpawnTracker.StartCycle(__instance);
+
+        Imperium.Oracle.Simulate();
     }
 
     [HarmonyPostfix]
@@ -89,11 +91,9 @@ internal static class RoundManagerPatch
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPostfixPatch(RoundManager __instance)
     {
         Imperium.ObjectManager.RefreshLevelEntities();
-        
+
         ImpSpawnTracker.EndCycle(__instance);
     }
-    
-    
     [HarmonyPrefix]
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
     private static bool PlotOutEnemiesForNextHourPatch()

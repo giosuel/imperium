@@ -24,4 +24,15 @@ internal class KnifeIndicators() : BaseVisualizer<Shovel>("Knife Indicators")
         indicatorObject.GetComponent<KnifeIndicator>().Init(knife, isActivelyHolding);
         indicatorObject.gameObject.SetActive(ImpSettings.Visualizations.KnifeIndicators.Value);
     }
+
+    internal override void Toggle(bool isOn)
+    {
+        base.Toggle(isOn);
+        RefreshAll();
+    }
+
+    private void RefreshAll()
+    {
+        foreach (var knife in Object.FindObjectsOfType<KnifeItem>()) Refresh(knife, knife.isHeld);
+    }
 }
