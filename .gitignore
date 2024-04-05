@@ -1,1 +1,9 @@
+.idea/
 
+Imperium/bin/
+
+Imperium/obj/
+
+deps/
+
+*.DotSettings*
