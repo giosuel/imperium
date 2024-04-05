@@ -1,4 +1,4 @@
-![Imperium Logo](assets/imperium_full_beta_alpha.png)
+![Imperium Logo](https://github.com/giosuel/imperium/blob/main/assets/imperium_full_beta_alpha.png?raw=true)
 
 # Imperium (Beta)
 
