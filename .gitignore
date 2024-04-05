@@ -4,6 +4,6 @@ Imperium/bin/
 
 Imperium/obj/
 
-deps/
+ldeps/
 
 *.DotSettings*

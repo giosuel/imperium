@@ -49,7 +49,7 @@ Imperium is divided into 5 separate main interfaces that can be opened separatel
 
 The Main Control Panel allows you to change game and player settings as well as enabling and disabling the various overlays and gizmos Imperium offers. The control panel also allows access the Moon Settings, Render Settings, Imperium Settings, Save File Editor and the Object Settings menu.
 
-![imperium-control-center](assets/imperium-ui.png)
+![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-ui.png?raw=true)
 
 - **Casting Indicators:** Raycast and physics collision indicators (*client-side*).
 - **Gizmos:** In-game objects that visualize spawn indicators and timers (*client-side*).
@@ -63,10 +63,10 @@ The Main Control Panel allows you to change game and player settings as well as 
 
 The object explorer allows you to easily manage the various game objects currently loaded in a scene.
 
-- Items and Scrap (<img src="imperium-assets/Assets/ImperiumSprites/cross_pixel.png" style="filter: invert(1); zoom:4%;" /> Despawn, <img src="imperium-assets/Assets/ImperiumSprites/drop.png" style="filter: invert(1); zoom:4%;" /> Drop, <img src="imperium-assets/Assets/ImperiumSprites/teleport_away.png" style="filter: invert(1); zoom:3%;" /> Teleport To)
-- Entities (<img src="imperium-assets/Assets/ImperiumSprites/cross_pixel.png" style="filter: invert(1); zoom:4%;" /> Despawn, <img src="imperium-assets/Assets/ImperiumSprites/respawn.png" style="filter: invert(1); zoom:4%;" /> Respawn, <img src="imperium-assets/Assets/ImperiumSprites/teleport_away.png" style="filter: invert(1); zoom:3%;" /> Teleport To)
-- Players (<img src="imperium-assets/Assets/ImperiumSprites/skull.png" style="filter: invert(1); zoom:3%;" /> Kill, <img src="imperium-assets/Assets/ImperiumSprites/revive.png" style="filter: invert(1); zoom:3%;" /> Revive, <img src="imperium-assets/Assets/ImperiumSprites/teleport_away.png" style="filter: invert(1); zoom:3%;" /> Teleport To, <img src="imperium-assets/Assets/ImperiumSprites/teleport_close.png" style="filter: invert(1); zoom:3%;" /> Teleport Player)
-- Map Hazards (<img src="imperium-assets/Assets/ImperiumSprites/cross_pixel.png" style="filter: invert(1); zoom:3%;" /> Despawn, <img src="imperium-assets/Assets/ImperiumSprites/teleport_away.png" style="filter: invert(1); zoom:3%;" /> Teleport To)
+- Items and Scrap (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/cross_pixel.png?raw=true" style="filter: invert(1); zoom:4%;" /> Despawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/drop.png?raw=true" style="filter: invert(1); zoom:4%;" /> Drop, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To)
+- Entities (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/cross_pixel.png?raw=true" style="filter: invert(1); zoom:4%;" /> Despawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/respawn.png?raw=true" style="filter: invert(1); zoom:4%;" /> Respawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To)
+- Players (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/skull.png?raw=true" style="filter: invert(1); zoom:3%;" /> Kill, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/revive.png?raw=true" style="filter: invert(1); zoom:3%;" /> Revive, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_close.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport Player)
+- Map Hazards (<img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/cross_pixel.png?raw=true" style="filter: invert(1); zoom:3%;" /> Despawn, <img src="https://github.com/giosuel/imperium/blob/main/assets/sprites/teleport_away.png?raw=true" style="filter: invert(1); zoom:3%;" /> Teleport To)
 
 ## Moon Settings
 
@@ -75,14 +75,14 @@ The moon settings interface lets you view and change settings and variables of t
 > [!TIP]
 > All the moon settings, including the min spawns, max power, weather variables and spawn lists are not persistent and reset every time a new game is loaded.
 
-![moon-settings](assets/moon-settings.png)
+![moon-settings](https://github.com/giosuel/imperium/blob/main/assets/moon-settings.png?raw=true)
 
 
 ## Render Settings
 
 The render settings interface allows you to activate / deactivate render layers and objects that make up the scene. Many of the settings are only used when on a moon. It is also possible to change the resolution of the game in real-time.
 
-<img src="assets/render-settings.png" alt="render-settings" style="zoom:50%;" />
+<img src="https://github.com/giosuel/imperium/blob/main/assets/render-settings.png?raw=true" alt="render-settings" style="zoom:50%;" />
 
 - **Lighting:** Contains light and sub objects.
 - **Volumetrics:** Contains global and local volumes.
@@ -98,7 +98,7 @@ The render settings interface allows you to activate / deactivate render layers 
 
 Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).
 
-![save-file-editor](assets/save-file-editor.png)
+![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/save-file-editor.png?raw=true)
 
 > [!CAUTION]
 > It is not recommended to use the save file editor unless you know what you are doing.
@@ -111,7 +111,7 @@ Imperium's built-in save file editor can edit any non-vector data fields from th
 
 Imperium comes with a built-in freecam that can be activated with **F**. The freecam camera is an exact copy of the player's gameplay camera with the exception of the culling layers that can be toggled in the layer selector. The layer selector can be toggled with **L** and is activated by default.
 
-![freecam](assets/freecam.png)
+![freecam](https://github.com/giosuel/imperium/blob/main/assets/freecam.png?raw=true)
 
 The freecam can be moved with **WASD** controls and **Q** and **E** for up and down movement.
 
@@ -140,7 +140,7 @@ There are three different spawn categories; **Entites**, **Items** and **Map Haz
 | Item       | `itemName [amount] [value]`    |
 | Map Hazard | `mapHazardName [amount]`       |
 
-![spawning-ui](assets/spawning-ui.png)
+![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
 
 ## Imperium Settings
 
@@ -168,7 +168,7 @@ If *Reload On Quit* is selected, the game will instantly be reloaded after you e
 - **UE Mouse Fix:** If turned on, the *Unity Explorer* UI will capture the cursor and disable head rotation.
 - **Notifications:** Activates / Deactivates the different in-game notifications.
 
-<img src="assets/imperium-settings.png" alt="imperium-settings" style="zoom: 67%;" />
+<img src="https://github.com/giosuel/imperium/blob/main/assets/imperium-settings.png?raw=true" alt="imperium-settings" style="zoom: 67%;" />
 
 ## Oracle Spawn Prediction
 
@@ -182,7 +182,7 @@ Entities spawned with Imperium do not count towards current level power or their
 >
 > Oracle is currently in beta stage and is therefore not guaranteed to always work properly.
 
-![imperium-oracle](assets/imperium-oracle.png)
+![imperium-oracle](https://github.com/giosuel/imperium/blob/main/assets/imperium-oracle.png?raw=true)
 
 ### Prediction Restrictions
 
