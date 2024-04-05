@@ -79,9 +79,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- LethalCompany.GameLibs.Steam isn't up-to-date with the newest game versions.-->
+        <Reference Include="Assembly-CSharp" HintPath="..\deps\Assembly-CSharp.dll" Private="False" Publicize="true"/>
         <Reference Include="UnityExplorer.BIE5.Mono" HintPath="..\deps\UnityExplorer.BIE5.Mono.dll"/>
-        <Reference Include="UniverseLib.Mono" HintPath="..\deps\UniverseLib.Mono.dll"/>
-<!--        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="50.0.0-*" Publicize="true" PrivateAssets="all" Private="false"/>-->
     </ItemGroup>
 
     <!-- MinVer Set Mod Version from Git -->
