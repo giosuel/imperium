@@ -1,0 +1,104 @@
+name: Publish
+
+on:
+  release:
+    types: [ released, prereleased ]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+          filter: tree:0
+
+      - name: Setup .NET Env
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.100"
+
+      - name: Restore Solution
+        run: |
+          dotnet restore
+          dotnet tool restore
+
+      - name: Pack Solution
+        run: |
+          dotnet pack --configuration Release
+
+      - name: Upload Thunderstore Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thunderstore-build
+          path: dist/*.zip
+
+      - name: Upload NuPkg Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg-build
+          path: Imperium/bin/Release/*.nupkg
+          
+  upload-release-artifacts:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Download all Artifacts
+        uses: actions/download-artifact@v4
+        
+      - name: Upload artifacts to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*.zip nupkg-build/*.nupkg
+  
+  deploy-nuget:
+    name: Deploy to NuGet
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+
+      - name: Download nupkg artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg-build
+          path: ./Imperium/bin/Release
+
+      - name: Setup .NET environment
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.100"
+
+      - name: Publish to NuGet.org
+        run: |
+          dotnet nuget push ./Imperium/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_TOKEN }} --source https://api.nuget.org/v3/index.json
+  
+  deploy-thunderstore:
+    if: ${{ github.event.release.prerelease == false }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Download Thunderstore Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: thunderstore-build
+          path: ./dist
+          
+      - name: Restore Tools
+        run: |
+          dotnet tool restore
+
+      - name: Publishing to Thunderstore
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_API_TOKEN }}
+        run: |
+          dotnet tcli publish --config-path assets/thunderstore.toml --file dist/*.zip
