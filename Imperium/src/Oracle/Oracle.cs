@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Util;
@@ -151,11 +152,12 @@ internal class Oracle
         if (StartOfRound.Instance.isChallengeFile) baseEntityAmount += 1f;
 
         var lower = baseEntityAmount + Mathf.Abs(Imperium.TimeOfDay.daysUntilDeadline - 3) / 1.6f;
+        var lowerBound = (int)(lower - roundManager.currentLevel.spawnProbabilityRange);
+        var upperBound = (int)(baseEntityAmount + roundManager.currentLevel.spawnProbabilityRange);
         var entityAmount = Mathf.Clamp(anomalySimulator.Next(
-            (int)(lower - roundManager.currentLevel.spawnProbabilityRange),
-            (int)(baseEntityAmount + roundManager.currentLevel.spawnProbabilityRange)
+            Math.Min(lowerBound, upperBound),
+            Math.Max(lowerBound, upperBound)
         ), roundManager.minEnemiesToSpawn, 20);
-
 
         entityAmount = Mathf.Clamp(entityAmount, 0, freeVents.Count);
 
