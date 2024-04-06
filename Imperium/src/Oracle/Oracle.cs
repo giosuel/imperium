@@ -351,10 +351,7 @@ internal class Oracle
         );
         var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
         
-        // Pragma due to daytime entity spawn BUG
-#pragma warning disable CS0162 // Unreachable code detected
         for (var i = 0; i < entityAmount; i++)
-#pragma warning restore CS0162 // Unreachable code detected
         {
             var probabilities = new List<int>();
             foreach (var entity in roundManager.currentLevel.DaytimeEnemies)
@@ -408,10 +405,6 @@ internal class Oracle
                 spawning.Add(new SpawnReport
                     { entity = enemyType, position = position, spawnTime = (int)currentDayTime });
             }
-
-            // BUG
-            // SpawnRandomDaytimeEnemy returns false in any case, so to simulate this, we break after the first loop.
-            break;
         }
 
         return spawning;
