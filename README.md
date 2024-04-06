@@ -105,7 +105,7 @@ Imperium's built-in save file editor can edit any non-vector data fields from th
 
 Imperium comes with a built-in freecam that can be activated with **F**. The freecam camera is an exact copy of the player's gameplay camera with the exception of the culling layers that can be toggled in the layer selector. The layer selector can be toggled with **L** and is activated by default.
 
-![freecam](https://github.com/giosuel/imperium/blob/main/assets/freecam.png?raw=true)
+![freecam](https://github.com/giosuel/imperium/blob/main/assets/freecam-layers-imperium.png?raw=true)
 
 The freecam can be moved with **WASD** controls and **Q** and **E** for up and down movement.
 

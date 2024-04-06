@@ -41,7 +41,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.1.2";
+    public const string PLUGIN_VERSION = "0.1.3";
 
     internal static ManualLogSource Log;
     internal static ConfigFile ConfigFile;
