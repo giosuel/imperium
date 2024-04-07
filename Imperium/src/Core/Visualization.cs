@@ -147,7 +147,7 @@ internal class Visualization
 
             if (!refresh)
             {
-                ImpOutput.Send(
+                Imperium.Output.Send(
                     $"Turned on Visualisation for {identifier}!",
                     notificationType: NotificationType.Confirmation
                 );
@@ -164,7 +164,7 @@ internal class Visualization
 
             if (!refresh)
             {
-                ImpOutput.Send(
+                Imperium.Output.Send(
                     $"Turned off Visualisation for {identifier}!",
                     notificationType: NotificationType.Confirmation
                 );

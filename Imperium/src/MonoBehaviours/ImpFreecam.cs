@@ -24,6 +24,7 @@ public class ImpFreecam : MonoBehaviour
     private Vector3 lookOrigin;
 
     internal readonly ImpBinaryBinding IsFreecamEnabled = new(false);
+    internal readonly ImpBinaryBinding IsMinicamEnabled = new(false);
 
     internal static ImpFreecam Create() => new GameObject("ImpFreecam").AddComponent<ImpFreecam>();
 
@@ -41,14 +42,28 @@ public class ImpFreecam : MonoBehaviour
 
         IsFreecamEnabled.onTrue += OnFreecamEnable;
         IsFreecamEnabled.onFalse += OnFreecamDisable;
+        
+        IsMinicamEnabled.onTrue += OnMinicamEnable;
+        IsMinicamEnabled.onFalse += OnMinicamDisable;
 
         // Close Unity Explorer if open
         UnityExplorerIntegration.CloseUI();
 
         Imperium.InputBindings.BaseMap["Freecam"].performed += OnFreecamToggle;
+        Imperium.InputBindings.BaseMap["Minicam"].performed += OnMinicamToggle;
         Imperium.InputBindings.FreecamMap["Reset"].performed += OnFreecamReset;
         Imperium.InputBindings.FreecamMap["LayerSelector"].performed += OnToggleLayerSelector;
         ImpSettings.Hidden.FreecamLayerMask.onUpdate += value => freecamCamera.cullingMask = value;
+    }
+    
+    private void OnMinicamToggle(InputAction.CallbackContext callbackContext)
+    {
+        if (Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.Player.inTerminalMenu ||
+            Imperium.Player.isTypingChat ||
+            Imperium.ShipBuildModeManager.InBuildMode) return;
+
+        IsMinicamEnabled.Toggle();
     }
 
     private void OnFreecamToggle(InputAction.CallbackContext callbackContext)
@@ -60,9 +75,26 @@ public class ImpFreecam : MonoBehaviour
         IsFreecamEnabled.Toggle();
     }
 
+    private void OnMinicamEnable()
+    {
+        if (IsFreecamEnabled.Value) IsFreecamEnabled.SetFalse();
+        
+        freecamCamera.enabled = true;
+        const float margin = 100f;
+        freecamCamera.rect = new Rect(margin / Screen.width, 1 - margin / Screen.height - 0.4f, 0.4f, 0.4f);
+    }
+
+    private void OnMinicamDisable()
+    {
+        freecamCamera.enabled = false;
+        freecamCamera.rect = new Rect(0, 0, 1, 1);
+    }
+
     private void OnFreecamEnable()
     {
         Imperium.Interface.Close();
+        
+        if (IsMinicamEnabled.Value) IsMinicamEnabled.SetFalse();
 
         HUDManager.Instance.HideHUD(true);
         Imperium.InputBindings.FreecamMap.Enable();
@@ -75,7 +107,7 @@ public class ImpFreecam : MonoBehaviour
     private void OnFreecamDisable()
     {
         layerSelector.OnUIClose();
-
+        
         HUDManager.Instance.HideHUD(false);
         Imperium.InputBindings.FreecamMap.Disable();
         freecamCamera.enabled = false;

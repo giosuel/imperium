@@ -40,7 +40,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     public T DefaultValue { get; }
 
     public T Value { get; protected set; }
-
+    
     /// <summary>
     /// Initializes default value and value with default value
     /// </summary>

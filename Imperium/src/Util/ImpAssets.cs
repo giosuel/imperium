@@ -52,7 +52,7 @@ public abstract class ImpAssets
             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "imperium_assets"));
         if (assets == null)
         {
-            ImpOutput.Log("[PRELOAD] Failed to load Imperium assets, aborting!");
+            Imperium.Output.Log("[PRELOAD] Failed to load Imperium assets, aborting!");
             return false;
         }
 
@@ -94,11 +94,11 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Audio/ButtonClick.ogg", out ButtonClick),
         ];
 
-        ImpOutput.LogBlock(logBuffer, "Imperium Asset Loader");
+        Imperium.Output.LogBlock(logBuffer, "Imperium Asset Loader");
 
         if (loadResults.Any(result => result == false))
         {
-            ImpOutput.Log("[PRELOAD]  Failed to load one or more assets from ./imperium_assets, aborting!");
+            Imperium.Output.Log("[PRELOAD]  Failed to load one or more assets from ./imperium_assets, aborting!");
             return false;
         }
 
@@ -112,7 +112,7 @@ public abstract class ImpAssets
         loadedObject = assets.LoadAsset<T>(path);
         if (!loadedObject)
         {
-            Imperium.Log.LogError($"Failed to load '{path}' from ./imperium_assets");
+            Imperium.Output.Error($"Failed to load '{path}' from ./imperium_assets");
             return false;
         }
 

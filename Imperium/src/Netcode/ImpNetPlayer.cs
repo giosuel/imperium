@@ -45,7 +45,7 @@ public class ImpNetPlayer : NetworkBehaviour
     {
         KillPlayerClientRpc(playerId);
 
-        ImpOutput.SendToClients(
+        Imperium.Output.SendToClients(
             $"Player {Imperium.StartOfRound.allPlayerScripts[playerId].playerUsername} has been murdered!"
         );
     }
@@ -72,7 +72,7 @@ public class ImpNetPlayer : NetworkBehaviour
     {
         PlayerManager.RevivePlayer(playerId);
 
-        ImpOutput.Send($"Player {Imperium.StartOfRound.allPlayerScripts[playerId].playerUsername} has been revived!");
+        Imperium.Output.Send($"Player {Imperium.StartOfRound.allPlayerScripts[playerId].playerUsername} has been revived!");
     }
 
     [ServerRpc(RequireOwnership = false)]

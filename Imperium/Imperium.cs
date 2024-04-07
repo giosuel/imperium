@@ -28,6 +28,7 @@ using Imperium.Util.Binding;
 using RuntimeNetcodeRPCValidator;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 #endregion
 
@@ -43,7 +44,6 @@ public class Imperium : BaseUnityPlugin
     public const string PLUGIN_NAME = "Imperium";
     public const string PLUGIN_VERSION = "0.1.3";
 
-    internal static ManualLogSource Log;
     internal static ConfigFile ConfigFile;
 
     // Global relays for game singletons to keep track of dependencies
@@ -54,6 +54,7 @@ public class Imperium : BaseUnityPlugin
     internal static IngamePlayerSettings IngamePlayerSettings => IngamePlayerSettings.Instance;
     internal static StartOfRound StartOfRound => StartOfRound.Instance;
     internal static RoundManager RoundManager => RoundManager.Instance;
+    internal static ShipBuildModeManager ShipBuildModeManager => ShipBuildModeManager.Instance;
 
     // Imperium game and lifecycle managers
     internal static GameManager GameManager;
@@ -61,6 +62,7 @@ public class Imperium : BaseUnityPlugin
     internal static PlayerManager PlayerManager;
     internal static Visualization Visualization;
     internal static Oracle.Oracle Oracle;
+    internal static ImpOutput Output;
 
     // Other Imperium objects
     internal static ImpFreecam Freecam;
@@ -80,7 +82,7 @@ public class Imperium : BaseUnityPlugin
 
     private void Awake()
     {
-        Log = Logger;
+        Output = new ImpOutput(Logger);
         ConfigFile = Config;
         if (!ImpAssets.Load()) return;
 
@@ -99,14 +101,14 @@ public class Imperium : BaseUnityPlugin
 
         IsImperiumReady = true;
 
-        ImpOutput.Log("[OK] Imperium is ready!");
+        Output.Log("[OK] Imperium is ready!");
     }
 
     internal static void Launch()
     {
         if (!IsImperiumReady)
         {
-            ImpOutput.Send("[ERR] Imperium failed to launch \u2299︿\u2299");
+            Output.Send("[ERR] Imperium failed to launch \u2299︿\u2299");
             return;
         }
 
@@ -155,6 +157,8 @@ public class Imperium : BaseUnityPlugin
         ObjectManager.CurrentLevelSpiderWebs.onTrigger += Visualization.RefreshOverlays;
         ObjectManager.CurrentLevelBreakerBoxes.onTrigger += Visualization.RefreshOverlays;
 
+        InputBindings.BaseMap["ToggleHUD"].performed += ToggleHUD;
+
         ImpSettings.LoadAll();
 
         SpawnUI();
@@ -165,6 +169,11 @@ public class Imperium : BaseUnityPlugin
         UnityExplorerIntegration.PatchFunctions(harmony);
 
         if (!ImpNetworkManager.IsHost.Value) ImpNetTime.Instance.RequestTimeServerRpc();
+    }
+
+    private static void ToggleHUD(InputAction.CallbackContext callbackContext)
+    {
+        HUDManager.HideHUD(!HUDManager.hudHidden);
     }
 
     internal static void Unload()
@@ -203,7 +212,7 @@ public class Imperium : BaseUnityPlugin
 
         Interface.StartListening();
 
-        ImpOutput.Log("[OK] Imperium UIs have been registered! \\o/");
+        Output.Log("[OK] Imperium UIs have been registered! \\o/");
     }
 
     private static void PreLaunchPatch()

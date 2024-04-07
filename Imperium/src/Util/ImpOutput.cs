@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Imperium.Util;
 
-internal abstract class ImpOutput
+internal class ImpOutput(ManualLogSource logga)
 {
     private static readonly Dictionary<NotificationType, ImpConfig<bool>> NotificationSettings = new()
     {
@@ -25,7 +25,7 @@ internal abstract class ImpOutput
         { NotificationType.Other, ImpSettings.Preferences.NotificationsOther }
     };
 
-    internal static void SendToClients(
+    internal void SendToClients(
         string text,
         string title = "Imperium",
         bool isWarning = false
@@ -35,7 +35,7 @@ internal abstract class ImpOutput
         ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning);
     }
 
-    internal static void Send(
+    internal void Send(
         string text,
         string title = "Imperium",
         bool isWarning = false,
@@ -44,7 +44,7 @@ internal abstract class ImpOutput
     {
         if (!HUDManager.Instance)
         {
-            Imperium.Log.LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
+            logga.LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
             return;
         }
 
@@ -56,9 +56,10 @@ internal abstract class ImpOutput
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
 
-    internal static void Log(string message) => Imperium.Log.LogInfo(message);
+    internal void Log(string message) => logga.LogInfo(message);
+    internal void Error(string message) => logga.LogError(message);
 
-    internal static void LogBlock(List<string> lines, string title = "Imperium Monitoring")
+    internal void LogBlock(List<string> lines, string title = "Imperium Monitoring")
     {
         if (!ImpSettings.Preferences.GeneralLogging.Value) return;
 
@@ -79,7 +80,7 @@ internal abstract class ImpOutput
             (current, line) => current + $"\u2502 {line}".PadRight(width - 2) + " \u2502\n");
         output += "\u2558" + fullWidth + "\u255b";
 
-        Imperium.Log.Log(LogLevel.Message, output);
+        logga.Log(LogLevel.Message, output);
     }
 }
 

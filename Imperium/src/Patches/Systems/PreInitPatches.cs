@@ -27,7 +27,7 @@ internal static class PreInitPatches
             if (ImpSettings.Preferences.QuickloadSkipStart.Value &&
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
             {
-                ImpOutput.Log("[SYS] Quickload is bypassing start-up sequence...");
+                Imperium.Output.Log("[SYS] Quickload is bypassing start-up sequence...");
                 SceneManager.LoadScene("InitScene");
             }
         }
@@ -45,7 +45,7 @@ internal static class PreInitPatches
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
             {
                 var saveNum = ImpSettings.Preferences.QuickloadSaveNumber.Value;
-                ImpOutput.Log($"[SYS] Quickload is loading level #{saveNum}...");
+                Imperium.Output.Log($"[SYS] Quickload is loading level #{saveNum}...");
 
                 var fileName = $"LCSaveFile{saveNum}";
 

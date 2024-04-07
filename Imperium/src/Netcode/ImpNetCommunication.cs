@@ -32,7 +32,7 @@ public class ImpNetCommunication : NetworkBehaviour
         bool isWarning = false
     )
     {
-        ImpOutput.Send(text: text, title: title, isWarning: isWarning, notificationType: NotificationType.Server);
+        Imperium.Output.Send(text: text, title: title, isWarning: isWarning, notificationType: NotificationType.Server);
     }
 
     [ServerRpc(RequireOwnership = false)]

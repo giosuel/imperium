@@ -118,7 +118,7 @@ internal class Oracle
 
         if (!string.IsNullOrEmpty(reason))
         {
-            ImpOutput.Send(
+            Imperium.Output.Send(
                 $"Spawn predictions updated due to {reason}!",
                 notificationType: NotificationType.OracleUpdate
             );

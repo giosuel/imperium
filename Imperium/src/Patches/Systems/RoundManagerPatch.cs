@@ -39,7 +39,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotNear");
+        Imperium.Output.Log("[ORACLE] Oracle had to re-simulate due to YRotNear");
         Imperium.Oracle.Simulate();
     }
 
@@ -50,7 +50,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotFar");
+        Imperium.Output.Log("[ORACLE] Oracle had to re-simulate due to YRotFar");
         Imperium.Oracle.Simulate();
     }
 

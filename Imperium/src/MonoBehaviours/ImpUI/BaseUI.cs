@@ -41,7 +41,7 @@ internal abstract class BaseUI : MonoBehaviour
         InitUI();
 
         container.gameObject.SetActive(false);
-        ImpOutput.Log($"[OK] Successfully loaded {GetType()} !");
+        Imperium.Output.Log($"[OK] Successfully loaded {GetType()} !");
     }
 
     /// <summary>

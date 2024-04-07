@@ -26,19 +26,19 @@ public static class ImpSpawnTracker
 
         if (output.Count < 1)
         {
-            ImpOutput.Send(
+            Imperium.Output.Send(
                 "Nothing spawned >.<", $"Spawn Report Cycle #{num * 9}",
                 notificationType: NotificationType.SpawnReport
             );
-            ImpOutput.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
+            Imperium.Output.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
         }
         else
         {
-            ImpOutput.Send(
+            Imperium.Output.Send(
                 output.Aggregate((a, b) => $"{a}\n{b}"), $"Spawn Report Cycle #{num * 9}",
                 notificationType: NotificationType.SpawnReport
             );
-            ImpOutput.LogBlock(output, title: "Spawn Tracker");
+            Imperium.Output.LogBlock(output, title: "Spawn Tracker");
         }
     }
 

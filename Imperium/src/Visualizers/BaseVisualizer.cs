@@ -30,7 +30,7 @@ internal abstract class BaseVisualizer<T>
     {
         ImpUtils.ToggleGameObjects(indicatorObjects.Values, isOn);
 
-        ImpOutput.Send(
+        Imperium.Output.Send(
             isOn ? $"Successfully enabled {displayName}!" : $"Successfully disabled {displayName}!",
             notificationType: NotificationType.Confirmation
         );
