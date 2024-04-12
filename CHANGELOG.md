@@ -2,9 +2,9 @@
 
 ## Imperium 0.1.4 [Beta]
 
-### Version
+### Compatibility
 
-Compatible with the [v50 rev.4](https://steamdb.info/changelist/23125974/) update of Lethal Company.
+This version is compatible with the [v50 rev.4](https://steamdb.info/changelist/23125974/) update of Lethal Company.
 
 ### Added Features
 
@@ -24,9 +24,9 @@ Compatible with the [v50 rev.4](https://steamdb.info/changelist/23125974/) updat
 
 ## Imperium 0.1.3 [Beta]
 
-### Version
+### Compatibility
 
-Compatible with the [v50 rev.3](https://steamdb.info/changelist/23055571/) update of Lethal Company.
+This version is compatible with the [v50 rev.3](https://steamdb.info/changelist/23055571/) update of Lethal Company.
 
 ### Buxfixes
 
