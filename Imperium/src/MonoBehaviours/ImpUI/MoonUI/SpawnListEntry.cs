@@ -74,7 +74,7 @@ public class SpawnListEntry : MonoBehaviour
     }
 
     /// <summary>
-    /// Sync changes with other entries in the same list for chance calculation and sends update to other clients
+    ///     Sync changes with other entries in the same list for chance calculation and sends update to other clients
     /// </summary>
     public void SyncUpdate()
     {

@@ -83,7 +83,7 @@ internal class TeleportWindow : BaseWindow
     private static void OnInteractive()
     {
         Imperium.Freecam.IsFreecamEnabled.Set(false);
-        Imperium.PositionIndicator.Activate(PlayerManager.TeleportTo);
+        Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo);
     }
 
     private void TeleportTo(Vector3? anchor)

@@ -18,7 +18,7 @@ internal abstract class BaseWindow : MonoBehaviour
     protected BaseUI parentUI;
 
     /// <summary>
-    /// Registers a window and implements close / collapse functionality for the window.
+    ///     Registers a window and implements close / collapse functionality for the window.
     /// </summary>
     /// <param name="parent"></param>
     /// <param name="isCollapsible"></param>

@@ -1,6 +1,7 @@
 #region
 
 using System.Linq;
+using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using JetBrains.Annotations;
@@ -15,7 +16,7 @@ namespace Imperium.MonoBehaviours.ImpUI.Common;
 public abstract class ImpButton
 {
     /// <summary>
-    /// Binds a unity button with an onclick listener and interactiveBindings
+    ///     Binds a unity button with an onclick listener and interactiveBindings
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>
@@ -33,7 +34,7 @@ public abstract class ImpButton
         var buttonObject = container.Find(path);
         var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(onClick);
-        button.onClick.AddListener(() => ImpUtils.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
 
@@ -58,9 +59,8 @@ public abstract class ImpButton
     }
 
     /// <summary>
-    /// Binds a unity button with an onclick listener and interactiveBindings
-    /// 
-    /// This version is meant for arrow buttons that collapse an area
+    ///     Binds a unity button with an onclick listener and interactiveBindings
+    ///     This version is meant for arrow buttons that collapse an area
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>
@@ -82,7 +82,7 @@ public abstract class ImpButton
             collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
             button.transform.Rotate(0, 0, 180);
         });
-        button.onClick.AddListener(() => ImpUtils.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
 
         if (interactableBindings.Length > 0)
         {

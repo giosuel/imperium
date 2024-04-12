@@ -16,16 +16,15 @@ public class ImpNetPlayer : NetworkBehaviour
 {
     internal static ImpNetPlayer Instance { get; private set; }
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        if (Instance == null)
+        if (ImpNetworkManager.IsHost.Value && Instance)
         {
-            Instance = this;
+            Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
-        else
-        {
-            Destroy(Instance.gameObject);
-        }
+
+        Instance = this;
+        base.OnNetworkSpawn();
     }
 
     [ServerRpc(RequireOwnership = false)]

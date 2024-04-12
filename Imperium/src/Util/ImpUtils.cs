@@ -25,15 +25,14 @@ internal abstract class ImpUtils
             ? CloneRandom(Imperium.RoundManager.AnomalyRandom)
             : new Random();
         var min = System.Math.Min(item.minValue, item.maxValue);
-        var max = System.Math.Min(item.minValue, item.maxValue);
+        var max = System.Math.Max(item.minValue, item.maxValue);
         return (int)(random.Next(min, max) * Imperium.RoundManager.scrapValueMultiplier);
     }
 
     /// <summary>
-    /// Tries to find value in a dictionary by key. If the key does not exist,
-    /// a new value of type T is created, indexed in the dictionary with the given key and returned.
-    ///
-    /// Basically a helper function to emulate a default dictionary.
+    ///     Tries to find value in a dictionary by key. If the key does not exist,
+    ///     a new value of type T is created, indexed in the dictionary with the given key and returned.
+    ///     Basically a helper function to emulate a default dictionary.
     /// </summary>
     internal static T DictionaryGetOrNew<T>(IDictionary<string, T> map, string key) where T : new()
     {
@@ -49,20 +48,11 @@ internal abstract class ImpUtils
         }
     }
 
-    internal static void ToggleGameObjects(IEnumerable<Component> list, bool isOn)
-    {
-        foreach (var obj in list.Where(obj => obj != null && obj.gameObject != null))
-        {
-            obj.gameObject.SetActive(isOn);
-        }
-    }
-
-
     internal static Random CloneRandom(Random random)
     {
         var cloned = new Random();
 
-        // The int array needs to be deep-copied since its a referenced type
+        // The seed array needs to be deep-copied since its a referenced type
         var seedArray = Reflection.Get<Random, int[]>(random, "_seedArray");
         Reflection.Set(cloned, "_seedArray", seedArray.ToArray());
 
@@ -75,15 +65,19 @@ internal abstract class ImpUtils
     internal static float TimeToNormalized(float currentTime) => currentTime / Imperium.TimeOfDay.totalTime;
 
     /// <summary>
-    /// Formats daytime like RoundManager.currentDayTime or TimeOfDay.globalTime
+    ///     Formats daytime like RoundManager.currentDayTime or TimeOfDay.globalTime
     /// </summary>
     /// <param name="dayTime"></param>
     /// <returns></returns>
-    internal static string FormatDayTime(float dayTime)
-    {
-        return FormatTime(TimeToNormalized(dayTime));
-    }
+    internal static string FormatDayTime(float dayTime) => FormatTime(TimeToNormalized(dayTime));
 
+    /// <summary>
+    ///     Generates a formatted string of a fraction; '(num1, num2)'
+    /// </summary>
+    /// <param name="num1"></param>
+    /// <param name="num2"></param>
+    /// <param name="ignoreEmpty">If the function should return an empty string if both parameters are zero</param>
+    /// <returns></returns>
     internal static string FormatFraction(int num1, int num2, bool ignoreEmpty = true)
     {
         if (ignoreEmpty && num1 == 0 && num2 == 0) return "";
@@ -100,6 +94,19 @@ internal abstract class ImpUtils
         if (hours == 0) hours = 12;
 
         return $"{hours:00}:{minutes:00} {suffix}";
+    }
+
+    internal static string FormatMinutesSeconds(float seconds)
+    {
+        var minutesLeft = Mathf.RoundToInt(seconds) / 60;
+        var secondsLeft = Mathf.RoundToInt(seconds) % 60;
+        return $"{minutesLeft}:{secondsLeft:00}";
+    }
+
+    internal static string FormatSeconds(float seconds)
+    {
+        ;
+        return $"{seconds:0.0}s";
     }
 
     internal static string FormatVector(Vector3 input, int roundDigits = -1)
@@ -120,11 +127,6 @@ internal abstract class ImpUtils
         {
             return default;
         }
-    }
-
-    internal static void PlayClip(AudioClip audioClip, bool randomize = false)
-    {
-        RoundManager.PlayRandomClip(Imperium.HUDManager.UIAudio, [audioClip], randomize);
     }
 
     internal static SpawnableItemWithRarity AddScrapToSpawnList(
@@ -179,7 +181,7 @@ internal abstract class ImpUtils
                 isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled);
         }
 
-        private static Color ChangeAlpha(Color oldColor, float newAlpha)
+        internal static Color ChangeAlpha(Color oldColor, float newAlpha)
         {
             var color = oldColor;
             color.a = newAlpha;
@@ -204,8 +206,8 @@ internal abstract class ImpUtils
             NormalizeFloat(MathF.Round(chance * 100, 2)).ToString(CultureInfo.InvariantCulture) + "%";
 
         /// <summary>
-        /// Removes trailing zeros from float if decimals are equal to zero
-        /// e.g. 100.00 => 100
+        ///     Removes trailing zeros from float if decimals are equal to zero
+        ///     e.g. 100.00 => 100
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -223,10 +225,9 @@ internal abstract class ImpUtils
         }
 
         /// <summary>
-        /// Limits a float to 3 digits.
-        /// e.g 100.01 => 100, 14.23 => 12.3, 1.22 => 1.22, 0.1 => 0.1
-        ///
-        /// Note: This only works for positive numbers smaller than 999
+        ///     Limits a float to 3 digits.
+        ///     e.g 100.01 => 100, 14.23 => 12.3, 1.22 => 1.22, 0.1 => 0.1
+        ///     Note: This only works for positive numbers smaller than 999
         /// </summary>
         internal static string FormatFloatToThreeDigits(float value) =>
             value switch
@@ -296,13 +297,15 @@ internal abstract class ImpUtils
 
         internal static GameObject CreatePrimitive(
             PrimitiveType type,
-            Transform parent,
+            [CanBeNull] Transform parent,
             Color color,
             float size = 1,
-            string name = null
+            int layer = 0,
+            string name = null,
+            bool removeCollider = true
         )
         {
-            var sphere = CreatePrimitive(type, parent, size, name);
+            var sphere = CreatePrimitive(type, parent, size, name, layer, removeCollider);
 
             var renderer = sphere.GetComponent<MeshRenderer>();
             renderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -316,13 +319,15 @@ internal abstract class ImpUtils
 
         internal static GameObject CreatePrimitive(
             PrimitiveType type,
-            Transform parent,
+            [CanBeNull] Transform parent,
             [CanBeNull] Material material,
             float size = 1,
-            string name = null
+            int layer = 0,
+            string name = null,
+            bool removeCollider = true
         )
         {
-            var sphere = CreatePrimitive(type, parent, size, name);
+            var sphere = CreatePrimitive(type, parent, size, name, layer, removeCollider);
             if (name != null) sphere.name = name;
 
             var renderer = sphere.GetComponent<MeshRenderer>();
@@ -340,37 +345,53 @@ internal abstract class ImpUtils
             return sphere;
         }
 
-        private static GameObject CreatePrimitive(
+        internal static GameObject CreatePrimitive(
             PrimitiveType type,
-            Transform parent,
+            [CanBeNull] Transform parent,
             float size = 1,
-            string name = "ImpObject"
+            string name = "ImpObject",
+            int layer = 0,
+            bool removeCollider = true,
+            bool removeRenderer = false
         )
         {
             var primitive = GameObject.CreatePrimitive(type);
             primitive.name = name;
+            primitive.layer = layer;
 
-            switch (type)
+            if (removeCollider)
             {
-                case PrimitiveType.Sphere:
-                    Object.Destroy(primitive.GetComponent<SphereCollider>());
-                    break;
-                case PrimitiveType.Cylinder:
-                case PrimitiveType.Cube:
-                case PrimitiveType.Plane:
-                case PrimitiveType.Quad:
-                    Object.Destroy(primitive.GetComponent<BoxCollider>());
-                    break;
-                case PrimitiveType.Capsule:
-                    Object.Destroy(primitive.GetComponent<CapsuleCollider>());
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                switch (type)
+                {
+                    case PrimitiveType.Sphere:
+                        Object.Destroy(primitive.GetComponent<SphereCollider>());
+                        break;
+                    case PrimitiveType.Cylinder:
+                    case PrimitiveType.Cube:
+                    case PrimitiveType.Plane:
+                    case PrimitiveType.Quad:
+                        Object.Destroy(primitive.GetComponent<BoxCollider>());
+                        break;
+                    case PrimitiveType.Capsule:
+                        Object.Destroy(primitive.GetComponent<CapsuleCollider>());
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
             }
 
             primitive.transform.localScale = Vector3.one * size;
-            primitive.transform.position = parent.position;
-            primitive.transform.SetParent(parent);
+            if (parent)
+            {
+                primitive.transform.position = parent.position;
+                primitive.transform.SetParent(parent);
+            }
+
+            if (removeRenderer)
+            {
+                Object.Destroy(primitive.GetComponent<MeshRenderer>());
+                Object.Destroy(primitive.GetComponent<MeshFilter>());
+            }
 
             return primitive;
         }

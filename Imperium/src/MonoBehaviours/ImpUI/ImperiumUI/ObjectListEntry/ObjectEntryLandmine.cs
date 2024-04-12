@@ -32,7 +32,7 @@ internal class ObjectEntryLandmine : ObjectEntry
 
     protected override void TeleportHere()
     {
-        Imperium.PositionIndicator.Activate(position => GetContainerObject().transform.position = position);
+        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position);
     }
 
     protected override string GetObjectName() => $"Landmine <i>{component.GetInstanceID()}</i>";

@@ -11,8 +11,8 @@ using Imperium.Util;
 namespace Imperium.Core;
 
 /// <summary>
-/// A moon manager for every moon is instantiated at the start of the game, it holds the spawn lists as well
-/// as a copy of the original vanilla data used to reset values.
+///     A moon manager for every moon is instantiated at the start of the game, it holds the spawn lists as well
+///     as a copy of the original vanilla data used to reset values.
 /// </summary>
 public class MoonManager
 {

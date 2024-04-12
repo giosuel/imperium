@@ -27,7 +27,7 @@ internal abstract class BaseUI : MonoBehaviour
     public virtual void Awake() => InitializeUI();
 
     /// <summary>
-    /// For child UIs that are only opened through a click in a parent and not via key bind
+    ///     For child UIs that are only opened through a click in a parent and not via key bind
     /// </summary>
     /// <param name="closeOnMovement">Whether the UI should be closed on movement inputs (WASD)</param>
     /// <param name="ignoreTabInput">Whether to ignore the tab close shortcut</param>
@@ -41,11 +41,11 @@ internal abstract class BaseUI : MonoBehaviour
         InitUI();
 
         container.gameObject.SetActive(false);
-        ImpOutput.Log($"[OK] Successfully loaded {GetType()} !");
+        Imperium.Log.LogInfo($"[OK] Successfully loaded {GetType()} !");
     }
 
     /// <summary>
-    /// This function will be overriden by the implementing UIs to initialize their UI parts at spawn time
+    ///     This function will be overriden by the implementing UIs to initialize their UI parts at spawn time
     /// </summary>
     protected abstract void InitUI();
 
@@ -68,7 +68,7 @@ internal abstract class BaseUI : MonoBehaviour
         IsOpen = true;
 
         onOpen?.Invoke();
-        ImpUtils.PlayClip(ImpAssets.ButtonClick);
+        GameManager.PlayClip(ImpAssets.ButtonClick);
 
         if (closeOnMove)
         {

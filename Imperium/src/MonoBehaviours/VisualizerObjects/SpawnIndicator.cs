@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Imperium.Util;
 using TMPro;
 using UnityEngine;
 
@@ -41,9 +42,7 @@ public class SpawnIndicator : MonoBehaviour
 
         entityText.text = entityName;
 
-        var minutesLeft = Mathf.RoundToInt(timeLeft) / 60;
-        var secondsLeft = Mathf.RoundToInt(timeLeft) % 60;
-        timeText.text = $"{minutesLeft}:{secondsLeft:00}";
+        timeText.text = ImpUtils.FormatMinutesSeconds(timeLeft);
 
         if (!Imperium.Player) return;
         canvas.transform.LookAt(Imperium.Player.transform);

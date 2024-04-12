@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
@@ -24,8 +25,9 @@ public class ImpSlider : MonoBehaviour
     private float debounceTime;
 
     /// <summary>
-    /// Adds and binds an ImpSlider to a valid slider object
-    /// </summary>>
+    ///     Adds and binds an ImpSlider to a valid slider object
+    /// </summary>
+    /// >
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="valueBinding">The binding that the value of the slider will be bound to</param>
@@ -71,7 +73,7 @@ public class ImpSlider : MonoBehaviour
 
             impSlider.indicatorText.text = indicatorFormatter(newValue);
 
-            ImpUtils.PlayClip(ImpAssets.GrassClick);
+            GameManager.PlayClip(ImpAssets.GrassClick);
 
             if (debounceTime > 0)
             {

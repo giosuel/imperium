@@ -17,6 +17,8 @@ public class ImpInputBindings
     {
         BaseMap.AddAction("Teleport", binding: "<Keyboard>/t");
         BaseMap.AddAction("Freecam", binding: "<Keyboard>/f");
+        BaseMap.AddAction("Minicam", binding: "<Keyboard>/x");
+        BaseMap.AddAction("ToggleHUD", binding: "<Keyboard>/z");
         BaseMap.Enable();
 
         FreecamMap.AddAction("Move");

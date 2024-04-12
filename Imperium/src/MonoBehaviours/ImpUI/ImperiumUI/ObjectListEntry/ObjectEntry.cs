@@ -26,7 +26,7 @@ internal class ObjectEntry : MonoBehaviour
 
     private ImpBinding<bool> IsObjectActive;
 
-    internal void Init(Component objectComponent, ImperiumUI imperiumUI)
+    internal void Init(Component objectComponent)
     {
         objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
 
@@ -77,14 +77,18 @@ internal class ObjectEntry : MonoBehaviour
         UpdateEntry();
     }
 
-    public virtual void UpdateEntry() => IsObjectActive.Set(containerObject.activeSelf);
+    public virtual void UpdateEntry()
+    {
+        SetName(GetObjectName());
+        IsObjectActive.Set(containerObject.activeSelf);
+    }
 
     public virtual void Destroy()
     {
         Destroy(gameObject);
     }
 
-    protected void SetName(string text)
+    private void SetName(string text)
     {
         objectNameText.text = text;
     }

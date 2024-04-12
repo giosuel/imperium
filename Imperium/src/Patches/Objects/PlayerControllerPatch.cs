@@ -6,6 +6,7 @@ using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util;
 using Unity.Netcode;
+using UnityEngine;
 
 #endregion
 
@@ -18,15 +19,30 @@ internal static class PlayerControllerPatch
     internal static class PreloadPatches
     {
         /// <summary>
-        /// This is used as the entry function for Imperium
+        ///     This is used as the entry function for Imperium
         /// </summary>
         [HarmonyPostfix]
         [HarmonyPatch("ConnectClientToPlayerObject")]
         private static void ConnectClientToPlayerObjectPatch(PlayerControllerB __instance)
         {
-            if (!Imperium.IsImperiumReady || GameNetworkManager.Instance.localPlayerController != __instance) return;
+            if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = __instance;
-            ImpNetCommunication.Instance.RequestImperiumAccessServerRpc(NetworkManager.Singleton.LocalClientId);
+
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                var networkHandlerObj = Object.Instantiate(
+                    ImpAssets.NetworkHandler,
+                    Vector3.zero,
+                    Quaternion.identity
+                );
+                networkHandlerObj.AddComponent<ImpNetCommunication>();
+                networkHandlerObj.AddComponent<ImpNetPlayer>();
+                networkHandlerObj.AddComponent<ImpNetQuota>();
+                networkHandlerObj.AddComponent<ImpNetSpawning>();
+                networkHandlerObj.AddComponent<ImpNetTime>();
+                networkHandlerObj.AddComponent<ImpNetWeather>();
+                networkHandlerObj.GetComponent<NetworkObject>().Spawn();
+            }
         }
     }
 

@@ -39,7 +39,7 @@ internal class ObjectEntryItem : ObjectEntry
 
     protected override void TeleportHere()
     {
-        Imperium.PositionIndicator.Activate(position =>
+        Imperium.ImpPositionIndicator.Activate(position =>
         {
             var item = (GrabbableObject)component;
             item.transform.position = position;
@@ -48,6 +48,8 @@ internal class ObjectEntryItem : ObjectEntry
 
     public override void UpdateEntry()
     {
+        base.UpdateEntry();
+
         var isInteractable = ((GrabbableObject)component).isHeld;
         if (!buttonIcon) buttonIcon = dropButton.transform.Find("Icon").GetComponent<Image>();
 

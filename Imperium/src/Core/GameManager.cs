@@ -371,4 +371,9 @@ internal class GameManager : ImpLifecycleObject
                 }
             });
     }
+
+    internal static void PlayClip(AudioClip audioClip, bool randomize = false)
+    {
+        RoundManager.PlayRandomClip(Imperium.HUDManager.UIAudio, [audioClip], randomize);
+    }
 }

@@ -11,9 +11,9 @@ using UnityEngine.InputSystem;
 namespace Imperium.MonoBehaviours.ImpUI.LayerSelector;
 
 /// <summary>
-/// This UI is a bit special as it is controlled by the bindings <see cref="ImpSettings.Hidden.FreecamLayerSelector"/>
-/// and <see cref="ImpFreecam.IsFreecamEnabled"/> and the in-game variable <see cref="QuickMenuManager.isMenuOpen"/>
-/// that indicates if the quick menu or an Imperium UI is open.
+///     This UI is a bit special as it is controlled by the bindings <see cref="ImpSettings.Hidden.FreecamLayerSelector" />
+///     and <see cref="ImpFreecam.IsFreecamEnabled" /> and the in-game variable <see cref="QuickMenuManager.isMenuOpen" />
+///     that indicates if the quick menu or an Imperium UI is open.
 /// </summary>
 internal class LayerSelector : StandaloneUI
 {
@@ -83,7 +83,7 @@ internal class LayerSelector : StandaloneUI
     {
         if (!IsOpen) return;
 
-        ImpUtils.PlayClip(ImpAssets.GrassClick);
+        GameManager.PlayClip(ImpAssets.GrassClick);
         var newMask = ImpUtils.ToggleLayerInMask(ImpSettings.Hidden.FreecamLayerMask.Value, selectedLayer);
         ImpSettings.Hidden.FreecamLayerMask.Set(newMask);
         layerToggles[selectedLayer].UpdateIsOn(newMask);

@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Util;
@@ -21,9 +22,11 @@ internal class Oracle
 
     internal void Simulate(bool initial, string reason)
     {
+        if (!Imperium.IsSceneLoaded.Value) return;
+
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
-        
+
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
         var EntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.EnemySpawnRandom);
         var OutsideEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.OutsideEnemySpawnRandom);
@@ -151,11 +154,12 @@ internal class Oracle
         if (StartOfRound.Instance.isChallengeFile) baseEntityAmount += 1f;
 
         var lower = baseEntityAmount + Mathf.Abs(Imperium.TimeOfDay.daysUntilDeadline - 3) / 1.6f;
+        var lowerBound = (int)(lower - roundManager.currentLevel.spawnProbabilityRange);
+        var upperBound = (int)(baseEntityAmount + roundManager.currentLevel.spawnProbabilityRange);
         var entityAmount = Mathf.Clamp(anomalySimulator.Next(
-            (int)(lower - roundManager.currentLevel.spawnProbabilityRange),
-            (int)(baseEntityAmount + roundManager.currentLevel.spawnProbabilityRange)
+            Math.Min(lowerBound, upperBound),
+            Math.Max(lowerBound, upperBound)
         ), roundManager.minEnemiesToSpawn, 20);
-
 
         entityAmount = Mathf.Clamp(entityAmount, 0, freeVents.Count);
 
@@ -350,7 +354,7 @@ internal class Oracle
             0, 20
         );
         var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
-        
+
         for (var i = 0; i < entityAmount; i++)
         {
             var probabilities = new List<int>();

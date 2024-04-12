@@ -1,6 +1,7 @@
 #region
 
 using System.Linq;
+using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using JetBrains.Annotations;
@@ -13,20 +14,18 @@ using UnityEngine.UI;
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 
 /// <summary>
-/// Represents a toggle in the Imperium UI, supports two types of structures
-///
-/// Toggle (Toggle)
-///  - Background (Image)
-///   - Checkmark (Image)
-///  - Text (TMP_Text)
-///
-/// Toggle (Toggle, Image)
-///  - Checkmark (Image)
+///     Represents a toggle in the Imperium UI, supports two types of structures
+///     Toggle (Toggle)
+///     - Background (Image)
+///     - Checkmark (Image)
+///     - Text (TMP_Text)
+///     Toggle (Toggle, Image)
+///     - Checkmark (Image)
 /// </summary>
 public abstract class ImpToggle
 {
     /// <summary>
-    /// Binds a unity toggle with an ImpBinding and interactiveBindings
+    ///     Binds a unity toggle with an ImpBinding and interactiveBindings
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>
@@ -47,7 +46,7 @@ public abstract class ImpToggle
 
         toggle.isOn = valueBinding.Value;
         toggle.onValueChanged.AddListener(valueBinding.Set);
-        toggle.onValueChanged.AddListener(_ => ImpUtils.PlayClip(ImpAssets.GrassClick));
+        toggle.onValueChanged.AddListener(_ => GameManager.PlayClip(ImpAssets.GrassClick));
         valueBinding.onUpdate += value => toggle.isOn = value;
 
         if (interactableBindings.Length > 0)

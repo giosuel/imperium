@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.Util;
@@ -25,6 +26,33 @@ internal static class RoundManagerPatch
         MoonManager.Current.ChallengeScrapAmount = MoonManager.Current.ScrapAmount + random.Next(10, 30);
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("PlayAudibleNoise")]
+    private static void PlayAudibleNoisePatch(
+        Vector3 noisePosition,
+        float noiseRange,
+        float noiseLoudness,
+        int timesPlayedInSameSpot,
+        bool noiseIsInsideClosedShip,
+        int noiseID
+    )
+    {
+        var range = noiseRange;
+        if (noiseIsInsideClosedShip) range /= 2f;
+
+        var colliders = new Collider[20];
+        Physics.OverlapSphereNonAlloc(
+            noisePosition,
+            range,
+            colliders,
+            8912896,
+            QueryTriggerInteraction.Collide
+        );
+        colliders.FirstOrDefault(collider => collider && collider.gameObject.name == "ImpNoiseListener")
+            ?.GetComponent<INoiseListener>()
+            ?.DetectNoise(noisePosition, noiseLoudness, timesPlayedInSameSpot, noiseID);
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("SpawnScrapInLevel")]
     private static void SpawnScrapInLevelPostfixPatch()
@@ -39,7 +67,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotNear");
+        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
         Imperium.Oracle.Simulate();
     }
 
@@ -50,7 +78,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        ImpOutput.Log("[ORACLE] Oracle had to re-simulate due to YRotFar");
+        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
         Imperium.Oracle.Simulate();
     }
 
@@ -94,6 +122,7 @@ internal static class RoundManagerPatch
 
         ImpSpawnTracker.EndCycle(__instance);
     }
+
     [HarmonyPrefix]
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
     private static bool PlotOutEnemiesForNextHourPatch()
@@ -116,7 +145,7 @@ internal static class RoundManagerPatch
     }
 
     /// <summary>
-    /// Level is finished generating, all scrap and map obstacles have been placed, no entities yet
+    ///     Level is finished generating, all scrap and map obstacles have been placed, no entities yet
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("FinishGeneratingNewLevelClientRpc")]

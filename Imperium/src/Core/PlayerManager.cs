@@ -38,6 +38,19 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         sceneLoaded
     );
 
+    // protected override void OnSceneLoad()
+    // {
+    //     GameObject.Find("Sky and Fog Global Volume (1)")?.SetActive(false);
+    //     GameObject.Find("Sky and Fog Global Volume").GetComponent<Volume>().profile = ImpAssets.ExperimentationVolume;
+    //
+    //     var vfxObject = new GameObject("ExpFlr");
+    //     vfxObject.transform.SetParent(Imperium.Player.transform);
+    //     vfxObject.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.left;
+    //     var effect = vfxObject.AddComponent<VisualEffect>();
+    //     effect.visualEffectAsset = ImpAssets.ExperimentationVFX;
+    //     effect.Play();
+    // }
+
     internal bool AllowPlayerDeathOverride;
 
     [ImpAttributes.LocalMethod]

@@ -56,8 +56,6 @@ internal abstract class ImpOutput
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
 
-    internal static void Log(string message) => Imperium.Log.LogInfo(message);
-
     internal static void LogBlock(List<string> lines, string title = "Imperium Monitoring")
     {
         if (!ImpSettings.Preferences.GeneralLogging.Value) return;

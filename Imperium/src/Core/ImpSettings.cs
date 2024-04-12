@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Imperium.Core;
 
 /// <summary>
-/// Contains all the bindings of the persistent settings of Imperium.
+///     Contains all the bindings of the persistent settings of Imperium.
 /// </summary>
 public abstract class ImpSettings
 {
@@ -146,7 +146,11 @@ public abstract class ImpSettings
             "Overlays",
             "AINodesIndoor",
             false,
-            value => Imperium.Visualization.Point("AINode", size: 1, material: ImpAssets.FresnelRedMaterial)(value)
+            value => Imperium.Visualization.Point(
+                "AINode",
+                size: 1,
+                material: ImpAssets.FresnelGreenMaterial
+            )(value)
         );
 
         internal static readonly ImpConfig<bool> AINodesOutdoor = new(
@@ -154,7 +158,16 @@ public abstract class ImpSettings
             "AINodesOutdoor",
             false,
             value => Imperium.Visualization.Point(
-                "OutsideAINode", size: 1, material: ImpAssets.FresnelRedMaterial
+                "OutsideAINode", size: 1, material: ImpAssets.FresnelGreenMaterial
+            )(value)
+        );
+
+        internal static readonly ImpConfig<bool> SpawnDenialPoints = new(
+            "Overlays",
+            "SpawnDenialPoints",
+            false,
+            value => Imperium.Visualization.Point(
+                "SpawnDenialPoint", size: 16, material: ImpAssets.FresnelRedMaterial
             )(value)
         );
 
@@ -180,11 +193,17 @@ public abstract class ImpSettings
             Imperium.Visualization.SpawnIndicators.Toggle
         );
 
-        internal static readonly ImpConfig<bool> SpawnTimers = new(
+        internal static readonly ImpConfig<bool> VentTimers = new(
             "Gizmos",
-            "SpawnTimers",
+            "VentTimers",
             false,
             Imperium.Visualization.VentTimers.Toggle
+        );
+
+        internal static readonly ImpConfig<bool> NoiseIndicators = new(
+            "Gizmos",
+            "NoiseIndicators",
+            false
         );
 
         internal static readonly ImpConfig<bool> PlayerInfo = new(

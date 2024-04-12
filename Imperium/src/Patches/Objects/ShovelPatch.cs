@@ -50,7 +50,7 @@ internal static class ShovelPatch
     }
 
     /// <summary>
-    /// Cloned from <see cref="Shovel.reelUpShovel"/> and removed static waiting times.
+    ///     Cloned from <see cref="Shovel.reelUpShovel" /> and removed static waiting times.
     /// </summary>
     private static IEnumerator reelUpShovelPatch(Shovel shovel)
     {

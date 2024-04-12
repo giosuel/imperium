@@ -14,7 +14,7 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 
 - Modular and user-centered UI system.
 - In-game overlays and indicators for hitboxes of shotguns, shovels, landmines, etc.
-- Customizable 3-axis freecam with built-in teleportation and custom FOV settings.
+- Customizable 3-axis freecam with built-in teleportation, night vision and custom FOV settings.
 - Visualization of game object hitboxes, spawn locations, tile borders and much more.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Ability to kill and revive players including the yourself.
@@ -22,6 +22,8 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 - Easy adjustment of game variables such as credits, quota deadline, spawn rates and many more.
 - Player tweaks such as god mode, infinite sprint, infinite battery, night vision, invisibility, custom movement speed, custom jump height, and many more.
 - Player teleportation via coordinate input or interactive location picking alongside a waypoint manager.
+- Noise detection overlay that marks recently played noises with temporary markers.
+- Option to toggle the employee HUD overlay.
 - Enabling / Disabling of various render layers, post-processing effects, render passes and more.
 - Built-in save file editor for save files (Level options, Furniture location, Player XP, etc.)
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
@@ -42,6 +44,8 @@ Imperium is divided into 5 separate main interfaces that can be opened separatel
 | F6    | Opens the ship navigator.                           |
 | T  | Opens the interactive teleportation indicator.            |
 | F  | Toggles the Imperium freecam.                             |
+| X | Toggles the Imperium minicam / picture-in-picture mode. |
+| Z | Toggles the employee HUD. |
 
 ## Imperium Control Panel
 
@@ -178,7 +182,7 @@ Entities spawned with Imperium do not count towards current level power or their
 
 ### Prediction Restrictions
 
-Entity spawns in Lethal Company are dependent on a lot of factors. Since v47 everything became more strictly dependent on the map seed and while this made things a lot easier, there are still a few exceptions in the code that mess up entity spawning. Oracle accounts for all these changes, meaning the spawn predictions can change if one of the following events occur:
+Entity spawns in Lethal Company are dependent on a lot of factors. Since v47 everything became more strictly dependent on the map seed and while this made things a lot easier, there are still a few exceptions in the code that mess up entity spawning. Oracle accounts for all these changes, meaning the spawn predictions can changaAAAAAAASe if one of the following events occur:
 
 - An entity dies (Affects all spawn cycles).
 - An eyeless dog kills an employee.
@@ -209,4 +213,6 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
 
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
+
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for making the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
 

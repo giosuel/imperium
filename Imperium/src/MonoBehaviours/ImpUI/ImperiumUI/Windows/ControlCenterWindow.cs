@@ -117,11 +117,13 @@ internal class ControlCenterWindow : BaseWindow
         ImpToggle.Bind("Right/Overlays/Entities", content, ImpSettings.Visualizations.EntityInfo);
         ImpToggle.Bind("Right/Overlays/AINodesIndoor", content, ImpSettings.Visualizations.AINodesIndoor);
         ImpToggle.Bind("Right/Overlays/AINodesOutdoor", content, ImpSettings.Visualizations.AINodesOutdoor);
+        ImpToggle.Bind("Right/Overlays/SpawnDenialPoints", content, ImpSettings.Visualizations.SpawnDenialPoints);
         ImpToggle.Bind("Right/Overlays/BeeSpawns", content, ImpSettings.Visualizations.BeeSpawns);
         ImpToggle.Bind("Right/Overlays/TileBorders", content, ImpSettings.Visualizations.TileBorders);
 
         ImpToggle.Bind("Left/Gizmos/SpawnIndicators", content, ImpSettings.Visualizations.SpawnIndicators);
-        ImpToggle.Bind("Left/Gizmos/SpawnTimers", content, ImpSettings.Visualizations.SpawnTimers);
+        ImpToggle.Bind("Left/Gizmos/SpawnTimers", content, ImpSettings.Visualizations.VentTimers);
+        ImpToggle.Bind("Left/Gizmos/NoiseIndicators", content, ImpSettings.Visualizations.NoiseIndicators);
 
         ImpToggle.Bind("Left/CastingIndicators/Shotguns", content, ImpSettings.Visualizations.ShotgunIndicators);
         ImpToggle.Bind("Left/CastingIndicators/Shovels", content, ImpSettings.Visualizations.ShovelIndicators);

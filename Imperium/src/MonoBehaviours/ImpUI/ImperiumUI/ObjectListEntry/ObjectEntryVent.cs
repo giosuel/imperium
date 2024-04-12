@@ -1,6 +1,5 @@
 #region
 
-using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -20,7 +19,7 @@ internal class ObjectEntryVent : ObjectEntry
     public override void Destroy()
     {
         base.Destroy();
-        ImpOutput.Log("Despawning vent on server");
+        Imperium.Log.LogInfo("Despawning vent on server");
     }
 
     protected override Vector3 GetTeleportPosition() => ((EnemyVent)component).floorNode.position;

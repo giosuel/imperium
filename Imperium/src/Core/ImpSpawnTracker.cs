@@ -9,7 +9,7 @@ using Imperium.Util;
 namespace Imperium.Core;
 
 /// <summary>
-/// Static class used by entity spawning patches to generate the spawn reports.
+///     Static class used by entity spawning patches to generate the spawn reports.
 /// </summary>
 public static class ImpSpawnTracker
 {
