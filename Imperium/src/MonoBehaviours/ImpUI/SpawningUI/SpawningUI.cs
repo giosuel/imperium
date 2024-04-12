@@ -111,7 +111,7 @@ internal class SpawningUI : BaseUI
         }
         else if (!string.IsNullOrEmpty(input.text))
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Failed to find object '{input.text}'",
                 isWarning: true, notificationType: NotificationType.Other
             );

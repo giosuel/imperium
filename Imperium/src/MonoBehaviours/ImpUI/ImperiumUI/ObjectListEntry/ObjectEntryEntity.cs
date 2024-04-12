@@ -2,6 +2,7 @@
 
 using Imperium.Core;
 using Imperium.Netcode;
+using Imperium.Util;
 using Unity.Netcode;
 
 #endregion
@@ -19,7 +20,8 @@ internal class ObjectEntryEntity : ObjectEntry
         base.Destroy();
         var spawnPosition = containerObject.transform.position;
         ImpNetSpawning.Instance.DespawnEntityServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId);
+            containerObject.GetComponent<NetworkObject>().NetworkObjectId
+        );
         ObjectManager.SpawnEntity(objectName, spawnPosition);
     }
 
@@ -27,13 +29,19 @@ internal class ObjectEntryEntity : ObjectEntry
     {
         base.Destroy();
         ImpNetSpawning.Instance.DespawnEntityServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId);
+            containerObject.GetComponent<NetworkObject>().NetworkObjectId
+        );
     }
 
     protected override void TeleportHere()
     {
-        Imperium.PositionIndicator.Activate(position => component.transform.position = position);
+        Imperium.ImpPositionIndicator.Activate(position => component.transform.position = position);
     }
 
-    protected override string GetObjectName() => ((EnemyAI)component).enemyType.enemyName;
+    protected override string GetObjectName()
+    {
+        var entity = (EnemyAI)component;
+        var entityName = entity.enemyType.enemyName;
+        return entity.isEnemyDead ? ImpUtils.RichText.Strikethrough(entityName) : entityName;
+    }
 }

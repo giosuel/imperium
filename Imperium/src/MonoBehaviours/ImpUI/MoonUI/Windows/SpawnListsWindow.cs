@@ -171,7 +171,7 @@ internal class SpawnListsWindow : BaseWindow
 
             if (spawnMap == null)
             {
-                Imperium.Output.Error($"Failed to find entity {entityName} in any spawn list!");
+                Imperium.Log.LogError($"Failed to find entity {entityName} in any spawn list!");
                 return;
             }
 

@@ -144,7 +144,7 @@ internal class ObjectManager : ImpLifecycleObject
     {
         if (!AllEntities.Value.TryGetValue(entityName, out var entityType))
         {
-            Imperium.Output.Error($"Entity {entityName} not found!");
+            Imperium.Log.LogError($"Entity {entityName} not found!");
             return;
         }
 
@@ -165,7 +165,7 @@ internal class ObjectManager : ImpLifecycleObject
         var mountString = amount == 1 ? "A" : $"{amount.ToString()}x";
         var verbString = amount == 1 ? "has" : "have";
 
-        Imperium.Output.SendToClients(
+        ImpOutput.SendToClients(
             $"{mountString} loyal {GetDisplayName(entityType.enemyName)} {verbString} been spawned!"
         );
 
@@ -183,7 +183,7 @@ internal class ObjectManager : ImpLifecycleObject
     {
         if (!AllItems.Value.TryGetValue(itemName, out var itemType))
         {
-            Imperium.Output.Error($"Item {itemName} not found!");
+            Imperium.Log.LogError($"Item {itemName} not found!");
             return;
         }
 
@@ -230,7 +230,7 @@ internal class ObjectManager : ImpLifecycleObject
         var mountString = amount == 1 ? "A" : $"{amount.ToString()}x";
         var verbString = amount == 1 ? "has" : "have";
 
-        Imperium.Output.SendToClients($"{mountString} {itemName} {verbString} been spawned!");
+        ImpOutput.SendToClients($"{mountString} {itemName} {verbString} been spawned!");
 
         ImpNetSpawning.Instance.OnItemsChangedClientRpc();
     }
@@ -256,10 +256,10 @@ internal class ObjectManager : ImpLifecycleObject
                     SpawnLandmine(position);
                     break;
                 case "SpiderWeb":
-                    Imperium.Output.Error("Spider web spawning not implemented yet");
+                    Imperium.Log.LogError("Spider web spawning not implemented yet");
                     break;
                 default:
-                    Imperium.Output.Error($"Failed to spawn map hazard {objectName}");
+                    Imperium.Log.LogError($"Failed to spawn map hazard {objectName}");
                     return;
             }
         }
@@ -267,7 +267,7 @@ internal class ObjectManager : ImpLifecycleObject
         var mountString = amount == 1 ? "A" : $"{amount.ToString()}x";
         var verbString = amount == 1 ? "has" : "have";
 
-        Imperium.Output.SendToClients($"{mountString} {objectName} {verbString} been spawned!");
+        ImpOutput.SendToClients($"{mountString} {objectName} {verbString} been spawned!");
 
         ImpNetSpawning.Instance.OnMapHazardsChangedClientRpc();
     }
@@ -341,7 +341,7 @@ internal class ObjectManager : ImpLifecycleObject
     {
         if (!CurrentLevelObjects.TryGetValue(netId, out var obj))
         {
-            Imperium.Output.Error($"Failed to despawn object with net ID {netId}");
+            Imperium.Log.LogError($"Failed to despawn object with net ID {netId}");
             return false;
         }
 
@@ -355,7 +355,7 @@ internal class ObjectManager : ImpLifecycleObject
         if (!CurrentLevelObjects.TryGetValue(netId, out var obj) ||
             !obj.TryGetComponent<EnemyVent>(out var enemyVent))
         {
-            Imperium.Output.Error($"Failed to empty vent with net ID {netId}");
+            Imperium.Log.LogError($"Failed to empty vent with net ID {netId}");
             return;
         }
 
@@ -634,7 +634,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     private void LogObjects()
     {
-        Imperium.Output.LogBlock([
+        ImpOutput.LogBlock([
             "Imperium scanned the current level for obstacles.",
             $"   > {CurrentLevelDoors.Value.Count}x Doors",
             $"   > {CurrentLevelSecurityDoors.Value.Count}x Security doors",

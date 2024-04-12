@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Imperium.Util;
 
-internal class ImpOutput(ManualLogSource logga)
+internal abstract class ImpOutput
 {
     private static readonly Dictionary<NotificationType, ImpConfig<bool>> NotificationSettings = new()
     {
@@ -25,7 +25,7 @@ internal class ImpOutput(ManualLogSource logga)
         { NotificationType.Other, ImpSettings.Preferences.NotificationsOther }
     };
 
-    internal void SendToClients(
+    internal static void SendToClients(
         string text,
         string title = "Imperium",
         bool isWarning = false
@@ -35,7 +35,7 @@ internal class ImpOutput(ManualLogSource logga)
         ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning);
     }
 
-    internal void Send(
+    internal static void Send(
         string text,
         string title = "Imperium",
         bool isWarning = false,
@@ -44,7 +44,7 @@ internal class ImpOutput(ManualLogSource logga)
     {
         if (!HUDManager.Instance)
         {
-            logga.LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
+            Imperium.Log.LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
             return;
         }
 
@@ -56,10 +56,7 @@ internal class ImpOutput(ManualLogSource logga)
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
 
-    internal void Log(string message) => logga.LogInfo(message);
-    internal void Error(string message) => logga.LogError(message);
-
-    internal void LogBlock(List<string> lines, string title = "Imperium Monitoring")
+    internal static void LogBlock(List<string> lines, string title = "Imperium Monitoring")
     {
         if (!ImpSettings.Preferences.GeneralLogging.Value) return;
 
@@ -80,7 +77,7 @@ internal class ImpOutput(ManualLogSource logga)
             (current, line) => current + $"\u2502 {line}".PadRight(width - 2) + " \u2502\n");
         output += "\u2558" + fullWidth + "\u255b";
 
-        logga.Log(LogLevel.Message, output);
+        Imperium.Log.Log(LogLevel.Message, output);
     }
 }
 

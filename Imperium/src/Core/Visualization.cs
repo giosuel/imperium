@@ -147,7 +147,7 @@ internal class Visualization
 
             if (!refresh)
             {
-                Imperium.Output.Send(
+                ImpOutput.Send(
                     $"Turned on Visualisation for {identifier}!",
                     notificationType: NotificationType.Confirmation
                 );
@@ -164,7 +164,7 @@ internal class Visualization
 
             if (!refresh)
             {
-                Imperium.Output.Send(
+                ImpOutput.Send(
                     $"Turned off Visualisation for {identifier}!",
                     notificationType: NotificationType.Confirmation
                 );
@@ -233,10 +233,11 @@ internal class Visualization
         }
     }
 
-    internal static GameObject VisualizeBoxCollider(BoxCollider collider, string name, Material material)
+    public static GameObject VisualizeBoxCollider(BoxCollider collider, string name, Material material)
     {
         var visualizer = ImpUtils.Geometry.CreatePrimitive(
-            PrimitiveType.Cube, collider.transform, material, name: $"ImpVis_{name}");
+            PrimitiveType.Cube, collider.transform, material, name: $"ImpVis_{name}"
+        );
 
         var transform = collider.transform;
         visualizer.transform.position = transform.position;

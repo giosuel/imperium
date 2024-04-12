@@ -2,13 +2,16 @@
 
 using System;
 using GameNetcodeStuff;
+using Imperium.MonoBehaviours;
 using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.VFX;
 using Object = UnityEngine.Object;
 
 #endregion
@@ -37,6 +40,19 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         () => GameObject.Find("LungApparatus(Clone)")?.transform.position,
         sceneLoaded
     );
+
+    // protected override void OnSceneLoad()
+    // {
+    //     GameObject.Find("Sky and Fog Global Volume (1)")?.SetActive(false);
+    //     GameObject.Find("Sky and Fog Global Volume").GetComponent<Volume>().profile = ImpAssets.ExperimentationVolume;
+    //
+    //     var vfxObject = new GameObject("ExpFlr");
+    //     vfxObject.transform.SetParent(Imperium.Player.transform);
+    //     vfxObject.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.left;
+    //     var effect = vfxObject.AddComponent<VisualEffect>();
+    //     effect.visualEffectAsset = ImpAssets.ExperimentationVFX;
+    //     effect.Play();
+    // }
 
     internal bool AllowPlayerDeathOverride;
 

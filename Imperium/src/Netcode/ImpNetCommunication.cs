@@ -13,16 +13,15 @@ public class ImpNetCommunication : NetworkBehaviour
 {
     internal static ImpNetCommunication Instance { get; private set; }
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        if (Instance == null)
+        if (ImpNetworkManager.IsHost.Value && Instance)
         {
-            Instance = this;
+            Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
-        else
-        {
-            Destroy(Instance.gameObject);
-        }
+        Instance = this;
+        Instance.RequestImperiumAccessServerRpc(NetworkManager.Singleton.LocalClientId);
+        base.OnNetworkSpawn();
     }
 
     [ClientRpc]
@@ -32,11 +31,11 @@ public class ImpNetCommunication : NetworkBehaviour
         bool isWarning = false
     )
     {
-        Imperium.Output.Send(text: text, title: title, isWarning: isWarning, notificationType: NotificationType.Server);
+        ImpOutput.Send(text: text, title: title, isWarning: isWarning, notificationType: NotificationType.Server);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    internal void RequestImperiumAccessServerRpc(ulong clientId)
+    private void RequestImperiumAccessServerRpc(ulong clientId)
     {
         ReceiveImperiumAccessClientRpc(clientId);
     }

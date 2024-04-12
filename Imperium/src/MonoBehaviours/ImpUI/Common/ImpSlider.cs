@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
@@ -71,7 +72,7 @@ public class ImpSlider : MonoBehaviour
 
             impSlider.indicatorText.text = indicatorFormatter(newValue);
 
-            ImpUtils.PlayClip(ImpAssets.GrassClick);
+            GameManager.PlayClip(ImpAssets.GrassClick);
 
             if (debounceTime > 0)
             {

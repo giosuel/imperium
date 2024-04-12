@@ -83,7 +83,7 @@ internal class LayerSelector : StandaloneUI
     {
         if (!IsOpen) return;
 
-        ImpUtils.PlayClip(ImpAssets.GrassClick);
+        GameManager.PlayClip(ImpAssets.GrassClick);
         var newMask = ImpUtils.ToggleLayerInMask(ImpSettings.Hidden.FreecamLayerMask.Value, selectedLayer);
         ImpSettings.Hidden.FreecamLayerMask.Set(newMask);
         layerToggles[selectedLayer].UpdateIsOn(newMask);

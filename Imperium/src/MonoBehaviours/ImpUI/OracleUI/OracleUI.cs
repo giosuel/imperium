@@ -51,7 +51,7 @@ internal class OracleUI : StandaloneUI
     {
         if (!Imperium.IsSceneLoaded.Value)
         {
-            Imperium.Output.Send("Nothing is spawning out here ._.", title: "Oracle");
+            ImpOutput.Send("Nothing is spawning out here ._.", title: "Oracle");
             return false;
         }
 

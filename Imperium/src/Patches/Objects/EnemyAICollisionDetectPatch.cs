@@ -15,10 +15,10 @@ internal class EnemyAICollisionDetectPatch
     private static void HitPatch(EnemyAICollisionDetect __instance, int force)
     {
         var entityName = __instance.mainScript.enemyType.enemyName;
-        Imperium.Output.Log($"Entity {entityName} ({__instance.GetInstanceID()}) was hit by {force} damage.");
+        Imperium.Log.LogInfo($"Entity {entityName} ({__instance.GetInstanceID()}) was hit by {force} damage.");
         if (!__instance.mainScript.isEnemyDead)
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Entity {entityName} was hit by {force} damage.",
                 notificationType: NotificationType.Entities
             );

@@ -27,10 +27,10 @@ internal class VentTimers(ImpBinding<HashSet<EnemyVent>> objectsBinding)
                 timerObject.transform.rotation = rotation;
                 timerObject.transform.localRotation = Quaternion.Euler(0, 180, -90);
                 timerObject.transform.position = parent.position + Vector3.up * 0.8f;
-                var timer = timerObject.AddComponent<SpawnTimer>();
+                var timer = timerObject.AddComponent<VentTimer>();
                 timer.vent = entityVent;
 
-                timerObject.SetActive(ImpSettings.Visualizations.SpawnTimers.Value);
+                timerObject.SetActive(ImpSettings.Visualizations.VentTimers.Value);
                 indicatorObjects[entityVent.GetInstanceID()] = timerObject;
             }
         }

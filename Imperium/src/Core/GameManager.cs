@@ -33,7 +33,7 @@ internal class GameManager : ImpLifecycleObject
         false,
         value =>
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 value ? "Indoor spawning has been paused!" : "Indoor spawning has been resumed!",
                 notificationType: NotificationType.Confirmation
             );
@@ -44,7 +44,7 @@ internal class GameManager : ImpLifecycleObject
         false,
         value =>
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 value ? "Outdoor spawning has been paused!" : "Outdoor spawning has been resumed!",
                 notificationType: NotificationType.Confirmation
             );
@@ -55,7 +55,7 @@ internal class GameManager : ImpLifecycleObject
         false,
         value =>
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 value ? "Daytime spawning has been paused!" : "Daytime spawning has been resumed!",
                 notificationType: NotificationType.Confirmation
             );
@@ -70,7 +70,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.currentMaxInsidePower = value;
-            Imperium.Output.Send($"Indoor Power set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Indoor Power set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetMaxIndoorPowerServerRpc(value)
@@ -81,7 +81,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.currentMaxOutsidePower = value;
-            Imperium.Output.Send($"Outdoor Power set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Outdoor Power set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetMaxOutdoorPowerServerRpc(value)
@@ -92,7 +92,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount = value;
-            Imperium.Output.Send($"Daytime Power set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Daytime Power set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetMaxDaytimePowerServerRpc(value)
@@ -103,7 +103,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.currentLevel.spawnProbabilityRange = value;
-            Imperium.Output.Send($"Indoor deviation set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Indoor deviation set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetIndoorDeviationServerRpc(value)
@@ -114,7 +114,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange = value;
-            Imperium.Output.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetDaytimeDeviationServerRpc(value)
@@ -125,7 +125,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.minEnemiesToSpawn = value;
-            Imperium.Output.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetMinIndoorEntitiesServerRpc(value)
@@ -136,7 +136,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.RoundManager.minOutsideEnemiesToSpawn = value;
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Minimum outdoor spawn has been set to {value}!",
                 notificationType: NotificationType.Confirmation
             );
@@ -156,7 +156,7 @@ internal class GameManager : ImpLifecycleObject
             }
 
             Imperium.TimeOfDay.currentWeatherVariable = value;
-            Imperium.Output.Send($"Weather variable 1 set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Weather variable 1 set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetWeatherVariable1ServerRpc(value)
@@ -167,7 +167,7 @@ internal class GameManager : ImpLifecycleObject
         value =>
         {
             Imperium.TimeOfDay.currentWeatherVariable2 = value;
-            Imperium.Output.Send($"Weather variable 2 set to {value}!", notificationType: NotificationType.Confirmation);
+            ImpOutput.Send($"Weather variable 2 set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
         syncOnUpdate: value => ImpNetSpawning.Instance.SetWeatherVariable2ServerRpc(value)
@@ -177,7 +177,7 @@ internal class GameManager : ImpLifecycleObject
         Imperium.Terminal.groupCredits,
         onUpdate: value =>
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Successfully changed group credits to {value}!",
                 notificationType: NotificationType.Confirmation
             );
@@ -190,7 +190,7 @@ internal class GameManager : ImpLifecycleObject
         Imperium.TimeOfDay.profitQuota,
         onUpdate: value =>
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Successfully changed profit quota to {value}!",
                 notificationType: NotificationType.Confirmation
             );
@@ -203,7 +203,7 @@ internal class GameManager : ImpLifecycleObject
         Imperium.TimeOfDay.daysUntilDeadline,
         onUpdate: value =>
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Successfully changed quota deadline to {value}!",
                 notificationType: NotificationType.Confirmation
             );
@@ -259,7 +259,7 @@ internal class GameManager : ImpLifecycleObject
 
         var planetName = Imperium.StartOfRound.levels[levelIndex].PlanetName;
         var weatherName = weatherType.ToString();
-        Imperium.Output.Send($"Successfully changed the weather on {planetName} to {weatherName}",
+        ImpOutput.Send($"Successfully changed the weather on {planetName} to {weatherName}",
             notificationType: NotificationType.Confirmation);
     }
 
@@ -370,5 +370,10 @@ internal class GameManager : ImpLifecycleObject
                     box.SetSwitchesOff();
                 }
             });
+    }
+    
+    internal static void PlayClip(AudioClip audioClip, bool randomize = false)
+    {
+        RoundManager.PlayRandomClip(Imperium.HUDManager.UIAudio, [audioClip], randomize);
     }
 }

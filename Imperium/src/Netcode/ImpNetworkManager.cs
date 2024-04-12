@@ -1,8 +1,10 @@
 #region
 
+using HarmonyLib;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
+using UnityEngine;
 
 #endregion
 
@@ -12,22 +14,22 @@ public abstract class ImpNetworkManager
 {
     internal static readonly ImpBinding<bool> IsHost = new(NetworkManager.Singleton.IsHost);
     internal static readonly ImpBinding<int> ConnectedPlayers = new(1);
-
+    
     internal static void OnClientConnected(ulong clientId)
     {
-        Imperium.Output.Log(
+        Imperium.Log.LogInfo(
             $"[NET] Imperium has detected a connect: {clientId} (host: {NetworkManager.Singleton.IsHost})"
         );
-        Imperium.Output.Send($"A client has connected! ID: {clientId}", "Imperium Networking");
+        ImpOutput.Send($"A client has connected! ID: {clientId}", "Imperium Networking");
         ConnectedPlayers.Set(ConnectedPlayers.Value + 1);
     }
 
     internal static void OnClientDisconnected(ulong clientId)
     {
-        Imperium.Output.Log(
+        Imperium.Log.LogInfo(
             $"[NET] Imperium has detected a disconnect: {clientId} (host: {NetworkManager.Singleton.IsHost})"
         );
-        Imperium.Output.Send($"A client has disconnected! ID: {clientId}", "Imperium Networking");
+        ImpOutput.Send($"A client has disconnected! ID: {clientId}", "Imperium Networking");
 
         ConnectedPlayers.Set(ConnectedPlayers.Value - 1);
     }

@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Imperium.Core;
 using Imperium.Types;
 using Imperium.Util;
@@ -16,16 +17,14 @@ public class ImpNetPlayer : NetworkBehaviour
 {
     internal static ImpNetPlayer Instance { get; private set; }
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        if (Instance == null)
+        if (ImpNetworkManager.IsHost.Value && Instance)
         {
-            Instance = this;
+            Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
-        else
-        {
-            Destroy(Instance.gameObject);
-        }
+        Instance = this;
+        base.OnNetworkSpawn();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -45,7 +44,7 @@ public class ImpNetPlayer : NetworkBehaviour
     {
         KillPlayerClientRpc(playerId);
 
-        Imperium.Output.SendToClients(
+        ImpOutput.SendToClients(
             $"Player {Imperium.StartOfRound.allPlayerScripts[playerId].playerUsername} has been murdered!"
         );
     }
@@ -72,7 +71,7 @@ public class ImpNetPlayer : NetworkBehaviour
     {
         PlayerManager.RevivePlayer(playerId);
 
-        Imperium.Output.Send($"Player {Imperium.StartOfRound.allPlayerScripts[playerId].playerUsername} has been revived!");
+        ImpOutput.Send($"Player {Imperium.StartOfRound.allPlayerScripts[playerId].playerUsername} has been revived!");
     }
 
     [ServerRpc(RequireOwnership = false)]

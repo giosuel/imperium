@@ -41,7 +41,7 @@ internal abstract class BaseUI : MonoBehaviour
         InitUI();
 
         container.gameObject.SetActive(false);
-        Imperium.Output.Log($"[OK] Successfully loaded {GetType()} !");
+        Imperium.Log.LogInfo($"[OK] Successfully loaded {GetType()} !");
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ internal abstract class BaseUI : MonoBehaviour
         IsOpen = true;
 
         onOpen?.Invoke();
-        ImpUtils.PlayClip(ImpAssets.ButtonClick);
+        GameManager.PlayClip(ImpAssets.ButtonClick);
 
         if (closeOnMove)
         {

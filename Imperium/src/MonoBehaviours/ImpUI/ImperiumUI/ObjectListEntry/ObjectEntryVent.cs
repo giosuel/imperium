@@ -20,7 +20,7 @@ internal class ObjectEntryVent : ObjectEntry
     public override void Destroy()
     {
         base.Destroy();
-        Imperium.Output.Log("Despawning vent on server");
+        Imperium.Log.LogInfo("Despawning vent on server");
     }
 
     protected override Vector3 GetTeleportPosition() => ((EnemyVent)component).floorNode.position;

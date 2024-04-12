@@ -6,6 +6,7 @@ using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util;
 using Unity.Netcode;
+using UnityEngine;
 
 #endregion
 
@@ -24,9 +25,24 @@ internal static class PlayerControllerPatch
         [HarmonyPatch("ConnectClientToPlayerObject")]
         private static void ConnectClientToPlayerObjectPatch(PlayerControllerB __instance)
         {
-            if (!Imperium.IsImperiumReady || GameNetworkManager.Instance.localPlayerController != __instance) return;
+            if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = __instance;
-            ImpNetCommunication.Instance.RequestImperiumAccessServerRpc(NetworkManager.Singleton.LocalClientId);
+            
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                var networkHandlerObj = Object.Instantiate(
+                    ImpAssets.NetworkHandler,
+                    Vector3.zero,
+                    Quaternion.identity
+                );
+                networkHandlerObj.AddComponent<ImpNetCommunication>();
+                networkHandlerObj.AddComponent<ImpNetPlayer>();
+                networkHandlerObj.AddComponent<ImpNetQuota>();
+                networkHandlerObj.AddComponent<ImpNetSpawning>();
+                networkHandlerObj.AddComponent<ImpNetTime>();
+                networkHandlerObj.AddComponent<ImpNetWeather>();
+                networkHandlerObj.GetComponent<NetworkObject>().Spawn();
+            }
         }
     }
 
@@ -48,7 +64,7 @@ internal static class PlayerControllerPatch
             __instance.criticallyInjured = false;
             __instance.health = 100;
 
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"God mode negated {damageNumber} damage from '{(causeOfDeath).ToString()}'",
                 notificationType: NotificationType.GodMode
             );
@@ -61,7 +77,7 @@ internal static class PlayerControllerPatch
     {
         if (ImpSettings.Player.GodMode.Value)
         {
-            Imperium.Output.Send($"God mode saved you from death by '{(causeOfDeath).ToString()}'",
+            ImpOutput.Send($"God mode saved you from death by '{(causeOfDeath).ToString()}'",
                 notificationType: NotificationType.GodMode);
         }
     }
@@ -90,7 +106,7 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("KillPlayerClientRpc")]
     private static void KillPlayerClientRpc(PlayerControllerB __instance, int playerId)
     {
-        Imperium.Output.Send($"Employee {__instance.playerUsername} has died!", notificationType: NotificationType.Other);
+        ImpOutput.Send($"Employee {__instance.playerUsername} has died!", notificationType: NotificationType.Other);
     }
 
     [HarmonyPrefix]

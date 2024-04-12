@@ -42,6 +42,8 @@ Imperium is divided into 5 separate main interfaces that can be opened separatel
 | F6    | Opens the ship navigator.                           |
 | T  | Opens the interactive teleportation indicator.            |
 | F  | Toggles the Imperium freecam.                             |
+| X | Toggles the Imperium minicam / picture-in-picture mode. |
+| Z | Toggle employee HUD. |
 
 ## Imperium Control Panel
 
@@ -209,4 +211,6 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
 
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
+
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for making the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
 

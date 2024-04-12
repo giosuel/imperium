@@ -13,18 +13,16 @@ public class ImpNetSpawning : NetworkBehaviour
 {
     internal static ImpNetSpawning Instance { get; private set; }
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        if (Instance == null)
+        if (ImpNetworkManager.IsHost.Value && Instance)
         {
-            Instance = this;
+            Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
-        else
-        {
-            Destroy(Instance.gameObject);
-        }
+        Instance = this;
+        base.OnNetworkSpawn();
     }
-
+    
     [ServerRpc(RequireOwnership = false)]
     internal void SpawnEntityServerRpc(
         string entityName,

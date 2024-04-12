@@ -34,8 +34,7 @@ internal static class EnemyAIPatch
     [HarmonyPatch("KillEnemy")]
     private static void KillEnemyPatch(EnemyAI __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
-        
+        Imperium.ObjectManager.CurrentLevelEntities.Refresh();
         Imperium.Oracle.Simulate(
             $"Entity {Imperium.ObjectManager.GetDisplayName(__instance.enemyType.enemyName)} was killed."
         );

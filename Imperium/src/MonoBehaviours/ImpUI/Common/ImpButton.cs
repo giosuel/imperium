@@ -1,6 +1,7 @@
 #region
 
 using System.Linq;
+using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using JetBrains.Annotations;
@@ -33,7 +34,7 @@ public abstract class ImpButton
         var buttonObject = container.Find(path);
         var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(onClick);
-        button.onClick.AddListener(() => ImpUtils.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
 
@@ -82,7 +83,7 @@ public abstract class ImpButton
             collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
             button.transform.Rotate(0, 0, 180);
         });
-        button.onClick.AddListener(() => ImpUtils.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
 
         if (interactableBindings.Length > 0)
         {

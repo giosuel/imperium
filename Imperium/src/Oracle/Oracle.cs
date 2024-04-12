@@ -22,6 +22,8 @@ internal class Oracle
 
     internal void Simulate(bool initial, string reason)
     {
+        if (!Imperium.IsSceneLoaded.Value) return;
+        
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
         
@@ -118,7 +120,7 @@ internal class Oracle
 
         if (!string.IsNullOrEmpty(reason))
         {
-            Imperium.Output.Send(
+            ImpOutput.Send(
                 $"Spawn predictions updated due to {reason}!",
                 notificationType: NotificationType.OracleUpdate
             );

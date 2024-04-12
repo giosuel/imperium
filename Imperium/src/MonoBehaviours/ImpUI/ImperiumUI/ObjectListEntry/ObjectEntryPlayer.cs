@@ -4,6 +4,7 @@ using GameNetcodeStuff;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Types;
+using Imperium.Util;
 
 #endregion
 
@@ -22,11 +23,11 @@ internal class ObjectEntryPlayer : ObjectEntry
 
     protected override string GetObjectName()
     {
-        var playerName = ((PlayerControllerB)component).playerUsername;
-        if (string.IsNullOrEmpty(playerName)) playerName = $"Player <i>{component.GetInstanceID()}</i>";
-        if (((PlayerControllerB)component).isPlayerDead) playerName = $"<s>{playerName}</s>";
+        var player = (PlayerControllerB)component;
+        var playerName = player.playerUsername;
+        if (string.IsNullOrEmpty(playerName)) playerName = $"Player {component.GetInstanceID()}";
 
-        return playerName;
+        return player.isPlayerDead ? ImpUtils.RichText.Strikethrough(playerName) : playerName;
     }
 
     protected override void Kill()
@@ -43,7 +44,7 @@ internal class ObjectEntryPlayer : ObjectEntry
 
     protected override void TeleportHere()
     {
-        Imperium.PositionIndicator.Activate(position =>
+        Imperium.ImpPositionIndicator.Activate(position =>
         {
             ImpNetPlayer.Instance.TeleportPlayerServerRpc(
                 PlayerManager.GetPlayerID((PlayerControllerB)component),
@@ -55,8 +56,8 @@ internal class ObjectEntryPlayer : ObjectEntry
 
     public override void UpdateEntry()
     {
-        SetName(GetObjectName());
-
+        base.UpdateEntry();
+        
         reviveButton.gameObject.SetActive(CanRevive());
         killButton.gameObject.SetActive(CanKill());
     }

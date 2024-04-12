@@ -27,7 +27,7 @@ internal static class PreInitPatches
             if (ImpSettings.Preferences.QuickloadSkipStart.Value &&
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
             {
-                Imperium.Output.Log("[SYS] Quickload is bypassing start-up sequence...");
+                Imperium.Log.LogInfo("[SYS] Quickload is bypassing start-up sequence...");
                 SceneManager.LoadScene("InitScene");
             }
         }
@@ -45,7 +45,7 @@ internal static class PreInitPatches
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
             {
                 var saveNum = ImpSettings.Preferences.QuickloadSaveNumber.Value;
-                Imperium.Output.Log($"[SYS] Quickload is loading level #{saveNum}...");
+                Imperium.Log.LogInfo($"[SYS] Quickload is loading level #{saveNum}...");
 
                 var fileName = $"LCSaveFile{saveNum}";
 
@@ -75,9 +75,12 @@ internal static class PreInitPatches
         {
             if (GameNetworkManager.Instance != null && __instance.versionNumberText != null)
             {
-                __instance.versionNumberText.text =
-                    $"{__instance.versionNumberText.text} ({Imperium.PLUGIN_NAME} {Imperium.PLUGIN_VERSION})";
-                __instance.versionNumberText.margin = new Vector4(0, 0, -300, 0);
+                if (!__instance.versionNumberText.text.Contains(Imperium.PLUGIN_NAME))
+                {
+                    __instance.versionNumberText.text =
+                        $"{__instance.versionNumberText.text} ({Imperium.PLUGIN_NAME} {Imperium.PLUGIN_VERSION})";
+                    __instance.versionNumberText.margin = new Vector4(0, 0, -300, 0);
+                }
             }
         }
     }
