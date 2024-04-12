@@ -11,13 +11,14 @@ namespace Imperium.Netcode;
 public class ImpNetQuota : NetworkBehaviour
 {
     internal static ImpNetQuota Instance { get; private set; }
-    
+
     public override void OnNetworkSpawn()
     {
         if (ImpNetworkManager.IsHost.Value && Instance)
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
+
         Instance = this;
         base.OnNetworkSpawn();
     }

@@ -1,12 +1,16 @@
+#region
+
 using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.Util;
 using UnityEngine;
 
+#endregion
+
 namespace Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 
 internal class ImpNoiseListener : MonoBehaviour, INoiseListener
-{ 
+{
     private readonly HashSet<NoiseIndicator> indicators = [];
     private readonly Queue<NoiseIndicator> arrowQueue = new();
 
@@ -43,7 +47,7 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
     void INoiseListener.DetectNoise(Vector3 noisePosition, float noiseLoudness, int timesPlayedInOneSpot, int noiseID)
     {
         if (!ImpSettings.Visualizations.NoiseIndicators.Value) return;
-        
+
         arrowQueue.Dequeue().Activate(noisePosition, 5, noiseLoudness);
     }
 }

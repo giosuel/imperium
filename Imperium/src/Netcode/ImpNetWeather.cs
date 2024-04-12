@@ -19,6 +19,7 @@ public class ImpNetWeather : NetworkBehaviour
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
+
         Instance = this;
         base.OnNetworkSpawn();
     }

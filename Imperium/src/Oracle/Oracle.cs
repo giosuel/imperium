@@ -23,10 +23,10 @@ internal class Oracle
     internal void Simulate(bool initial, string reason)
     {
         if (!Imperium.IsSceneLoaded.Value) return;
-        
+
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
-        
+
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
         var EntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.EnemySpawnRandom);
         var OutsideEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.OutsideEnemySpawnRandom);
@@ -354,7 +354,7 @@ internal class Oracle
             0, 20
         );
         var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
-        
+
         for (var i = 0; i < entityAmount; i++)
         {
             var probabilities = new List<int>();

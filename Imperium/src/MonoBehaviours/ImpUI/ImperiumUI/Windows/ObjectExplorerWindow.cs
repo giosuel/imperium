@@ -32,7 +32,7 @@ internal class ObjectExplorerWindow : BaseWindow
     private TMP_Text otherCount;
 
     private readonly ImpTimer refreshTimer = ImpTimer.ForInterval(0.2f);
-    
+
     private Dictionary<int, ObjectEntry> objectEntries = [];
 
     protected override void RegisterWindow()
@@ -194,7 +194,7 @@ internal class ObjectExplorerWindow : BaseWindow
                 other.Count(p => p.gameObject.activeInHierarchy),
                 other.Count
             );
-        
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(explorerContentRect);
     }
 

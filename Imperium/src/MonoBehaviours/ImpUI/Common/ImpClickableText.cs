@@ -11,8 +11,8 @@ using UnityEngine.EventSystems;
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 
 /// <summary>
-/// Clickable TMP text component that also supports has a custom hover effect
-/// Note: Default hover effect is underlined text.
+///     Clickable TMP text component that also supports has a custom hover effect
+///     Note: Default hover effect is underlined text.
 /// </summary>
 public class ImpClickableText : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {

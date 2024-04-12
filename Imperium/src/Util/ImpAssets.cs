@@ -50,11 +50,11 @@ public abstract class ImpAssets
     internal static Material WireframeYellowMaterial;
     internal static Material WireframeGreenMaterial;
     internal static Material WireframeRedMaterial;
-    
+
     internal static VolumeProfile ExperimentationVolume;
     internal static VolumeProfile GlobalVolume;
     internal static GameObject ShipVolume;
-    
+
     internal static VisualEffectAsset ExperimentationVFX;
 
     internal static bool Load()
@@ -111,13 +111,13 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Volumes/global.asset", out GlobalVolume),
             LoadFile(assets, "Assets/VFX/experimentation.vfx", out ExperimentationVFX),
         ];
-        
+
         if (loadResults.Any(result => result == false))
         {
             Imperium.Log.LogInfo("[PRELOAD] Failed to load one or more assets from ./imperium_assets, aborting!");
             return false;
         }
-        
+
         ImpOutput.LogBlock(logBuffer, "Imperium Asset Loader");
 
         return true;

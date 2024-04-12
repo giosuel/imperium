@@ -376,12 +376,11 @@ internal class ObjectManager : ImpLifecycleObject
     internal void ToggleObject(string name, bool isOn) => FindObject(name)?.SetActive(isOn);
 
     /// <summary>
-    /// Fetches all game objects from resources to be used later for spawning
-    ///
-    /// - Entities (Indoor, Outdoor, Daytime)
-    /// - Scrap and Items
-    /// - Map Hazards
-    /// - Other Static Prefabs (e.g. clipboard, player body)
+    ///     Fetches all game objects from resources to be used later for spawning
+    ///     - Entities (Indoor, Outdoor, Daytime)
+    ///     - Scrap and Items
+    ///     - Map Hazards
+    ///     - Other Static Prefabs (e.g. clipboard, player body)
     /// </summary>
     private void FetchGlobalSpawnLists()
     {

@@ -16,7 +16,7 @@ namespace Imperium.MonoBehaviours.ImpUI.Common;
 public abstract class ImpButton
 {
     /// <summary>
-    /// Binds a unity button with an onclick listener and interactiveBindings
+    ///     Binds a unity button with an onclick listener and interactiveBindings
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>
@@ -59,9 +59,8 @@ public abstract class ImpButton
     }
 
     /// <summary>
-    /// Binds a unity button with an onclick listener and interactiveBindings
-    /// 
-    /// This version is meant for arrow buttons that collapse an area
+    ///     Binds a unity button with an onclick listener and interactiveBindings
+    ///     This version is meant for arrow buttons that collapse an area
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>

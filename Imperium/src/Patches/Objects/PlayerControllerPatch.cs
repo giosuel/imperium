@@ -19,7 +19,7 @@ internal static class PlayerControllerPatch
     internal static class PreloadPatches
     {
         /// <summary>
-        /// This is used as the entry function for Imperium
+        ///     This is used as the entry function for Imperium
         /// </summary>
         [HarmonyPostfix]
         [HarmonyPatch("ConnectClientToPlayerObject")]
@@ -27,7 +27,7 @@ internal static class PlayerControllerPatch
         {
             if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = __instance;
-            
+
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 var networkHandlerObj = Object.Instantiate(

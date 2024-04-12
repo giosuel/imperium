@@ -8,7 +8,7 @@ using Imperium.Core;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-/// Binds a game value and allows subscribers to register on change listeners.
+///     Binds a game value and allows subscribers to register on change listeners.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class ImpBinding<T> : IRefreshable, IResettable
@@ -28,30 +28,35 @@ public class ImpBinding<T> : IRefreshable, IResettable
     public event Action onTrigger;
 
     /// <summary>
-    /// Whether manual refresh (<see cref="Refresh"/>) should skip callback invocation. This is useful if different
-    /// bindings have the same expensive update callback and you intend to manually call once it at the end of the
-    /// refresh instead of having every binding calling it separately.
-    ///
-    /// e.g. Some render setting bindings use <see cref="PlayerManager.UpdateCameras()"/> as their callback to update
-    /// the cameras. This is an expensive function and we want to avoid calling it all the time during config loading.
+    ///     Whether manual refresh (<see cref="Refresh" />) should skip callback invocation. This is useful if different
+    ///     bindings have the same expensive update callback and you intend to manually call once it at the end of the
+    ///     refresh instead of having every binding calling it separately.
+    ///     e.g. Some render setting bindings use <see cref="PlayerManager.UpdateCameras()" /> as their callback to update
+    ///     the cameras. This is an expensive function and we want to avoid calling it all the time during config loading.
     /// </summary>
     private readonly bool ignoreRefresh;
 
     public T DefaultValue { get; }
 
     public T Value { get; protected set; }
-    
+
     /// <summary>
-    /// Initializes default value and value with default value
+    ///     Initializes default value and value with default value
     /// </summary>
     internal ImpBinding()
     {
     }
 
     /// <param name="currentValue"></param>
-    /// <param name="onUpdate"><see cref="onUpdate"/></param>
-    /// <param name="syncOnUpdate"><see cref="syncOnUpdate"/></param>
-    /// <param name="ignoreRefresh"><see cref="ignoreRefresh"/></param>
+    /// <param name="onUpdate">
+    ///     <see cref="onUpdate" />
+    /// </param>
+    /// <param name="syncOnUpdate">
+    ///     <see cref="syncOnUpdate" />
+    /// </param>
+    /// <param name="ignoreRefresh">
+    ///     <see cref="ignoreRefresh" />
+    /// </param>
     internal ImpBinding(
         T currentValue,
         Action<T> onUpdate = null,
@@ -68,13 +73,19 @@ public class ImpBinding<T> : IRefreshable, IResettable
     }
 
     /// <summary>
-    /// This constructor takes a default value that is different from the current value.
+    ///     This constructor takes a default value that is different from the current value.
     /// </summary>
     /// <param name="currentValue"></param>
     /// <param name="defaultValue"></param>
-    /// <param name="onUpdate"><see cref="onUpdate"/></param>
-    /// <param name="syncOnUpdate"><see cref="syncOnUpdate"/></param>
-    /// <param name="ignoreRefresh"><see cref="ignoreRefresh"/></param>
+    /// <param name="onUpdate">
+    ///     <see cref="onUpdate" />
+    /// </param>
+    /// <param name="syncOnUpdate">
+    ///     <see cref="syncOnUpdate" />
+    /// </param>
+    /// <param name="ignoreRefresh">
+    ///     <see cref="ignoreRefresh" />
+    /// </param>
     internal ImpBinding(
         T currentValue,
         T defaultValue,
@@ -92,7 +103,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     }
 
     /// <summary>
-    /// Resets the value of the bound variable to the default value
+    ///     Resets the value of the bound variable to the default value
     /// </summary>
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>
     internal void Reset(bool skipSync) => Set(DefaultValue, skipSync);
@@ -103,7 +114,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     }
 
     /// <summary>
-    /// Set new value disguised as refresh so ignoreRefresh applies.
+    ///     Set new value disguised as refresh so ignoreRefresh applies.
     /// </summary>
     /// <param name="newValue"></param>
     public void Refresh(T newValue)
@@ -117,7 +128,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     internal void Set(T value) => Set(value, false);
 
     /// <summary>
-    /// Sets the value of the bound variable and calls all callbacks if the new value isn't equal to the current value
+    ///     Sets the value of the bound variable and calls all callbacks if the new value isn't equal to the current value
     /// </summary>
     /// <param name="value"></param>
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>

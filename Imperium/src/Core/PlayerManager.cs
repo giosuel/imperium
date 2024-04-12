@@ -2,16 +2,13 @@
 
 using System;
 using GameNetcodeStuff;
-using Imperium.MonoBehaviours;
 using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
-using UnityEngine.VFX;
 using Object = UnityEngine.Object;
 
 #endregion

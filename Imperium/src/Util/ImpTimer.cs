@@ -1,5 +1,8 @@
-using System;
+#region
+
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Util;
 
@@ -26,7 +29,7 @@ internal class ImpTimer
     {
         initialTime = newTime;
     }
-    
+
     internal bool Tick()
     {
         countdown -= Time.deltaTime;

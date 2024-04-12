@@ -7,14 +7,14 @@ using System.Collections.Generic;
 namespace Imperium.MonoBehaviours.ImpUI;
 
 /// <summary>
-/// Complex UI that consists of multiple windows that have independent contents and title boxes.
+///     Complex UI that consists of multiple windows that have independent contents and title boxes.
 /// </summary>
 internal abstract class MultiplexUI : BaseUI
 {
     private readonly Dictionary<string, BaseWindow> Windows = [];
 
     /// <summary>
-    /// Registers a new window within the current UI
+    ///     Registers a new window within the current UI
     /// </summary>
     /// <param name="windowName"></param>
     /// <param name="isCollapsible">Whether the window has a collapse button or not</param>

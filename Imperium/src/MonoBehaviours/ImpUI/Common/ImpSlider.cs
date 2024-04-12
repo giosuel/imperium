@@ -25,8 +25,9 @@ public class ImpSlider : MonoBehaviour
     private float debounceTime;
 
     /// <summary>
-    /// Adds and binds an ImpSlider to a valid slider object
-    /// </summary>>
+    ///     Adds and binds an ImpSlider to a valid slider object
+    /// </summary>
+    /// >
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="valueBinding">The binding that the value of the slider will be bound to</param>

@@ -1,10 +1,8 @@
 #region
 
-using HarmonyLib;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
-using UnityEngine;
 
 #endregion
 
@@ -14,7 +12,7 @@ public abstract class ImpNetworkManager
 {
     internal static readonly ImpBinding<bool> IsHost = new(NetworkManager.Singleton.IsHost);
     internal static readonly ImpBinding<int> ConnectedPlayers = new(1);
-    
+
     internal static void OnClientConnected(ulong clientId)
     {
         Imperium.Log.LogInfo(

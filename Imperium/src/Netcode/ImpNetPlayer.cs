@@ -1,6 +1,5 @@
 #region
 
-using System;
 using Imperium.Core;
 using Imperium.Types;
 using Imperium.Util;
@@ -23,6 +22,7 @@ public class ImpNetPlayer : NetworkBehaviour
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
+
         Instance = this;
         base.OnNetworkSpawn();
     }

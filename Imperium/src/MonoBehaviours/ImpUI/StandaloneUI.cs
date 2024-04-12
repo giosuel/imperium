@@ -9,8 +9,8 @@ using UnityEngine.UI;
 namespace Imperium.MonoBehaviours.ImpUI;
 
 /// <summary>
-/// Simple UI with a single window.
-/// Uses the component called "Window" in the UI container as the window component.
+///     Simple UI with a single window.
+///     Uses the component called "Window" in the UI container as the window component.
 /// </summary>
 internal abstract class StandaloneUI : BaseUI
 {
@@ -28,7 +28,7 @@ internal abstract class StandaloneUI : BaseUI
     }
 
     /// <summary>
-    /// Finds content and title box and implements title box close / collapse functionality.
+    ///     Finds content and title box and implements title box close / collapse functionality.
     /// </summary>
     /// <param name="isCollapsible"></param>
     /// <param name="parent"></param>

@@ -14,7 +14,7 @@ namespace Imperium.MonoBehaviours.ImpUI.Common;
 public abstract class ImpInput
 {
     /// <summary>
-    /// Binds a Unity input field to an ImpBinding without adding a component (content type int)
+    ///     Binds a Unity input field to an ImpBinding without adding a component (content type int)
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>
@@ -64,7 +64,7 @@ public abstract class ImpInput
     }
 
     /// <summary>
-    /// Binds a Unity input field to an ImpBinding without adding a component (content type float)
+    ///     Binds a Unity input field to an ImpBinding without adding a component (content type float)
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>
@@ -108,7 +108,7 @@ public abstract class ImpInput
     }
 
     /// <summary>
-    /// Creates a dummy field for decorative purposes (e.g. Outdoor deviation is a hard-coded value)
+    ///     Creates a dummy field for decorative purposes (e.g. Outdoor deviation is a hard-coded value)
     /// </summary>
     /// <param name="path"></param>
     /// <param name="container"></param>

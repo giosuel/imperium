@@ -145,7 +145,7 @@ internal static class RoundManagerPatch
     }
 
     /// <summary>
-    /// Level is finished generating, all scrap and map obstacles have been placed, no entities yet
+    ///     Level is finished generating, all scrap and map obstacles have been placed, no entities yet
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("FinishGeneratingNewLevelClientRpc")]

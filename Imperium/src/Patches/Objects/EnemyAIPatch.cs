@@ -41,7 +41,7 @@ internal static class EnemyAIPatch
     }
 
     /// <summary>
-    /// Temporarily removes invisible player from allPlayerScripts
+    ///     Temporarily removes invisible player from allPlayerScripts
     /// </summary>
     /// <param name="__instance"></param>
     [HarmonyPrefix]
@@ -59,7 +59,7 @@ internal static class EnemyAIPatch
     }
 
     /// <summary>
-    /// Restores allPlayerScripts modified by prefix patch
+    ///     Restores allPlayerScripts modified by prefix patch
     /// </summary>
     /// <param name="__instance"></param>
     [HarmonyPostfix]
@@ -75,7 +75,7 @@ internal static class EnemyAIPatch
     }
 
     /// <summary>
-    /// Temporarily removes invisible player from allPlayerScripts
+    ///     Temporarily removes invisible player from allPlayerScripts
     /// </summary>
     /// <param name="__instance"></param>
     [HarmonyPrefix]
@@ -93,7 +93,7 @@ internal static class EnemyAIPatch
     }
 
     /// <summary>
-    /// Restores allPlayerScripts modified by prefix patch
+    ///     Restores allPlayerScripts modified by prefix patch
     /// </summary>
     /// <param name="__instance"></param>
     [HarmonyPostfix]

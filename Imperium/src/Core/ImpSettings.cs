@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Imperium.Core;
 
 /// <summary>
-/// Contains all the bindings of the persistent settings of Imperium.
+///     Contains all the bindings of the persistent settings of Imperium.
 /// </summary>
 public abstract class ImpSettings
 {
@@ -199,7 +199,7 @@ public abstract class ImpSettings
             false,
             Imperium.Visualization.VentTimers.Toggle
         );
-        
+
         internal static readonly ImpConfig<bool> NoiseIndicators = new(
             "Gizmos",
             "NoiseIndicators",

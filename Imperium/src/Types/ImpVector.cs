@@ -1,6 +1,5 @@
 #region
 
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,13 +8,15 @@ using UnityEngine;
 namespace Imperium.Types;
 
 /// <summary>
-/// Simple UnityEngine.Vector3 wrapper to make it serializable for utilization in server and client RPCs
+///     Simple UnityEngine.Vector3 wrapper to make it serializable for utilization in server and client RPCs
 /// </summary>
 public class ImpVector : INetworkSerializable
 {
     private Vector3 vector3;
-    
-    public ImpVector(){}
+
+    public ImpVector()
+    {
+    }
 
     public ImpVector(Vector3 vector3)
     {

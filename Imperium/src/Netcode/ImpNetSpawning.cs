@@ -19,10 +19,11 @@ public class ImpNetSpawning : NetworkBehaviour
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
+
         Instance = this;
         base.OnNetworkSpawn();
     }
-    
+
     [ServerRpc(RequireOwnership = false)]
     internal void SpawnEntityServerRpc(
         string entityName,

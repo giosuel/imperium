@@ -3,7 +3,6 @@
 using System;
 using Imperium.Core;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Quaternion = UnityEngine.Quaternion;
@@ -22,7 +21,7 @@ public class ImpPositionIndicator : MonoBehaviour
     private Action<Vector3> registeredCallback;
 
     private bool _isActive;
-    
+
     private bool isActive
     {
         get => _isActive;

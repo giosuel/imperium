@@ -57,7 +57,7 @@ internal class ObjectEntryPlayer : ObjectEntry
     public override void UpdateEntry()
     {
         base.UpdateEntry();
-        
+
         reviveButton.gameObject.SetActive(CanRevive());
         killButton.gameObject.SetActive(CanKill());
     }

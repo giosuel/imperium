@@ -54,9 +54,8 @@ internal class Visualization
     internal readonly EntityInfos EntityInfos;
 
     /// <summary>
-    /// Visualizes the colliders of a group of game objects by tag or layer
-    /// 
-    /// Can display multiple visualizers per object as long as they have DIFFERENT sizes.
+    ///     Visualizes the colliders of a group of game objects by tag or layer
+    ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
     /// </summary>
     /// <param name="identifier">Tag or layer of the collider objects</param>
     /// <param name="type">If the identifier is a tag or a layer</param>
@@ -71,9 +70,8 @@ internal class Visualization
     ) => isOn => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
 
     /// <summary>
-    /// Visualizes a group of game objects with a sphere by tag or layer
-    /// 
-    /// Can display multiple visualizers per object as long as they have DIFFERENT sizes.
+    ///     Visualizes a group of game objects with a sphere by tag or layer
+    ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
     /// </summary>
     /// <param name="identifier">Tag or layer of the collider objects</param>
     /// <param name="type">If the identifier is a tag or a layer</param>
@@ -88,7 +86,7 @@ internal class Visualization
     ) => isOn => Visualize(identifier, isOn, VisualizePoint, type, false, size, material);
 
     /// <summary>
-    /// Refreshes all collider and point visualizers
+    ///     Refreshes all collider and point visualizers
     /// </summary>
     internal void RefreshOverlays()
     {

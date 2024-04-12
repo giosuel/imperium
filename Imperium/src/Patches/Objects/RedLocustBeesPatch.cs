@@ -1,4 +1,8 @@
+#region
+
 using HarmonyLib;
+
+#endregion
 
 namespace Imperium.Patches.Objects;
 

@@ -18,6 +18,7 @@ public class ImpNetTime : NetworkBehaviour
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
+
         Instance = this;
         base.OnNetworkSpawn();
     }

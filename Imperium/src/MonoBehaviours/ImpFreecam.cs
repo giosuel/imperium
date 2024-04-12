@@ -20,9 +20,9 @@ public class ImpFreecam : MonoBehaviour
     private Camera gameplayCamera;
     private Vector2 lookInput;
     private LayerSelector layerSelector;
-    
+
     internal Camera FreecamCamera { get; private set; }
-    
+
     private static Rect minicamRect => new(100f / Screen.width, 1 - 100f / Screen.height - 0.4f, 0.4f, 0.4f);
 
     internal readonly ImpBinaryBinding IsFreecamEnabled = new(false);
@@ -44,7 +44,7 @@ public class ImpFreecam : MonoBehaviour
 
         IsFreecamEnabled.onTrue += OnFreecamEnable;
         IsFreecamEnabled.onFalse += OnFreecamDisable;
-        
+
         IsMinicamEnabled.onTrue += OnMinicamEnable;
         IsMinicamEnabled.onFalse += OnMinicamDisable;
 
@@ -62,7 +62,7 @@ public class ImpFreecam : MonoBehaviour
         Imperium.InputBindings.FreecamMap["LayerSelector"].performed += OnToggleLayerSelector;
         ImpSettings.Hidden.FreecamLayerMask.onUpdate += value => FreecamCamera.cullingMask = value;
     }
-    
+
     private void OnMinicamToggle(InputAction.CallbackContext callbackContext)
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen ||
@@ -85,7 +85,7 @@ public class ImpFreecam : MonoBehaviour
     private void OnMinicamEnable()
     {
         if (IsFreecamEnabled.Value) IsFreecamEnabled.SetFalse();
-        
+
         HUDManager.Instance.HideHUD(true);
         FreecamCamera.enabled = true;
         FreecamCamera.rect = minicamRect;
@@ -95,21 +95,21 @@ public class ImpFreecam : MonoBehaviour
     {
         // Hide UI if view is not switching from minicam to freecam
         if (!IsFreecamEnabled.Value) HUDManager.Instance.HideHUD(false);
-        
+
         FreecamCamera.enabled = false;
-        
+
         FreecamCamera.rect = new Rect(0, 0, 1, 1);
     }
 
     private void OnFreecamEnable()
     {
         Imperium.Interface.Close();
-        
+
         if (IsMinicamEnabled.Value) IsMinicamEnabled.SetFalse();
 
         SetNightVision(ImpSettings.Player.NightVision.Value);
         ImpSettings.Player.NightVision.onUpdate += SetNightVision;
-        
+
         HUDManager.Instance.HideHUD(true);
         Imperium.InputBindings.FreecamMap.Enable();
         FreecamCamera.enabled = true;
@@ -121,12 +121,12 @@ public class ImpFreecam : MonoBehaviour
     private void OnFreecamDisable()
     {
         layerSelector.OnUIClose();
-        
+
         // Hide UI if view is not switching to minimap state
         if (!IsMinicamEnabled.Value) HUDManager.Instance.HideHUD(false);
 
         freecamLight.enabled = false;
-        
+
         Imperium.InputBindings.FreecamMap.Disable();
         FreecamCamera.enabled = false;
         Imperium.StartOfRound.SwitchCamera(gameplayCamera);

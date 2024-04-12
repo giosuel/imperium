@@ -19,6 +19,7 @@ public class ImpNetCommunication : NetworkBehaviour
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
+
         Instance = this;
         Instance.RequestImperiumAccessServerRpc(NetworkManager.Singleton.LocalClientId);
         base.OnNetworkSpawn();

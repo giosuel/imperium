@@ -30,10 +30,9 @@ internal abstract class ImpUtils
     }
 
     /// <summary>
-    /// Tries to find value in a dictionary by key. If the key does not exist,
-    /// a new value of type T is created, indexed in the dictionary with the given key and returned.
-    ///
-    /// Basically a helper function to emulate a default dictionary.
+    ///     Tries to find value in a dictionary by key. If the key does not exist,
+    ///     a new value of type T is created, indexed in the dictionary with the given key and returned.
+    ///     Basically a helper function to emulate a default dictionary.
     /// </summary>
     internal static T DictionaryGetOrNew<T>(IDictionary<string, T> map, string key) where T : new()
     {
@@ -66,14 +65,14 @@ internal abstract class ImpUtils
     internal static float TimeToNormalized(float currentTime) => currentTime / Imperium.TimeOfDay.totalTime;
 
     /// <summary>
-    /// Formats daytime like RoundManager.currentDayTime or TimeOfDay.globalTime
+    ///     Formats daytime like RoundManager.currentDayTime or TimeOfDay.globalTime
     /// </summary>
     /// <param name="dayTime"></param>
     /// <returns></returns>
     internal static string FormatDayTime(float dayTime) => FormatTime(TimeToNormalized(dayTime));
 
     /// <summary>
-    /// Generates a formatted string of a fraction; '(num1, num2)'
+    ///     Generates a formatted string of a fraction; '(num1, num2)'
     /// </summary>
     /// <param name="num1"></param>
     /// <param name="num2"></param>
@@ -96,16 +95,17 @@ internal abstract class ImpUtils
 
         return $"{hours:00}:{minutes:00} {suffix}";
     }
-    
+
     internal static string FormatMinutesSeconds(float seconds)
     {
         var minutesLeft = Mathf.RoundToInt(seconds) / 60;
         var secondsLeft = Mathf.RoundToInt(seconds) % 60;
         return $"{minutesLeft}:{secondsLeft:00}";
     }
-    
+
     internal static string FormatSeconds(float seconds)
-    { ;
+    {
+        ;
         return $"{seconds:0.0}s";
     }
 
@@ -206,8 +206,8 @@ internal abstract class ImpUtils
             NormalizeFloat(MathF.Round(chance * 100, 2)).ToString(CultureInfo.InvariantCulture) + "%";
 
         /// <summary>
-        /// Removes trailing zeros from float if decimals are equal to zero
-        /// e.g. 100.00 => 100
+        ///     Removes trailing zeros from float if decimals are equal to zero
+        ///     e.g. 100.00 => 100
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -225,10 +225,9 @@ internal abstract class ImpUtils
         }
 
         /// <summary>
-        /// Limits a float to 3 digits.
-        /// e.g 100.01 => 100, 14.23 => 12.3, 1.22 => 1.22, 0.1 => 0.1
-        ///
-        /// Note: This only works for positive numbers smaller than 999
+        ///     Limits a float to 3 digits.
+        ///     e.g 100.01 => 100, 14.23 => 12.3, 1.22 => 1.22, 0.1 => 0.1
+        ///     Note: This only works for positive numbers smaller than 999
         /// </summary>
         internal static string FormatFloatToThreeDigits(float value) =>
             value switch
@@ -385,7 +384,7 @@ internal abstract class ImpUtils
             if (parent)
             {
                 primitive.transform.position = parent.position;
-                primitive.transform.SetParent(parent);   
+                primitive.transform.SetParent(parent);
             }
 
             if (removeRenderer)

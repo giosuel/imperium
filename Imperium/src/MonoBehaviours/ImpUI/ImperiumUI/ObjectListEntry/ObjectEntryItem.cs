@@ -49,7 +49,7 @@ internal class ObjectEntryItem : ObjectEntry
     public override void UpdateEntry()
     {
         base.UpdateEntry();
-        
+
         var isInteractable = ((GrabbableObject)component).isHeld;
         if (!buttonIcon) buttonIcon = dropButton.transform.Find("Icon").GetComponent<Image>();
 

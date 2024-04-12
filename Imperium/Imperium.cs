@@ -20,7 +20,6 @@ using Imperium.MonoBehaviours.ImpUI.SettingsUI;
 using Imperium.MonoBehaviours.ImpUI.SpawningUI;
 using Imperium.MonoBehaviours.ImpUI.TeleportUI;
 using Imperium.MonoBehaviours.ImpUI.WeatherUI;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
@@ -30,7 +29,6 @@ using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 #endregion
 
@@ -88,7 +86,7 @@ public class Imperium : BaseUnityPlugin
         if (!ImpAssets.Load()) return;
 
         NetcodePatcher();
-        
+
         harmony = new Harmony(PLUGIN_GUID);
 
         PreLaunchPatch();
@@ -97,7 +95,7 @@ public class Imperium : BaseUnityPlugin
 
         Log.LogInfo("[OK] Imperium is ready!");
     }
-    
+
     private static void NetcodePatcher()
     {
         var types = Assembly.GetExecutingAssembly().GetTypes();
@@ -114,7 +112,7 @@ public class Imperium : BaseUnityPlugin
             }
         }
     }
-    
+
     internal static void Launch()
     {
         if (!IsImperiumReady)
@@ -175,12 +173,12 @@ public class Imperium : BaseUnityPlugin
 
         ImpSettings.LoadAll();
         PlayerManager.UpdateCameras();
-        
+
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
         harmony.PatchAll();
         UnityExplorerIntegration.PatchFunctions(harmony);
-        
+
         SpawnUI();
 
         if (!ImpNetworkManager.IsHost.Value) ImpNetTime.Instance.RequestTimeServerRpc();
@@ -227,7 +225,7 @@ public class Imperium : BaseUnityPlugin
 
         Interface.StartListening();
 
-        Imperium.Log.LogInfo("[OK] Imperium UIs have been registered! \\o/");
+        Log.LogInfo("[OK] Imperium UIs have been registered! \\o/");
     }
 
     private static void PreLaunchPatch()
