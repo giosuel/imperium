@@ -1,9 +1,7 @@
 {
     "name": "Imperium",
-    "version_number": "0.1.3",
+    "version_number": "0.1.4",
     "website_url": "https://github.com/giosuel/Imperium",
     "description": " A powerful and highly performant all-in-one debugging tool to test and explore game mechanics and functionality in Lethal Company.",
-    "dependencies": [
-        "Ozone-Runtime_Netcode_Patcher-0.2.5"
-    ]
+    "dependencies": []
 }
