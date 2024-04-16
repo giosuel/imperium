@@ -2,6 +2,7 @@
 
 using Imperium.Core;
 using Imperium.Netcode;
+using Imperium.Types;
 using Imperium.Util;
 using Unity.Netcode;
 using UnityEngine.UI;
@@ -14,9 +15,7 @@ internal class ObjectEntryItem : ObjectEntry
 {
     protected override bool CanRespawn() => false;
     protected override bool CanDrop() => true;
-
-    // TODO(giosuel): Fix updating scrap location
-    protected override bool CanTeleportHere() => false;
+    protected override bool CanTeleportHere() => true;
 
     private Image buttonIcon;
 
@@ -42,7 +41,8 @@ internal class ObjectEntryItem : ObjectEntry
         Imperium.ImpPositionIndicator.Activate(position =>
         {
             var item = (GrabbableObject)component;
-            item.transform.position = position;
+            Imperium.Log.LogInfo($"TELEPORT ITEM TO : {ImpUtils.FormatVector(position)}");
+            item.targetFloorPosition = position;
         });
     }
 

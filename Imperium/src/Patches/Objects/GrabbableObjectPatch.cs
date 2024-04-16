@@ -3,6 +3,7 @@
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
+using Imperium.Util;
 
 #endregion
 
@@ -17,7 +18,7 @@ internal static class GrabbableObjectPatch
     {
         if (ImpSettings.Player.InfiniteBattery.Value) __instance.insertedBattery.charge = 1;
     }
-
+    
     [HarmonyPostfix]
     [HarmonyPatch("EquipItem")]
     internal static void EquipItemPatch(GrabbableObject __instance)

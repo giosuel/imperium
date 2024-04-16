@@ -38,19 +38,6 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         sceneLoaded
     );
 
-    // protected override void OnSceneLoad()
-    // {
-    //     GameObject.Find("Sky and Fog Global Volume (1)")?.SetActive(false);
-    //     GameObject.Find("Sky and Fog Global Volume").GetComponent<Volume>().profile = ImpAssets.ExperimentationVolume;
-    //
-    //     var vfxObject = new GameObject("ExpFlr");
-    //     vfxObject.transform.SetParent(Imperium.Player.transform);
-    //     vfxObject.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.left;
-    //     var effect = vfxObject.AddComponent<VisualEffect>();
-    //     effect.visualEffectAsset = ImpAssets.ExperimentationVFX;
-    //     effect.Play();
-    // }
-
     internal bool AllowPlayerDeathOverride;
 
     [ImpAttributes.LocalMethod]
@@ -219,10 +206,8 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
             if (!camera.targetTexture) continue;
             var targetTexture = camera.targetTexture;
             targetTexture.Release();
-            targetTexture.width =
-                Mathf.RoundToInt(860 * ImpSettings.Rendering.ResolutionMultiplier.Value);
-            targetTexture.height =
-                Mathf.RoundToInt(520 * ImpSettings.Rendering.ResolutionMultiplier.Value);
+            targetTexture.width = Mathf.RoundToInt(860 * ImpSettings.Rendering.ResolutionMultiplier.Value);
+            targetTexture.height = Mathf.RoundToInt(520 * ImpSettings.Rendering.ResolutionMultiplier.Value);
             targetTexture.Create();
 
             Resources.UnloadUnusedAssets();

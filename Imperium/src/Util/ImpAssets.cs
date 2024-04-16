@@ -51,12 +51,6 @@ public abstract class ImpAssets
     internal static Material WireframeGreenMaterial;
     internal static Material WireframeRedMaterial;
 
-    internal static VolumeProfile ExperimentationVolume;
-    internal static VolumeProfile GlobalVolume;
-    internal static GameObject ShipVolume;
-
-    internal static VisualEffectAsset ExperimentationVFX;
-
     internal static bool Load()
     {
         var assets = AssetBundle.LoadFromFile(
@@ -93,7 +87,6 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/minicam_overlay.prefab", out MinicamOverlay),
             LoadFile(assets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadFile(assets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
-            LoadFile(assets, "Assets/Prefabs/ship_volume.prefab", out ShipVolume),
             LoadFile(assets, "Assets/Materials/xray.mat", out XrayMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_blue.mat", out FresnelBlueMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
@@ -106,10 +99,7 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Materials/wireframe_green.mat", out WireframeGreenMaterial),
             LoadFile(assets, "Assets/Materials/wireframe_red.mat", out WireframeRedMaterial),
             LoadFile(assets, "Assets/Audio/GrassClick.wav", out GrassClick),
-            LoadFile(assets, "Assets/Audio/ButtonClick.ogg", out ButtonClick),
-            LoadFile(assets, "Assets/Volumes/experimentation.asset", out ExperimentationVolume),
-            LoadFile(assets, "Assets/Volumes/global.asset", out GlobalVolume),
-            LoadFile(assets, "Assets/VFX/experimentation.vfx", out ExperimentationVFX),
+            LoadFile(assets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
         ];
 
         if (loadResults.Any(result => result == false))

@@ -59,7 +59,7 @@ internal class ObjectManager : ImpLifecycleObject
     private readonly ImpBinding<Dictionary<string, GameObject>> AllStaticPrefabs = new([]);
 
     // These lists hold the currently existing objects on the map
-    // These are used by the object list in Imperium UI and is always up to date but
+    // These are used by the object list in Imperium UI and is always up-to-date but
     // CAN CONTAIN NULL elements that have been marked for but not yet deleted
     // during the last refresh.
     // Loaded on ship landing.
@@ -81,15 +81,14 @@ internal class ObjectManager : ImpLifecycleObject
 
     internal static void SpawnEntity(
         string entityName,
-        Vector3? position = null,
+        Vector3 position,
         int amount = 1,
         int health = -1
     )
     {
-        var playerTransform = Imperium.Player.transform;
         ImpNetSpawning.Instance.SpawnEntityServerRpc(
             entityName,
-            new ImpVector(position ?? playerTransform.position + playerTransform.forward * 3f),
+            new ImpVector(position),
             amount,
             health
         );

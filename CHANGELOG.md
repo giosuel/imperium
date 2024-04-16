@@ -1,5 +1,25 @@
 # Changelog
 
+## Imperium 0.1.5 [Beta]
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23145064/) update of Lethal Company.
+
+### Added Features
+
+- **Items and scap can now be teleported in the Object Explorer.** (NOT YET!!!!!)
+
+### Internal Fixes
+
+- Changing the weather in real-time is now fully implemented.
+- FOV transitions are now smooth (e.g. when sprinting).
+- Fixed the BepInEx dependency.
+
+### QOL Changes
+
+- Entity spawn location can now be picked interactively when in freecam.
+
 ## Imperium 0.1.4 [Beta]
 
 ### Compatibility

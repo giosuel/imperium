@@ -182,7 +182,7 @@ Entities spawned with Imperium do not count towards current level power or their
 
 ### Prediction Restrictions
 
-Entity spawns in Lethal Company are dependent on a lot of factors. Since v47 everything became more strictly dependent on the map seed and while this made things a lot easier, there are still a few exceptions in the code that mess up entity spawning. Oracle accounts for all these changes, meaning the spawn predictions can changaAAAAAAASe if one of the following events occur:
+Entity spawns in Lethal Company are dependent on a lot of factors. Since v47 everything became more strictly dependent on the map seed and while this made things a lot easier, there are still a few exceptions in the code that mess up entity spawning. Oracle accounts for all these changes, meaning the spawn predictions can change if one of the following events occur:
 
 - An entity dies (Affects all spawn cycles).
 - An eyeless dog kills an employee.

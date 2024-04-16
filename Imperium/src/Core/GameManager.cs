@@ -278,10 +278,20 @@ internal class GameManager : ImpLifecycleObject
                 weatherEffect.effectPermanentObject.SetActive(value: isEnabled);
             }
 
-            // The game doesn't usually remove the sun animator when switching from eclipsed to another weather
-            if (!string.IsNullOrEmpty(weatherEffect.sunAnimatorBool) && !isEnabled && Imperium.TimeOfDay.sunAnimator)
+            if (weatherEffect.effectObject != null)
             {
-                Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: false);
+                weatherEffect.effectObject.SetActive(value: isEnabled);
+            }
+
+            if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool) 
+                          && Imperium.TimeOfDay.sunAnimator != null)
+            {
+                Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);
+            }
+            else
+            {
+                Imperium.TimeOfDay.sunAnimator.Rebind();
+                Imperium.TimeOfDay.sunAnimator.Update(0);
             }
         }
 

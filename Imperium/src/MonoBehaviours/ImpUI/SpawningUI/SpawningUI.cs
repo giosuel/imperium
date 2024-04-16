@@ -8,7 +8,8 @@ using Imperium.Core;
 using Imperium.Util;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 #endregion
 
@@ -176,24 +177,40 @@ internal class SpawningUI : BaseUI
                Imperium.ObjectManager.GetDisplayName(objectName).ToLower().Contains(inputNormalized);
     }
 
-    private void Spawn(string objectName, int amount, int value)
+    private void Spawn(string objectName, int amount, int value, Vector3 position)
     {
         switch (spawningMode)
         {
             case SpawningMode.ENTITY:
-                ObjectManager.SpawnEntity(objectName, amount: amount, health: value);
+                ObjectManager.SpawnEntity(objectName, position, amount, value);
                 break;
             case SpawningMode.ITEM:
-                ObjectManager.SpawnItem(objectName, PlayerManager.LocalPlayerId, amount: amount, value: value);
+                ObjectManager.SpawnItem(objectName, PlayerManager.LocalPlayerId, position, amount, value);
                 break;
             case SpawningMode.MAP_HAZARD:
-                ObjectManager.SpawnMapHazard(objectName, amount: amount);
+                ObjectManager.SpawnMapHazard(objectName, position, amount);
                 break;
             default:
                 return;
         }
 
         Imperium.Interface.Close();
+    }
+
+    private void Spawn(string objectName, int amount, int value)
+    {
+        if (Imperium.Freecam.IsFreecamEnabled.Value)
+        {
+            Imperium.ImpPositionIndicator.Activate(
+                position => Spawn(objectName, amount, value, position),
+                Imperium.Freecam.transform
+            );
+        }
+        else
+        {
+            var playerTransform = Imperium.Player.transform;
+            Spawn(objectName, amount, value, playerTransform.position + playerTransform.forward * 3f);
+        }
     }
 
     private void Update()

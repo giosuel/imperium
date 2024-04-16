@@ -130,8 +130,15 @@ internal static class PlayerControllerPatch
         if (ImpSettings.Player.CustomFieldOfView.Value < 0) return;
 
         var targetFOV = ImpSettings.Player.CustomFieldOfView.Value;
-        if (__instance.isSprinting) targetFOV += 2;
-        __instance.gameplayCamera.fieldOfView = targetFOV;
+        if (__instance.inTerminalMenu) targetFOV -= 6;
+        if (__instance.IsInspectingItem) targetFOV -= 14;
+        if (__instance.isSprinting) targetFOV += 2f;
+        
+        __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
+            __instance.gameplayCamera.fieldOfView,
+            targetFOV,
+            6f * Time.deltaTime
+        );
     }
 
     // Temporarily stores gameHasStarted if patch overwrites it for pickup check

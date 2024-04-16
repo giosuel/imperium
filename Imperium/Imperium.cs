@@ -168,9 +168,6 @@ public class Imperium : BaseUnityPlugin
 
         InputBindings.BaseMap["ToggleHUD"].performed += ToggleHUD;
 
-        // Instantiate(ImpAssets.ShipVolume, GameObject.Find("HangarShip").transform);
-        // GameObject.Find("VolumeMain").GetComponent<Volume>().profile = ImpAssets.GlobalVolume;
-
         ImpSettings.LoadAll();
         PlayerManager.UpdateCameras();
 
