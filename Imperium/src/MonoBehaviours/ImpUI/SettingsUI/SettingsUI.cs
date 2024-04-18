@@ -27,9 +27,7 @@ internal class SettingsUI : StandaloneUI
             "General/UEMouseFixToggle",
             content,
             ImpSettings.Preferences.UnityExplorerMouseFix,
-            new ImpBinding<bool>(
-                Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer")
-            )
+            new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer"))
         );
         ImpToggle.Bind("General/OptimizeLogsToggle", content, ImpSettings.Preferences.OptimizeLogs);
 

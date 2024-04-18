@@ -28,13 +28,9 @@ internal static class PlayerControllerPatch
             if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = __instance;
 
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            if (NetworkManager.Singleton.IsHost)
             {
-                var networkHandlerObj = Object.Instantiate(
-                    ImpAssets.NetworkHandler,
-                    Vector3.zero,
-                    Quaternion.identity
-                );
+                var networkHandlerObj = Object.Instantiate(ImpAssets.NetworkHandler);
                 networkHandlerObj.AddComponent<ImpNetCommunication>();
                 networkHandlerObj.AddComponent<ImpNetPlayer>();
                 networkHandlerObj.AddComponent<ImpNetQuota>();
@@ -130,8 +126,15 @@ internal static class PlayerControllerPatch
         if (ImpSettings.Player.CustomFieldOfView.Value < 0) return;
 
         var targetFOV = ImpSettings.Player.CustomFieldOfView.Value;
-        if (__instance.isSprinting) targetFOV += 2;
-        __instance.gameplayCamera.fieldOfView = targetFOV;
+        if (__instance.inTerminalMenu) targetFOV -= 6;
+        if (__instance.IsInspectingItem) targetFOV -= 14;
+        if (__instance.isSprinting) targetFOV += 2f;
+
+        __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
+            __instance.gameplayCamera.fieldOfView,
+            targetFOV,
+            6f * Time.deltaTime
+        );
     }
 
     // Temporarily stores gameHasStarted if patch overwrites it for pickup check

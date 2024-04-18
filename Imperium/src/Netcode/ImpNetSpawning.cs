@@ -27,24 +27,27 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SpawnEntityServerRpc(
         string entityName,
+        string prefabName,
         ImpVector position,
         int amount,
         int health
     )
     {
-        Imperium.ObjectManager.SpawnEntityServer(entityName, position.Vector3(), amount, health);
+        Imperium.ObjectManager.SpawnEntityServer(entityName, prefabName, position.Vector3(), amount, health);
     }
 
     [ServerRpc(RequireOwnership = false)]
     internal void SpawnItemServerRpc(
         string itemName,
+        string prefabName,
         int spawningPlayerId,
         ImpVector position,
         int amount,
         int value
     )
     {
-        Imperium.ObjectManager.SpawnItemServer(itemName, spawningPlayerId, position.Vector3(), amount, value);
+        Imperium.ObjectManager.SpawnItemServer(itemName, prefabName, spawningPlayerId, position.Vector3(), amount,
+            value);
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -80,7 +80,7 @@ internal class ObjectEntry : MonoBehaviour
     public virtual void UpdateEntry()
     {
         SetName(GetObjectName());
-        IsObjectActive.Set(containerObject.activeSelf);
+        if (IsObjectActive.Value != containerObject.activeSelf) IsObjectActive.Set(containerObject.activeSelf, true);
     }
 
     public virtual void Destroy()

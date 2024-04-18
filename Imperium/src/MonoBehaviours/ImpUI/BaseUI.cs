@@ -21,6 +21,7 @@ internal abstract class BaseUI : MonoBehaviour
     public bool ignoreTab { get; private set; }
 
     protected event Action onOpen;
+    protected event Action onClose;
 
     internal ImpInterfaceManager interfaceManager;
 
@@ -37,6 +38,7 @@ internal abstract class BaseUI : MonoBehaviour
         ignoreTab = ignoreTabInput;
         container = transform.Find("Container");
         onOpen += OnOpen;
+        onClose += OnClose;
 
         InitUI();
 
@@ -56,6 +58,7 @@ internal abstract class BaseUI : MonoBehaviour
         container.gameObject.SetActive(false);
         IsOpen = false;
 
+        onClose?.Invoke();
         if (closeOnMove)
         {
             Imperium.IngamePlayerSettings.playerInput.actions.FindAction("Move").performed -= CloseEvent;
@@ -101,6 +104,10 @@ internal abstract class BaseUI : MonoBehaviour
     }
 
     protected virtual void OnOpen()
+    {
+    }
+
+    protected virtual void OnClose()
     {
     }
 

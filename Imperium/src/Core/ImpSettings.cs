@@ -216,28 +216,28 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> EntityInfo = new(
             "Gizmos",
             "EntityInfo",
-            true,
+            false,
             Imperium.Visualization.EntityInfos.Toggle
         );
 
         internal static readonly ImpConfig<bool> ShotgunIndicators = new(
             "Gizmos",
             "ShotgunIndicators",
-            true,
+            false,
             Imperium.Visualization.ShotgunIndicators.Toggle
         );
 
         internal static readonly ImpConfig<bool> ShovelIndicators = new(
             "Gizmos",
             "ShovelIndicators",
-            true,
+            false,
             Imperium.Visualization.ShovelIndicators.Toggle
         );
 
         internal static readonly ImpConfig<bool> KnifeIndicators = new(
             "Gizmos",
             "KnifeIndicators",
-            true,
+            false,
             Imperium.Visualization.KnifeIndicators.Toggle
         );
 
@@ -416,7 +416,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> StarsOverlay = new(
             "Rendering.Overlays",
             "StarsOverlay",
-            true,
+            false,
             value =>
             {
                 // Disable space sun when on moon
@@ -555,7 +555,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<float> FreecamMovementSpeed = new(
             "Preferences.Freecam",
             "MovementSpeed",
-            10
+            20
         );
 
         internal static readonly ImpConfig<float> FreecamFieldOfView = new(

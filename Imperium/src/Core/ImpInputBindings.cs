@@ -10,6 +10,7 @@ public class ImpInputBindings
 {
     internal readonly InputActionMap BaseMap = new();
     internal readonly InputActionMap FreecamMap = new();
+    internal readonly InputActionMap SpawningMap = new();
 
     internal static PlayerActions GameMap => Imperium.Player.playerActions;
 
@@ -20,6 +21,10 @@ public class ImpInputBindings
         BaseMap.AddAction("Minicam", binding: "<Keyboard>/x");
         BaseMap.AddAction("ToggleHUD", binding: "<Keyboard>/z");
         BaseMap.Enable();
+
+        SpawningMap.AddAction("ArrowUp", binding: "<Keyboard>/upArrow");
+        SpawningMap.AddAction("ArrowDown", binding: "<Keyboard>/downArrow");
+        SpawningMap.AddAction("Submit", binding: "<Keyboard>/return");
 
         FreecamMap.AddAction("Move");
         FreecamMap["Move"].AddCompositeBinding("dpad")

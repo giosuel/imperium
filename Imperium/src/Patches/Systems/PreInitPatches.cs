@@ -21,7 +21,7 @@ internal static class PreInitPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch("SkipToFinalSetting")]
-        private static void SkipToFinalSettingPatch(IngamePlayerSettings __instance)
+        private static void SkipToFinalSettingPatch(PreInitSceneScript __instance)
         {
             if (ImpSettings.Preferences.QuickloadSkipStart.Value &&
                 (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))

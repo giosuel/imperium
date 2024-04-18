@@ -110,6 +110,14 @@ public class ImpPositionIndicator : MonoBehaviour
         indicatorLineRenderer.startWidth = 0.08f;
         indicatorLineRenderer.endWidth = 0.08f;
 
+        if (endPosition == Vector3.zero)
+        {
+            indicatorLineRenderer.gameObject.SetActive(false);
+            return;
+        }
+
+        indicatorLineRenderer.gameObject.SetActive(true);
+
         for (var i = 0; i < 100; i++)
         {
             var position2D = ImpUtils.Math.SampleQuadraticBezier(

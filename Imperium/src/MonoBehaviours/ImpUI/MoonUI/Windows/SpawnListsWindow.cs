@@ -22,10 +22,10 @@ internal class SpawnListsWindow : BaseWindow
     private GameObject scrapListTemplate;
     private GameObject scrapList;
 
-    private readonly Dictionary<string, SpawnListEntry> indoorEntitySpawnEntries = [];
-    private readonly Dictionary<string, SpawnListEntry> outdoorEntitySpawnEntries = [];
-    private readonly Dictionary<string, SpawnListEntry> daytimeEntitySpawnEntries = [];
-    private readonly Dictionary<string, SpawnListEntry> scrapSpawnEntries = [];
+    private readonly Dictionary<EnemyType, EntitySpawnListEntry> indoorEntitySpawnEntries = [];
+    private readonly Dictionary<EnemyType, EntitySpawnListEntry> outdoorEntitySpawnEntries = [];
+    private readonly Dictionary<EnemyType, EntitySpawnListEntry> daytimeEntitySpawnEntries = [];
+    private readonly Dictionary<Item, ScrapSpawnListEntry> scrapSpawnEntries = [];
 
     protected override void RegisterWindow()
     {
@@ -122,72 +122,79 @@ internal class SpawnListsWindow : BaseWindow
 
     public void Refresh()
     {
+        // TODO(giosuel): Activate this when implementing spawn list synchronization
         RefreshEntitySpawnLists();
         RefreshScrapSpawnList();
     }
 
     private void RefreshEntitySpawnLists()
     {
-        var objectList = Imperium.ObjectManager.AllEntities.Value.OrderByDescending(
-            entry => MoonManager.Current.IsEntityNative(entry.Key));
+        var objectList = Imperium.ObjectManager.AllEntities.Value
+            .OrderByDescending(entry => MoonManager.Current.IsEntityNative(entry));
 
-        foreach (var entry in objectList)
+        foreach (var entity in objectList)
         {
-            var entityName = entry.Key;
             var isNative = false;
-            var isSpawning = false;
             Transform listParent = null;
-            Dictionary<string, SpawnListEntry> spawnMap = null;
-            SpawnableEnemyWithRarity entityObject = null;
-            SpawnListEntry.EntryType entryType = default;
+            Dictionary<EnemyType, EntitySpawnListEntry> spawnMap = null;
+            SpawnableEnemyWithRarity entityWithRarity = null;
+            EntitySpawnListEntry.EntityListType entityListType = default;
 
-            if (Imperium.ObjectManager.AllIndoorEntities.Value.ContainsKey(entityName))
+            if (Imperium.ObjectManager.AllIndoorEntities.Value.Contains(entity))
             {
                 listParent = indoorEntityList;
-                isNative = MoonManager.Current.IsEntityNative(entityName);
-                isSpawning = MoonManager.Current.IndoorEntities[entityName].rarity > 0;
-                entityObject = MoonManager.Current.IndoorEntities[entityName];
+                isNative = MoonManager.Current.IsEntityNative(entity);
+                entityWithRarity = MoonManager.Current.Level.Enemies.Find(entry => entry.enemyType == entity);
                 spawnMap = indoorEntitySpawnEntries;
-                entryType = SpawnListEntry.EntryType.IndoorEntity;
+                entityListType = EntitySpawnListEntry.EntityListType.IndoorEntity;
             }
-            else if (Imperium.ObjectManager.AllOutdoorEntities.Value.ContainsKey(entityName))
+            else if (Imperium.ObjectManager.AllOutdoorEntities.Value.Contains(entity))
             {
                 listParent = outdoorEntityList;
-                isNative = MoonManager.Current.IsEntityNative(entityName);
-                isSpawning = MoonManager.Current.OutdoorEntities[entityName].rarity > 0;
-                entityObject = MoonManager.Current.OutdoorEntities[entityName];
+                isNative = MoonManager.Current.IsEntityNative(entity);
+                entityWithRarity = MoonManager.Current.Level.OutsideEnemies.Find(entry => entry.enemyType == entity);
                 spawnMap = outdoorEntitySpawnEntries;
-                entryType = SpawnListEntry.EntryType.OutdoorEntity;
+                entityListType = EntitySpawnListEntry.EntityListType.OutdoorEntity;
             }
-            else if (Imperium.ObjectManager.AllDaytimeEntities.Value.ContainsKey(entityName))
+            else if (Imperium.ObjectManager.AllDaytimeEntities.Value.Contains(entity))
             {
                 listParent = daytimeEntityList;
-                isNative = MoonManager.Current.IsEntityNative(entityName);
-                isSpawning = MoonManager.Current.DaytimeEntities[entityName].rarity > 0;
-                entityObject = MoonManager.Current.DaytimeEntities[entityName];
+                isNative = MoonManager.Current.IsEntityNative(entity);
+                entityWithRarity = MoonManager.Current.Level.DaytimeEnemies.Find(entry => entry.enemyType == entity);
                 spawnMap = daytimeEntitySpawnEntries;
-                entryType = SpawnListEntry.EntryType.DaytimeEntity;
+                entityListType = EntitySpawnListEntry.EntityListType.DaytimeEntity;
             }
 
             if (spawnMap == null)
             {
-                Imperium.Log.LogError($"Failed to find entity {entityName} in any spawn list!");
+                Imperium.Log.LogError($"Failed to find entity {entity.enemyName} in any spawn list!");
                 return;
             }
 
-            if (spawnMap.TryGetValue(entityName, out var existingEntry))
+            if (spawnMap.TryGetValue(entity, out var existingEntry))
             {
                 // Skip syncing for every entry, sync once at the end
-                existingEntry.Rarity.Set(entityObject.rarity, true);
-                existingEntry.IsSpawning.Set(isSpawning, true);
+                //existingEntry.Rarity.Set(entityWithRarity.rarity, true);
+                // existingEntry.IsSpawning.Set(entityWithRarity.rarity > 0, true);
             }
             else
             {
                 var listItem = Instantiate(entityListTemplate, listParent);
-                var spawnListEntry = listItem.AddComponent<SpawnListEntry>();
+                var spawnListEntry = listItem.AddComponent<EntitySpawnListEntry>();
                 listItem.SetActive(true);
-                spawnListEntry.Init(isNative, isSpawning, entityName, entityObject, spawnMap, entryType);
-                spawnMap[entityName] = spawnListEntry;
+                spawnListEntry.Init(isNative, entityWithRarity, entityListType);
+                spawnListEntry.Rarity.onTrigger += () =>
+                {
+                    var totalRarity = spawnMap.Values.Select(entry => entry.Rarity.Value).Sum();
+                    spawnMap.Values.ToList().ForEach(entry => entry.UpdateSpawnChance(totalRarity));
+
+                    ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+                };
+                spawnListEntry.onExclusive += () =>
+                {
+                    foreach (var entry in spawnMap.Values) entry.Rarity.Set(0, skipSync: true);
+                };
+                spawnMap[entity] = spawnListEntry;
             }
         }
 
@@ -205,16 +212,16 @@ internal class SpawnListsWindow : BaseWindow
 
     private void RefreshScrapSpawnList()
     {
-        var objectList = Imperium.ObjectManager.AllScrap.Value.OrderByDescending(
-            entry => MoonManager.Current.IsEntityNative(entry.Key));
-        foreach (var entry in objectList)
+        var objectList = Imperium.ObjectManager.AllScrap.Value
+            .OrderByDescending(scrap => MoonManager.Current.IsScrapNative(scrap));
+
+        foreach (var scrap in objectList)
         {
-            var scrapName = entry.Key;
-            var isNative = MoonManager.Current.IsScrapNative(scrapName);
-            var scrapObject = MoonManager.Current.Scrap[scrapName];
+            var isNative = MoonManager.Current.IsScrapNative(scrap);
+            var scrapObject = MoonManager.Current.Level.spawnableScrap.Find(entry => entry.spawnableItem = scrap);
             var isSpawning = scrapObject.rarity > 0;
 
-            if (scrapSpawnEntries.TryGetValue(scrapName, out var existingEntry))
+            if (scrapSpawnEntries.TryGetValue(scrap, out var existingEntry))
             {
                 // Skip syncing for every entry, sync once at the end
                 existingEntry.Rarity.Set(scrapObject.rarity, true);
@@ -223,12 +230,21 @@ internal class SpawnListsWindow : BaseWindow
             else
             {
                 var listItem = Instantiate(scrapListTemplate, scrapList.transform);
-                var spawnListEntry = listItem.AddComponent<SpawnListEntry>();
-                spawnListEntry.Init(
-                    isNative, isSpawning, scrapName, scrapObject, scrapSpawnEntries, SpawnListEntry.EntryType.Scrap);
+                var spawnListEntry = listItem.AddComponent<ScrapSpawnListEntry>();
                 listItem.SetActive(true);
+                spawnListEntry.Init(isNative, scrapObject);
+                spawnListEntry.Rarity.onTrigger += () =>
+                {
+                    var totalRarity = scrapSpawnEntries.Values.Select(entry => entry.Rarity.Value).Sum();
+                    scrapSpawnEntries.Values.ToList().ForEach(entry => entry.UpdateSpawnChance(totalRarity));
 
-                scrapSpawnEntries[scrapName] = spawnListEntry;
+                    ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+                };
+                spawnListEntry.onExclusive += () =>
+                {
+                    foreach (var entry in scrapSpawnEntries.Values) entry.Rarity.Set(0, skipSync: true);
+                };
+                scrapSpawnEntries[scrapObject.spawnableItem] = spawnListEntry;
             }
         }
 

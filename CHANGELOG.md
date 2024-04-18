@@ -1,5 +1,42 @@
 # Changelog
 
+## Imperium 0.1.5 [Beta]
+
+I re-wrote the entity and item management system to improve the compatibility with mods that add items and entities with [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/).
+
+In general, using Imperium in existing v50 modpacks should now work a lot better, but I still can't guarantee that it doesn't break with certain mods.
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company.
+
+#### Known Mod Incompatibilities
+
+- [NutcrackerFixes](https://thunderstore.io/c/lethal-company/p/Zaggy1024/NutcrackerFixes/) by Zaggy1024 - Breaks F-key menus
+- [Minimap](https://thunderstore.io/c/lethal-company/p/Tyzeron/Minimap/) by Tyzeron - Conflicts with the cursor locking
+
+### Changes
+
+- Completely rewrote the Spawning UI and entity handling system to be more robust.
+- Added support for modded items and entities.
+- Items, scrap and spider webs can now be teleported from the Object Explorer.
+- Added indoor spawning vents to the Object Explorer.
+- Added breaker boxes to the Object Explorer.
+
+### Internal Fixes
+
+- Changing the weather in real-time is now fully implemented.
+- FOV transitions are now smooth (e.g. when sprinting).
+- Fixed a bug that caused freecam inputs to go through when the UI was open.
+- Fixed the BepInEx dependency.
+- Fixed a bug that caused problems when spawning entities with a space in their name.
+
+### QOL Changes
+
+- Entity spawn location can now be picked interactively when in freecam.
+- Freecam now spawns above the player when opened for the first time.
+- More overlays now correctly look at freecam when its active.
+
 ## Imperium 0.1.4 [Beta]
 
 ### Compatibility

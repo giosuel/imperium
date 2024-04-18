@@ -1,7 +1,9 @@
 {
     "name": "Imperium",
-    "version_number": "0.1.4",
+    "version_number": "0.1.5",
     "website_url": "https://github.com/giosuel/Imperium",
     "description": " A powerful and highly performant all-in-one debugging tool to test and explore game mechanics and functionality in Lethal Company.",
-    "dependencies": []
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
 }

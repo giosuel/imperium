@@ -1,14 +1,10 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Configuration;
-using Imperium.Core;
-using Imperium.Util;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 #endregion
 
@@ -16,113 +12,274 @@ namespace Imperium.MonoBehaviours.ImpUI.SpawningUI;
 
 internal class SpawningUI : BaseUI
 {
-    private TMP_Dropdown results;
     private TMP_InputField input;
-    private TMP_Text modeText;
-    private Button modeButton;
-    private TMP_Text placeholder;
 
-    private KeyboardShortcut switchModeShortcut = new(KeyCode.Tab);
-    private KeyboardShortcut downArrow = new(KeyCode.DownArrow);
-    private SpawningMode spawningMode;
-    private List<string> dropdownItems;
+    private GameObject moreItems;
+    private TMP_Text moreItemsText;
 
-    private readonly Dictionary<SpawningMode, (string, int, int)> previouslySpawnedObjects = new()
-    {
-        { SpawningMode.ENTITY, ("", 1, -1) },
-        { SpawningMode.ITEM, ("", 1, -1) },
-        { SpawningMode.MAP_HAZARD, ("", 1, -1) },
-    };
+    private Transform entryContainer;
+    private GameObject template;
 
-    public override void Awake() => InitializeUI(false, true);
+    private readonly List<SpawningObjectEntry> entries = [];
+    private SpawningObjectEntry previouslySpawnedObject;
+    private int previouslySpawnedAmount;
+    private int previouslySpawnedValue;
+
+    private int selectedIndex = -1;
+
+    public override void Awake() => InitializeUI(false);
 
     protected override void InitUI()
     {
-        spawningMode = SpawningMode.ENTITY;
-
+        entryContainer = container.Find("Window/Results");
+        template = container.Find("Window/Results/Template").gameObject;
+        template.SetActive(false);
         input = container.Find("Window/Input").GetComponent<TMP_InputField>();
-        results = container.Find("Window/Input/Dropdown").GetComponent<TMP_Dropdown>();
-        modeButton = container.Find("Window/Input/Mode").GetComponent<Button>();
-        modeText = container.Find("Window/Input/Mode/Text").GetComponent<TMP_Text>();
-        placeholder = container.Find("Window/Input/TextArea/Placeholder").GetComponent<TMP_Text>();
 
-        modeButton.onClick.AddListener(OnModeRotate);
+        moreItems = container.Find("Window/Results/MoreItems").gameObject;
+        moreItemsText = container.Find("Window/Results/MoreItems/Label").GetComponent<TMP_Text>();
+        moreItems.SetActive(false);
+
         input.onValueChanged.AddListener(_ => OnInput(input.text));
         input.onSubmit.AddListener(_ => OnSubmit());
-        results.onValueChanged.AddListener(OnDropdownSelect);
 
-        // Can't update dropdown yet since there is still some internal stuff going on at this point (apparently)
-        SetMode(SpawningMode.ENTITY, false);
+        Imperium.InputBindings.SpawningMap["ArrowUp"].performed += OnSelectPrevious;
+        Imperium.InputBindings.SpawningMap["ArrowDown"].performed += OnSelectNext;
+        Imperium.InputBindings.SpawningMap["Submit"].performed += OnSelectNext;
+
+        onOpen += Imperium.InputBindings.SpawningMap.Enable;
+        onClose += Imperium.InputBindings.SpawningMap.Disable;
+
+        GenerateItems();
     }
 
-    private void OnModeRotate()
+    private void GenerateItems()
     {
-        SetMode(spawningMode switch
+        foreach (var entity in Imperium.ObjectManager.AllEntities.Value)
         {
-            SpawningMode.ENTITY => SpawningMode.ITEM,
-            SpawningMode.ITEM => SpawningMode.MAP_HAZARD,
-            SpawningMode.MAP_HAZARD => SpawningMode.ENTITY,
-            _ => spawningMode
-        }, true);
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            spawningEntry.Init(
+                SpawningObjectEntry.SpawnObjectType.ENTITY,
+                entity.enemyName,
+                entity.enemyPrefab?.name,
+                () => Spawn(spawningEntry, 1, -1),
+                () => SelectItemAndDeselectOthers(currentIndex)
+            );
+            entries.Add(spawningEntry);
+        }
 
-        // The switch button (Tab) is also used to open the quick menu, this fix makes it so the game thinks the quick
-        // menu is still open after "closing" it internally so the menu doesn't open after pressing Tab more than
-        // two times
-        ImpUtils.Interface.ToggleCursorState(true);
+        foreach (var item in Imperium.ObjectManager.AllItems.Value)
+        {
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            spawningEntry.Init(
+                SpawningObjectEntry.SpawnObjectType.ITEM,
+                item.itemName,
+                item.spawnPrefab?.name ?? Imperium.ObjectManager.GetStaticPrefabName(item.itemName),
+                () => Spawn(spawningEntry, 1, -1),
+                () => SelectItemAndDeselectOthers(currentIndex)
+            );
+            entries.Add(spawningEntry);
+        }
+
+        foreach (var (hazardName, hazard) in Imperium.ObjectManager.AllMapHazards.Value)
+        {
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            spawningEntry.Init(
+                SpawningObjectEntry.SpawnObjectType.MAP_HAZARD,
+                hazardName,
+                hazard.name,
+                () => Spawn(spawningEntry, 1, -1),
+                () => SelectItemAndDeselectOthers(currentIndex)
+            );
+            entries.Add(spawningEntry);
+        }
     }
 
-    private void SetMode(SpawningMode mode, bool updateDropdown)
+    private void SelectItemAndDeselectOthers(int index)
     {
-        spawningMode = mode;
-        modeText.text = ModeNameMap[spawningMode];
-
-        dropdownItems = spawningMode switch
-        {
-            SpawningMode.ENTITY => Imperium.ObjectManager.AllEntities.Value.Keys.ToList(),
-            SpawningMode.ITEM => Imperium.ObjectManager.AllItems.Value.Keys.ToList(),
-            SpawningMode.MAP_HAZARD => Imperium.ObjectManager.AllMapHazards.Value.Keys.ToList(),
-            _ => []
-        };
-
-        SetPlaceholder();
-        if (updateDropdown) OnInput(input.text);
+        selectedIndex = index;
+        SelectItemAndDeselectOthers();
     }
 
-    private void SetPlaceholder()
+    private void SelectItemAndDeselectOthers()
     {
-        placeholder.text = spawningMode switch
-        {
-            SpawningMode.ENTITY => "e.g. Jester",
-            SpawningMode.ITEM => "e.g. Flashlight",
-            SpawningMode.MAP_HAZARD => "e.g. Turret",
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        for (var i = 0; i < entries.Count; i++) entries[i].SetSelected(i == selectedIndex);
     }
 
-    private void OnDropdownSelect(int value) => Spawn(results.options[value].text, 1, -1);
+    private void SelectFirst()
+    {
+        selectedIndex = 0;
+        while (!entries[selectedIndex].gameObject.activeSelf)
+        {
+            selectedIndex++;
+
+            if (selectedIndex == entries.Count)
+            {
+                selectedIndex = -1;
+                break;
+            }
+        }
+
+        if (selectedIndex > -1) SelectItemAndDeselectOthers();
+    }
+
+    private void OnSelectNext(InputAction.CallbackContext callbackContext)
+    {
+        var traverseCounter = 0;
+        do
+        {
+            if (selectedIndex == entries.Count - 1)
+            {
+                selectedIndex = 0;
+            }
+            else
+            {
+                selectedIndex++;
+            }
+
+            traverseCounter++;
+            if (traverseCounter == entries.Count)
+            {
+                selectedIndex = -1;
+                break;
+            }
+        } while (!entries[selectedIndex].gameObject.activeSelf);
+
+        if (selectedIndex > -1) SelectItemAndDeselectOthers();
+
+        // Put caret at the end since arrow keys move it
+        if (input.text.Length > 0)
+        {
+            input.caretPosition = input.text.Length;
+        }
+    }
+
+    private void OnSelectPrevious(InputAction.CallbackContext callbackContext)
+    {
+        var traverseCounter = 0;
+        do
+        {
+            if (selectedIndex == 0)
+            {
+                selectedIndex = entries.Count - 1;
+            }
+            else
+            {
+                selectedIndex--;
+            }
+
+            traverseCounter++;
+            if (traverseCounter == entries.Count)
+            {
+                selectedIndex = -1;
+                break;
+            }
+        } while (!entries[selectedIndex].gameObject.activeSelf);
+
+        if (selectedIndex > -1) SelectItemAndDeselectOthers();
+
+        // Put caret at the end since arrow keys move it
+        if (input.text.Length > 0)
+        {
+            input.caretPosition = input.text.Length;
+        }
+    }
+
+    private void SetMoreItemsText(int amount)
+    {
+        if (amount < 1)
+        {
+            moreItems.gameObject.SetActive(false);
+            return;
+        }
+
+        moreItems.SetActive(true);
+        moreItemsText.text = $"{amount} more results...";
+        moreItems.transform.SetAsLastSibling();
+    }
+
+    private void Spawn(SpawningObjectEntry spawningObjectEntry, int amount, int value)
+    {
+        if (Imperium.Freecam.IsFreecamEnabled.Value)
+        {
+            Imperium.ImpPositionIndicator.Activate(
+                position => spawningObjectEntry.Spawn(position, amount, value, false),
+                Imperium.Freecam.transform
+            );
+        }
+        else
+        {
+            var playerTransform = Imperium.Player.transform;
+            var spawnPosition = playerTransform.position + playerTransform.forward * 3f;
+
+            // Note: This layer mask was copied from GrabbableObject.FallToGround()
+            var hasFloorBeneath = Physics.Raycast(
+                spawnPosition,
+                Vector3.down,
+                out var hitInfo,
+                80f,
+                268437760,
+                QueryTriggerInteraction.Ignore
+            );
+
+            if (hasFloorBeneath) spawnPosition = hitInfo.point;
+
+            spawningObjectEntry.Spawn(spawnPosition, amount, value);
+        }
+
+        CloseUI();
+    }
+
+    private void OnInput(string text)
+    {
+        var (inputText, _, _) = GetInputParameters(text.Trim());
+        var resultCount = entries.Count(entry => entry.OnInput(inputText));
+
+        SelectFirst();
+
+        var shownItems = 0;
+        var hiddenItems = 0;
+        foreach (var entry in entries.Where(entry => entry.gameObject.activeSelf))
+        {
+            if (shownItems < 6)
+            {
+                shownItems++;
+            }
+            else
+            {
+                hiddenItems++;
+                entry.gameObject.SetActive(false);
+            }
+        }
+
+        SetMoreItemsText(hiddenItems);
+    }
 
     private void OnSubmit()
     {
-        if (results.options.Count > 0)
-        {
-            var (_, amount, value) = GetInputParameters(input.text.Trim());
-            previouslySpawnedObjects[spawningMode] = (results.options[0].text, Math.Min(amount, 100), value);
-            Spawn(results.options[0].text, amount, value);
-        }
-        else if (!string.IsNullOrEmpty(input.text))
-        {
-            ImpOutput.Send(
-                $"Failed to find object '{input.text}'",
-                isWarning: true, notificationType: NotificationType.Other
-            );
-        }
-        else if (!string.IsNullOrEmpty(previouslySpawnedObjects[spawningMode].Item1))
-        {
-            var (objectName, amount, value) = previouslySpawnedObjects[spawningMode];
-            Spawn(objectName, amount, value);
-        }
+        var (_, amount, value) = GetInputParameters(input.text.Trim());
 
-        input.ActivateInputField();
+        if (selectedIndex > -1)
+        {
+            Spawn(entries[selectedIndex], amount, value);
+
+            previouslySpawnedObject = entries[selectedIndex];
+            previouslySpawnedAmount = amount;
+            previouslySpawnedValue = value;
+
+            CloseUI();
+        }
+        else if (previouslySpawnedObject)
+        {
+            Spawn(previouslySpawnedObject, previouslySpawnedAmount, previouslySpawnedValue);
+            CloseUI();
+        }
     }
 
     private static (string, int, int) GetInputParameters(string text)
@@ -145,84 +302,9 @@ internal class SpawningUI : BaseUI
         return (split[0], amount, value);
     }
 
-    private void OnInput(string text)
-    {
-        results.Hide();
-
-        var (inputText, _, _) = GetInputParameters(text.Trim());
-
-        if (text.Length != 0)
-        {
-            results.options = dropdownItems
-                .Where(key => ItemNameMatchesInput(key, inputText))
-                .Select(key => new TMP_Dropdown.OptionData(key)).ToList();
-        }
-        else
-        {
-            results.options = [];
-        }
-
-        if (results.options.Count > 0) results.Show();
-
-        input.ActivateInputField();
-        input.caretPosition = input.text.Length;
-    }
-
-    private static bool ItemNameMatchesInput(string objectName, string inputText)
-    {
-        var inputNormalized = inputText.Trim().ToLower();
-
-        return objectName.ToLower().Contains(inputNormalized) ||
-               Imperium.ObjectManager.GetDisplayName(objectName).ToLower().Contains(inputNormalized);
-    }
-
-    private void Spawn(string objectName, int amount, int value)
-    {
-        switch (spawningMode)
-        {
-            case SpawningMode.ENTITY:
-                ObjectManager.SpawnEntity(objectName, amount: amount, health: value);
-                break;
-            case SpawningMode.ITEM:
-                ObjectManager.SpawnItem(objectName, PlayerManager.LocalPlayerId, amount: amount, value: value);
-                break;
-            case SpawningMode.MAP_HAZARD:
-                ObjectManager.SpawnMapHazard(objectName, amount: amount);
-                break;
-            default:
-                return;
-        }
-
-        Imperium.Interface.Close();
-    }
-
-    private void Update()
-    {
-        if (IsOpen && switchModeShortcut.IsDown()) OnModeRotate();
-        if (downArrow.IsDown())
-        {
-            results.Select();
-        }
-    }
-
     protected override void OnOpen()
     {
         input.text = "";
         input.ActivateInputField();
-        //input.Select();
     }
-
-    private enum SpawningMode
-    {
-        ENTITY,
-        ITEM,
-        MAP_HAZARD
-    }
-
-    private static readonly Dictionary<SpawningMode, string> ModeNameMap = new()
-    {
-        { SpawningMode.ENTITY, "Entities" },
-        { SpawningMode.ITEM, "Items" },
-        { SpawningMode.MAP_HAZARD, "Map Hazards" },
-    };
 }

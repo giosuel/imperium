@@ -30,6 +30,8 @@ public class ImpFreecam : MonoBehaviour
 
     internal static ImpFreecam Create() => new GameObject("ImpFreecam").AddComponent<ImpFreecam>();
 
+    private bool freecamOpenendFirstTime = true;
+
     private void Awake()
     {
         gameplayCamera = Imperium.Player.gameplayCamera;
@@ -116,6 +118,12 @@ public class ImpFreecam : MonoBehaviour
         Imperium.StartOfRound.SwitchCamera(FreecamCamera);
         Imperium.Player.isFreeCamera = true;
         enabled = true;
+
+        if (freecamOpenendFirstTime)
+        {
+            freecamOpenendFirstTime = false;
+            FreecamCamera.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.up * 2;
+        }
     }
 
     private void OnFreecamDisable()
@@ -136,15 +144,21 @@ public class ImpFreecam : MonoBehaviour
 
     private void OnFreecamReset(InputAction.CallbackContext callbackContext)
     {
-        var playerTransform = Imperium.Player.gameplayCamera.transform;
-        var freecamTransform = FreecamCamera.transform;
-        freecamTransform.position = playerTransform.position + Vector3.up * 2;
+        if (Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.Player.inTerminalMenu ||
+            Imperium.Player.isTypingChat) return;
+
+        FreecamCamera.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.up * 2;
 
         ImpSettings.Hidden.FreecamFieldOfView.Set(ImpConstants.DefaultFOV);
     }
 
     private void OnToggleLayerSelector(InputAction.CallbackContext callbackContext)
     {
+        if (Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.Player.inTerminalMenu ||
+            Imperium.Player.isTypingChat) return;
+
         ImpSettings.Hidden.FreecamLayerSelector.Set(!layerSelector.IsOpen);
         if (layerSelector.IsOpen)
         {
@@ -166,7 +180,7 @@ public class ImpFreecam : MonoBehaviour
     private void Update()
     {
         // The component is only enabled when the freecam is active
-        // Stop update of a the quick menu an ImpUI is open with freecam 
+        // Stop update of a quick menu an ImpUI is open with freecam 
         if (Imperium.Player.quickMenuManager.isMenuOpen) return;
 
         var scrollValue = Imperium.IngamePlayerSettings.playerInput.actions

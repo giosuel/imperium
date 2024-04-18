@@ -36,12 +36,13 @@ namespace Imperium;
 
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
 public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.1.4";
+    public const string PLUGIN_VERSION = "0.1.5";
 
     internal static ManualLogSource Log;
     internal static ConfigFile ConfigFile;
@@ -168,9 +169,6 @@ public class Imperium : BaseUnityPlugin
 
         InputBindings.BaseMap["ToggleHUD"].performed += ToggleHUD;
 
-        // Instantiate(ImpAssets.ShipVolume, GameObject.Find("HangarShip").transform);
-        // GameObject.Find("VolumeMain").GetComponent<Volume>().profile = ImpAssets.GlobalVolume;
-
         ImpSettings.LoadAll();
         PlayerManager.UpdateCameras();
 
@@ -196,6 +194,7 @@ public class Imperium : BaseUnityPlugin
 
         InputBindings.BaseMap.Disable();
         InputBindings.FreecamMap.Disable();
+        InputBindings.SpawningMap.Disable();
         Interface.StopListening();
 
         ImpSettings.Reinstantiate();

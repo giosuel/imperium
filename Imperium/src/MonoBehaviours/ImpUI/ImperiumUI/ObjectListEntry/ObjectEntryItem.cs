@@ -14,9 +14,7 @@ internal class ObjectEntryItem : ObjectEntry
 {
     protected override bool CanRespawn() => false;
     protected override bool CanDrop() => true;
-
-    // TODO(giosuel): Fix updating scrap location
-    protected override bool CanTeleportHere() => false;
+    protected override bool CanTeleportHere() => true;
 
     private Image buttonIcon;
 
@@ -39,11 +37,13 @@ internal class ObjectEntryItem : ObjectEntry
 
     protected override void TeleportHere()
     {
+        var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
         Imperium.ImpPositionIndicator.Activate(position =>
         {
             var item = (GrabbableObject)component;
             item.transform.position = position;
-        });
+            item.FallToGround();
+        }, origin);
     }
 
     public override void UpdateEntry()

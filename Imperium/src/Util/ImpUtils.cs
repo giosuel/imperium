@@ -129,24 +129,24 @@ internal abstract class ImpUtils
         }
     }
 
-    internal static SpawnableItemWithRarity AddScrapToSpawnList(
+    internal static Item AddScrapToSpawnList(
         Item itemType,
         ICollection<SpawnableItemWithRarity> scrapList
     )
     {
         var newScrap = new SpawnableItemWithRarity { spawnableItem = itemType, rarity = 0 };
         scrapList.Add(newScrap);
-        return newScrap;
+        return itemType;
     }
 
-    internal static SpawnableEnemyWithRarity AddEntityToSpawnList(
+    internal static EnemyType AddEntityToSpawnList(
         EnemyType entityType,
         ICollection<SpawnableEnemyWithRarity> entityList
     )
     {
         var newEntity = new SpawnableEnemyWithRarity { enemyType = entityType, rarity = 0 };
         entityList.Add(newEntity);
-        return newEntity;
+        return entityType;
     }
 
     internal abstract class RichText
