@@ -283,7 +283,7 @@ internal class GameManager : ImpLifecycleObject
                 weatherEffect.effectObject.SetActive(value: isEnabled);
             }
 
-            if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool) 
+            if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool)
                           && Imperium.TimeOfDay.sunAnimator != null)
             {
                 Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);

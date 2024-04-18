@@ -108,14 +108,14 @@ internal static class EnemyAIPatch
             Imperium.StartOfRound.allPlayerScripts = playerBackup;
         }
     }
-    
+
     [HarmonyPrefix]
     [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
     private static void MeetsStandardPlayerCollisionConditionsPrefix()
     {
         if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
-    
+
     [HarmonyPostfix]
     [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
     private static void MeetsStandardPlayerCollisionConditionsPostfix()

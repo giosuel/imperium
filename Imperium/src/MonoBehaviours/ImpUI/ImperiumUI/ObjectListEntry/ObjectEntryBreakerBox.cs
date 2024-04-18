@@ -18,7 +18,7 @@ internal class ObjectEntryBreakerBox : ObjectEntry
         base.Destroy();
         ImpNetSpawning.Instance.OnMapHazardsChangedClientRpc();
     }
-    
+
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;

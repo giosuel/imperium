@@ -147,7 +147,7 @@ public class ImpFreecam : MonoBehaviour
         if (Imperium.Player.quickMenuManager.isMenuOpen ||
             Imperium.Player.inTerminalMenu ||
             Imperium.Player.isTypingChat) return;
-        
+
         FreecamCamera.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.up * 2;
 
         ImpSettings.Hidden.FreecamFieldOfView.Set(ImpConstants.DefaultFOV);
@@ -158,7 +158,7 @@ public class ImpFreecam : MonoBehaviour
         if (Imperium.Player.quickMenuManager.isMenuOpen ||
             Imperium.Player.inTerminalMenu ||
             Imperium.Player.isTypingChat) return;
-        
+
         ImpSettings.Hidden.FreecamLayerSelector.Set(!layerSelector.IsOpen);
         if (layerSelector.IsOpen)
         {

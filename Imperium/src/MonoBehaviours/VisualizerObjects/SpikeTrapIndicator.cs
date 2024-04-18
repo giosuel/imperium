@@ -84,7 +84,7 @@ public class SpikeTrapIndicator : MonoBehaviour
         }
 
         spikeTimerCanvas.gameObject.SetActive(true);
-        
+
         spikeTimerCanvas.transform.LookAt(Imperium.Freecam.IsFreecamEnabled.Value
             ? Imperium.Freecam.transform.position
             : Imperium.Player.gameplayCamera.transform.position);

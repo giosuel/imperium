@@ -1,7 +1,6 @@
 #region
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
@@ -38,7 +37,7 @@ internal class ObjectManager : ImpLifecycleObject
         RefreshLevelObstacles();
 
         LogObjects();
-        
+
         // Reload objects that are hidden on the moon but visible in space
         ImpSettings.Rendering.SpaceSun.Refresh();
         ImpSettings.Rendering.StarsOverlay.Refresh();

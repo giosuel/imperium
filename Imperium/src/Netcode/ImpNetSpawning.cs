@@ -46,7 +46,8 @@ public class ImpNetSpawning : NetworkBehaviour
         int value
     )
     {
-        Imperium.ObjectManager.SpawnItemServer(itemName, prefabName, spawningPlayerId, position.Vector3(), amount, value);
+        Imperium.ObjectManager.SpawnItemServer(itemName, prefabName, spawningPlayerId, position.Vector3(), amount,
+            value);
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -129,7 +129,7 @@ internal static class PlayerControllerPatch
         if (__instance.inTerminalMenu) targetFOV -= 6;
         if (__instance.IsInspectingItem) targetFOV -= 14;
         if (__instance.isSprinting) targetFOV += 2f;
-        
+
         __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
             __instance.gameplayCamera.fieldOfView,
             targetFOV,

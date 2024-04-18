@@ -100,7 +100,7 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
     }
-    
+
     private void SelectItemAndDeselectOthers(int index)
     {
         selectedIndex = index;
@@ -187,7 +187,7 @@ internal class SpawningUI : BaseUI
         // Put caret at the end since arrow keys move it
         if (input.text.Length > 0)
         {
-            input.caretPosition = input.text.Length;   
+            input.caretPosition = input.text.Length;
         }
     }
 
@@ -217,7 +217,7 @@ internal class SpawningUI : BaseUI
         {
             var playerTransform = Imperium.Player.transform;
             var spawnPosition = playerTransform.position + playerTransform.forward * 3f;
-            
+
             // Note: This layer mask was copied from GrabbableObject.FallToGround()
             var hasFloorBeneath = Physics.Raycast(
                 spawnPosition,
@@ -227,7 +227,7 @@ internal class SpawningUI : BaseUI
                 268437760,
                 QueryTriggerInteraction.Ignore
             );
-            
+
             if (hasFloorBeneath) spawnPosition = hitInfo.point;
 
             spawningObjectEntry.Spawn(spawnPosition, amount, value);

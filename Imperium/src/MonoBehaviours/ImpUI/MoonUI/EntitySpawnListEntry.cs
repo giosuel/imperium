@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Netcode;
@@ -22,7 +21,7 @@ public class EntitySpawnListEntry : MonoBehaviour
 
     private EntityListType entityListListType;
     private SpawnableEnemyWithRarity entity;
-    
+
     internal ImpBinding<int> Rarity { get; private set; }
     internal ImpBinding<bool> IsSpawning { get; private set; }
 

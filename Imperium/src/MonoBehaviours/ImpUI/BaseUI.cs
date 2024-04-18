@@ -106,7 +106,7 @@ internal abstract class BaseUI : MonoBehaviour
     protected virtual void OnOpen()
     {
     }
-    
+
     protected virtual void OnClose()
     {
     }

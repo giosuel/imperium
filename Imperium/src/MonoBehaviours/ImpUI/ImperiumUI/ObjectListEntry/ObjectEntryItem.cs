@@ -2,7 +2,6 @@
 
 using Imperium.Core;
 using Imperium.Netcode;
-using Imperium.Types;
 using Imperium.Util;
 using Unity.Netcode;
 using UnityEngine.UI;

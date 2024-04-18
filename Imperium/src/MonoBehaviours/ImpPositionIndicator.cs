@@ -117,7 +117,7 @@ public class ImpPositionIndicator : MonoBehaviour
         }
 
         indicatorLineRenderer.gameObject.SetActive(true);
-        
+
         for (var i = 0; i < 100; i++)
         {
             var position2D = ImpUtils.Math.SampleQuadraticBezier(

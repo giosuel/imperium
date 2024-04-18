@@ -1,9 +1,13 @@
+#region
+
 using System;
 using System.Linq;
 using Imperium.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.SpawningUI;
 
