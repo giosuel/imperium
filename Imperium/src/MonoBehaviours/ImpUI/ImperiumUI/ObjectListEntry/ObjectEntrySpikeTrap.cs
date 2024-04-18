@@ -31,7 +31,8 @@ internal class ObjectEntrySpikeTrap : ObjectEntry
 
     protected override void TeleportHere()
     {
-        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position);
+        var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
+        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
     }
 
     protected override string GetObjectName() => $"Spike Trap <i>{component.GetInstanceID()}</i>";

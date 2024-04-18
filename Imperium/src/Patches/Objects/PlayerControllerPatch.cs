@@ -28,13 +28,9 @@ internal static class PlayerControllerPatch
             if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = __instance;
 
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            if (NetworkManager.Singleton.IsHost)
             {
-                var networkHandlerObj = Object.Instantiate(
-                    ImpAssets.NetworkHandler,
-                    Vector3.zero,
-                    Quaternion.identity
-                );
+                var networkHandlerObj = Object.Instantiate(ImpAssets.NetworkHandler);
                 networkHandlerObj.AddComponent<ImpNetCommunication>();
                 networkHandlerObj.AddComponent<ImpNetPlayer>();
                 networkHandlerObj.AddComponent<ImpNetQuota>();

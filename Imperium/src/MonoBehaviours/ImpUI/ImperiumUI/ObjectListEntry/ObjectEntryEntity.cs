@@ -22,7 +22,11 @@ internal class ObjectEntryEntity : ObjectEntry
         ImpNetSpawning.Instance.DespawnEntityServerRpc(
             containerObject.GetComponent<NetworkObject>().NetworkObjectId
         );
-        ObjectManager.SpawnEntity(objectName, spawnPosition);
+        ObjectManager.SpawnEntity(
+            objectName,
+            ((EnemyAI)component).enemyType.enemyPrefab.name,
+            spawnPosition
+        );
     }
 
     public override void Destroy()
@@ -35,7 +39,8 @@ internal class ObjectEntryEntity : ObjectEntry
 
     protected override void TeleportHere()
     {
-        Imperium.ImpPositionIndicator.Activate(position => component.transform.position = position);
+        var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
+        Imperium.ImpPositionIndicator.Activate(position => component.transform.position = position, origin);
     }
 
     protected override string GetObjectName()

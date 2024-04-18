@@ -28,6 +28,8 @@ internal class ObjectExplorerWindow : BaseWindow
     private TMP_Text itemCount;
     private Transform hazardList;
     private TMP_Text hazardCount;
+    private Transform ventList;
+    private TMP_Text ventCount;
     private Transform otherList;
     private TMP_Text otherCount;
 
@@ -51,6 +53,8 @@ internal class ObjectExplorerWindow : BaseWindow
         itemCount = content.Find("ItemListTitle/Count").GetComponent<TMP_Text>();
         hazardList = content.Find("HazardList");
         hazardCount = content.Find("HazardListTitle/Count").GetComponent<TMP_Text>();
+        ventList = content.Find("VentList");
+        ventCount = content.Find("VentListTitle/Count").GetComponent<TMP_Text>();
         otherList = content.Find("OtherList");
         otherCount = content.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
 
@@ -88,6 +92,12 @@ internal class ObjectExplorerWindow : BaseWindow
             .Concat(Imperium.ObjectManager.CurrentLevelTurrets.Value
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryTurret), entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
+                .Where(obj => obj != null)
+                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryBreakerBox), entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelVents.Value
+                .Where(obj => obj != null)
+                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryVent), entry)))
             .Concat(Imperium.ObjectManager.CurrentLevelLandmines.Value
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryLandmine), entry)))
@@ -104,13 +114,10 @@ internal class ObjectExplorerWindow : BaseWindow
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryPlayer), entry)));
 
-    // ReSharper disable Unity.PerformanceAnalysis
-    // This warning can be ignored due to the late update function only updating it conditionally
     public void Refresh()
     {
         // Create a list of key value pairs where the key is the type of object entry that will be added to the
         // instantiated list entry of each object (ObjectEntryXXX, Component)
-
         var instanceIdSet = new HashSet<int>();
 
         foreach (var (type, component) in Objects)
@@ -122,7 +129,8 @@ internal class ObjectExplorerWindow : BaseWindow
                     EnemyAI => entityList,
                     GrabbableObject => itemList,
                     PlayerControllerB => playerList,
-                    Turret or Landmine or SandSpiderWebTrap or SpikeRoofTrap => hazardList,
+                    EnemyVent => ventList,
+                    Turret or Landmine or SpikeRoofTrap or SandSpiderWebTrap => hazardList,
                     _ => otherList
                 };
 
@@ -159,18 +167,18 @@ internal class ObjectExplorerWindow : BaseWindow
 
         var players = Imperium.StartOfRound.allPlayerScripts;
         playerCount.text = ImpUtils.FormatFraction(players.Count(p => !p.isPlayerDead), players.Length);
+
         var entities = Imperium.ObjectManager.CurrentLevelEntities.Value.Where(obj => obj != null).ToList();
-        entityCount.text =
-            ImpUtils.FormatFraction(
-                entities.Count(p => p.gameObject.activeSelf),
-                entities.Count
-            );
+        entityCount.text = ImpUtils.FormatFraction(
+            entities.Count(p => p.gameObject.activeSelf),
+            entities.Count
+        );
+
         var items = Imperium.ObjectManager.CurrentLevelItems.Value.Where(obj => obj != null).ToList();
-        itemCount.text =
-            ImpUtils.FormatFraction(
-                items.Count(p => p.gameObject.activeSelf),
-                items.Count
-            );
+        itemCount.text = ImpUtils.FormatFraction(
+            items.Count(p => p.gameObject.activeSelf),
+            items.Count
+        );
         var hazards = Objects
             .Where(entry =>
                 entry.Key == typeof(ObjectEntryTurret)
@@ -179,21 +187,25 @@ internal class ObjectExplorerWindow : BaseWindow
                 || entry.Key == typeof(ObjectEntrySpikeTrap)
             )
             .Select(entry => entry.Value).ToList();
-        hazardCount.text =
-            ImpUtils.FormatFraction(
-                hazards.Count(p => p.gameObject.activeInHierarchy),
-                hazards.Count
-            );
+        hazardCount.text = ImpUtils.FormatFraction(
+            hazards.Count(p => p.gameObject.activeInHierarchy),
+            hazards.Count
+        );
+
+        var vents = Imperium.ObjectManager.CurrentLevelVents.Value.Where(obj => obj != null).ToList();
+        ventCount.text = ImpUtils.FormatFraction(
+            vents.Count(p => p.gameObject.activeInHierarchy),
+            vents.Count
+        );
 
         var other = Objects
             .Where(entry => entry.Key == typeof(ObjectEntryBreakerBox))
             .Select(entry => entry.Value)
             .ToList();
-        otherCount.text =
-            ImpUtils.FormatFraction(
-                other.Count(p => p.gameObject.activeInHierarchy),
-                other.Count
-            );
+        otherCount.text = ImpUtils.FormatFraction(
+            other.Count(p => p.gameObject.activeInHierarchy),
+            other.Count
+        );
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(explorerContentRect);
     }

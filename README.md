@@ -6,6 +6,7 @@ Imperium is a powerful and highly performant all-in-one debugging tool to test a
 
 It is a client-side and server-side mod, meaning it works in singleplayer and multiplayer, as long as Imperium is also installed on the host.
 
+> [!IMPORTANT]
 > Imperium was made with the intent to be a tool to test game functionality and provide more insight into the weird and wonderful mechanics of Lethal Company.
 >
 > The Imperium team strongly stands against cheating and trolling in public lobbies. If you really want to cheat, at least put some effort into making your own hacked client!
@@ -74,6 +75,8 @@ The object explorer allows you to easily manage the various game objects current
 
 The moon settings interface lets you view and change settings and variables of the current moon. Challenge moon information is always provided, even on non-challenge save files.
 
+
+> [!TIP]
 > All the moon settings, including the min spawns, max power, weather variables and spawn lists are not persistent and reset every time a new game is loaded.
 
 ![moon-settings](https://github.com/giosuel/imperium/blob/main/assets/moon-settings.png?raw=true)
@@ -91,6 +94,7 @@ The render settings interface allows you to activate / deactivate render layers 
 - **Post Processing:** Screen-space post-processing camera layers.
 - **Player Overlays / Filters:** Contains various employee overlays and filters.
 
+> [!NOTE]
 > Due to the nature of buffering and rendering of unity cameras, a new render texture has to be generated every time the resolution is changed. The slider has a debounce timer to make sure the game doesn't crash but changing the resolution still lags the game for a few seconds.
 
 ## Save File Editor
@@ -99,6 +103,7 @@ Imperium's built-in save file editor can edit any non-vector data fields from th
 
 ![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/save-file-editor.png?raw=true)
 
+> [!CAUTION]
 > It is not recommended to use the save file editor unless you know what you are doing.
 >
 > To provide maximum control over the save files, Imperium doesn't implement any input validation, meaning it is very easy to screw up the saves and render the game **completely unplayable**!
@@ -176,6 +181,7 @@ Oracle predicts daytime, outdoor and indoor entities including their spawn times
 
 Entities spawned with Imperium do not count towards current level power or their max count, meaning, they **do not influence** the entity spawning.
 
+> [!NOTE]
 > Oracle is currently in beta stage and is therefore not guaranteed to always work properly.
 
 ![imperium-oracle](https://github.com/giosuel/imperium/blob/main/assets/imperium-oracle.png?raw=true)

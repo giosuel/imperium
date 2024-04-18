@@ -50,7 +50,7 @@ internal class ObjectEntryPlayer : ObjectEntry
                 PlayerManager.GetPlayerID((PlayerControllerB)component),
                 new ImpVector(position)
             );
-        });
+        }, Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null);
         Imperium.Interface.Close();
     }
 

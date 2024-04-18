@@ -46,7 +46,11 @@ public abstract class ImpToggle
 
         toggle.isOn = valueBinding.Value;
         toggle.onValueChanged.AddListener(valueBinding.Set);
-        toggle.onValueChanged.AddListener(_ => GameManager.PlayClip(ImpAssets.GrassClick));
+        toggle.onValueChanged.AddListener(_ =>
+        {
+            Imperium.Log.LogInfo($"[AAA] PLAYING SOUND FROM TOGGLE22: {path}");
+            GameManager.PlayClip(ImpAssets.GrassClick);
+        });
         valueBinding.onUpdate += value => toggle.isOn = value;
 
         if (interactableBindings.Length > 0)

@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
@@ -41,20 +42,20 @@ internal class ObjectManager : ImpLifecycleObject
 
     protected override void OnPlayersUpdate(int playersConnected) => FetchPlayers();
 
-    // Caches other game objects so they don't have to be searched for every time with
+    // Caches other game objects, so they don't have to be searched for every time with
     // the expensive resource lookup. This is per map and gets reset on scene reload.
     private readonly Dictionary<string, GameObject> ObjectCache = new();
 
     // Holds all the entities that can be spawned in Lethal Company, including the ones that are not in any
     // spawn list of any moon (e.g. Red Pill, Lasso Man)
     // Loaded on Imperium initialization.
-    internal readonly ImpBinding<Dictionary<string, EnemyType>> AllEntities = new([]);
-    internal readonly ImpBinding<Dictionary<string, EnemyType>> AllIndoorEntities = new([]);
-    internal readonly ImpBinding<Dictionary<string, EnemyType>> AllOutdoorEntities = new([]);
-    internal readonly ImpBinding<Dictionary<string, EnemyType>> AllDaytimeEntities = new([]);
+    internal readonly ImpBinding<HashSet<EnemyType>> AllEntities = new([]);
+    internal readonly ImpBinding<HashSet<EnemyType>> AllIndoorEntities = new([]);
+    internal readonly ImpBinding<HashSet<EnemyType>> AllOutdoorEntities = new([]);
+    internal readonly ImpBinding<HashSet<EnemyType>> AllDaytimeEntities = new([]);
 
-    internal readonly ImpBinding<Dictionary<string, Item>> AllItems = new([]);
-    internal readonly ImpBinding<Dictionary<string, Item>> AllScrap = new([]);
+    internal readonly ImpBinding<HashSet<Item>> AllItems = new([]);
+    internal readonly ImpBinding<HashSet<Item>> AllScrap = new([]);
     internal readonly ImpBinding<Dictionary<string, GameObject>> AllMapHazards = new([]);
     private readonly ImpBinding<Dictionary<string, GameObject>> AllStaticPrefabs = new([]);
 
@@ -81,6 +82,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     internal static void SpawnEntity(
         string entityName,
+        string prefabName,
         Vector3 position,
         int amount = 1,
         int health = -1
@@ -88,6 +90,7 @@ internal class ObjectManager : ImpLifecycleObject
     {
         ImpNetSpawning.Instance.SpawnEntityServerRpc(
             entityName,
+            prefabName,
             new ImpVector(position),
             amount,
             health
@@ -96,23 +99,18 @@ internal class ObjectManager : ImpLifecycleObject
 
     internal static void SpawnItem(
         string itemName,
+        string prefabName,
         int spawningPlayerId,
-        Vector3? position = null,
+        Vector3 position,
         int amount = 1,
         int value = -1
     )
     {
-        var playerCamera = Imperium.Player.gameplayCamera.transform;
-        var playerCameraForward = playerCamera.forward;
-        var defaultSpawnPosition = playerCamera.position + 3 * new Vector3(
-            playerCameraForward.x,
-            0,
-            playerCameraForward.z
-        );
         ImpNetSpawning.Instance.SpawnItemServerRpc(
             itemName,
+            prefabName,
             spawningPlayerId,
-            new ImpVector(position ?? defaultSpawnPosition),
+            new ImpVector(position),
             amount,
             value
         );
@@ -120,15 +118,13 @@ internal class ObjectManager : ImpLifecycleObject
 
     internal static void SpawnMapHazard(
         string objectName,
-        Vector3? position = null,
+        Vector3 position,
         int amount = 1
     )
     {
-        var playerTransform = Imperium.Player.transform;
-
         ImpNetSpawning.Instance.SpawnMapHazardServerRpc(
             objectName,
-            new ImpVector(position ?? playerTransform.position + playerTransform.forward * 3f),
+            new ImpVector(position),
             amount
         );
     }
@@ -136,12 +132,15 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     internal void SpawnEntityServer(
         string entityName,
+        string prefabName,
         Vector3 position,
         int amount,
         int health
     )
     {
-        if (!AllEntities.Value.TryGetValue(entityName, out var entityType))
+        var spawningEntity = AllEntities.Value
+            .FirstOrDefault(entity => entity.enemyName == entityName && entity.enemyPrefab.name == prefabName);
+        if (!spawningEntity)
         {
             Imperium.Log.LogError($"Entity {entityName} not found!");
             return;
@@ -150,7 +149,7 @@ internal class ObjectManager : ImpLifecycleObject
         for (var i = 0; i < amount; i++)
         {
             var entityObj = Object.Instantiate(
-                entityType.enemyPrefab,
+                spawningEntity.enemyPrefab,
                 position,
                 Quaternion.Euler(Vector3.zero)
             );
@@ -165,7 +164,7 @@ internal class ObjectManager : ImpLifecycleObject
         var verbString = amount == 1 ? "has" : "have";
 
         ImpOutput.SendToClients(
-            $"{mountString} loyal {GetDisplayName(entityType.enemyName)} {verbString} been spawned!"
+            $"{mountString} loyal {GetDisplayName(entityName)} {verbString} been spawned!"
         );
 
         ImpNetSpawning.Instance.OnEntitiesChangedClientRpc();
@@ -174,36 +173,41 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     internal void SpawnItemServer(
         string itemName,
+        string prefabName,
         int spawningPlayerId,
         Vector3 position,
         int amount,
         int value
     )
     {
-        if (!AllItems.Value.TryGetValue(itemName, out var itemType))
+        var spawningItem = AllItems.Value
+            .FirstOrDefault(item => item.itemName == itemName && item.spawnPrefab?.name == prefabName);
+        var itemPrefab = spawningItem?.spawnPrefab ?? AllStaticPrefabs.Value[itemName];
+
+        if (!itemPrefab || !itemPrefab.GetComponent<GrabbableObject>())
         {
             Imperium.Log.LogError($"Item {itemName} not found!");
             return;
         }
 
-        var prefab = itemType.spawnPrefab != null && itemType.spawnPrefab.GetComponent<GrabbableObject>() != null
-            ? itemType.spawnPrefab
-            : AllStaticPrefabs.Value[itemType.itemName];
-
         for (var i = 0; i < amount; i++)
         {
             var itemObj = Object.Instantiate(
-                prefab,
+                itemPrefab,
                 position,
                 Quaternion.identity,
                 Imperium.RoundManager.spawnedScrapContainer
             );
 
             var grabbableItem = itemObj.GetComponent<GrabbableObject>();
-            grabbableItem.transform.rotation = Quaternion.Euler(itemType.restingRotation);
 
-            if (value == -1) value = ImpUtils.RandomItemValue(itemType);
-            grabbableItem.scrapValue = value;
+            if (spawningItem)
+            {
+                if (value == -1) value = ImpUtils.RandomItemValue(spawningItem);
+                grabbableItem.transform.rotation = Quaternion.Euler(spawningItem.restingRotation);
+            }
+
+            grabbableItem.SetScrapValue(value);
 
             // Execute start immediately to initialize random generator for animated objects
             grabbableItem.Start();
@@ -213,16 +217,19 @@ internal class ObjectManager : ImpLifecycleObject
             CurrentLevelObjects[netObject.NetworkObjectId] = itemObj;
 
             // If player has free slot, place it in hand, otherwise leave it on the ground and play sound
-            var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[spawningPlayerId];
-            var firstItemSlot = Reflection.Invoke<PlayerControllerB, int>(invokingPlayer, "FirstEmptyItemSlot");
-            if (firstItemSlot != -1 && grabbableItem.grabbable)
+            if (spawningPlayerId != -1)
             {
-                grabbableItem.InteractItem();
-                PlayerManager.GrabObject(grabbableItem, invokingPlayer);
-            }
-            else if (grabbableItem.itemProperties.dropSFX)
-            {
-                Imperium.Player.itemAudio.PlayOneShot(grabbableItem.itemProperties.dropSFX);
+                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[spawningPlayerId];
+                var firstItemSlot = Reflection.Invoke<PlayerControllerB, int>(invokingPlayer, "FirstEmptyItemSlot");
+                if (firstItemSlot != -1 && grabbableItem.grabbable)
+                {
+                    grabbableItem.InteractItem();
+                    PlayerManager.GrabObject(grabbableItem, invokingPlayer);
+                }
+                else if (grabbableItem.itemProperties.dropSFX)
+                {
+                    Imperium.Player.itemAudio.PlayOneShot(grabbableItem.itemProperties.dropSFX);
+                }
             }
         }
 
@@ -383,32 +390,32 @@ internal class ObjectManager : ImpLifecycleObject
     /// </summary>
     private void FetchGlobalSpawnLists()
     {
-        var allEntities = new Dictionary<string, EnemyType>();
-        var allIndoorEntities = new Dictionary<string, EnemyType>();
-        var allOutdoorEntities = new Dictionary<string, EnemyType>();
-        var allDaytimeEntities = new Dictionary<string, EnemyType>();
+        var allEntities = new HashSet<EnemyType>();
+        var allIndoorEntities = new HashSet<EnemyType>();
+        var allOutdoorEntities = new HashSet<EnemyType>();
+        var allDaytimeEntities = new HashSet<EnemyType>();
 
         foreach (var enemyType in Resources.FindObjectsOfTypeAll<EnemyType>().Distinct())
         {
-            allEntities[enemyType.enemyName] = enemyType;
+            allEntities.Add(enemyType);
 
             if (enemyType.isDaytimeEnemy)
             {
-                allDaytimeEntities[enemyType.enemyName] = enemyType;
+                allDaytimeEntities.Add(enemyType);
             }
             else if (enemyType.isOutsideEnemy)
             {
-                allOutdoorEntities[enemyType.enemyName] = enemyType;
+                allOutdoorEntities.Add(enemyType);
             }
             else
             {
-                allIndoorEntities[enemyType.enemyName] = enemyType;
+                allIndoorEntities.Add(enemyType);
             }
         }
 
         var allItems = Resources.FindObjectsOfTypeAll<Item>()
             .Where(item => !ImpConstants.ItemBlacklist.Contains(item.itemName))
-            .ToDictionary(scrap => scrap.itemName);
+            .ToHashSet();
 
         var allMapHazards = new Dictionary<string, GameObject>();
         var allStaticPrefabs = new Dictionary<string, GameObject>();
@@ -437,9 +444,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         allStaticPrefabs["Body"] = Imperium.StartOfRound.ragdollGrabbableObjectPrefab;
 
-        var allScrap = allItems
-            .Where(scrap => scrap.Value.isScrap)
-            .ToDictionary(entry => entry.Key, entry => entry.Value);
+        var allScrap = allItems.Where(scrap => scrap.isScrap).ToHashSet();
 
         AllEntities.Set(allEntities);
         AllIndoorEntities.Set(allIndoorEntities);
@@ -452,6 +457,11 @@ internal class ObjectManager : ImpLifecycleObject
         AllStaticPrefabs.Set(allStaticPrefabs);
 
         GenerateDisplayNameMap();
+    }
+
+    internal string GetStaticPrefabName(string objectName)
+    {
+        return AllStaticPrefabs.Value.TryGetValue(objectName, out var prefab) ? prefab.name : objectName;
     }
 
     internal void RefreshLevelItems()
@@ -599,25 +609,18 @@ internal class ObjectManager : ImpLifecycleObject
 
     private void GenerateDisplayNameMap()
     {
-        foreach (var (entityName, entity) in AllEntities.Value.Where(entity => entity.Value))
+        foreach (var entity in AllEntities.Value)
         {
-            if (!entity || entity.enemyPrefab) return;
+            if (!entity.enemyPrefab) continue;
             var displayName = entity.enemyPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
-            if (!string.IsNullOrEmpty(displayName)) displayNameMap[entityName] = displayName;
+            if (!string.IsNullOrEmpty(displayName)) displayNameMap[entity.enemyName] = displayName;
         }
 
-        foreach (var (entityName, entity) in AllScrap.Value.Where(scrap => scrap.Value))
+        foreach (var item in AllItems.Value)
         {
-            if (!entity || entity.spawnPrefab) return;
-            var displayName = entity.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
-            if (!string.IsNullOrEmpty(displayName)) displayNameMap[entityName] = displayName;
-        }
-
-        foreach (var (entityName, entity) in AllItems.Value.Where(item => item.Value))
-        {
-            if (!entity || entity.spawnPrefab) return;
-            var displayName = entity.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
-            if (!string.IsNullOrEmpty(displayName)) displayNameMap[entityName] = displayName;
+            if (!item.spawnPrefab) continue;
+            var displayName = item.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
+            if (!string.IsNullOrEmpty(displayName)) displayNameMap[item.itemName] = displayName;
         }
     }
 

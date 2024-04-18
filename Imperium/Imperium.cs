@@ -36,6 +36,7 @@ namespace Imperium;
 
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
 public class Imperium : BaseUnityPlugin
 {
@@ -193,6 +194,7 @@ public class Imperium : BaseUnityPlugin
 
         InputBindings.BaseMap.Disable();
         InputBindings.FreecamMap.Disable();
+        InputBindings.SpawningMap.Disable();
         Interface.StopListening();
 
         ImpSettings.Reinstantiate();

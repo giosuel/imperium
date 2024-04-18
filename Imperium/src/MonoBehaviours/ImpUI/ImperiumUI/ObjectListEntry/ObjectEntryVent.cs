@@ -10,16 +10,24 @@ internal class ObjectEntryVent : ObjectEntry
 {
     protected override bool CanRespawn() => false;
     protected override bool CanDrop() => false;
+    protected override bool CanDestroy() => false;
+    protected override bool CanTeleportHere() => true;
 
     protected override string GetObjectName()
     {
-        return $"{((EnemyVent)component).enemyType.enemyName} (Vent <i>{component.GetInstanceID()}</i>)";
+        var vent = (EnemyVent)component;
+        if (vent.occupied && vent.enemyType)
+        {
+            return $"Vent <i>{component.GetInstanceID()}</i> ({((EnemyVent)component).enemyType.enemyName})";
+        }
+
+        return $"Vent <i>{component.GetInstanceID()}</i>";
     }
 
-    public override void Destroy()
+    protected override void TeleportHere()
     {
-        base.Destroy();
-        Imperium.Log.LogInfo("Despawning vent on server");
+        var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
+        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
     }
 
     protected override Vector3 GetTeleportPosition() => ((EnemyVent)component).floorNode.position;

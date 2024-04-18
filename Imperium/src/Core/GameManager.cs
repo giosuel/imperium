@@ -371,13 +371,16 @@ internal class GameManager : ImpLifecycleObject
             .ToList()
             .ForEach(box =>
             {
-                if (isOn)
+                foreach (var breakerSwitch in box.breakerSwitches)
                 {
-                    box.leversSwitchedOff = 0;
-                }
-                else
-                {
-                    box.SetSwitchesOff();
+                    var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
+                    if (animation.boolValue != isOn)
+                    {
+                        animation.boolValue = isOn;
+                        animation.setInitialState = isOn;
+                        breakerSwitch.SetBool("turnedLeft", isOn);
+                        box.SwitchBreaker(isOn);
+                    }
                 }
             });
     }

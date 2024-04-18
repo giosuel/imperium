@@ -43,10 +43,13 @@ internal class Oracle
         var cannotSpawnMoreInsideEnemies = roundManager.cannotSpawnMoreInsideEnemies;
 
         var indoorEntityCounts = currentLevel.Enemies
+            .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
         var outdoorEntityCounts = currentLevel.OutsideEnemies
+            .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
         var daytimeEntityCounts = currentLevel.DaytimeEnemies
+            .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
 
         var firstTimeSpawningEnemies =

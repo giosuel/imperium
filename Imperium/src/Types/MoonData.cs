@@ -8,11 +8,11 @@ namespace Imperium.Types;
 
 public record MoonData
 {
-    public Dictionary<string, int> IndoorEntityRarities = [];
-    public Dictionary<string, int> OutdoorEntityRarities = [];
-    public Dictionary<string, int> DaytimeEntityRarities = [];
+    public Dictionary<EnemyType, int> IndoorEntityRarities = [];
+    public Dictionary<EnemyType, int> OutdoorEntityRarities = [];
+    public Dictionary<EnemyType, int> DaytimeEntityRarities = [];
 
-    public Dictionary<string, int> ScrapRarities = [];
+    public Dictionary<Item, int> ScrapRarities = [];
 
     public int maxIndoorPower;
     public int maxOutdoorPower;

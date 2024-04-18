@@ -32,7 +32,8 @@ internal class ObjectEntryLandmine : ObjectEntry
 
     protected override void TeleportHere()
     {
-        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position);
+        var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
+        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
     }
 
     protected override string GetObjectName() => $"Landmine <i>{component.GetInstanceID()}</i>";

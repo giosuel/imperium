@@ -38,12 +38,13 @@ internal class ObjectEntryItem : ObjectEntry
 
     protected override void TeleportHere()
     {
+        var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
         Imperium.ImpPositionIndicator.Activate(position =>
         {
             var item = (GrabbableObject)component;
-            Imperium.Log.LogInfo($"TELEPORT ITEM TO : {ImpUtils.FormatVector(position)}");
-            item.targetFloorPosition = position;
-        });
+            item.transform.position = position;
+            item.FallToGround();
+        }, origin);
     }
 
     public override void UpdateEntry()
