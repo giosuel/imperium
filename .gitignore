@@ -9,8 +9,6 @@ ldeps/
 *.DotSettings*
 giosuel.Imperium.dll
 
-imperium_0.1.2.zip
-
 imperium_assets
 
 manifest.json

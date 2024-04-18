@@ -29,7 +29,7 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 - Built-in save file editor for save files (Level options, Furniture location, Player XP, etc.)
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
 - Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (Including mouse look fix).
-- Fully compatible with the public beta v50 of Lethal Company.
+- Fully compatible with Version 50 of Lethal Company.
 
 ## UI System and Keybinds
 
