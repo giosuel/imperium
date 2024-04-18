@@ -122,6 +122,7 @@ internal class SpawnListsWindow : BaseWindow
 
     public void Refresh()
     {
+        // TODO(giosuel): Activate this when implementing spawn list synchronization
         RefreshEntitySpawnLists();
         RefreshScrapSpawnList();
     }
@@ -173,8 +174,8 @@ internal class SpawnListsWindow : BaseWindow
             if (spawnMap.TryGetValue(entity, out var existingEntry))
             {
                 // Skip syncing for every entry, sync once at the end
-                existingEntry.Rarity.Set(entityWithRarity.rarity, true);
-                existingEntry.IsSpawning.Set(entityWithRarity.rarity > 0, true);
+                //existingEntry.Rarity.Set(entityWithRarity.rarity, true);
+                // existingEntry.IsSpawning.Set(entityWithRarity.rarity > 0, true);
             }
             else
             {

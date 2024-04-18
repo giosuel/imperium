@@ -19,7 +19,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     // meaning we need to make sure that this doesn't cause a runaway chain update on all clients
     // Therefore we put the network update into the sync update which is only called on actual user inputs and not on
     // external updates from other clients or the server.
-    private readonly Action<T> syncOnUpdate;
+    public event Action<T> syncOnUpdate;
 
     // Additional update listeners registered by dependent components and objects
     public event Action<T> onUpdate;

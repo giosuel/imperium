@@ -21,6 +21,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - Added support for modded items and entities.
 - Items, scrap and spider webs can now be teleported from the Object Explorer.
 - Added indoor spawning vents to the Object Explorer.
+- Added breaker boxes to the Object Explorer.
 
 ### Internal Fixes
 
@@ -28,6 +29,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - FOV transitions are now smooth (e.g. when sprinting).
 - Fixed a bug that caused freecam inputs to go through when the UI was open.
 - Fixed the BepInEx dependency.
+- Fixed a bug that caused problems when spawning entities with a space in their name.
 
 ### QOL Changes
 
