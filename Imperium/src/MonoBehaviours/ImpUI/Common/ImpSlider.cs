@@ -62,7 +62,7 @@ public class ImpSlider : MonoBehaviour
         var currentValue = useLogarithmicScale ? (float)Math.Log10(valueBinding.Value) : valueBinding.Value;
 
         impSlider.slider.value = currentValue;
-        impSlider.indicatorText.text = indicatorFormatter(valueBinding.Value);
+        impSlider.indicatorText.text = $"{indicatorFormatter(valueBinding.Value)}{indicatorUnit}";
 
         impSlider.slider.onValueChanged.AddListener(value =>
         {

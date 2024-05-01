@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Diagnostics;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -10,6 +11,7 @@ using Imperium.Core;
 using Imperium.Integration;
 using Imperium.MonoBehaviours;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
+using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.MonoBehaviours.ImpUI.MoonUI;
 using Imperium.MonoBehaviours.ImpUI.NavigatorUI;
 using Imperium.MonoBehaviours.ImpUI.ObjectsUI;
@@ -26,6 +28,8 @@ using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -66,6 +70,7 @@ public class Imperium : BaseUnityPlugin
 
     // Other Imperium objects
     internal static ImpFreecam Freecam;
+    internal static ImpNightVision NightVision;
     internal static ImpNoiseListener NoiseListener;
     internal static ImpInputBindings InputBindings;
     internal static ImpPositionIndicator ImpPositionIndicator;
@@ -84,20 +89,19 @@ public class Imperium : BaseUnityPlugin
     {
         Log = Logger;
         ConfigFile = Config;
+
         if (!ImpAssets.Load()) return;
 
-        NetcodePatcher();
-
         harmony = new Harmony(PLUGIN_GUID);
-
         PreLaunchPatch();
+        RunNetcodePatcher();
 
         IsImperiumReady = true;
-
         Log.LogInfo("[OK] Imperium is ready!");
     }
 
-    private static void NetcodePatcher()
+
+    private static void RunNetcodePatcher()
     {
         var types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (var type in types)
@@ -131,6 +135,7 @@ public class Imperium : BaseUnityPlugin
         ImpNetworkManager.IsHost.Set(NetworkManager.Singleton.IsHost);
 
         Freecam = ImpFreecam.Create();
+        NightVision = ImpNightVision.Create();
         Interface = ImpInterfaceManager.Create();
         NoiseListener = ImpNoiseListener.Create();
         ImpPositionIndicator = ImpPositionIndicator.Create();
@@ -221,6 +226,7 @@ public class Imperium : BaseUnityPlugin
         Interface.Register<WeatherUI>(ImpAssets.WeatherUIObject, "<Keyboard>/F4");
         Interface.Register<OracleUI>(ImpAssets.OracleUIObject, "<Keyboard>/F5");
         Interface.Register<NavigatorUI>(ImpAssets.NavigatorUIObject, "<Keyboard>/F6");
+        Interface.Register<MapUI>(ImpAssets.LayerSelectorMap, "<Keyboard>/F8");
 
         Interface.StartListening();
 

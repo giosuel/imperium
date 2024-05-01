@@ -13,7 +13,7 @@ using Random = System.Random;
 
 namespace Imperium.Oracle;
 
-internal class Oracle
+internal class  Oracle
 {
     internal readonly ImpBinding<OracleState> State = new(new OracleState());
 

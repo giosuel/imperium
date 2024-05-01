@@ -28,6 +28,14 @@ internal class TeleportUI : MultiplexUI
 
         // Set origin of indicator to freecam if freecam is enabled
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo, origin);
+        
+        if (Imperium.ImpPositionIndicator.IsActive)
+        {
+            Imperium.ImpPositionIndicator.HideIndicator();
+        }
+        else
+        {
+            Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo, origin);
+        }
     }
 }

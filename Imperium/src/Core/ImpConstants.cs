@@ -24,6 +24,8 @@ internal abstract class ImpConstants
     internal const int ShotgunCollisionCount = 10;
     internal const float ShotgunDefaultCooldown = 0.7f;
 
+    internal const float DefaultMapCameraScale = 19.7f;
+
     internal const string GeneralSaveFile = "LCGeneralSaveData";
 
     internal static readonly LayerMask IndicatorMask = LayerMask.GetMask("Room", "Terrain", "Railing");

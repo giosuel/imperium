@@ -28,11 +28,6 @@ internal class KnifeIndicators() : BaseVisualizer<Shovel>("Knife Indicators")
     internal override void Toggle(bool isOn)
     {
         base.Toggle(isOn);
-        RefreshAll();
-    }
-
-    private void RefreshAll()
-    {
         foreach (var knife in Object.FindObjectsOfType<KnifeItem>()) Refresh(knife, knife.isHeld);
     }
 }

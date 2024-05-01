@@ -283,15 +283,17 @@ internal class GameManager : ImpLifecycleObject
                 weatherEffect.effectObject.SetActive(value: isEnabled);
             }
 
-            if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool)
-                          && Imperium.TimeOfDay.sunAnimator != null)
+            if (Imperium.TimeOfDay.sunAnimator)
             {
-                Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);
-            }
-            else
-            {
-                Imperium.TimeOfDay.sunAnimator.Rebind();
-                Imperium.TimeOfDay.sunAnimator.Update(0);
+                if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool))
+                {
+                    Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);
+                }
+                else
+                {
+                    Imperium.TimeOfDay.sunAnimator.Rebind();
+                    Imperium.TimeOfDay.sunAnimator.Update(0);
+                }   
             }
         }
 
@@ -312,77 +314,6 @@ internal class GameManager : ImpLifecycleObject
 
         // Send scene refresh so moon related data is refreshed
         Imperium.IsSceneLoaded.Refresh();
-    }
-
-    internal static void ToggleDoors(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => door.OpenOrCloseDoor(Imperium.Player));
-    }
-
-    internal static void ToggleDoorLocks(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door =>
-            {
-                if (isOn)
-                {
-                    door.LockDoor();
-                }
-                else
-                {
-                    door.UnlockDoor();
-                }
-            });
-    }
-
-    public static void ToggleSecurityDoors(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => door.OnPowerSwitch(isOn));
-    }
-
-    public static void ToggleTurrets(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelTurrets.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(turret => turret.ToggleTurretEnabled(isOn));
-    }
-
-    public static void ToggleLandmines(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelLandmines.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(mine => mine.ToggleMine(isOn));
-    }
-
-    public static void ToggleBreakers(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(box =>
-            {
-                foreach (var breakerSwitch in box.breakerSwitches)
-                {
-                    var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
-                    if (animation.boolValue != isOn)
-                    {
-                        animation.boolValue = isOn;
-                        animation.setInitialState = isOn;
-                        breakerSwitch.SetBool("turnedLeft", isOn);
-                        box.SwitchBreaker(isOn);
-                    }
-                }
-            });
     }
 
     internal static void PlayClip(AudioClip audioClip, bool randomize = false)

@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using Imperium.Core;
+using Imperium.MonoBehaviours.ImpUI.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,7 +41,7 @@ public class SpawningObjectEntry : MonoBehaviour
         background = GetComponent<Image>();
         GetComponent<Button>().onClick.AddListener(() => onClick?.Invoke());
 
-        gameObject.AddComponent<SpawnEntryButton>().onHover += onHover;
+        gameObject.AddComponent<ImpInteractable>().onEnter += onHover;
     }
 
     internal void Spawn(Vector3 position, int amount, int value, bool spawnInInventory = true)

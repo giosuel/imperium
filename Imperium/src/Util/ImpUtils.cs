@@ -2,10 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Imperium.Core;
 using JetBrains.Annotations;
+using MonoMod.Cil;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -52,12 +55,12 @@ internal abstract class ImpUtils
     {
         var cloned = new Random();
 
-        // The seed array needs to be deep-copied since its a referenced type
+        // The seed array needs to be deep-copied since arrays are referenced types
         var seedArray = Reflection.Get<Random, int[]>(random, "_seedArray");
         Reflection.Set(cloned, "_seedArray", seedArray.ToArray());
 
-        Reflection.Copy(random, cloned, "_inextp");
-        Reflection.Copy(random, cloned, "_inext");
+        Reflection.CopyField(random, cloned, "_inextp");
+        Reflection.CopyField(random, cloned, "_inext");
 
         return cloned;
     }
@@ -165,6 +168,11 @@ internal abstract class ImpUtils
         }
 
         return layerMask | (1 << layer);
+    }
+    
+    internal static int ToggleLayersInMask(int layerMask, params int[] layers)
+    {
+        return layers.Aggregate(layerMask, ToggleLayerInMask);
     }
 
     internal abstract class Interface

@@ -60,12 +60,7 @@ public abstract class ImpSettings
             "Player",
             "NightVision",
             0,
-            value =>
-            {
-                var exp = value > 0 ? 2 + 0.02 * value : 0;
-                Imperium.Player.nightVision.intensity = (float)Math.Pow(10, exp) * 5 + 366.9317f;
-                Imperium.Player.nightVision.range = value == 0 ? 12 : 1000000;
-            }
+            Imperium.NightVision.SetIntensity
         );
     }
 
@@ -95,6 +90,12 @@ public abstract class ImpSettings
             "MuteShipSpeaker",
             true,
             value => Imperium.StartOfRound.speakerAudioSource.mute = value
+        );
+
+        internal static readonly ImpConfig<bool> PreventShipLeave = new(
+            "Game.Ship",
+            "PreventShipLeave",
+            true
         );
     }
 
@@ -482,6 +483,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> OracleLogging = new("Preferences.General", "OracleLogging", false);
         internal static readonly ImpConfig<bool> LeftHandedMode = new("Preferences.General", "LeftHandedMode", false);
         internal static readonly ImpConfig<bool> OptimizeLogs = new("Preferences.General", "OptimizeLogsToggle", false);
+        internal static readonly ImpConfig<bool> CustomWelcome = new("Preferences.General", "CustomWelcome", true);
 
         internal static readonly ImpConfig<bool> UnityExplorerMouseFix = new(
             "Preferences.General",
@@ -538,9 +540,60 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<int> QuickloadSaveNumber = new("Preferences.Quickload", "SaveFileNumber", 4);
     }
 
-    internal abstract class Hidden
+    internal abstract class Map
     {
-        internal static readonly ImpConfig<bool> FreecamLayerSelector = new(
+        internal static readonly ImpConfig<bool> MinimapEnabled = new(
+            "Preferences.Map",
+            "Minimap",
+            false
+        );
+
+        internal static readonly ImpConfig<bool> CompassEnabled = new(
+            "Preferences.Map",
+            "Compass",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> RotationLock = new(
+            "Preferences.Map",
+            "RotationLock",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> UnlockView = new(
+            "Preferences.Map",
+            "UnlockView",
+            false
+        );
+
+        internal static readonly ImpConfig<int> CameraLayerMask = new(
+            "Preferences.Map",
+            "LayerMask",
+            ~LayerMask.GetMask("HelmetVisor")
+        );
+
+        internal static readonly ImpConfig<float> CameraZoom = new(
+            "Preferences.Map",
+            "Zoom",
+            ImpConstants.DefaultMapCameraScale
+        );
+
+        internal static readonly ImpConfig<float> CameraNearClip = new(
+            "Preferences.Map",
+            "NearClip",
+            -30
+        );
+
+        internal static readonly ImpConfig<float> CameraFarClip = new(
+            "Preferences.Map",
+            "FarClip",
+            100
+        );
+    }
+
+    internal abstract class Freecam
+    {
+        internal static readonly ImpConfig<bool> LayerSelector = new(
             "Preferences.Freecam",
             "LayerSelector",
             true
@@ -565,7 +618,7 @@ public abstract class ImpSettings
         );
     }
 
-    internal static void Load<T>()
+    private static void Load<T>()
     {
         IsLoading = true;
         typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
@@ -605,7 +658,8 @@ public abstract class ImpSettings
         Load<Visualizations>();
         Load<Rendering>();
         Load<Preferences>();
-        Load<Hidden>();
+        Load<Map>();
+        Load<Freecam>();
     }
 
     internal static void FactoryReset()
@@ -618,7 +672,8 @@ public abstract class ImpSettings
         Reset<Visualizations>();
         Reset<Rendering>();
         Reset<Preferences>();
-        Reset<Hidden>();
+        Reset<Map>();
+        Reset<Freecam>();
 
         Imperium.ReloadUI();
     }
@@ -633,6 +688,6 @@ public abstract class ImpSettings
         Reinstantiate<Visualizations>();
         Reinstantiate<Rendering>();
         Reinstantiate<Preferences>();
-        Reinstantiate<Hidden>();
+        Reinstantiate<Freecam>();
     }
 }

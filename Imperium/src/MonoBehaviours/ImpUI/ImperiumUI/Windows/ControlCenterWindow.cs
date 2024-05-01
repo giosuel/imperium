@@ -102,6 +102,7 @@ internal class ControlCenterWindow : BaseWindow
     {
         ImpToggle.Bind("Right/GameSettings/OverwriteShipDoors", content, ImpSettings.Game.OverwriteShipDoors);
         ImpToggle.Bind("Right/GameSettings/MuteShipSpeaker", content, ImpSettings.Game.MuteShipSpeaker);
+        ImpToggle.Bind("Right/GameSettings/PreventShipLeave", content, ImpSettings.Game.PreventShipLeave);
     }
 
     private void InitOverlays()

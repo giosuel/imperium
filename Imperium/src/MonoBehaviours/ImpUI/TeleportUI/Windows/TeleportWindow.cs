@@ -17,7 +17,6 @@ internal class TeleportWindow : BaseWindow
 {
     private Button tpMainEntrance;
     private Button tpShip;
-    private Button tpFreecam;
     private Button tpApparatus;
     private TMP_Dropdown fireExitsDropdown;
 
@@ -37,15 +36,15 @@ internal class TeleportWindow : BaseWindow
             "Presets/Ship", content,
             () => TeleportTo(Imperium.PlayerManager.ShipTPAnchor.Value)
         );
-        tpFreecam = ImpButton.Bind(
-            "Presets/Freecam", content,
-            () => TeleportTo(Imperium.PlayerManager.FreecamTPAnchor.Value)
-        );
         tpApparatus = ImpButton.Bind(
             "Presets/Apparatus", content,
             () => TeleportTo(Imperium.PlayerManager.ApparatusTPAnchor.Value)
         );
-
+        ImpButton.Bind(
+            "Presets/Freecam", content,
+            () => TeleportTo(Imperium.Freecam.transform.position)
+        );
+        
         coordinateX = new ImpBinding<float>(0, _ => TeleportToCoords());
         coordinateY = new ImpBinding<float>(0, _ => TeleportToCoords());
         coordinateZ = new ImpBinding<float>(0, _ => TeleportToCoords());
@@ -69,7 +68,6 @@ internal class TeleportWindow : BaseWindow
     {
         tpShip.interactable = Imperium.PlayerManager.ShipTPAnchor.Value != null;
         tpMainEntrance.interactable = Imperium.PlayerManager.MainEntranceTPAnchor.Value != null;
-        tpFreecam.interactable = Imperium.PlayerManager.FreecamTPAnchor.Value != null;
         tpApparatus.interactable = Imperium.PlayerManager.ApparatusTPAnchor.Value != null;
 
         var position = Imperium.Player.transform.position;

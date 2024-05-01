@@ -72,7 +72,7 @@ public class SpikeTrapIndicator : MonoBehaviour
                 + spikeTrap.timeSinceMovingUp,
                 0
             );
-            spikeTimerText.text = $"{timeLeft:0.0}s";
+            spikeTimerText.text = $"{timeLeft:0.0}";
         }
 
         // Set collider visualizer colors based on if the trap does damage.

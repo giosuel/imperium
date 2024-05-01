@@ -23,7 +23,7 @@ internal abstract class StandaloneUI : BaseUI
         bool ignoreTabInput = false
     )
     {
-        InitTitleBox(isCollapsible);
+        InitStandalone(isCollapsible);
         base.InitializeUI(closeOnMovement, ignoreTabInput);
     }
 
@@ -32,7 +32,7 @@ internal abstract class StandaloneUI : BaseUI
     /// </summary>
     /// <param name="isCollapsible"></param>
     /// <param name="parent"></param>
-    private void InitTitleBox(bool isCollapsible, BaseUI parent = null)
+    private void InitStandalone(bool isCollapsible, BaseUI parent = null)
     {
         content = transform.Find(isCollapsible ? "Container/Window/Main/Content" : "Container/Window/Content");
         // Use scrollbar content if content is scroll bar

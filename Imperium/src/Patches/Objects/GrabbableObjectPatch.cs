@@ -17,12 +17,12 @@ internal static class GrabbableObjectPatch
     {
         if (ImpSettings.Player.InfiniteBattery.Value) __instance.insertedBattery.charge = 1;
     }
-
+    
     [HarmonyPostfix]
     [HarmonyPatch("EquipItem")]
     internal static void EquipItemPatch(GrabbableObject __instance)
     {
-        // This needs to be patched here as Shovel does not override this method
+        // This needs to be patched here as the Shovel and Knife scripts do not override this method
         switch (__instance)
         {
             case Shovel shovel:

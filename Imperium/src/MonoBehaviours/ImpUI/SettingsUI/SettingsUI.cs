@@ -23,6 +23,7 @@ internal class SettingsUI : StandaloneUI
         ImpToggle.Bind("General/LoggingToggle", content, ImpSettings.Preferences.GeneralLogging);
         ImpToggle.Bind("General/OracleLoggingToggle", content, ImpSettings.Preferences.OracleLogging);
         ImpToggle.Bind("General/LeftHandedToggle", content, ImpSettings.Preferences.LeftHandedMode);
+        ImpToggle.Bind("General/CustomWelcome", content, ImpSettings.Preferences.CustomWelcome);
         ImpToggle.Bind(
             "General/UEMouseFixToggle",
             content,

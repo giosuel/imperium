@@ -25,7 +25,8 @@ public abstract class ImpAssets
     internal static GameObject OracleUIObject;
     internal static GameObject NavigatorUIObject;
     internal static GameObject IndicatorObject;
-    internal static GameObject LayerSelector;
+    internal static GameObject LayerSelectorMap;
+    internal static GameObject LayerSelectorFreecam;
     internal static GameObject MinicamOverlay;
     internal static GameObject NoiseOverlay;
     internal static GameObject NetworkHandler;
@@ -76,7 +77,8 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/navigator_ui.prefab", out NavigatorUIObject),
             LoadFile(assets, "Assets/Prefabs/confirmation_ui.prefab", out ConfirmationUIObject),
             LoadFile(assets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
-            LoadFile(assets, "Assets/Prefabs/layer_selector.prefab", out LayerSelector),
+            LoadFile(assets, "Assets/Prefabs/layer_selector_map.prefab", out LayerSelectorMap),
+            LoadFile(assets, "Assets/Prefabs/layer_selector_freecam.prefab", out LayerSelectorFreecam),
             LoadFile(assets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadFile(assets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadFile(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfo),

@@ -1,6 +1,8 @@
 #region
 
 using HarmonyLib;
+using Imperium.Core;
+using Imperium.Util;
 
 #endregion
 
@@ -14,6 +16,19 @@ public class StartOfRoundPatch
     private static void unloadSceneForAllPlayersPatch(StartOfRound __instance)
     {
         Imperium.IsSceneLoaded.SetFalse();
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("ShipLeaveAutomatically")]
+    private static bool ShipLeaveAutomaticallyPatch(StartOfRound __instance)
+    {
+        if (ImpSettings.Game.PreventShipLeave.Value)
+        {
+            ImpOutput.Send("Prevented the ship from leaving.", notificationType: NotificationType.Other);
+            return false;
+        }
+
+        return true;
     }
 
     [HarmonyPostfix]

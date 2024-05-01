@@ -1,5 +1,31 @@
 # Changelog
 
+## Imperium 0.1.6 [Beta] - The Map
+
+Imperium now has its own map and minimap!
+
+Besides that, this update is mainly aimed at QoL fixes and changes. I reworked the night vision system to be more uniform and comfortable to use.
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company.
+
+### Changes
+
+- Added an option to prevent the ship from leaving automatically.
+- Reworked night vision to be more uniform and comfortable to use.
+- The custom welcome message can now be turned off in the settings. 
+
+### Internal Fixes
+
+- Security doors now correctly open and close.
+- Fixed a bug where changing weathers was causing an exception on certain moons.
+- Fixed the freecam teleport button in the Teleport UI.
+
+### QOL Changes
+
+- Teleport Indicator can now be toggled with **T**.
+
 ## Imperium 0.1.5 [Beta]
 
 I re-wrote the entity and item management system to improve the compatibility with mods that add items and entities with [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/).

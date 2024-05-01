@@ -68,7 +68,7 @@ internal class ObjectManager : ImpLifecycleObject
     // during the last refresh.
     // Loaded on ship landing.
     internal readonly ImpBinding<HashSet<DoorLock>> CurrentLevelDoors = new([]);
-    internal readonly ImpBinding<HashSet<PowerSwitchable>> CurrentLevelSecurityDoors = new([]);
+    internal readonly ImpBinding<HashSet<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
     internal readonly ImpBinding<HashSet<Turret>> CurrentLevelTurrets = new([]);
     internal readonly ImpBinding<HashSet<Landmine>> CurrentLevelLandmines = new([]);
     internal readonly ImpBinding<HashSet<SpikeRoofTrap>> CurrentLevelSpikeTraps = new([]);
@@ -83,6 +83,7 @@ internal class ObjectManager : ImpLifecycleObject
     // Used by the server to execute a despawn request from a client via network ID
     private readonly Dictionary<ulong, GameObject> CurrentLevelObjects = [];
 
+    [ImpAttributes.RemoteMethod]
     internal static void SpawnEntity(
         string entityName,
         string prefabName,
@@ -100,6 +101,7 @@ internal class ObjectManager : ImpLifecycleObject
         );
     }
 
+    [ImpAttributes.RemoteMethod]
     internal static void SpawnItem(
         string itemName,
         string prefabName,
@@ -119,6 +121,7 @@ internal class ObjectManager : ImpLifecycleObject
         );
     }
 
+    [ImpAttributes.RemoteMethod]
     internal static void SpawnMapHazard(
         string objectName,
         Vector3 position,
@@ -244,10 +247,6 @@ internal class ObjectManager : ImpLifecycleObject
         ImpNetSpawning.Instance.OnItemsChangedClientRpc();
     }
 
-    private readonly Dictionary<string, string> displayNameMap = [];
-
-    internal string GetDisplayName(string inGameName) => displayNameMap.GetValueOrDefault(inGameName, inGameName);
-
     [ImpAttributes.HostOnly]
     internal void SpawnMapHazardServer(string objectName, Vector3 position, int amount)
     {
@@ -357,6 +356,10 @@ internal class ObjectManager : ImpLifecycleObject
         DespawnObject(obj);
         return true;
     }
+    
+    private readonly Dictionary<string, string> displayNameMap = [];
+
+    internal string GetDisplayName(string inGameName) => displayNameMap.GetValueOrDefault(inGameName, inGameName);
 
     [ImpAttributes.LocalMethod]
     internal void EmptyVent(ulong netId)
@@ -371,7 +374,6 @@ internal class ObjectManager : ImpLifecycleObject
         enemyVent.occupied = false;
     }
 
-    [ImpAttributes.LocalMethod]
     internal GameObject FindObject(string name)
     {
         if (ObjectCache.TryGetValue(name, out var v)) return v;
@@ -500,7 +502,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal void RefreshLevelObstacles()
     {
         HashSet<DoorLock> currentLevelDoors = [];
-        HashSet<PowerSwitchable> currentLevelSecurityDoors = [];
+        HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
         HashSet<Turret> currentLevelTurrets = [];
         HashSet<Landmine> currentLevelLandmines = [];
         HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
@@ -527,8 +529,8 @@ internal class ObjectManager : ImpLifecycleObject
                     case DoorLock doorLock when !currentLevelDoors.Contains(doorLock):
                         currentLevelDoors.Add(doorLock);
                         break;
-                    case PowerSwitchable powerSwitch when !currentLevelSecurityDoors.Contains(powerSwitch):
-                        currentLevelSecurityDoors.Add(powerSwitch);
+                    case TerminalAccessibleObject securityDoor:
+                        currentLevelSecurityDoors.Add(securityDoor);
                         break;
                     case Turret turret when !currentLevelTurrets.Contains(turret):
                         currentLevelTurrets.Add(turret);
@@ -551,17 +553,8 @@ internal class ObjectManager : ImpLifecycleObject
                 }
             }
 
-            var networkObject = obj.GetComponent<NetworkObject>();
-            if (!networkObject)
-            {
-                networkObject = obj.GetComponentInChildren<NetworkObject>();
-                if (!networkObject)
-                {
-                    continue;
-                }
-            }
-
-            CurrentLevelObjects[networkObject.NetworkObjectId] = obj.gameObject;
+            var networkObject = obj.GetComponent<NetworkObject>() ?? obj.GetComponentInChildren<NetworkObject>();
+            if (networkObject) CurrentLevelObjects[networkObject.NetworkObjectId] = obj.gameObject;
         }
 
         if (currentLevelDoors.Count > 0)

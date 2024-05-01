@@ -28,11 +28,6 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         sceneLoaded
     );
 
-    internal readonly ImpExternalBinding<Vector3?, bool> FreecamTPAnchor = new(
-        () => freecam.transform.position,
-        sceneLoaded
-    );
-
     internal readonly ImpExternalBinding<Vector3?, bool> ApparatusTPAnchor = new(
         () => GameObject.Find("LungApparatus(Clone)")?.transform.position,
         sceneLoaded
@@ -191,6 +186,15 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         }
 
         throw new ArgumentOutOfRangeException();
+    }
+
+    internal static PlayerControllerB GetPlayerFromID(int playerId)
+    {
+        if (playerId < 0 || playerId >= Imperium.StartOfRound.allPlayerScripts.Length)
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+        return Imperium.StartOfRound.allPlayerScripts[playerId];
     }
 
     // Override for ImperiumSettings to use this as a method group

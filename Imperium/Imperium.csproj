@@ -34,7 +34,7 @@
     </PropertyGroup>
 
     <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-        <Exec Command="netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
+        <Exec Command="~/.dotnet/tools/netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
     </Target>
 
     <!-- Include README and CHANGELOG in the package -->
@@ -85,6 +85,12 @@
     <ItemGroup>
         <Reference Include="UnityExplorer.BIE5.Mono" HintPath="..\deps\UnityExplorer.BIE5.Mono.dll"/>
     </ItemGroup>
+
+    <!--  Ignore this - Unity is a great software that always works, especially on Linux :]  -->
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="cp /run/user/1000/gvfs/sftp:host=192.168.1.69/home/giosuel/Projects/imperium/imperium-assets/AssetBundles/StandaloneWindows/imperium_assets /home/giosuel/.config/r2modmanPlus-local/LethalCompany/profiles/playground/BepInEx/plugins/giosuel-Imperium\ \(Local\)/imperium_assets" />
+    </Target>
+
 
     <!-- MinVer Set Mod Version from Git -->
     <Target Name="SetPluginVersion" BeforeTargets="AddGeneratedFile" DependsOnTargets="MinVer">
