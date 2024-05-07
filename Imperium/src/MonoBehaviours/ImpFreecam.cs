@@ -45,8 +45,9 @@ public class ImpFreecam : MonoBehaviour
         hdCameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(int)FrameSettingsField.Volumetrics] = true;
         hdCameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Volumetrics, false);
 
-        var layerSelectorObject = Instantiate(ImpAssets.LayerSelectorFreecam, transform);
+        var layerSelectorObject = Instantiate(ImpAssets.LayerSelector, transform);
         layerSelector = layerSelectorObject.AddComponent<LayerSelector>();
+        layerSelector.InitializeUI(Imperium.Theme, false);
         layerSelector.Bind(ImpSettings.Freecam.LayerSelector, ImpSettings.Freecam.FreecamLayerMask);
 
         IsFreecamEnabled.onTrue += OnFreecamEnable;
@@ -157,11 +158,11 @@ public class ImpFreecam : MonoBehaviour
         ImpSettings.Freecam.LayerSelector.Set(!layerSelector.IsOpen);
         if (layerSelector.IsOpen)
         {
-            layerSelector.OnUIClose();
+            layerSelector.CloseUI();
         }
         else
         {
-            layerSelector.OnUIOpen();
+            layerSelector.OpenUI();
         }
     }
 

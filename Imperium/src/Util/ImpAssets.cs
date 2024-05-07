@@ -25,9 +25,10 @@ public abstract class ImpAssets
     internal static GameObject OracleUIObject;
     internal static GameObject NavigatorUIObject;
     internal static GameObject IndicatorObject;
-    internal static GameObject LayerSelectorMap;
-    internal static GameObject LayerSelectorFreecam;
-    internal static GameObject MinicamOverlay;
+    internal static GameObject MapUIObject;
+    internal static GameObject MinimapSettingsObject;
+    internal static GameObject LayerSelector;
+    internal static GameObject MinimapOverlayObject;
     internal static GameObject NoiseOverlay;
     internal static GameObject NetworkHandler;
     internal static AudioClip GrassClick;
@@ -52,16 +53,18 @@ public abstract class ImpAssets
 
     internal static bool Load()
     {
-        var assets = AssetBundle.LoadFromFile(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "imperium_assets"));
+        var assetFile = Path.Combine(
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
+            "imperium_assets"
+        );
+        var assets = AssetBundle.LoadFromFile(assetFile);
         if (assets == null)
         {
-            Imperium.Log.LogInfo("[PRELOAD] Failed to load Imperium assets, aborting!");
+            Imperium.Log.LogInfo($"[PRELOAD] Failed to load assets from {assetFile}, aborting!");
             return false;
         }
 
         logBuffer = [];
-
         List<bool> loadResults =
         [
             LoadFile(assets, "Assets/Prefabs/imperium_ui.prefab", out ImperiumUIObject),
@@ -77,14 +80,15 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/navigator_ui.prefab", out NavigatorUIObject),
             LoadFile(assets, "Assets/Prefabs/confirmation_ui.prefab", out ConfirmationUIObject),
             LoadFile(assets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
-            LoadFile(assets, "Assets/Prefabs/layer_selector_map.prefab", out LayerSelectorMap),
-            LoadFile(assets, "Assets/Prefabs/layer_selector_freecam.prefab", out LayerSelectorFreecam),
+            LoadFile(assets, "Assets/Prefabs/map_ui.prefab", out MapUIObject),
+            LoadFile(assets, "Assets/Prefabs/minimap.prefab", out MinimapOverlayObject),
+            LoadFile(assets, "Assets/Prefabs/minimap_settings.prefab", out MinimapSettingsObject),
+            LoadFile(assets, "Assets/Prefabs/layer_selector.prefab", out LayerSelector),
             LoadFile(assets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadFile(assets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadFile(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfo),
             LoadFile(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfo),
             LoadFile(assets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
-            LoadFile(assets, "Assets/Prefabs/minicam_overlay.prefab", out MinicamOverlay),
             LoadFile(assets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadFile(assets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
             LoadFile(assets, "Assets/Materials/xray.mat", out XrayMaterial),
@@ -102,9 +106,10 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
         ];
 
+
         if (loadResults.Any(result => result == false))
         {
-            Imperium.Log.LogInfo("[PRELOAD] Failed to load one or more assets from ./imperium_assets, aborting!");
+            Imperium.Log.LogInfo($"[PRELOAD] Failed to load one or more assets from {assetFile}, aborting!");
             return false;
         }
 

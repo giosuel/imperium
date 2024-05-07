@@ -1,6 +1,10 @@
 #region
 
 using Imperium.Core;
+using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Types;
+using Imperium.Util;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +14,7 @@ using ContentType = TMPro.TMP_InputField.ContentType;
 
 namespace Imperium.MonoBehaviours.ImpUI.SaveUI;
 
-internal class SaveUI : StandaloneUI
+internal class SaveUI : SingleplexUI
 {
     private Transform generalSaveContainer;
     private Transform currentSaveContainer;
@@ -18,8 +22,6 @@ internal class SaveUI : StandaloneUI
 
     private Transform inputTemplate;
     private Transform toggleTemplate;
-
-    public override void Awake() => InitializeUI();
 
     protected override void InitUI()
     {
@@ -39,6 +41,15 @@ internal class SaveUI : StandaloneUI
         {
             InitCurrentSave();
         }
+    }
+
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            container.Find("Window/Content"),
+            new StyleOverride("Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
+        );
     }
 
     private void InitGeneralSave()
@@ -132,10 +143,9 @@ internal class SaveUI : StandaloneUI
         element.gameObject.SetActive(true);
         element.Find("Title").GetComponent<TMP_Text>().text = settingName;
 
-        var field = element.Find("Input").GetComponent<TMP_InputField>();
-        field.text = ES3.Load(settingName, fileName).ToString();
-        field.contentType = contentType;
-        field.onSubmit.AddListener(value => ES3.Save(settingName, value, fileName));
+        var binding = new ImpBinding<string>(ES3.Load(settingName, fileName).ToString());
+        binding.onUpdate += value => ES3.Save(settingName, value, fileName);
+        ImpInput.Bind("Input", element, binding, theme);
     }
 
     private void BindBooleanSetting(string settingName, string fileName, Transform parent)
@@ -146,9 +156,10 @@ internal class SaveUI : StandaloneUI
         element.gameObject.SetActive(true);
         element.Find("Title").GetComponent<TMP_Text>().text = settingName;
 
-        var toggle = element.GetComponent<Toggle>();
-        var isOn = ES3.KeyExists(settingName, fileName) && (bool)ES3.Load(settingName, fileName);
-        toggle.isOn = isOn;
-        toggle.onValueChanged.AddListener(value => ES3.Save(settingName, value, fileName));
+        var binding = new ImpBinaryBinding(
+            ES3.KeyExists(settingName, fileName) && (bool)ES3.Load(settingName, fileName)
+        );
+        binding.onUpdate += value => ES3.Save(settingName, value, fileName);
+        ImpToggle.Bind("", element, binding, theme);
     }
 }

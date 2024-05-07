@@ -212,6 +212,13 @@ internal class GameManager : ImpLifecycleObject
         syncOnUpdate: value => ImpNetQuota.Instance.SetDeadlineDaysServerRpc(value)
     );
 
+    internal readonly ImpBinding<bool> AllPlayersDead = new(
+        false,
+        ignoreRefresh: true,
+        onUpdate: value => Imperium.StartOfRound.allPlayersDead = value,
+        syncOnUpdate: value => ImpNetPlayer.Instance.SetAllPlayersDeadServerRpc(value)
+    );
+
     [ImpAttributes.RemoteMethod]
     internal void FulfillQuota()
     {

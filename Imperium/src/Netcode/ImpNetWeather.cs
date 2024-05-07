@@ -27,6 +27,8 @@ public class ImpNetWeather : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void ChangeWeatherServerRpc(int levelIndex, LevelWeatherType weatherType)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         OnWeatherChangedClientRpc(levelIndex, weatherType);
     }
 

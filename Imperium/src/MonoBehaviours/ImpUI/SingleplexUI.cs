@@ -3,6 +3,7 @@
 using System;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,30 +12,32 @@ using UnityEngine.UI;
 
 namespace Imperium.MonoBehaviours.ImpUI;
 
-internal abstract class BaseWindow : MonoBehaviour
+/// <summary>
+///     Simple UI with a single window.
+///     Uses the component called "Window" in the UI container as the window component.
+/// </summary>
+internal abstract class SingleplexUI : BaseUI
 {
-    // Reference to the content UI component
+    // Main content of the UI, can be null
     protected Transform content;
-    protected Transform titleBox;
-    public event Action onOpen;
 
-    // Binding holding the current theme
-    protected ImpBinding<ImpTheme> themeBinding;
+    // Titlebox of the UI, can be null
+    private Transform titleBox;
 
-    protected BaseUI parentUI;
-
-    /// <summary>
-    ///     Registers a window and implements close / collapse functionality for the window.
-    /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="theme">The theme to use for the window.</param>
-    public void RegisterWindow(BaseUI parent, ImpBinding<ImpTheme> theme)
+    public override void InitializeUI(
+        ImpBinding<ImpTheme> themeBinding,
+        bool closeOnMovement = true,
+        bool ignoreTabInput = false
+    )
     {
-        parentUI = parent;
-        themeBinding = theme;
+        InitSingleplex(themeBinding);
+        base.InitializeUI(themeBinding, closeOnMovement, ignoreTabInput);
+    }
 
-        content = transform.Find("Content");
-        if (!content) content = transform.Find("Main/Content");
+    private void InitSingleplex(ImpBinding<ImpTheme> themeBinding, BaseUI parent = null)
+    {
+        content = transform.Find("Container/Window/Content");
+        if (!content) content = transform.Find("Container/Window/Main/Content");
 
         // Use scrollbar content if content is scroll bar
         if (content && content.gameObject.GetComponent<ScrollRect>())
@@ -42,7 +45,7 @@ internal abstract class BaseWindow : MonoBehaviour
             content = content.Find("Viewport/Content");
         }
 
-        titleBox = transform.Find("TitleBox");
+        titleBox = transform.Find("Container/Window/TitleBox");
         if (titleBox)
         {
             ImpButton.Bind("Close", titleBox, CloseUI, theme: themeBinding, isIconButton: true);
@@ -57,13 +60,9 @@ internal abstract class BaseWindow : MonoBehaviour
             }
         }
 
-        onOpen += OnOpen;
-        theme.onUpdate += OnThemeUpdate;
-        theme.onUpdate += value =>
+        themeBinding.onUpdate += value =>
         {
-            ImpThemeManager.Style(
-                value,
-                transform,
+            ImpThemeManager.Style(value, container.Find("Window"), [
                 // Window background color
                 new StyleOverride("", Variant.BACKGROUND),
                 // Titlebox border color
@@ -72,36 +71,17 @@ internal abstract class BaseWindow : MonoBehaviour
                 new StyleOverride("Border", Variant.DARKER),
                 new StyleOverride("Content", Variant.DARKER),
                 new StyleOverride("Content/Border", Variant.DARKER)
-            );
+            ]);
 
             if (titleBox)
             {
                 // Window title
                 ImpThemeManager.StyleText(
                     value,
-                    transform,
+                    container.Find("Window"),
                     new StyleOverride("TitleBox/Title", Variant.FOREGROUND)
                 );
             }
         };
-
-        RegisterWindow();
-
-        // Style UI with the current theme
-        OnThemeUpdate(themeBinding.Value);
     }
-
-    protected virtual void OnThemeUpdate(ImpTheme themeUpdated)
-    {
-    }
-
-    public void TriggerOnOpen() => onOpen?.Invoke();
-
-    protected void CloseUI() => parentUI.CloseUI();
-
-    protected virtual void OnOpen()
-    {
-    }
-
-    protected abstract void RegisterWindow();
 }

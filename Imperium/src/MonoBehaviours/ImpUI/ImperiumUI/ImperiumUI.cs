@@ -1,6 +1,8 @@
 #region
 
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
+using Imperium.Types;
+using Imperium.Util.Binding;
 
 #endregion
 
@@ -10,11 +12,9 @@ internal class ImperiumUI : MultiplexUI
 {
     internal ObjectExplorerWindow ObjectExplorerWindow;
 
-    public override void Awake() => InitializeUI();
-
     protected override void InitUI()
     {
-        RegisterWindow<ControlCenterWindow>("ControlCenter", false);
-        ObjectExplorerWindow = RegisterWindow<ObjectExplorerWindow>("ObjectExplorer", false);
+        RegisterWindow<ControlCenterWindow>("ControlCenter", theme);
+        ObjectExplorerWindow = RegisterWindow<ObjectExplorerWindow>("ObjectExplorer", theme);
     }
 }

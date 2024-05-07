@@ -12,6 +12,7 @@ using Imperium.Integration;
 using Imperium.MonoBehaviours;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
+using Imperium.MonoBehaviours.ImpUI.MinimapSettings;
 using Imperium.MonoBehaviours.ImpUI.MoonUI;
 using Imperium.MonoBehaviours.ImpUI.NavigatorUI;
 using Imperium.MonoBehaviours.ImpUI.ObjectsUI;
@@ -26,6 +27,7 @@ using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using MonoMod.Cil;
@@ -69,12 +71,12 @@ public class Imperium : BaseUnityPlugin
     internal static Oracle.Oracle Oracle;
 
     // Other Imperium objects
+    internal static ImpMap Map;
     internal static ImpFreecam Freecam;
     internal static ImpNightVision NightVision;
     internal static ImpNoiseListener NoiseListener;
     internal static ImpInputBindings InputBindings;
     internal static ImpPositionIndicator ImpPositionIndicator;
-
     internal static ImpInterfaceManager Interface;
 
     private static Harmony harmony;
@@ -84,6 +86,8 @@ public class Imperium : BaseUnityPlugin
 
     // Global variable indicating if ship is currently landed on a moon
     internal static ImpBinaryBinding IsSceneLoaded;
+
+    internal static readonly ImpBinding<ImpTheme> Theme = new(ImpThemeManager.DefaultTheme);
 
     private void Awake()
     {
@@ -99,7 +103,6 @@ public class Imperium : BaseUnityPlugin
         IsImperiumReady = true;
         Log.LogInfo("[OK] Imperium is ready!");
     }
-
 
     private static void RunNetcodePatcher()
     {
@@ -122,7 +125,7 @@ public class Imperium : BaseUnityPlugin
     {
         if (!IsImperiumReady)
         {
-            ImpOutput.Send("[ERR] Imperium failed to launch \u2299︿\u2299");
+            ImpOutput.Send("Imperium failed to launch \u2299︿\u2299");
             return;
         }
 
@@ -134,9 +137,10 @@ public class Imperium : BaseUnityPlugin
 
         ImpNetworkManager.IsHost.Set(NetworkManager.Singleton.IsHost);
 
+        Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();
         NightVision = ImpNightVision.Create();
-        Interface = ImpInterfaceManager.Create();
+        Interface = ImpInterfaceManager.Create(Theme);
         NoiseListener = ImpNoiseListener.Create();
         ImpPositionIndicator = ImpPositionIndicator.Create();
 
@@ -205,7 +209,7 @@ public class Imperium : BaseUnityPlugin
         ImpSettings.Reinstantiate();
     }
 
-    internal static void ReloadUI()
+    internal static void Reload()
     {
         Interface.Close();
         Unload();
@@ -220,15 +224,18 @@ public class Imperium : BaseUnityPlugin
         Interface.Register<ObjectsUI, ImperiumUI>(ImpAssets.ObjectsUIObject);
         Interface.Register<MoonUI, ImperiumUI>(ImpAssets.MoonUIObject);
         Interface.Register<RenderingUI, ImperiumUI>(ImpAssets.RenderingUIObject);
+        Interface.Register<MinimapSettings>(ImpAssets.MinimapSettingsObject);
         Interface.Register<ImperiumUI>(ImpAssets.ImperiumUIObject, "<Keyboard>/F1");
-        Interface.Register<SpawningUI>(ImpAssets.SpawningUIObject, "<Keyboard>/F2");
-        Interface.Register<TeleportUI>(ImpAssets.TeleportUIObject, "<Keyboard>/F3");
+        Interface.Register<SpawningUI>(ImpAssets.SpawningUIObject, "<Keyboard>/F2", closeOnMovement: false);
+        Interface.Register<TeleportUI>(ImpAssets.TeleportUIObject, "<Keyboard>/F3", closeOnMovement: false);
         Interface.Register<WeatherUI>(ImpAssets.WeatherUIObject, "<Keyboard>/F4");
         Interface.Register<OracleUI>(ImpAssets.OracleUIObject, "<Keyboard>/F5");
         Interface.Register<NavigatorUI>(ImpAssets.NavigatorUIObject, "<Keyboard>/F6");
-        Interface.Register<MapUI>(ImpAssets.LayerSelectorMap, "<Keyboard>/F8");
+        Interface.Register<MapUI>(ImpAssets.MapUIObject, "<Keyboard>/F8");
 
         Interface.StartListening();
+
+        ImpThemeManager.BindTheme(ImpSettings.Preferences.Theme, Theme);
 
         Log.LogInfo("[OK] Imperium UIs have been registered! \\o/");
     }
@@ -236,7 +243,10 @@ public class Imperium : BaseUnityPlugin
     private static void PreLaunchPatch()
     {
         harmony.PatchAll(typeof(PlayerControllerPatch.PreloadPatches));
+        harmony.PatchAll(typeof(StartOfRoundPatch.PreloadPatches));
+        harmony.PatchAll(typeof(GameNetworkManagerPatch.PreloadPatches));
         harmony.PatchAll(typeof(TerminalPatch.PreloadPatches));
+
         harmony.PatchAll(typeof(PreInitPatches.PreInitSceneScriptPatch));
         harmony.PatchAll(typeof(PreInitPatches.MenuManagerPatch));
     }

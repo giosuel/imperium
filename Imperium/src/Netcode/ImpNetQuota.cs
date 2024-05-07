@@ -1,5 +1,6 @@
 #region
 
+using Imperium.Core;
 using Unity.Netcode;
 
 #endregion
@@ -26,6 +27,8 @@ public class ImpNetQuota : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetProfitQuotaServerRpc(int newProfitQuota)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetProfitQuotaClientRpc(newProfitQuota);
     }
 
@@ -39,6 +42,8 @@ public class ImpNetQuota : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetDeadlineDaysServerRpc(int days)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         OnChangeDeadlineDaysClientRpc(days);
     }
 
@@ -58,6 +63,8 @@ public class ImpNetQuota : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetGroupCreditsServerRpc(int credits)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetGroupCreditsClientRpc(credits);
     }
 

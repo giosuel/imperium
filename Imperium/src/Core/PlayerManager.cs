@@ -80,7 +80,7 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
         // ReSharper disable once Unity.PreferAddressByIdToGraphicsParams
         // This is taken directly from the game
-        if (player.playerBodyAnimator != null) player.playerBodyAnimator.SetBool("Limp", value: false);
+        if (player.playerBodyAnimator) player.playerBodyAnimator.SetBool("Limp", value: false);
         HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", value: false);
         HUDManager.Instance.gameOverAnimator.SetTrigger("revive");
 
@@ -223,45 +223,45 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
             camera.customRenderingSettings = true;
 
-            camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.DecalLayers, ImpSettings.Rendering.DecalLayers.Value);
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.DecalLayers] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.SSGI, ImpSettings.Rendering.SSGI.Value);
+                FrameSettingsField.DecalLayers, ImpSettings.Rendering.DecalLayers.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.SSGI] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.RayTracing, ImpSettings.Rendering.RayTracing.Value);
+                FrameSettingsField.SSGI, ImpSettings.Rendering.SSGI.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.RayTracing] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.VolumetricClouds, ImpSettings.Rendering.VolumetricClouds.Value);
+                FrameSettingsField.RayTracing, ImpSettings.Rendering.RayTracing.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.VolumetricClouds] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.SubsurfaceScattering, ImpSettings.Rendering.SubsurfaceScattering.Value);
+                FrameSettingsField.VolumetricClouds, ImpSettings.Rendering.VolumetricClouds.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.SubsurfaceScattering] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.ReprojectionForVolumetrics, ImpSettings.Rendering.VolumeReprojection.Value);
+                FrameSettingsField.SubsurfaceScattering, ImpSettings.Rendering.SSS.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.ReprojectionForVolumetrics] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.TransparentPrepass, ImpSettings.Rendering.TransparentPrepass.Value);
+                FrameSettingsField.ReprojectionForVolumetrics, ImpSettings.Rendering.VolumeReprojection.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.TransparentPrepass] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.TransparentPostpass, ImpSettings.Rendering.TransparentPostpass.Value);
+                FrameSettingsField.TransparentPrepass, ImpSettings.Rendering.TransparentPrepass.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.TransparentPostpass] = true;
+            camera.renderingPathCustomFrameSettings.SetEnabled(
+                FrameSettingsField.TransparentPostpass, ImpSettings.Rendering.TransparentPostpass.Value);
         }
     }
 }

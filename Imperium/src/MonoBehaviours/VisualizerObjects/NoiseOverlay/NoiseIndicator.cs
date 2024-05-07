@@ -17,10 +17,12 @@ public class NoiseIndicator : MonoBehaviour
 {
     private float timer;
     private float totalTime;
+    private int noiseId;
 
     private Vector3 worldPosition;
     private bool isDone;
-    private TMP_Text text;
+    private TMP_Text distanceText;
+    private TMP_Text noiseIdText;
     private Image image;
 
     private Canvas canvas;
@@ -35,20 +37,22 @@ public class NoiseIndicator : MonoBehaviour
     internal void Init(Canvas parent)
     {
         canvas = parent;
-        text = transform.Find("Text").GetComponent<TMP_Text>();
+        distanceText = transform.Find("Text").GetComponent<TMP_Text>();
+        noiseIdText = transform.Find("NoiseId").GetComponent<TMP_Text>();
         image = transform.Find("Image").GetComponent<Image>();
         indicatorTransform = GetComponent<RectTransform>();
         arrowTransform = transform.Find("Arrow").GetComponent<RectTransform>();
     }
 
-    internal void Activate(Vector3 position, float duration, float loudness)
+    internal void Activate(Vector3 position, float duration, float loudness, int noiseID)
     {
         timer = duration;
         totalTime = duration;
+        noiseId = noiseID;
 
         worldPosition = position;
         isDone = false;
-        text.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, 1);
+        distanceText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, 1);
         image.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, 1);
         gameObject.SetActive(true);
         transform.localScale = Vector3.one * loudness * 2;
@@ -104,9 +108,12 @@ public class NoiseIndicator : MonoBehaviour
             arrowTransform.rotation = Quaternion.Euler(0, 0, angle + 180);
 
             timer -= Time.deltaTime;
-            text.text = $"{Vector3.Distance(playerPosition, worldPosition):0.0}m";
-            text.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
+            distanceText.text = $"{Vector3.Distance(playerPosition, worldPosition):0.0}m";
+            noiseIdText.text = noiseId.ToString();
+
+            distanceText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
             image.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
+            noiseIdText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
         }
         else if (!isDone)
         {

@@ -112,12 +112,17 @@ internal abstract class ImpUtils
         return $"{seconds:0.0}s";
     }
 
-    internal static string FormatVector(Vector3 input, int roundDigits = -1)
+    internal static string FormatVector(
+        Vector3 input,
+        int roundDigits = -1,
+        string separator = "/",
+        string unit = ""
+    )
     {
         var x = roundDigits > -1 ? MathF.Round(input.x, roundDigits) : input.x;
         var y = roundDigits > -1 ? MathF.Round(input.y, roundDigits) : input.y;
         var z = roundDigits > -1 ? MathF.Round(input.z, roundDigits) : input.z;
-        return $"({x}/{y}/{z})";
+        return $"({x}{unit}{separator}{y}{unit}{separator}{z}{unit})";
     }
 
     internal static T InvokeDefaultOnNull<T>(Func<T> callback)
@@ -130,6 +135,27 @@ internal abstract class ImpUtils
         {
             return default;
         }
+    }
+
+    /// <summary>
+    /// Formats the parents of a Unity transform into a string.
+    ///
+    /// e.g. "ImpInterface/imperium_ui/Container/Window/Content"
+    /// </summary>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    internal static string GetTransformPath(Transform root)
+    {
+        if (!root) return "";
+
+        List<string> path = [];
+        while (root)
+        {
+            path.Add(root.name);
+            root = root.parent;
+        }
+
+        return path.AsEnumerable().Reverse().Aggregate((a, b) => a + "/" + b);
     }
 
     internal static Item AddScrapToSpawnList(
@@ -169,7 +195,7 @@ internal abstract class ImpUtils
 
         return layerMask | (1 << layer);
     }
-    
+
     internal static int ToggleLayersInMask(int layerMask, params int[] layers)
     {
         return layers.Aggregate(layerMask, ToggleLayerInMask);

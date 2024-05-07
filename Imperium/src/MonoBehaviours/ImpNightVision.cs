@@ -1,3 +1,4 @@
+using Imperium.Core;
 using UnityEngine;
 
 namespace Imperium.MonoBehaviours;
@@ -26,15 +27,12 @@ public class ImpNightVision : MonoBehaviour
         FarLight.range = 500f;
     }
 
-    internal void SetIntensity(float intensity)
-    {
-        NearLight.intensity = intensity * 100f;
-        FarLight.intensity = intensity * 1100f;
-    }
-
     private void Update()
     {
         FarLight.enabled = Imperium.Player.nightVision.enabled;
         NearLight.enabled = Imperium.Player.nightVision.enabled;
+
+        NearLight.intensity = ImpSettings.Player.NightVision.Value * 100f;
+        FarLight.intensity = ImpSettings.Player.NightVision.Value * 1100f;
     }
 }

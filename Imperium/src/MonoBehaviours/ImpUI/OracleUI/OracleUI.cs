@@ -1,17 +1,17 @@
 #region
 
 using Imperium.Oracle;
+using Imperium.Types;
 using Imperium.Util;
+using Imperium.Util.Binding;
 
 #endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.OracleUI;
 
-internal class OracleUI : StandaloneUI
+internal class OracleUI : SingleplexUI
 {
     private readonly OracleCycleEntry[] entries = new OracleCycleEntry[10];
-
-    public override void Awake() => InitializeUI();
 
     private void OnOracleUpdate(OracleState state)
     {
@@ -39,7 +39,7 @@ internal class OracleUI : StandaloneUI
                 var entryObject = Instantiate(cycleTemplate, rowObject.transform);
                 entryObject.SetActive(true);
                 entries[index] = entryObject.AddComponent<OracleCycleEntry>();
-
+                entries[index].Initialize(theme);
                 index++;
             }
         }

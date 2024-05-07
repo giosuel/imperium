@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.Core;
 using Imperium.Netcode;
+using Imperium.Types;
+using Imperium.Util;
 using TMPro;
 using UnityEngine;
 
@@ -11,12 +13,10 @@ using UnityEngine;
 
 namespace Imperium.MonoBehaviours.ImpUI.WeatherUI;
 
-internal class WeatherUI : StandaloneUI
+internal class WeatherUI : SingleplexUI
 {
     private GameObject templateEntry;
     private readonly Dictionary<int, TMP_Dropdown> dropdowns = [];
-
-    public override void Awake() => InitializeUI();
 
     protected override void InitUI()
     {
@@ -30,6 +30,33 @@ internal class WeatherUI : StandaloneUI
             dropdownObj.SetActive(true);
             dropdownObj.transform.Find("Title").GetComponent<TMP_Text>().text = level.PlanetName;
             dropdowns[i] = dropdownObj.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
+        }
+    }
+
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        // Update template and real entries
+        ImpThemeManager.Style(
+            themeUpdate,
+            templateEntry.transform,
+            new StyleOverride("", Variant.FOREGROUND),
+            new StyleOverride("Arrow", Variant.FOREGROUND),
+            new StyleOverride("Template", Variant.DARKER),
+            new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
+            new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
+        );
+
+        foreach (var dropdown in dropdowns)
+        {
+            ImpThemeManager.Style(
+                themeUpdate,
+                dropdown.Value.transform,
+                new StyleOverride("", Variant.FOREGROUND),
+                new StyleOverride("Arrow", Variant.FOREGROUND),
+                new StyleOverride("Template", Variant.DARKER),
+                new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
+                new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
+            );
         }
     }
 

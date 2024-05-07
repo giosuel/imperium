@@ -4,6 +4,7 @@ using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.MonoBehaviours.ImpUI.RenderingUI;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -18,7 +19,7 @@ namespace Imperium.MonoBehaviours.ImpUI.LayerSelector;
 /// This UI is a bit special as it is neither a child of another UI nor does it have a keybinding to open it at any time.
 /// Instead, this UI can only be opened by the <see cref="ImpFreecam"/> and the <see cref="MapUI"/>.
 /// </summary>
-internal class LayerSelector : StandaloneUI
+internal class LayerSelector : SingleplexUI
 {
     private int selectedLayer;
     private GameObject layerTemplate;
@@ -26,9 +27,7 @@ internal class LayerSelector : StandaloneUI
 
     private ImpBinding<bool> IsEnabledBinding = new(false);
     private ImpBinding<int> LayerMaskBinding = new(0);
-
-    public override void Awake() => InitializeUI(isCollapsible: false, closeOnMovement: false);
-
+    
     protected override void InitUI()
     {
         layerTemplate = content.Find("LayerItem").gameObject;
@@ -55,6 +54,24 @@ internal class LayerSelector : StandaloneUI
         Imperium.InputBindings.FreecamMap["ArrowDown"].performed += OnLayerDown;
         Imperium.InputBindings.FreecamMap["ArrowUp"].performed += OnLayerUp;
         Imperium.InputBindings.FreecamMap["Select"].performed += OnLayerSelect;
+    }
+
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            layerTemplate.transform,
+            new StyleOverride("Selected", Variant.FADED)
+        );
+
+        foreach (var toggle in layerToggles)
+        {
+            ImpThemeManager.Style(
+                themeUpdate,
+                toggle.transform,
+                new StyleOverride("Selected", Variant.FADED)
+            );
+        }
     }
 
     internal void Bind(ImpBinding<bool> enabledBinding, ImpBinding<int> layerMaskBinding)
@@ -117,11 +134,11 @@ internal class LayerSelector : StandaloneUI
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen)
         {
-            if (IsOpen) OnUIClose();
+            if (IsOpen) CloseUI();
         }
         else if (IsEnabledBinding is { Value: true } && Imperium.Player.isFreeCamera)
         {
-            if (!IsOpen) OnUIOpen();
+            if (!IsOpen) OpenUI();
         }
     }
 }

@@ -6,10 +6,13 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+using Imperium.Types;
 using Imperium.Util;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 #endregion
 
@@ -39,7 +42,7 @@ internal class ObjectExplorerWindow : BaseWindow
 
     protected override void RegisterWindow()
     {
-        titleBox.Find("Objects").GetComponent<Button>().onClick.AddListener(OpenObjectsUI);
+        ImpButton.Bind("Objects", titleBox, OpenObjectsUI, theme: themeBinding, isIconButton: true);
 
         explorerContentRect = content.GetComponent<RectTransform>();
         listTemplate = content.Find("EntityList/Item").gameObject;
@@ -62,6 +65,7 @@ internal class ObjectExplorerWindow : BaseWindow
         ImpButton.CreateCollapse("EntityListTitle/Arrow", content, entityList);
         ImpButton.CreateCollapse("ItemListTitle/Arrow", content, itemList);
         ImpButton.CreateCollapse("HazardListTitle/Arrow", content, hazardList);
+        ImpButton.CreateCollapse("VentListTitle/Arrow", content, ventList);
         ImpButton.CreateCollapse("OtherListTitle/Arrow", content, otherList);
 
         Imperium.ObjectManager.CurrentLevelDoors.onTrigger += Refresh;
@@ -76,6 +80,40 @@ internal class ObjectExplorerWindow : BaseWindow
         Imperium.ObjectManager.CurrentLevelEntities.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelItems.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentPlayers.onTrigger += Refresh;
+
+        if (Random.Range(0, 100) >= 99) titleBox.Find("Title").GetComponent<TMP_Text>().text = "Emporium Control Panel";
+    }
+
+    protected override void OnThemeUpdate(ImpTheme theme)
+    {
+        ImpThemeManager.Style(
+            theme,
+            content,
+            new StyleOverride("PlayerListTitle", Variant.DARKER),
+            new StyleOverride("EntityListTitle", Variant.DARKER),
+            new StyleOverride("HazardListTitle", Variant.DARKER),
+            new StyleOverride("ItemListTitle", Variant.DARKER),
+            new StyleOverride("VentListTitle", Variant.DARKER),
+            new StyleOverride("OtherListTitle", Variant.DARKER)
+        );
+
+        ImpThemeManager.Style(
+            theme,
+            transform,
+            new StyleOverride("Content/Scrollbar", Variant.DARKEST),
+            new StyleOverride("Content/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
+        );
+
+        ImpThemeManager.StyleText(
+            theme,
+            content,
+            new StyleOverride("PlayerListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("EntityListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("HazardListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("ItemListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("VentListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("OtherListTitle/Count", Variant.FADED_TEXT)
+        );
     }
 
     protected override void OnOpen() => Refresh();
@@ -137,7 +175,7 @@ internal class ObjectExplorerWindow : BaseWindow
                 var entryObj = Instantiate(listTemplate, entryList.transform);
                 entryObj.SetActive(true);
                 objectEntry = (ObjectEntry)entryObj.AddComponent(type);
-                objectEntry.Init(component);
+                objectEntry.Init(component, themeBinding);
 
                 objectEntries[component.GetInstanceID()] = objectEntry;
             }

@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -59,8 +60,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<float> NightVision = new(
             "Player",
             "NightVision",
-            0,
-            Imperium.NightVision.SetIntensity
+            0
         );
     }
 
@@ -83,7 +83,11 @@ public abstract class ImpSettings
 
     internal abstract class Game
     {
-        internal static readonly ImpConfig<bool> OverwriteShipDoors = new("Game.Ship", "OverwriteShipDoors", false);
+        internal static readonly ImpConfig<bool> OverwriteShipDoors = new(
+            "Game.Ship",
+            "OverwriteShipDoors",
+            false
+        );
 
         internal static readonly ImpConfig<bool> MuteShipSpeaker = new(
             "Game.Ship",
@@ -95,7 +99,8 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> PreventShipLeave = new(
             "Game.Ship",
             "PreventShipLeave",
-            true
+            false,
+            syncOnUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
         );
     }
 
@@ -307,7 +312,8 @@ public abstract class ImpSettings
             "Rendering.Volumes",
             "Steamleaks",
             true,
-            value => Imperium.ObjectManager.CurrentLevelSteamleaks.Value.ToList().ForEach(leak => leak.SetActive(value))
+            value => Imperium.ObjectManager?.CurrentLevelSteamleaks.Value?.ToList()
+                .ForEach(leak => leak.SetActive(value))
         );
 
         internal static readonly ImpConfig<bool> SpaceSun = new(
@@ -375,7 +381,7 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> SubsurfaceScattering = new(
+        internal static readonly ImpConfig<bool> SSS = new(
             "Rendering.FrameSettings",
             "SubsurfaceScattering",
             true,
@@ -482,8 +488,20 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> GeneralLogging = new("Preferences.General", "GeneralLogging", true);
         internal static readonly ImpConfig<bool> OracleLogging = new("Preferences.General", "OracleLogging", false);
         internal static readonly ImpConfig<bool> LeftHandedMode = new("Preferences.General", "LeftHandedMode", false);
-        internal static readonly ImpConfig<bool> OptimizeLogs = new("Preferences.General", "OptimizeLogsToggle", false);
+        internal static readonly ImpConfig<bool> OptimizeLogs = new("Preferences.General", "OptimizeLogsToggle", true);
         internal static readonly ImpConfig<bool> CustomWelcome = new("Preferences.General", "CustomWelcome", true);
+
+        internal static readonly ImpConfig<string> Theme = new(
+            "Preferences.Appearance",
+            "Theme",
+            "Imperium"
+        );
+
+        internal static readonly ImpConfig<bool> AllowClients = new(
+            "Preferences.Host",
+            "AllowClients",
+            true
+        );
 
         internal static readonly ImpConfig<bool> UnityExplorerMouseFix = new(
             "Preferences.General",
@@ -545,7 +563,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> MinimapEnabled = new(
             "Preferences.Map",
             "Minimap",
-            false
+            true
         );
 
         internal static readonly ImpConfig<bool> CompassEnabled = new(
@@ -569,7 +587,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<int> CameraLayerMask = new(
             "Preferences.Map",
             "LayerMask",
-            ~LayerMask.GetMask("HelmetVisor")
+            -272672930
         );
 
         internal static readonly ImpConfig<float> CameraZoom = new(
@@ -578,16 +596,28 @@ public abstract class ImpSettings
             ImpConstants.DefaultMapCameraScale
         );
 
-        internal static readonly ImpConfig<float> CameraNearClip = new(
+        internal static readonly ImpConfig<bool> AutoClipping = new(
             "Preferences.Map",
-            "NearClip",
-            -30
+            "AutoClipping",
+            true
         );
 
-        internal static readonly ImpConfig<float> CameraFarClip = new(
-            "Preferences.Map",
-            "FarClip",
-            100
+        internal static readonly ImpConfig<float> MinimapWidth = new(
+            "Preferences.Minimap",
+            "Width",
+            1
+        );
+
+        internal static readonly ImpConfig<float> MinimapHeight = new(
+            "Preferences.Minimap",
+            "Height",
+            1
+        );
+
+        internal static readonly ImpConfig<bool> MinimapInfoPanel = new(
+            "Preferences.Minimap",
+            "InfoPanel",
+            true
         );
     }
 
@@ -618,7 +648,7 @@ public abstract class ImpSettings
         );
     }
 
-    private static void Load<T>()
+    internal static void Load<T>()
     {
         IsLoading = true;
         typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
@@ -675,7 +705,7 @@ public abstract class ImpSettings
         Reset<Map>();
         Reset<Freecam>();
 
-        Imperium.ReloadUI();
+        Imperium.Reload();
     }
 
     internal static void Reinstantiate()

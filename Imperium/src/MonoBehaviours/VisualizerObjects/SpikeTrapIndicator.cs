@@ -117,8 +117,9 @@ public class SpikeTrapIndicator : MonoBehaviour
 
         foreach (var collider in trap.GetComponentsInChildren<BoxCollider>())
         {
-            var visualizer =
-                Visualization.VisualizeBoxCollider(collider, "SpikeTrap", ImpAssets.WireframeGreenMaterial);
+            var visualizer = Visualization.VisualizeBoxCollider(
+                collider, ImpAssets.WireframeGreenMaterial, "SpikeTrap"
+            );
             visualizer.SetActive(false);
             colliders.Add(visualizer);
         }

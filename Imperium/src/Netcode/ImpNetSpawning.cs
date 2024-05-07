@@ -1,5 +1,6 @@
 #region
 
+using Imperium.Core;
 using Imperium.Types;
 using Unity.Netcode;
 
@@ -30,10 +31,15 @@ public class ImpNetSpawning : NetworkBehaviour
         string prefabName,
         ImpVector position,
         int amount,
-        int health
+        int health,
+        bool sendNotification
     )
     {
-        Imperium.ObjectManager.SpawnEntityServer(entityName, prefabName, position.Vector3(), amount, health);
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
+        Imperium.ObjectManager.SpawnEntityServer(
+            entityName, prefabName, position.Vector3(), amount, health, sendNotification
+        );
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -46,8 +52,11 @@ public class ImpNetSpawning : NetworkBehaviour
         int value
     )
     {
-        Imperium.ObjectManager.SpawnItemServer(itemName, prefabName, spawningPlayerId, position.Vector3(), amount,
-            value);
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
+        Imperium.ObjectManager.SpawnItemServer(
+            itemName, prefabName, spawningPlayerId, position.Vector3(), amount, value
+        );
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -57,24 +66,32 @@ public class ImpNetSpawning : NetworkBehaviour
         int amount
     )
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         Imperium.ObjectManager.SpawnMapHazardServer(objectName, position.Vector3(), amount);
     }
 
     [ServerRpc(RequireOwnership = false)]
     internal void DespawnMapHazardServerRpc(ulong netId)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         if (Imperium.ObjectManager.DespawnObject(netId)) OnMapHazardsChangedClientRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]
     internal void DespawnEntityServerRpc(ulong netId)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         if (Imperium.ObjectManager.DespawnObject(netId)) OnEntitiesChangedClientRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]
     internal void DespawnItemServerRpc(ulong netId)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         if (Imperium.ObjectManager.DespawnObject(netId)) OnItemsChangedClientRpc();
     }
 
@@ -99,6 +116,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc]
     public void OnSpawningChangedServerRpc()
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         // TODO(giosuel): Implement syncing of spawn lists
         // OnSpawningChangedClientRpc();
     }
@@ -113,6 +132,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetMaxIndoorPowerServerRpc(float value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetMaxIndoorPowerClientRpc(value);
     }
 
@@ -125,6 +146,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetMaxOutdoorPowerServerRpc(float value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetMaxOutdoorPowerClientRpc(value);
     }
 
@@ -137,6 +160,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetMaxDaytimePowerServerRpc(int value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetMaxDaytimePowerClientRpc(value);
     }
 
@@ -150,6 +175,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetMinIndoorEntitiesServerRpc(int value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetMinIndoorEntitiesClientRpc(value);
     }
 
@@ -162,6 +189,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetMinOutdoorEntitiesServerRpc(int value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetMinOutdoorEntitiesClientRpc(value);
     }
 
@@ -174,6 +203,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetIndoorDeviationServerRpc(float value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetIndoorDeviationClientRpc(value);
     }
 
@@ -186,6 +217,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetDaytimeDeviationServerRpc(float value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetDaytimeDeviationClientRpc(value);
     }
 
@@ -198,6 +231,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetWeatherVariable1ServerRpc(float value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetWeatherVariable1ClientRpc(value);
     }
 
@@ -210,6 +245,8 @@ public class ImpNetSpawning : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetWeatherVariable2ServerRpc(float value)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SetWeatherVariable2ClientRpc(value);
     }
 

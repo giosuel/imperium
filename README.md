@@ -44,7 +44,7 @@ Imperium is divided into multiple main interfaces that can be opened separately 
 | F4  | Opens the weather forecaster.                             |
 | F5 | Opens the Oracle spawn prediction.                       |
 | F6    | Opens the ship navigator.                           |
-| *F7* | *Unused, reserved for Unity Explorer* |
+| *F7* | *Reserved for Unity Explorer* |
 | F8 | Opens the full-screen map. |
 | T  | Toggles interactive teleportation.      |
 | F  | Toggles the Imperium freecam.                             |

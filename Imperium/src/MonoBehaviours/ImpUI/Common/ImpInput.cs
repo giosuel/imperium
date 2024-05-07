@@ -1,7 +1,9 @@
 #region
 
+using System;
 using System.Globalization;
 using System.Linq;
+using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -19,6 +21,7 @@ public abstract class ImpInput
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="valueBinding"></param>
+    /// <param name="theme">The theme the input will use</param>
     /// <param name="min">Minimum input value</param>
     /// <param name="max">Maximum input value</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
@@ -27,6 +30,7 @@ public abstract class ImpInput
         string path,
         Transform container,
         ImpBinding<int> valueBinding = null,
+        ImpBinding<ImpTheme> theme = null,
         int min = int.MinValue,
         int max = int.MaxValue,
         bool interactableInvert = false,
@@ -34,6 +38,8 @@ public abstract class ImpInput
     )
     {
         var inputObject = container.Find(path);
+        if (!inputObject) return null;
+
         var input = inputObject.gameObject.GetComponent<TMP_InputField>();
         input.contentType = TMP_InputField.ContentType.IntegerNumber;
         input.onValueChanged.AddListener(value => OnIntFieldInput(input, value, min, max));
@@ -60,6 +66,11 @@ public abstract class ImpInput
             }
         }
 
+        if (theme != null)
+        {
+            theme.onUpdate += value => OnThemeUpdate(value, inputObject);
+        }
+
         return input;
     }
 
@@ -69,6 +80,7 @@ public abstract class ImpInput
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="valueBinding"></param>
+    /// <param name="theme">The theme the input will use</param>
     /// <param name="min">Minimum input value</param>
     /// <param name="max">Maximum input value</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
@@ -77,6 +89,7 @@ public abstract class ImpInput
         string path,
         Transform container,
         ImpBinding<float> valueBinding = null,
+        ImpBinding<ImpTheme> theme = null,
         float min = float.MinValue,
         float max = float.MaxValue,
         bool interactableInvert = false,
@@ -84,6 +97,8 @@ public abstract class ImpInput
     )
     {
         var inputObject = container.Find(path);
+        if (!inputObject) return null;
+
         var input = inputObject.gameObject.GetComponent<TMP_InputField>();
         input.contentType = TMP_InputField.ContentType.DecimalNumber;
         input.onValueChanged.AddListener(value => OnFloatFieldInput(input, value, min, max));
@@ -104,6 +119,63 @@ public abstract class ImpInput
             }
         }
 
+        if (theme != null)
+        {
+            theme.onUpdate += value => OnThemeUpdate(value, inputObject);
+            OnThemeUpdate(theme.Value, inputObject);
+        }
+
+        return input;
+    }
+
+    private static void OnThemeUpdate(ImpTheme theme, Transform container)
+    {
+        ImpThemeManager.Style(
+            theme,
+            container,
+            new StyleOverride("", Variant.FOREGROUND)
+        );
+    }
+
+    internal static TMP_InputField Bind(
+        string path,
+        Transform container,
+        ImpBinding<string> valueBinding = null,
+        ImpBinding<ImpTheme> theme = null,
+        bool interactableInvert = false,
+        params ImpBinding<bool>[] interactableBindings
+    )
+    {
+        var inputObject = container.Find(path);
+        if (!inputObject) return null;
+
+        var input = inputObject.gameObject.GetComponent<TMP_InputField>();
+        input.contentType = TMP_InputField.ContentType.Standard;
+
+        if (valueBinding != null)
+        {
+            input.text = valueBinding.Value;
+
+            // Set binding to default value if input value is empty
+            input.onSubmit.AddListener(valueBinding.Set);
+
+            valueBinding.onUpdate += value => input.text = value.ToString();
+        }
+
+        if (interactableBindings.Length > 0)
+        {
+            ToggleInteractable(input, interactableBindings.All(entry => entry.Value), interactableInvert);
+            foreach (var interactableBinding in interactableBindings)
+            {
+                interactableBinding.onUpdate += value => ToggleInteractable(input, value, interactableInvert);
+            }
+        }
+
+        if (theme != null)
+        {
+            theme.onUpdate += value => OnThemeUpdate(value, inputObject);
+        }
+
         return input;
     }
 
@@ -113,11 +185,13 @@ public abstract class ImpInput
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="text"></param>
+    /// <param name="theme">The theme the input will use</param>
     /// <returns></returns>
     internal static void CreateStatic(
         string path,
         Transform container,
-        string text
+        string text,
+        ImpBinding<ImpTheme> theme = null
     )
     {
         var inputObject = container.Find(path);
@@ -125,6 +199,12 @@ public abstract class ImpInput
         input.text = text;
         input.interactable = false;
         input.contentType = TMP_InputField.ContentType.IntegerNumber;
+
+        if (theme != null)
+        {
+            theme.onUpdate += value => OnThemeUpdate(value, inputObject);
+            OnThemeUpdate(theme.Value, inputObject);
+        }
     }
 
     private static void OnIntFieldInput(

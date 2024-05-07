@@ -2,6 +2,7 @@
 
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -26,7 +27,7 @@ internal class ObjectEntry : MonoBehaviour
 
     private ImpBinding<bool> IsObjectActive;
 
-    internal void Init(Component objectComponent)
+    internal void Init(Component objectComponent, ImpBinding<ImpTheme> theme)
     {
         objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
 
@@ -40,7 +41,7 @@ internal class ObjectEntry : MonoBehaviour
         SetName(objectName);
 
         // Active toggle
-        activeToggle = ImpToggle.Bind("Active", transform, IsObjectActive);
+        activeToggle = ImpToggle.Bind("Active", transform, IsObjectActive, theme);
         activeToggle.gameObject.SetActive(CanToggle());
 
         // Teleport to button
@@ -48,29 +49,29 @@ internal class ObjectEntry : MonoBehaviour
         {
             PlayerManager.TeleportTo(GetTeleportPosition());
             Imperium.Interface.Close();
-        });
+        }, theme, isIconButton: true);
 
         // Teleport here button
-        var teleportHereButton = ImpButton.Bind("TeleportHere", transform, TeleportHere);
+        var teleportHereButton = ImpButton.Bind("TeleportHere", transform, TeleportHere, theme, isIconButton: true);
         teleportHereButton.gameObject.SetActive(CanTeleportHere());
 
-        // Destroy button
+        // Destroy button (Unthemed, as it's red in any theme)
         var destroyButton = ImpButton.Bind("Destroy", transform, Destroy);
         destroyButton.gameObject.SetActive(CanDestroy());
 
         // Respawn button
-        var respawnButton = ImpButton.Bind("Respawn", transform, Respawn);
+        var respawnButton = ImpButton.Bind("Respawn", transform, Respawn, theme, isIconButton: true);
         respawnButton.gameObject.SetActive(CanRespawn());
 
         // Drop button
-        dropButton = ImpButton.Bind("Drop", transform, Drop);
+        dropButton = ImpButton.Bind("Drop", transform, Drop, theme, isIconButton: true);
         dropButton.gameObject.SetActive(CanDrop());
 
-        // Kill button
+        // Kill button (Unthemes, as it is red in every theme)
         killButton = ImpButton.Bind("Kill", transform, Kill);
         killButton.gameObject.SetActive(CanKill());
 
-        // Revive button
+        // Revive button (Unthemed, as it is blue in every theme)
         reviveButton = ImpButton.Bind("Revive", transform, Revive);
         reviveButton.gameObject.SetActive(CanRevive());
 

@@ -25,6 +25,8 @@ public class ImpInputBindings
         BaseMap.AddAction("LeftClick", binding: "<Mouse>/leftButton");
         BaseMap.AddAction("RightClick", binding: "<Mouse>/rightButton");
         BaseMap.AddAction("Reset", binding: "<Keyboard>/r");
+        BaseMap.AddAction("Minimap", binding: "<Keyboard>/m");
+        BaseMap.AddAction("Alt", binding: "<Keyboard>/alt");
         BaseMap.Enable();
 
         SpawningMap.AddAction("ArrowUp", binding: "<Keyboard>/upArrow");

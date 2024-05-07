@@ -125,14 +125,20 @@ public class EntityInfo : MonoBehaviour
                 break;
         }
 
-        if (lookAtPosition.HasValue)
+        if (lookAtPosition.HasValue && lookAtPosition != Vector3.zero)
         {
+            lookAtLine.gameObject.SetActive(true);
+
             ImpUtils.Geometry.SetLinePositions(
                 lookAtLine,
                 entityController.transform.position,
                 lookAtPosition.Value
             );
             ImpUtils.Geometry.SetLineColor(lookAtLine, new Color(0.47f, 0.66f, 0.35f));
+        }
+        else
+        {
+            lookAtLine.gameObject.SetActive(false);
         }
     }
 

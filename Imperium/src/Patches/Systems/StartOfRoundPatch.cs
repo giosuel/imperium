@@ -2,7 +2,10 @@
 
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Netcode;
 using Imperium.Util;
+using Unity.Netcode;
+using UnityEngine;
 
 #endregion
 
@@ -11,6 +14,23 @@ namespace Imperium.Patches.Systems;
 [HarmonyPatch(typeof(StartOfRound))]
 public class StartOfRoundPatch
 {
+    [HarmonyPatch(typeof(StartOfRound))]
+    internal static class PreloadPatches
+    {
+        /// <summary>
+        ///     This is used as the entry function for Imperium
+        /// </summary>
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StartOfRound), "Awake")]
+        private static void ConnectClientToPlayerObjectPatch(StartOfRound __instance)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                Object.Instantiate(ImpNetworkManager.NetworkPrefab).GetComponent<NetworkObject>().Spawn();
+            }
+        }
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("unloadSceneForAllPlayers")]
     private static void unloadSceneForAllPlayersPatch(StartOfRound __instance)
@@ -24,7 +44,11 @@ public class StartOfRoundPatch
     {
         if (ImpSettings.Game.PreventShipLeave.Value)
         {
+            // We have to revert this
+            __instance.allPlayersDead = false;
+
             ImpOutput.Send("Prevented the ship from leaving.", notificationType: NotificationType.Other);
+            Imperium.Log.LogInfo("[MON] Prevented the ship from leaving.");
             return false;
         }
 

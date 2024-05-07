@@ -10,12 +10,11 @@ namespace Imperium.MonoBehaviours.ImpUI.TeleportUI;
 
 internal class TeleportUI : MultiplexUI
 {
-    public override void Awake() => InitializeUI(closeOnMovement: false);
-
-    protected override void InitUI()
+    protected override void InitUI(
+        )
     {
-        RegisterWindow<TeleportWindow>("Teleport", false);
-        RegisterWindow<WaypointWindow>("Waypoints");
+        RegisterWindow<TeleportWindow>("Teleport", theme);
+        RegisterWindow<WaypointWindow>("Waypoints", theme);
 
         Imperium.InputBindings.BaseMap["Teleport"].performed += OnTeleport;
     }

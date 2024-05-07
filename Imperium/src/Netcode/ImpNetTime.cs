@@ -1,5 +1,6 @@
 #region
 
+using Imperium.Core;
 using Unity.Netcode;
 
 #endregion
@@ -26,12 +27,16 @@ public class ImpNetTime : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void RequestTimeServerRpc()
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SyncTimeClientRpc(Imperium.GameManager.TimeSpeed.Value, Imperium.GameManager.TimeIsPaused.Value);
     }
 
     [ServerRpc(RequireOwnership = false)]
     internal void UpdateTimeServerRpc(float timeSpeed, bool isPaused)
     {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
         SyncTimeClientRpc(timeSpeed, isPaused);
     }
 
@@ -40,5 +45,19 @@ public class ImpNetTime : NetworkBehaviour
     {
         Imperium.GameManager.TimeSpeed.Set(timeSpeed, skipSync: true);
         Imperium.GameManager.TimeIsPaused.Set(isPaused, skipSync: true);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    internal void SetShipLeaveAutomaticallyServerRpc(bool leaveAutomatically)
+    {
+        if (!ImpSettings.Preferences.AllowClients.Value) return;
+
+        SetShipLeaveAutomaticallyClientRpc(leaveAutomatically);
+    }
+
+    [ClientRpc]
+    private void SetShipLeaveAutomaticallyClientRpc(bool leaveAutomatically)
+    {
+        ImpSettings.Game.PreventShipLeave.Set(!leaveAutomatically, skipSync: true);
     }
 }

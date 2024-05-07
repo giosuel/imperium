@@ -32,9 +32,12 @@ internal abstract class ImpOutput
         bool isWarning = false
     )
     {
-        if (!ImpNetworkManager.IsHost.Value) return;
+        if (!ImpNetworkManager.IsHost.Value || !ImpSettings.Preferences.AllowClients.Value) return;
         ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning);
     }
+
+    internal static void Status(string text) => HUDManager.Instance.DisplayStatusEffect(text);
+    internal static void Debug(string text) => HUDManager.Instance.SetDebugText(text);
 
     internal static void Send(
         string text,

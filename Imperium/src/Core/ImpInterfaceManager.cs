@@ -6,6 +6,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using Imperium.Integration;
 using Imperium.MonoBehaviours.ImpUI;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -22,6 +23,7 @@ internal class ImpInterfaceManager : MonoBehaviour
     internal readonly ImpBinding<BaseUI> OpenInterface = new();
 
     private readonly InputActionMap interfaceMap = new();
+    private ImpBinding<ImpTheme> theme;
 
     // We implement the exiting from UIs with bepinex controls as we have to differentiate
     // between the Escape and Tab character due to some UIs overriding the tab button callback.
@@ -29,23 +31,37 @@ internal class ImpInterfaceManager : MonoBehaviour
     private KeyboardShortcut escShortcut = new(KeyCode.Escape);
     private KeyboardShortcut tabShortcut = new(KeyCode.Tab);
 
-    internal static ImpInterfaceManager Create() => new GameObject("ImpInterface").AddComponent<ImpInterfaceManager>();
+    internal static ImpInterfaceManager Create(ImpBinding<ImpTheme> theme)
+    {
+        var interfaceManager = new GameObject("ImpInterface").AddComponent<ImpInterfaceManager>();
+        interfaceManager.theme = theme;
+
+        return interfaceManager;
+    }
 
     private void Update()
     {
         if (!OpenInterface.Value) return;
 
-        if (escShortcut.IsDown() || (!OpenInterface.Value.ignoreTab && tabShortcut.IsDown()))
+        if (escShortcut.IsDown() || (!OpenInterface.Value.IgnoreTab && tabShortcut.IsDown()))
         {
             Close();
         }
     }
 
-    internal void Register<T>(GameObject obj, string keybind = null, Type parent = null) where T : BaseUI
+    internal void Register<T>(
+        GameObject obj,
+        string keybind = null,
+        Type parent = null,
+        bool closeOnMovement = true,
+        bool ignoreTab = false
+    ) where T : BaseUI
     {
         if (interfaceControllers.ContainsKey(typeof(T))) return;
 
         var interfaceObj = Instantiate(obj, transform).AddComponent<T>();
+        interfaceObj.InitializeUI(theme, closeOnMovement, ignoreTab);
+
         if (parent != null) interfaceParents[interfaceObj.GetInstanceID()] = parent;
         interfaceObj.interfaceManager = this;
         interfaceControllers[typeof(T)] = interfaceObj;

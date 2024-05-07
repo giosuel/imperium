@@ -89,7 +89,8 @@ internal class ObjectManager : ImpLifecycleObject
         string prefabName,
         Vector3 position,
         int amount = 1,
-        int health = -1
+        int health = -1,
+        bool sendNotification = false
     )
     {
         ImpNetSpawning.Instance.SpawnEntityServerRpc(
@@ -97,7 +98,8 @@ internal class ObjectManager : ImpLifecycleObject
             prefabName,
             new ImpVector(position),
             amount,
-            health
+            health,
+            sendNotification
         );
     }
 
@@ -141,7 +143,8 @@ internal class ObjectManager : ImpLifecycleObject
         string prefabName,
         Vector3 position,
         int amount,
-        int health
+        int health,
+        bool sendNotification
     )
     {
         var spawningEntity = AllEntities.Value
@@ -169,9 +172,12 @@ internal class ObjectManager : ImpLifecycleObject
         var mountString = amount == 1 ? "A" : $"{amount.ToString()}x";
         var verbString = amount == 1 ? "has" : "have";
 
-        ImpOutput.SendToClients(
-            $"{mountString} loyal {GetDisplayName(entityName)} {verbString} been spawned!"
-        );
+        if (sendNotification)
+        {
+            ImpOutput.SendToClients(
+                $"{mountString} loyal {GetDisplayName(entityName)} {verbString} been spawned!"
+            );
+        }
 
         ImpNetSpawning.Instance.OnEntitiesChangedClientRpc();
     }
@@ -356,7 +362,7 @@ internal class ObjectManager : ImpLifecycleObject
         DespawnObject(obj);
         return true;
     }
-    
+
     private readonly Dictionary<string, string> displayNameMap = [];
 
     internal string GetDisplayName(string inGameName) => displayNameMap.GetValueOrDefault(inGameName, inGameName);

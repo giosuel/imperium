@@ -25,7 +25,8 @@ internal static class ShotgunItemPatch
         {
             __instance.useCooldown = ImpSettings.Shotgun.FullAuto.Value
                 ? 0
-                : ImpConstants.ShotgunDefaultCooldown;
+                // Get default use cooldown from the shotgun spawn prefab
+                : __instance.itemProperties.spawnPrefab.GetComponent<ShotgunItem>().useCooldown;
             if (ImpSettings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
         }
     }

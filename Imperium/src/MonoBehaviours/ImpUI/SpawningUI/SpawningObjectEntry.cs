@@ -4,9 +4,10 @@ using System;
 using System.Linq;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Types;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 #endregion
 
@@ -14,7 +15,7 @@ namespace Imperium.MonoBehaviours.ImpUI.SpawningUI;
 
 public class SpawningObjectEntry : MonoBehaviour
 {
-    private Image background;
+    // private GameObject selectedCover;
 
     private SpawnObjectType spawnType;
     private string displayName;
@@ -25,7 +26,14 @@ public class SpawningObjectEntry : MonoBehaviour
     private string spawnObjectNamNormalized;
     private string spawnObjectPrefabNameNormalized;
 
-    internal void Init(SpawnObjectType type, string objectName, string prefabName, Action onClick, Action onHover)
+    internal void Init(
+        SpawnObjectType type,
+        string objectName,
+        string prefabName,
+        Action onClick,
+        Action onHover,
+        ImpBinding<ImpTheme> themeBinding
+    )
     {
         spawnType = type;
         displayName = Imperium.ObjectManager.GetDisplayName(objectName);
@@ -36,12 +44,23 @@ public class SpawningObjectEntry : MonoBehaviour
         spawnObjectNamNormalized = NormalizeName(spawnObjectName);
         spawnObjectPrefabNameNormalized = NormalizeName(spawnObjectPrefabName);
 
+        ImpButton.Bind("", transform, () => onClick?.Invoke(), themeBinding);
+
+        // selectedCover = transform.Find("Selected").gameObject;
+        // selectedCover.SetActive(false);
         transform.Find("Label").GetComponent<TMP_Text>().text = $"{displayName} ({objectName})";
 
-        background = GetComponent<Image>();
-        GetComponent<Button>().onClick.AddListener(() => onClick?.Invoke());
-
         gameObject.AddComponent<ImpInteractable>().onEnter += onHover;
+        themeBinding.onUpdate += OnThemeUpdate;
+    }
+
+    private void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            transform,
+            new StyleOverride("", Variant.LIGHTER)
+        );
     }
 
     internal void Spawn(Vector3 position, int amount, int value, bool spawnInInventory = true)
@@ -49,7 +68,14 @@ public class SpawningObjectEntry : MonoBehaviour
         switch (spawnType)
         {
             case SpawnObjectType.ENTITY:
-                ObjectManager.SpawnEntity(spawnObjectName, spawnObjectPrefabName, position, amount, value);
+                ObjectManager.SpawnEntity(
+                    spawnObjectName,
+                    spawnObjectPrefabName,
+                    position,
+                    amount,
+                    value,
+                    true
+                );
                 break;
             case SpawnObjectType.ITEM:
                 ObjectManager.SpawnItem(
@@ -71,7 +97,7 @@ public class SpawningObjectEntry : MonoBehaviour
 
     internal void SetSelected(bool isSelected)
     {
-        background.color = isSelected ? new Color(0.8f, 0, 0) : new Color(0.5f, 0, 0);
+        // selectedCover.SetActive(isSelected);
     }
 
     internal bool OnInput(string inputText)

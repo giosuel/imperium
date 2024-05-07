@@ -30,38 +30,40 @@ internal class TeleportWindow : BaseWindow
     {
         tpMainEntrance = ImpButton.Bind(
             "Presets/MainEntrance", content,
-            () => TeleportTo(Imperium.PlayerManager.MainEntranceTPAnchor.Value)
+            () => TeleportTo(Imperium.PlayerManager.MainEntranceTPAnchor.Value),
+            themeBinding
         );
         tpShip = ImpButton.Bind(
             "Presets/Ship", content,
-            () => TeleportTo(Imperium.PlayerManager.ShipTPAnchor.Value)
+            () => TeleportTo(Imperium.PlayerManager.ShipTPAnchor.Value),
+            themeBinding
         );
         tpApparatus = ImpButton.Bind(
             "Presets/Apparatus", content,
-            () => TeleportTo(Imperium.PlayerManager.ApparatusTPAnchor.Value)
+            () => TeleportTo(Imperium.PlayerManager.ApparatusTPAnchor.Value),
+            themeBinding
         );
         ImpButton.Bind(
             "Presets/Freecam", content,
-            () => TeleportTo(Imperium.Freecam.transform.position)
+            () => TeleportTo(Imperium.Freecam.transform.position),
+            themeBinding
         );
-        
-        coordinateX = new ImpBinding<float>(0, _ => TeleportToCoords());
-        coordinateY = new ImpBinding<float>(0, _ => TeleportToCoords());
-        coordinateZ = new ImpBinding<float>(0, _ => TeleportToCoords());
 
-        ImpInput.Bind("Coords/CoordsX", content, coordinateX, max: 10000f, min: -10000f);
-        ImpInput.Bind("Coords/CoordsY", content, coordinateY, max: 999f, min: -999f);
-        ImpInput.Bind("Coords/CoordsZ", content, coordinateZ, max: 10000f, min: -10000f);
+        // We need to set the teleport function as sync callback as the game might teleport the player to different
+        // coordinates due to OOB restrictions. That way, the input field would be out of sync with the actual position,
+        // so we have to re-set the coords without invoking another teleport that would lead to a stack overflow.
+        coordinateX = new ImpBinding<float>(0, syncOnUpdate: _ => TeleportToCoords());
+        coordinateY = new ImpBinding<float>(0, syncOnUpdate: _ => TeleportToCoords());
+        coordinateZ = new ImpBinding<float>(0, syncOnUpdate: _ => TeleportToCoords());
 
-        // Every input field submit teleports player to combined coords
-        coordinateX.onUpdate += _ => TeleportToCoords();
-        coordinateY.onUpdate += _ => TeleportToCoords();
-        coordinateZ.onUpdate += _ => TeleportToCoords();
+        ImpInput.Bind("Coords/CoordsX", content, coordinateX, themeBinding, max: 10000f, min: -10000f);
+        ImpInput.Bind("Coords/CoordsY", content, coordinateY, themeBinding, max: 999f, min: -999f);
+        ImpInput.Bind("Coords/CoordsZ", content, coordinateZ, themeBinding, max: 10000f, min: -10000f);
 
         fireExitsDropdown = content.Find("FireExits").GetComponent<TMP_Dropdown>();
         fireExitsDropdown.onValueChanged.AddListener(_ => TeleportTo(fireExits[fireExitsDropdown.value]));
 
-        ImpButton.Bind("Buttons/Interactive", content, OnInteractive);
+        ImpButton.Bind("Buttons/Interactive", content, OnInteractive, themeBinding);
     }
 
     protected override void OnOpen()
@@ -98,6 +100,10 @@ internal class TeleportWindow : BaseWindow
             coordinateY.Value,
             coordinateZ.Value
         ));
+        var playerPosition = Imperium.Player.transform.position;
+        coordinateX.Set(playerPosition.x, true);
+        coordinateY.Set(playerPosition.y, true);
+        coordinateZ.Set(playerPosition.z, true);
     }
 
     private void FillFireExitDropdown()
