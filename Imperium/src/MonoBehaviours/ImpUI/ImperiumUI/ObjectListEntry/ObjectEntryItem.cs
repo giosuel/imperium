@@ -4,6 +4,7 @@ using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.UI;
 
 #endregion
@@ -41,7 +42,13 @@ internal class ObjectEntryItem : ObjectEntry
         Imperium.ImpPositionIndicator.Activate(position =>
         {
             var item = (GrabbableObject)component;
-            item.transform.position = position;
+            var itemTransform = item.transform;
+            itemTransform.position = position + Vector3.up;
+            item.startFallingPosition = itemTransform.position;
+            if (item.transform.parent != null)
+            {
+                item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
+            }
             item.FallToGround();
         }, origin);
     }
