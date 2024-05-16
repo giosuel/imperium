@@ -8,7 +8,7 @@ using Imperium.Core;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-///     Binds a game value and allows subscribers to register on change listeners.
+///     Binds a value and allows subscribers to register on change listeners.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class ImpBinding<T> : IRefreshable, IResettable
@@ -19,7 +19,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     // meaning we need to make sure that this doesn't cause a runaway chain update on all clients
     // Therefore we put the network update into the sync update which is only called on actual user inputs and not on
     // external updates from other clients or the server.
-    public event Action<T> syncOnUpdate;
+    public event Action<T> onUpdateSync;
 
     // Additional update listeners registered by dependent components and objects
     public event Action<T> onUpdate;
@@ -48,28 +48,28 @@ public class ImpBinding<T> : IRefreshable, IResettable
     }
 
     /// <param name="currentValue"></param>
-    /// <param name="onUpdate">
+    /// <param name="update">
     ///     <see cref="onUpdate" />
     /// </param>
-    /// <param name="syncOnUpdate">
-    ///     <see cref="syncOnUpdate" />
+    /// <param name="syncUpdate">
+    ///     <see cref="onUpdateSync" />
     /// </param>
     /// <param name="ignoreRefresh">
     ///     <see cref="ignoreRefresh" />
     /// </param>
     internal ImpBinding(
         T currentValue,
-        Action<T> onUpdate = null,
-        Action<T> syncOnUpdate = null,
+        Action<T> update = null,
+        Action<T> syncUpdate = null,
         bool ignoreRefresh = false
     )
     {
         Value = currentValue;
         DefaultValue = currentValue;
         this.ignoreRefresh = ignoreRefresh;
-        this.syncOnUpdate = syncOnUpdate;
+        this.onUpdateSync = syncUpdate;
 
-        this.onUpdate += onUpdate;
+        this.onUpdate += update;
     }
 
     /// <summary>
@@ -77,11 +77,11 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// </summary>
     /// <param name="currentValue"></param>
     /// <param name="defaultValue"></param>
-    /// <param name="onUpdate">
+    /// <param name="update">
     ///     <see cref="onUpdate" />
     /// </param>
-    /// <param name="syncOnUpdate">
-    ///     <see cref="syncOnUpdate" />
+    /// <param name="syncUpdate">
+    ///     <see cref="onUpdateSync" />
     /// </param>
     /// <param name="ignoreRefresh">
     ///     <see cref="ignoreRefresh" />
@@ -89,17 +89,17 @@ public class ImpBinding<T> : IRefreshable, IResettable
     internal ImpBinding(
         T currentValue,
         T defaultValue,
-        Action<T> onUpdate = null,
-        Action<T> syncOnUpdate = null,
+        Action<T> update = null,
+        Action<T> syncUpdate = null,
         bool ignoreRefresh = false
     )
     {
         Value = currentValue;
         DefaultValue = defaultValue;
         this.ignoreRefresh = ignoreRefresh;
-        this.syncOnUpdate = syncOnUpdate;
+        this.onUpdateSync = syncUpdate;
 
-        this.onUpdate += onUpdate;
+        this.onUpdate += update;
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     {
         Value = value;
 
-        if (!skipSync) syncOnUpdate?.Invoke(value);
+        if (!skipSync) onUpdateSync?.Invoke(value);
         onUpdate?.Invoke(value);
         onTrigger?.Invoke();
     }

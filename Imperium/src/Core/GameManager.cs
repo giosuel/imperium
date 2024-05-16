@@ -17,12 +17,12 @@ internal class GameManager : ImpLifecycleObject
     {
         TimeIsPaused = new ImpBinding<bool>(
             false,
-            syncOnUpdate: value =>
+            syncUpdate: value =>
                 ImpNetTime.Instance.UpdateTimeServerRpc(TimeSpeed?.Value ?? ImpConstants.DefaultTimeSpeed, value)
         );
         TimeSpeed = new ImpBinding<float>(
             ImpConstants.DefaultTimeSpeed,
-            syncOnUpdate: value =>
+            syncUpdate: value =>
                 ImpNetTime.Instance.UpdateTimeServerRpc(value, TimeIsPaused?.Value ?? false)
         );
     }
@@ -199,8 +199,8 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<bool> AllPlayersDead = new(
         false,
         ignoreRefresh: true,
-        onUpdate: value => Imperium.StartOfRound.allPlayersDead = value,
-        syncOnUpdate: value => ImpNetPlayer.Instance.SetAllPlayersDeadServerRpc(value)
+        update: value => Imperium.StartOfRound.allPlayersDead = value,
+        syncUpdate: value => ImpNetPlayer.Instance.SetAllPlayersDeadServerRpc(value)
     );
 
     [ImpAttributes.RemoteMethod]
