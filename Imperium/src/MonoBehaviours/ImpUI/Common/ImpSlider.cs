@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Imperium.Core;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
@@ -19,89 +21,145 @@ public class ImpSlider : MonoBehaviour
     private Slider slider;
     private TMP_Text indicatorText;
 
-    private Func<float, string> indicatorFormatter;
     private string indicatorUnit;
+    private Func<float, string> indicatorFormatter;
 
     private float debounceTime;
+    private Coroutine debounceCoroutine;
 
     /// <summary>
-    ///     Adds and binds an ImpSlider to a valid slider object
+    ///     Factory method to create and bind an ImpSlider to a valid slider object.
+    ///
+    /// Required UI Layout:
+    ///   Root
+    ///     "Reset" (Button?) - Optional reset button
+    ///     "Slider" (Slider)
+    ///       "SliderArea" (Image)
+    ///         "SlideArea"
+    ///           "Handle" (Image)
+    ///             "Text" (TMP_Text) - Optional indicator text
     /// </summary>
-    /// >
-    /// <param name="path"></param>
-    /// <param name="container"></param>
+    /// <param name="path">The path to the UI element relative to the parent.</param>
+    /// <param name="container">The parent object of the UI elmeent.</param>
     /// <param name="valueBinding">The binding that the value of the slider will be bound to</param>
+    /// <param name="theme">The theme the slider will use</param>
     /// <param name="useLogarithmicScale">If the slider uses a logarithmic scale</param>
-    /// <param name="indicatorDefaultValue">Overwrites the default value on the slider</param>
     /// <param name="indicatorUnit">Slider value unit (e.g. % or degrees)</param>
+    /// <param name="indicatorDefaultValue">Overwrites the default value on the slider</param>
     /// <param name="indicatorFormatter">Formatter for custom indicator text</param>
     /// <param name="debounceTime">Debounce time for slider updates</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
+    /// <param name="options">Override options with provided labels</param>
+    /// <param name="clickAudio">The audio clip that is played when the slider value is changed.</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the slider is interactable</param>
     internal static ImpSlider Bind(
         string path,
         Transform container,
         ImpBinding<float> valueBinding,
+        ImpBinding<ImpTheme> theme = null,
         bool useLogarithmicScale = false,
-        float? indicatorDefaultValue = null,
         string indicatorUnit = "",
+        float? indicatorDefaultValue = null,
         Func<float, string> indicatorFormatter = null,
         float debounceTime = 0f,
         bool interactableInvert = false,
+        ImpBinding<List<string>> options = null,
+        AudioClip clickAudio = null,
         params ImpBinding<bool>[] interactableBindings
     )
     {
         var sliderObject = container.Find(path);
+        if (!sliderObject) return null;
+
         var impSlider = sliderObject.gameObject.AddComponent<ImpSlider>();
         impSlider.debounceTime = debounceTime;
         impSlider.indicatorFormatter = indicatorFormatter;
         impSlider.indicatorUnit = indicatorUnit;
+        impSlider.slider = sliderObject.Find("Slider").GetComponent<Slider>();
+        impSlider.indicatorText = sliderObject.Find("Slider/SlideArea/Handle/Text").GetComponent<TMP_Text>();
 
-        indicatorFormatter ??= value => $"{Mathf.RoundToInt(value)}{indicatorUnit}";
+        indicatorFormatter ??= value => $"{Mathf.RoundToInt(value)}";
+        clickAudio ??= ImpAssets.GrassClick;
 
         var currentValue = useLogarithmicScale ? (float)Math.Log10(valueBinding.Value) : valueBinding.Value;
-
         impSlider.slider.value = currentValue;
-        impSlider.indicatorText.text = indicatorFormatter(valueBinding.Value);
 
-        impSlider.slider.onValueChanged.AddListener(value =>
+        if (options is { Value: not null, Value.Count: > 0 })
+        {
+            impSlider.slider.minValue = 0;
+            impSlider.slider.maxValue = options.Value.Count - 1;
+
+            impSlider.indicatorText.text = $"{options.Value[(int)valueBinding.Value]}{indicatorUnit}";
+
+            options.onUpdate += newOptions =>
+            {
+                impSlider.slider.minValue = 0;
+                impSlider.slider.maxValue = newOptions.Count - 1;
+
+                impSlider.indicatorText.text = $"{newOptions[(int)valueBinding.Value]}{indicatorUnit}";
+            };
+        }
+        else
+        {
+            impSlider.indicatorText.text = $"{indicatorFormatter(valueBinding.Value)}{indicatorUnit}";
+        }
+
+        impSlider.slider.onValueChanged.AddListener(newValue =>
         {
             // Fixes weird null pointer error after respawning UI
             if (!impSlider) return;
 
-            var newValue = useLogarithmicScale ? (float)Math.Pow(10, value) : value;
 
-            impSlider.indicatorText.text = indicatorFormatter(newValue);
+            // Use option label if options are used
+            impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }
+                ? $"{options.Value[(int)newValue]}{indicatorUnit}"
+                : $"{indicatorFormatter(newValue)}{indicatorUnit}";
 
-            GameManager.PlayClip(ImpAssets.GrassClick);
+            var bindingValue = useLogarithmicScale ? (float)Math.Pow(10, newValue) : newValue;
 
             if (debounceTime > 0)
             {
                 if (impSlider.debounceCoroutine != null) impSlider.StopCoroutine(impSlider.debounceCoroutine);
-                impSlider.debounceCoroutine =
-                    impSlider.StartCoroutine(impSlider.DebounceSlider(valueBinding, newValue));
+                impSlider.debounceCoroutine = impSlider.StartCoroutine(
+                    impSlider.DebounceSlider(valueBinding, bindingValue, clickAudio)
+                );
             }
             else
             {
-                valueBinding.Set(newValue);
+                valueBinding.Set(bindingValue);
+                GameManager.PlayClip(clickAudio);
             }
         });
 
-        valueBinding.onUpdate += value =>
+        valueBinding.onUpdate += newValue =>
         {
-            impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(value) : value;
-            impSlider.indicatorText.text = indicatorFormatter(value);
+            impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(newValue) : newValue;;
+
+            // Use option label if options are used
+            impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }
+                ? $"{options.Value[(int)newValue]}{indicatorUnit}"
+                : $"{indicatorFormatter(newValue)}{indicatorUnit}";
         };
 
-        ImpButton.Bind("Reset", sliderObject, () =>
-        {
-            valueBinding.Reset();
+        ImpButton.Bind(
+            "Reset", sliderObject, () =>
+            {
+                var defaultValue = indicatorDefaultValue ?? valueBinding.DefaultValue;
 
-            var defaultValue = indicatorDefaultValue ?? valueBinding.DefaultValue;
+                impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(defaultValue) : defaultValue;
 
-            impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(defaultValue) : defaultValue;
-            impSlider.indicatorText.text = indicatorFormatter(defaultValue);
-        }, interactableInvert, interactableBindings);
+                // Use option label if options are used
+                impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }
+                    ? $"{options.Value[(int)defaultValue]}{indicatorUnit}"
+                    : $"{indicatorFormatter(defaultValue)}{indicatorUnit}";
+
+                valueBinding.Reset();
+            },
+            theme: theme,
+            playClickSound: false,
+            interactableInvert: interactableInvert,
+            interactableBindings: interactableBindings
+        );
 
         if (interactableBindings.Length > 0)
         {
@@ -115,23 +173,30 @@ public class ImpSlider : MonoBehaviour
             }
         }
 
+        if (theme != null)
+        {
+            theme.onUpdate += value => OnThemeUpdate(value, sliderObject);
+            OnThemeUpdate(theme.Value, sliderObject);
+        }
+
         return impSlider;
     }
 
-    public void Awake()
+    private static void OnThemeUpdate(ImpTheme theme, Transform container)
     {
-        slider = transform.Find("Slider").GetComponent<Slider>();
-        indicatorText = transform.Find("Slider/SlideArea/Handle/Text").GetComponent<TMP_Text>();
+        ImpThemeManager.Style(
+            theme,
+            container,
+            new StyleOverride("Slider/SliderArea", Variant.DARKER),
+            new StyleOverride("Slider/SlideArea/Handle", Variant.FOREGROUND)
+        );
     }
 
-    private Coroutine debounceCoroutine;
-
-    // ReSharper disable Unity.PerformanceAnalysis
-    // This is only called to debounce when the slider value has been changed
-    private IEnumerator DebounceSlider(ImpBinding<float> binding, float value)
+    private IEnumerator DebounceSlider(ImpBinding<float> binding, float value, AudioClip clickAudio)
     {
         yield return new WaitForSeconds(debounceTime);
         binding.Set(value);
+        GameManager.PlayClip(clickAudio);
     }
 
     private void SetIndicatorText(float value)

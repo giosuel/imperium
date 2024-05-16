@@ -10,12 +10,11 @@ namespace Imperium.MonoBehaviours.ImpUI.TeleportUI;
 
 internal class TeleportUI : MultiplexUI
 {
-    public override void Awake() => InitializeUI(closeOnMovement: false);
-
-    protected override void InitUI()
+    protected override void InitUI(
+        )
     {
-        RegisterWindow<TeleportWindow>("Teleport", false);
-        RegisterWindow<WaypointWindow>("Waypoints");
+        RegisterWindow<TeleportWindow>("Teleport", theme);
+        RegisterWindow<WaypointWindow>("Waypoints", theme);
 
         Imperium.InputBindings.BaseMap["Teleport"].performed += OnTeleport;
     }
@@ -28,6 +27,14 @@ internal class TeleportUI : MultiplexUI
 
         // Set origin of indicator to freecam if freecam is enabled
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo, origin);
+        
+        if (Imperium.ImpPositionIndicator.IsActive)
+        {
+            Imperium.ImpPositionIndicator.HideIndicator();
+        }
+        else
+        {
+            Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo, origin);
+        }
     }
 }

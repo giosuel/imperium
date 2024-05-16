@@ -181,4 +181,81 @@ public class MoonManager
 
         ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
+    
+    internal static void ToggleDoors(bool isOpen)
+    {
+        Imperium.ObjectManager.CurrentLevelDoors.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(door =>
+            {
+                var animation = door.gameObject.GetComponent<AnimatedObjectTrigger>();
+                animation.TriggerAnimation(Imperium.Player);
+                door.isDoorOpened = isOpen;
+                door.navMeshObstacle.enabled = !isOpen;
+            });
+    }
+
+    internal static void ToggleDoorLocks(bool isLocked)
+    {
+        Imperium.ObjectManager.CurrentLevelDoors.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(door =>
+            {
+                if (isLocked && !door.isLocked)
+                {
+                    door.LockDoor();
+                }
+                else if (door.isLocked)
+                {
+                    door.UnlockDoor();
+                }
+            });
+    }
+
+    internal static void ToggleSecurityDoors(bool isOn)
+    {
+        Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(door => door.OnPowerSwitch(!isOn));
+    }
+
+    internal static void ToggleTurrets(bool isOn)
+    {
+        Imperium.ObjectManager.CurrentLevelTurrets.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(turret => turret.ToggleTurretEnabled(isOn));
+    }
+
+    internal static void ToggleLandmines(bool isOn)
+    {
+        Imperium.ObjectManager.CurrentLevelLandmines.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(mine => mine.ToggleMine(isOn));
+    }
+
+    internal static void ToggleBreakers(bool isOn)
+    {
+        Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(box =>
+            {
+                foreach (var breakerSwitch in box.breakerSwitches)
+                {
+                    var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
+                    if (animation.boolValue != isOn)
+                    {
+                        animation.boolValue = isOn;
+                        animation.setInitialState = isOn;
+                        breakerSwitch.SetBool("turnedLeft", isOn);
+                        box.SwitchBreaker(isOn);
+                    }
+                }
+            });
+    }
 }

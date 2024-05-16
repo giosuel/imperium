@@ -3,15 +3,15 @@
 using System.Linq;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Types;
+using Imperium.Util.Binding;
 
 #endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.ObjectsUI;
 
-internal class ObjectsUI : StandaloneUI
+internal class ObjectsUI : SingleplexUI
 {
-    public override void Awake() => InitializeUI();
-
     protected override void InitUI()
     {
         InitShotgun();
@@ -21,13 +21,13 @@ internal class ObjectsUI : StandaloneUI
 
     private void InitShotgun()
     {
-        ImpToggle.Bind("Shotgun/InfiniteAmmo", content, ImpSettings.Shotgun.InfiniteAmmo);
-        ImpToggle.Bind("Shotgun/FullAuto", content, ImpSettings.Shotgun.FullAuto);
+        ImpToggle.Bind("Shotgun/InfiniteAmmo", content, ImpSettings.Shotgun.InfiniteAmmo, theme: theme);
+        ImpToggle.Bind("Shotgun/FullAuto", content, ImpSettings.Shotgun.FullAuto, theme: theme);
     }
 
     private void InitShovel()
     {
-        ImpToggle.Bind("Shovel/Speedy", content, ImpSettings.Shovel.Speedy);
+        ImpToggle.Bind("Shovel/Speedy", content, ImpSettings.Shovel.Speedy, theme: theme);
     }
 
     private void InitJester()
@@ -43,7 +43,7 @@ internal class ObjectsUI : StandaloneUI
                     jester.creatureAnimator.SetBool("turningCrank", value: true);
                     jester.SwitchToBehaviourState(2);
                 });
-        });
+        }, theme: theme);
 
         ImpButton.Bind("Jester/PopCursed", content, () =>
         {
@@ -52,7 +52,7 @@ internal class ObjectsUI : StandaloneUI
                 .Where(obj => obj is JesterAI)
                 .ToList()
                 .ForEach(jester => jester.SwitchToBehaviourState(2));
-        });
+        }, theme: theme);
 
         ImpButton.Bind("Jester/Reset", content, () =>
         {
@@ -61,6 +61,6 @@ internal class ObjectsUI : StandaloneUI
                 .Where(obj => obj is JesterAI)
                 .ToList()
                 .ForEach(jester => jester.SwitchToBehaviourState(0));
-        });
+        }, theme: theme);
     }
 }

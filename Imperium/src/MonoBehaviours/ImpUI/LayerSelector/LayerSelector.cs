@@ -1,28 +1,33 @@
 #region
 
 using Imperium.Core;
+using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.MonoBehaviours.ImpUI.RenderingUI;
+using Imperium.Types;
 using Imperium.Util;
+using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 #endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.LayerSelector;
 
 /// <summary>
-///     This UI is a bit special as it is controlled by the bindings <see cref="ImpSettings.Hidden.FreecamLayerSelector" />
-///     and <see cref="ImpFreecam.IsFreecamEnabled" /> and the in-game variable <see cref="QuickMenuManager.isMenuOpen" />
-///     that indicates if the quick menu or an Imperium UI is open.
+/// This UI is a bit special as it is neither a child of another UI nor does it have a keybinding to open it at any time.
+/// Instead, this UI can only be opened by the <see cref="ImpFreecam"/> and the <see cref="MapUI"/>.
 /// </summary>
-internal class LayerSelector : StandaloneUI
+internal class LayerSelector : SingleplexUI
 {
     private int selectedLayer;
     private GameObject layerTemplate;
     private readonly LayerToggle[] layerToggles = new LayerToggle[31];
 
-    public override void Awake() => InitializeUI(isCollapsible: false, closeOnMovement: false);
-
+    private ImpBinding<bool> IsEnabledBinding = new(false);
+    private ImpBinding<int> LayerMaskBinding = new(0);
+    
     protected override void InitUI()
     {
         layerTemplate = content.Find("LayerItem").gameObject;
@@ -34,6 +39,14 @@ internal class LayerSelector : StandaloneUI
             toggleObj.SetActive(true);
             layerToggles[i] = toggleObj.AddComponent<LayerToggle>();
             layerToggles[i].Init(LayerMask.LayerToName(i), i);
+            var currentIndex = i;
+            layerToggles[i].gameObject.AddComponent<ImpInteractable>().onEnter += () =>
+            {
+                layerToggles[selectedLayer].SetSelected(false);
+                selectedLayer = currentIndex;
+                layerToggles[selectedLayer].SetSelected(true);
+            };
+            layerToggles[i].GetComponent<Button>().onClick.AddListener(OnLayerSelect);
         }
 
         layerToggles[0].SetSelected(true);
@@ -41,8 +54,31 @@ internal class LayerSelector : StandaloneUI
         Imperium.InputBindings.FreecamMap["ArrowDown"].performed += OnLayerDown;
         Imperium.InputBindings.FreecamMap["ArrowUp"].performed += OnLayerUp;
         Imperium.InputBindings.FreecamMap["Select"].performed += OnLayerSelect;
+    }
 
-        foreach (var toggle in layerToggles) toggle.UpdateIsOn(ImpSettings.Hidden.FreecamLayerMask.Value);
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            layerTemplate.transform,
+            new StyleOverride("Hover", Variant.FADED)
+        );
+
+        foreach (var toggle in layerToggles)
+        {
+            ImpThemeManager.Style(
+                themeUpdate,
+                toggle.transform,
+                new StyleOverride("Hover", Variant.FADED)
+            );
+        }
+    }
+
+    internal void Bind(ImpBinding<bool> enabledBinding, ImpBinding<int> layerMaskBinding)
+    {
+        IsEnabledBinding = enabledBinding;
+        LayerMaskBinding = layerMaskBinding;
+        foreach (var toggle in layerToggles) toggle.UpdateIsOn(layerMaskBinding.Value);
     }
 
     private void OnLayerDown(InputAction.CallbackContext callbackContext)
@@ -83,9 +119,14 @@ internal class LayerSelector : StandaloneUI
     {
         if (!IsOpen) return;
 
+        OnLayerSelect();
+    }
+
+    private void OnLayerSelect()
+    {
         GameManager.PlayClip(ImpAssets.GrassClick);
-        var newMask = ImpUtils.ToggleLayerInMask(ImpSettings.Hidden.FreecamLayerMask.Value, selectedLayer);
-        ImpSettings.Hidden.FreecamLayerMask.Set(newMask);
+        var newMask = ImpUtils.ToggleLayerInMask(LayerMaskBinding.Value, selectedLayer);
+        LayerMaskBinding.Set(newMask);
         layerToggles[selectedLayer].UpdateIsOn(newMask);
     }
 
@@ -93,11 +134,11 @@ internal class LayerSelector : StandaloneUI
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen)
         {
-            if (IsOpen) OnUIClose();
+            if (IsOpen) CloseUI();
         }
-        else if (ImpSettings.Hidden.FreecamLayerSelector.Value && Imperium.Player.isFreeCamera)
+        else if (IsEnabledBinding is { Value: true } && Imperium.Player.isFreeCamera)
         {
-            if (!IsOpen) OnUIOpen();
+            if (!IsOpen) OpenUI();
         }
     }
 }

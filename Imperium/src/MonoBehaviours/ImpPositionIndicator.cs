@@ -14,15 +14,15 @@ namespace Imperium.MonoBehaviours;
 
 public class ImpPositionIndicator : MonoBehaviour
 {
+    private Transform origin;
     private GameObject indicatorObject;
     private LineRenderer indicatorLineRenderer;
-    private Transform origin;
 
     private Action<Vector3> registeredCallback;
 
     private bool _isActive;
 
-    private bool isActive
+    internal bool IsActive
     {
         get => _isActive;
         set
@@ -45,7 +45,7 @@ public class ImpPositionIndicator : MonoBehaviour
 
     private void OnLeftClick(InputAction.CallbackContext context)
     {
-        if (isActive) SubmitIndicator();
+        if (IsActive) SubmitIndicator();
     }
 
     public void Activate(Action<Vector3> callback, Transform originTransform = null)
@@ -63,7 +63,7 @@ public class ImpPositionIndicator : MonoBehaviour
 
     private void ShowIndicator()
     {
-        isActive = true;
+        IsActive = true;
 
         Imperium.Interface.Close();
 
@@ -73,7 +73,7 @@ public class ImpPositionIndicator : MonoBehaviour
 
     public void HideIndicator()
     {
-        isActive = false;
+        IsActive = false;
         registeredCallback = null;
 
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed -= OnLeftClick;
@@ -82,7 +82,7 @@ public class ImpPositionIndicator : MonoBehaviour
 
     public void Update()
     {
-        if (!isActive || !origin) return;
+        if (!IsActive || !origin) return;
 
         var forward = origin.forward;
         var rotateDegrees = ImpSettings.Preferences.LeftHandedMode.Value ? -90 : 90;

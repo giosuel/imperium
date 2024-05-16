@@ -17,12 +17,12 @@ internal class GameManager : ImpLifecycleObject
     {
         TimeIsPaused = new ImpBinding<bool>(
             false,
-            syncOnUpdate: value =>
+            syncUpdate: value =>
                 ImpNetTime.Instance.UpdateTimeServerRpc(TimeSpeed?.Value ?? ImpConstants.DefaultTimeSpeed, value)
         );
         TimeSpeed = new ImpBinding<float>(
             ImpConstants.DefaultTimeSpeed,
-            syncOnUpdate: value =>
+            syncUpdate: value =>
                 ImpNetTime.Instance.UpdateTimeServerRpc(value, TimeIsPaused?.Value ?? false)
         );
     }
@@ -67,83 +67,69 @@ internal class GameManager : ImpLifecycleObject
 
     internal readonly ImpBinding<float> MaxIndoorPower = new(
         Imperium.RoundManager.currentMaxInsidePower,
-        value =>
+        value => Imperium.RoundManager.currentMaxInsidePower = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.currentMaxInsidePower = value;
+            ImpNetSpawning.Instance.SetMaxIndoorPowerServerRpc(value);
             ImpOutput.Send($"Indoor Power set to {value}!", notificationType: NotificationType.Confirmation);
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetMaxIndoorPowerServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<float> MaxOutdoorPower = new(
         Imperium.RoundManager.currentMaxOutsidePower,
-        value =>
+        value => Imperium.RoundManager.currentMaxOutsidePower = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.currentMaxOutsidePower = value;
+            ImpNetSpawning.Instance.SetMaxOutdoorPowerServerRpc(value);
             ImpOutput.Send($"Outdoor Power set to {value}!", notificationType: NotificationType.Confirmation);
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetMaxOutdoorPowerServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<int> MaxDaytimePower = new(
         Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount,
-        value =>
+        value => Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount = value;
+            ImpNetSpawning.Instance.SetMaxDaytimePowerServerRpc(value);
             ImpOutput.Send($"Daytime Power set to {value}!", notificationType: NotificationType.Confirmation);
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetMaxDaytimePowerServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<float> IndoorDeviation = new(
         Imperium.RoundManager.currentLevel.spawnProbabilityRange,
-        value =>
+        value => Imperium.RoundManager.currentLevel.spawnProbabilityRange = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.currentLevel.spawnProbabilityRange = value;
+            ImpNetSpawning.Instance.SetIndoorDeviationServerRpc(value);
             ImpOutput.Send($"Indoor deviation set to {value}!", notificationType: NotificationType.Confirmation);
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetIndoorDeviationServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<float> DaytimeDeviation = new(
         Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange,
-        value =>
+        value => Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange = value;
+            ImpNetSpawning.Instance.SetDaytimeDeviationServerRpc(value);
             ImpOutput.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetDaytimeDeviationServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<int> MinIndoorSpawns = new(
         Imperium.RoundManager.minEnemiesToSpawn,
-        value =>
+        value => Imperium.RoundManager.minEnemiesToSpawn = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.minEnemiesToSpawn = value;
+            ImpNetSpawning.Instance.SetMinIndoorEntitiesServerRpc(value);
             ImpOutput.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetMinIndoorEntitiesServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<int> MinOutdoorSpawns = new(
         Imperium.RoundManager.minOutsideEnemiesToSpawn,
-        value =>
+        value => Imperium.RoundManager.minOutsideEnemiesToSpawn = value,
+        syncUpdate: value =>
         {
-            Imperium.RoundManager.minOutsideEnemiesToSpawn = value;
+            ImpNetSpawning.Instance.SetMinOutdoorEntitiesServerRpc(value);
             ImpOutput.Send(
                 $"Minimum outdoor spawn has been set to {value}!",
                 notificationType: NotificationType.Confirmation
             );
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetMinOutdoorEntitiesServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<float> WeatherVariable1 = new(
         Imperium.TimeOfDay.currentWeatherVariable,
@@ -156,60 +142,65 @@ internal class GameManager : ImpLifecycleObject
             }
 
             Imperium.TimeOfDay.currentWeatherVariable = value;
-            ImpOutput.Send($"Weather variable 1 set to {value}!", notificationType: NotificationType.Confirmation);
         },
         ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetWeatherVariable1ServerRpc(value)
-    );
+        syncUpdate: value =>
+        {
+            ImpNetSpawning.Instance.SetWeatherVariable1ServerRpc(value);
+            ImpOutput.Send($"Weather variable 1 set to {value}!", notificationType: NotificationType.Confirmation);
+        });
 
     internal readonly ImpBinding<float> WeatherVariable2 = new(
         Imperium.TimeOfDay.currentWeatherVariable2,
-        value =>
-        {
-            Imperium.TimeOfDay.currentWeatherVariable2 = value;
-            ImpOutput.Send($"Weather variable 2 set to {value}!", notificationType: NotificationType.Confirmation);
-        },
+        value => Imperium.TimeOfDay.currentWeatherVariable2 = value,
         ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetSpawning.Instance.SetWeatherVariable2ServerRpc(value)
-    );
+        syncUpdate: value =>
+        {
+            ImpNetSpawning.Instance.SetWeatherVariable2ServerRpc(value);
+            ImpOutput.Send($"Weather variable 2 set to {value}!", notificationType: NotificationType.Confirmation);
+        });
 
     internal readonly ImpBinding<int> GroupCredits = new(
         Imperium.Terminal.groupCredits,
-        onUpdate: value =>
+        ignoreRefresh: true,
+        syncUpdate: value =>
         {
+            ImpNetQuota.Instance.SetGroupCreditsServerRpc(value);
             ImpOutput.Send(
                 $"Successfully changed group credits to {value}!",
                 notificationType: NotificationType.Confirmation
             );
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetQuota.Instance.SetGroupCreditsServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<int> ProfitQuota = new(
         Imperium.TimeOfDay.profitQuota,
-        onUpdate: value =>
+        ignoreRefresh: true,
+        syncUpdate: value =>
         {
+            ImpNetQuota.Instance.SetProfitQuotaServerRpc(value);
             ImpOutput.Send(
                 $"Successfully changed profit quota to {value}!",
                 notificationType: NotificationType.Confirmation
             );
-        },
-        ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetQuota.Instance.SetProfitQuotaServerRpc(value)
-    );
+        });
 
     internal readonly ImpBinding<int> QuotaDeadline = new(
         Imperium.TimeOfDay.daysUntilDeadline,
-        onUpdate: value =>
+        ignoreRefresh: true,
+        syncUpdate: value =>
         {
+            ImpNetQuota.Instance.SetDeadlineDaysServerRpc(value);
             ImpOutput.Send(
                 $"Successfully changed quota deadline to {value}!",
                 notificationType: NotificationType.Confirmation
             );
-        },
+        });
+
+    internal readonly ImpBinding<bool> AllPlayersDead = new(
+        false,
         ignoreRefresh: true,
-        syncOnUpdate: value => ImpNetQuota.Instance.SetDeadlineDaysServerRpc(value)
+        update: value => Imperium.StartOfRound.allPlayersDead = value,
+        syncUpdate: value => ImpNetPlayer.Instance.SetAllPlayersDeadServerRpc(value)
     );
 
     [ImpAttributes.RemoteMethod]
@@ -283,15 +274,17 @@ internal class GameManager : ImpLifecycleObject
                 weatherEffect.effectObject.SetActive(value: isEnabled);
             }
 
-            if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool)
-                          && Imperium.TimeOfDay.sunAnimator != null)
+            if (Imperium.TimeOfDay.sunAnimator)
             {
-                Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);
-            }
-            else
-            {
-                Imperium.TimeOfDay.sunAnimator.Rebind();
-                Imperium.TimeOfDay.sunAnimator.Update(0);
+                if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool))
+                {
+                    Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);
+                }
+                else
+                {
+                    Imperium.TimeOfDay.sunAnimator.Rebind();
+                    Imperium.TimeOfDay.sunAnimator.Update(0);
+                }
             }
         }
 
@@ -312,77 +305,6 @@ internal class GameManager : ImpLifecycleObject
 
         // Send scene refresh so moon related data is refreshed
         Imperium.IsSceneLoaded.Refresh();
-    }
-
-    internal static void ToggleDoors(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => door.OpenOrCloseDoor(Imperium.Player));
-    }
-
-    internal static void ToggleDoorLocks(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door =>
-            {
-                if (isOn)
-                {
-                    door.LockDoor();
-                }
-                else
-                {
-                    door.UnlockDoor();
-                }
-            });
-    }
-
-    public static void ToggleSecurityDoors(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => door.OnPowerSwitch(isOn));
-    }
-
-    public static void ToggleTurrets(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelTurrets.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(turret => turret.ToggleTurretEnabled(isOn));
-    }
-
-    public static void ToggleLandmines(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelLandmines.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(mine => mine.ToggleMine(isOn));
-    }
-
-    public static void ToggleBreakers(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(box =>
-            {
-                foreach (var breakerSwitch in box.breakerSwitches)
-                {
-                    var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
-                    if (animation.boolValue != isOn)
-                    {
-                        animation.boolValue = isOn;
-                        animation.setInitialState = isOn;
-                        breakerSwitch.SetBool("turnedLeft", isOn);
-                        box.SwitchBreaker(isOn);
-                    }
-                }
-            });
     }
 
     internal static void PlayClip(AudioClip audioClip, bool randomize = false)

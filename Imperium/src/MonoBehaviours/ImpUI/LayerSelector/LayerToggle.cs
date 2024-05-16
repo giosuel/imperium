@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.RenderingUI;
+namespace Imperium.MonoBehaviours.ImpUI.LayerSelector;
 
 internal class LayerToggle : MonoBehaviour
 {
@@ -18,8 +18,8 @@ internal class LayerToggle : MonoBehaviour
 
     private void Awake()
     {
-        cover = transform.Find("Cover").gameObject;
-        buttonCross = transform.Find("Check").gameObject;
+        cover = transform.Find("Hover").gameObject;
+        buttonCross = transform.Find("Selected").gameObject;
         buttonCheck = transform.Find("Cross").gameObject;
         text = transform.Find("Text").GetComponent<TMP_Text>();
 

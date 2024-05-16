@@ -1,17 +1,17 @@
 #region
 
 using Imperium.Oracle;
+using Imperium.Types;
 using Imperium.Util;
+using Imperium.Util.Binding;
 
 #endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.OracleUI;
 
-internal class OracleUI : StandaloneUI
+internal class OracleUI : SingleplexUI
 {
     private readonly OracleCycleEntry[] entries = new OracleCycleEntry[10];
-
-    public override void Awake() => InitializeUI();
 
     private void OnOracleUpdate(OracleState state)
     {
@@ -28,6 +28,7 @@ internal class OracleUI : StandaloneUI
 
         // Initial cycle with only indoor
         entries[0] = content.Find("Header/InitialCycle").gameObject.AddComponent<OracleCycleEntry>();
+        entries[0].Initialize(theme);
 
         var index = 1;
         for (var i = 1; i <= 3; i++)
@@ -39,7 +40,7 @@ internal class OracleUI : StandaloneUI
                 var entryObject = Instantiate(cycleTemplate, rowObject.transform);
                 entryObject.SetActive(true);
                 entries[index] = entryObject.AddComponent<OracleCycleEntry>();
-
+                entries[index].Initialize(theme);
                 index++;
             }
         }
@@ -47,11 +48,25 @@ internal class OracleUI : StandaloneUI
         Imperium.Oracle.State.onUpdate += OnOracleUpdate;
     }
 
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            container.Find("Window/Content"),
+            new StyleOverride("Scrollbar", Variant.DARKEST),
+            new StyleOverride("Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
+        );
+    }
+
     public override bool CanOpen()
     {
         if (!Imperium.IsSceneLoaded.Value)
         {
-            ImpOutput.Send("Nothing is spawning out here ._.", title: "Oracle");
+            ImpOutput.Send(
+                "Nothing is spawning out here ._.",
+                title: "Oracle",
+                notificationType: NotificationType.Required
+            );
             return false;
         }
 

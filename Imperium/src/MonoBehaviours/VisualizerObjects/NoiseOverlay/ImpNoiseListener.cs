@@ -48,6 +48,6 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
     {
         if (!ImpSettings.Visualizations.NoiseIndicators.Value) return;
 
-        arrowQueue.Dequeue().Activate(noisePosition, 5, noiseLoudness);
+        arrowQueue.Dequeue().Activate(noisePosition, 5, noiseLoudness, noiseID);
     }
 }

@@ -5,6 +5,7 @@ using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util;
+using Unity.Netcode;
 
 #endregion
 
@@ -27,6 +28,33 @@ internal class ObjectEntryPlayer : ObjectEntry
         var playerName = player.playerUsername;
         if (string.IsNullOrEmpty(playerName)) playerName = $"Player {component.GetInstanceID()}";
 
+        // Check if player is also using Imperium
+        if (ImpNetCommunication.Instance.ImperiumUsers.Contains(player.playerClientId))
+        {
+            playerName = $"[I] {playerName}";
+        }
+
+        if (player.isPlayerControlled)
+        {
+            if (player.isInHangarShipRoom)
+            {
+                playerName += " (In Ship)";
+            }
+            else if (player.isInsideFactory)
+            {
+                playerName += " (Indoors)";
+            }
+            else
+            {
+                playerName += " (Outdoors)";
+            }
+        }
+
+        if (player.playerClientId == NetworkManager.ServerClientId)
+        {
+            playerName = ImpUtils.RichText.Bold(playerName);
+        }
+
         return player.isPlayerDead ? ImpUtils.RichText.Strikethrough(playerName) : playerName;
     }
 
@@ -46,10 +74,11 @@ internal class ObjectEntryPlayer : ObjectEntry
     {
         Imperium.ImpPositionIndicator.Activate(position =>
         {
-            ImpNetPlayer.Instance.TeleportPlayerServerRpc(
-                PlayerManager.GetPlayerID((PlayerControllerB)component),
-                new ImpVector(position)
-            );
+            ((PlayerControllerB)component).TeleportPlayer(position);
+            // ImpNetPlayer.Instance.TeleportPlayerServerRpc(
+            //     PlayerManager.GetPlayerID((PlayerControllerB)component),
+            //     new ImpVector(position)
+            // );
         }, Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null);
         Imperium.Interface.Close();
     }

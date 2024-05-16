@@ -52,12 +52,15 @@ internal class Oracle
             .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
 
-        var firstTimeSpawningEnemies =
-            Reflection.Get<RoundManager, bool>(roundManager, "firstTimeSpawningEnemies");
-        var firstTimeSpawningOutsideEnemies =
-            Reflection.Get<RoundManager, bool>(roundManager, "firstTimeSpawningOutsideEnemies");
-        var firstTimeSpawningDaytimeEnemies =
-            Reflection.Get<RoundManager, bool>(roundManager, "firstTimeSpawningDaytimeEnemies");
+        var firstTimeSpawningEnemies = Reflection.Get<RoundManager, bool>(
+            roundManager, "firstTimeSpawningEnemies"
+        );
+        var firstTimeSpawningOutsideEnemies = Reflection.Get<RoundManager, bool>(
+            roundManager, "firstTimeSpawningOutsideEnemies"
+        );
+        var firstTimeSpawningDaytimeEnemies = Reflection.Get<RoundManager, bool>(
+            roundManager, "firstTimeSpawningDaytimeEnemies"
+        );
 
         // Cycle Variables
         State.Value.currentCycle =
@@ -220,7 +223,11 @@ internal class Oracle
             currentPower += spawningEntity.PowerLevel;
             entitySpawnCounts[spawningEntity]++;
             spawning.Add(new SpawnReport
-                { entity = spawningEntity, position = spawnVent.floorNode.position, spawnTime = spawnTime });
+            {
+                entity = spawningEntity,
+                position = spawnVent.floorNode?.position ?? Vector3.zero,
+                spawnTime = spawnTime
+            });
         }
 
         return spawning;
@@ -290,8 +297,7 @@ internal class Oracle
             if (probabilities.Sum() == 0) continue;
 
             var randomWeightedIndex = roundManager.GetRandomWeightedIndex(
-                probabilities.ToArray(),
-                outsideEntitySimulator
+                probabilities.ToArray(), outsideEntitySimulator
             );
             var spawningEntity = roundManager.currentLevel.OutsideEnemies[randomWeightedIndex].enemyType;
 
@@ -320,7 +326,11 @@ internal class Oracle
                 entitySpawnCounts[spawningEntity]++;
 
                 spawning.Add(new SpawnReport
-                    { entity = spawningEntity, position = position, spawnTime = (int)currentDayTime });
+                {
+                    entity = spawningEntity,
+                    position = position,
+                    spawnTime = (int)currentDayTime
+                });
             }
         }
 
@@ -410,7 +420,11 @@ internal class Oracle
                 entitySpawnCounts[enemyType]++;
 
                 spawning.Add(new SpawnReport
-                    { entity = enemyType, position = position, spawnTime = (int)currentDayTime });
+                {
+                    entity = enemyType,
+                    position = position,
+                    spawnTime = (int)currentDayTime
+                });
             }
         }
 

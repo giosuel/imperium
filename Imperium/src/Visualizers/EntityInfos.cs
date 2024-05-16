@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using System.Linq;
 using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util;
@@ -16,14 +17,13 @@ internal class EntityInfos(ImpBinding<HashSet<EnemyAI>> objectsBinding)
 {
     protected override void Refresh(HashSet<EnemyAI> objects)
     {
-        foreach (var entity in objects)
+        foreach (var entity in objects.Where(entity => entity))
         {
             if (!indicatorObjects.ContainsKey(entity.GetInstanceID()))
             {
                 var entityInfoObject = Object.Instantiate(ImpAssets.EntityInfo);
-                var parent = entity.GetComponentInChildren<EnemyAICollisionDetect>()?.transform
-                    ? entity.GetComponentInChildren<EnemyAICollisionDetect>().transform
-                    : entity.transform;
+                var collisionDectector = entity.GetComponentInChildren<EnemyAICollisionDetect>();
+                var parent = collisionDectector ? collisionDectector.transform  : entity.transform;
 
                 // Get the highest point of any box collider (min 1f)
                 var collider = entity.GetComponentInChildren<BoxCollider>();

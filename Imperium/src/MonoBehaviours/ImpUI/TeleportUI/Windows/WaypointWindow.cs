@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Types;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,6 +41,31 @@ internal class WaypointWindow : BaseWindow
         waypointTemplate.SetActive(false);
         waypointListTemplate.SetActive(false);
         waypointTitleTemplate.SetActive(false);
+    }
+
+    protected override void OnThemeUpdate(ImpTheme theme)
+    {
+        ImpThemeManager.Style(
+            theme,
+            transform.parent.parent,
+            new StyleOverride("ScrollbarVertical/SlidingArea/Handle", Variant.LIGHTER)
+        );
+
+        ImpThemeManager.Style(
+            theme,
+            content,
+            new StyleOverride("Add/Name", Variant.LIGHTER),
+            new StyleOverride("TemplateTitle", Variant.DARKER)
+        );
+
+        foreach (var waypointTitle in waypointTitleMap.Values)
+        {
+            ImpThemeManager.Style(
+                theme,
+                waypointTitle,
+                new StyleOverride("", Variant.DARKER)
+            );
+        }
     }
 
     private void OnWaypointAdd(string waypointName)
@@ -87,20 +113,32 @@ internal class WaypointWindow : BaseWindow
         moonWaypointMap[waypointName] = Imperium.Player.transform.position;
 
         newWaypoint.transform.Find("Name").GetComponent<TMP_Text>().text = waypointName;
-        newWaypoint.transform.Find("Teleport").GetComponent<Button>().onClick.AddListener(
-            () => PlayerManager.TeleportTo(moonWaypointMap[waypointName]));
-        newWaypoint.transform.Find("Remove").GetComponent<Button>().onClick.AddListener(() =>
-        {
-            Destroy(newWaypoint);
-            moonWaypointMap.Remove(waypointName);
 
-            // Remove moon if was last waypoint
-            if (moonWaypointMap.Count == 0)
+        ImpButton.Bind(
+            "Teleport",
+            newWaypoint.transform,
+            () => PlayerManager.TeleportTo(moonWaypointMap[waypointName]),
+            theme: themeBinding,
+            isIconButton: true
+        );
+        ImpButton.Bind(
+            "Remove",
+            newWaypoint.transform,
+            () =>
             {
-                Destroy(waypointList.gameObject);
-                Destroy(waypointTitle.gameObject);
-            }
-        });
+                Destroy(newWaypoint);
+                moonWaypointMap.Remove(waypointName);
+
+                // Remove moon if was last waypoint
+                if (moonWaypointMap.Count == 0)
+                {
+                    Destroy(waypointList.gameObject);
+                    Destroy(waypointTitle.gameObject);
+                }
+            },
+            theme: themeBinding,
+            isIconButton: true
+        );
 
         waypointNameInput.text = "";
     }

@@ -1,7 +1,11 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.Types;
+using Imperium.Util;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +14,7 @@ using UnityEngine.InputSystem;
 
 namespace Imperium.MonoBehaviours.ImpUI.SpawningUI;
 
-internal class SpawningUI : BaseUI
+internal class SpawningUI : SingleplexUI
 {
     private TMP_InputField input;
 
@@ -26,8 +30,6 @@ internal class SpawningUI : BaseUI
     private int previouslySpawnedValue;
 
     private int selectedIndex = -1;
-
-    public override void Awake() => InitializeUI(false);
 
     protected override void InitUI()
     {
@@ -53,6 +55,20 @@ internal class SpawningUI : BaseUI
         GenerateItems();
     }
 
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            container.Find("Window"),
+            new StyleOverride("Input", Variant.BACKGROUND),
+            new StyleOverride("Input/Border", Variant.DARKER),
+            new StyleOverride("Results/MoreItems", Variant.DARKEST),
+            new StyleOverride("Results/Template", Variant.DARKER)
+        );
+
+        base.OnThemeUpdate(themeUpdate);
+    }
+
     private void GenerateItems()
     {
         foreach (var entity in Imperium.ObjectManager.AllEntities.Value)
@@ -65,7 +81,8 @@ internal class SpawningUI : BaseUI
                 entity.enemyName,
                 entity.enemyPrefab?.name,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex)
+                () => SelectItemAndDeselectOthers(currentIndex),
+                theme
             );
             entries.Add(spawningEntry);
         }
@@ -80,7 +97,8 @@ internal class SpawningUI : BaseUI
                 item.itemName,
                 item.spawnPrefab?.name ?? Imperium.ObjectManager.GetStaticPrefabName(item.itemName),
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex)
+                () => SelectItemAndDeselectOthers(currentIndex),
+                theme
             );
             entries.Add(spawningEntry);
         }
@@ -95,7 +113,8 @@ internal class SpawningUI : BaseUI
                 hazardName,
                 hazard.name,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex)
+                () => SelectItemAndDeselectOthers(currentIndex),
+                theme
             );
             entries.Add(spawningEntry);
         }
@@ -215,7 +234,7 @@ internal class SpawningUI : BaseUI
         }
         else
         {
-            var playerTransform = Imperium.Player.transform;
+            var playerTransform = Imperium.Player.gameplayCamera.transform;
             var spawnPosition = playerTransform.position + playerTransform.forward * 3f;
 
             // Note: This layer mask was copied from GrabbableObject.FallToGround()
@@ -229,7 +248,6 @@ internal class SpawningUI : BaseUI
             );
 
             if (hasFloorBeneath) spawnPosition = hitInfo.point;
-
             spawningObjectEntry.Spawn(spawnPosition, amount, value);
         }
 

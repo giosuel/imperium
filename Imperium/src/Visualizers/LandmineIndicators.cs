@@ -14,13 +14,6 @@ namespace Imperium.Visualizers;
 internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding) :
     BaseVisualizer<HashSet<Landmine>>("Landmine Indicators", objectsBinding)
 {
-    internal void SnapshotPlayerHitbox(int landmineId)
-    {
-        if (!indicatorObjects.TryGetValue(landmineId, out var landmine)) return;
-
-        landmine.GetComponent<LandmineIndicator>().SnapshotHitboxes();
-    }
-
     protected override void Refresh(HashSet<Landmine> objects)
     {
         ClearObjects();
@@ -38,5 +31,12 @@ internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding) 
                 indicatorObjects[landmine.GetInstanceID()] = indicatorObject;
             }
         }
+    }
+    
+    internal void SnapshotPlayerHitbox(int landmineId)
+    {
+        if (!indicatorObjects.TryGetValue(landmineId, out var landmine)) return;
+
+        landmine.GetComponent<LandmineIndicator>().SnapshotHitboxes();
     }
 }

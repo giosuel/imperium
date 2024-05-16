@@ -2,7 +2,10 @@
 
 using System;
 using Imperium.Core;
+using Imperium.Types;
 using Imperium.Util;
+using Imperium.Util.Binding;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,39 +13,65 @@ using UnityEngine.InputSystem;
 
 namespace Imperium.MonoBehaviours.ImpUI;
 
+/// <summary>
+/// Basic Imperium UI. Can be used as part of an <see cref="ImpInterfaceManager"/> or as standalone UI.
+/// </summary>
 internal abstract class BaseUI : MonoBehaviour
 {
     internal bool IsOpen { get; private set; }
 
-    // Top-level component of the UI, containing all windows and or components
+    /// <summary>
+    /// Reference to the container UI component
+    /// </summary>
     protected Transform container;
 
-    private bool closeOnMove { get; set; }
-    public bool ignoreTab { get; private set; }
-
-    protected event Action onOpen;
-    protected event Action onClose;
-
-    internal ImpInterfaceManager interfaceManager;
-
-    public virtual void Awake() => InitializeUI();
+    /// <summary>
+    /// Whether the UI should be closed when a movement input is detected
+    /// </summary>
+    private bool closeOnMove { get; set; } = true;
 
     /// <summary>
-    ///     For child UIs that are only opened through a click in a parent and not via key bind
+    /// Whether the UI should not react to tab inputs
     /// </summary>
-    /// <param name="closeOnMovement">Whether the UI should be closed on movement inputs (WASD)</param>
-    /// <param name="ignoreTabInput">Whether to ignore the tab close shortcut</param>
-    public void InitializeUI(bool closeOnMovement = true, bool ignoreTabInput = false)
+    internal bool IgnoreTab { get; private set; }
+
+    /// <summary>
+    /// The binding that controls the theme of the UI component.
+    /// UIs can implement the function <see cref="OnThemeUpdate"/> to style components.
+    /// It is called every time the theme binding updates.
+    /// </summary>
+    protected ImpBinding<ImpTheme> theme;
+
+    internal event Action onOpen;
+    internal event Action onClose;
+
+    /// <summary>
+    /// The interface manager this UI belongs to, if it belongs to a manager.
+    /// </summary>
+    [CanBeNull] internal ImpInterfaceManager interfaceManager;
+
+    public virtual void InitializeUI(
+        ImpBinding<ImpTheme> themeBinding,
+        bool closeOnMovement = true,
+        bool ignoreTab = false
+    )
     {
         closeOnMove = closeOnMovement;
-        ignoreTab = ignoreTabInput;
+        IgnoreTab = ignoreTab;
         container = transform.Find("Container");
+
         onOpen += OnOpen;
         onClose += OnClose;
 
+        theme = themeBinding;
+        if (theme != null) theme.onUpdate += OnThemeUpdate;
+
         InitUI();
 
-        container.gameObject.SetActive(false);
+        // Style UI with the current theme
+        OnThemeUpdate(themeBinding.Value);
+
+        if (container) container.gameObject.SetActive(false);
         Imperium.Log.LogInfo($"[OK] Successfully loaded {GetType()} !");
     }
 
@@ -53,33 +82,10 @@ internal abstract class BaseUI : MonoBehaviour
 
     private void CloseEvent(InputAction.CallbackContext _) => CloseUI();
 
-    internal void OnUIClose()
-    {
-        container.gameObject.SetActive(false);
-        IsOpen = false;
-
-        onClose?.Invoke();
-        if (closeOnMove)
-        {
-            Imperium.IngamePlayerSettings.playerInput.actions.FindAction("Move").performed -= CloseEvent;
-        }
-    }
-
-    internal void OnUIOpen()
-    {
-        container.gameObject.SetActive(true);
-        IsOpen = true;
-
-        onOpen?.Invoke();
-        GameManager.PlayClip(ImpAssets.ButtonClick);
-
-        if (closeOnMove)
-        {
-            Imperium.IngamePlayerSettings.playerInput.actions.FindAction("Move").performed += CloseEvent;
-        }
-    }
-
-    protected void CloseUI()
+    /// <summary>
+    /// Closes the UI.
+    /// </summary>
+    internal void CloseUI()
     {
         if (interfaceManager)
         {
@@ -91,7 +97,10 @@ internal abstract class BaseUI : MonoBehaviour
         }
     }
 
-    protected void OpenUI()
+    /// <summary>
+    /// Opens the UI.
+    /// </summary>
+    internal void OpenUI()
     {
         if (interfaceManager)
         {
@@ -103,10 +112,50 @@ internal abstract class BaseUI : MonoBehaviour
         }
     }
 
+    internal void OnUIClose()
+    {
+        if (container) container.gameObject.SetActive(false);
+        IsOpen = false;
+
+        onClose?.Invoke();
+        if (closeOnMove)
+        {
+            Imperium.IngamePlayerSettings.playerInput.actions.FindAction("Move").performed -= CloseEvent;
+        }
+    }
+
+    internal void OnUIOpen()
+    {
+        if (container) container.gameObject.SetActive(true);
+        IsOpen = true;
+
+        onOpen?.Invoke();
+        GameManager.PlayClip(ImpAssets.ButtonClick);
+
+        if (closeOnMove)
+        {
+            Imperium.IngamePlayerSettings.playerInput.actions.FindAction("Move").performed += CloseEvent;
+        }
+    }
+
+    /// <summary>
+    /// Called every time the theme binding updates.
+    /// </summary>
+    /// <param name="themeUpdate">The updated theme</param>
+    protected virtual void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+    }
+
+    /// <summary>
+    /// Called when the UI is opened.
+    /// </summary>
     protected virtual void OnOpen()
     {
     }
 
+    /// <summary>
+    /// Called when then UI is closed.
+    /// </summary>
     protected virtual void OnClose()
     {
     }

@@ -20,6 +20,8 @@ internal delegate void Visualizer(GameObject obj, string identifier, float thick
 
 internal class Visualization
 {
+    private static Material DefaultMaterial => ImpAssets.WireframeCyanMaterial;
+
     internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager)
     {
         ShotgunIndicators = new ShotgunIndicators();
@@ -102,6 +104,91 @@ internal class Visualization
                 definition.material
             );
         }
+    }
+
+    public static GameObject VisualizePoint(GameObject obj, float size, Material material, string name = null)
+    {
+        return ImpUtils.Geometry.CreatePrimitive(
+            PrimitiveType.Sphere,
+            obj.transform,
+            material: material ?? DefaultMaterial,
+            size,
+            name: $"ImpVis_{name ?? obj.GetInstanceID().ToString()}"
+        );
+    }
+
+    public static List<GameObject> VisualizeColliders(GameObject obj, Material material)
+    {
+        return obj.GetComponents<BoxCollider>()
+            .Select(collider => VisualizeBoxCollider(collider, material))
+            .Concat(
+                obj.GetComponents<CapsuleCollider>()
+                    .Select(collider => VisualizeCapsuleCollider(collider, material))
+            )
+            .ToList();
+    }
+
+    public static GameObject VisualizeBoxCollider(GameObject obj, Material material, string name = null)
+    {
+        return VisualizeBoxCollider(obj.GetComponents<BoxCollider>().First(), material, name);
+    }
+
+    public static GameObject VisualizeCapsuleCollider(GameObject obj, Material material, string name = null)
+    {
+        return VisualizeCapsuleCollider(obj.GetComponents<CapsuleCollider>().First(), material, name);
+    }
+
+    public static List<GameObject> VisualizeBoxColliders(GameObject obj, Material material, string name = null)
+    {
+        return obj.GetComponents<BoxCollider>()
+            .Select(collider => VisualizeBoxCollider(collider, material, name))
+            .ToList();
+    }
+
+    public static List<GameObject> VisualizeCapsuleColliders(GameObject obj, Material material, string name = null)
+    {
+        return obj.GetComponents<CapsuleCollider>()
+            .Select(collider => VisualizeCapsuleCollider(collider, material, name))
+            .ToList();
+    }
+
+    public static GameObject VisualizeBoxCollider(BoxCollider collider, Material material, string name = null)
+    {
+        if (!collider) return null;
+
+        var visualizer = ImpUtils.Geometry.CreatePrimitive(
+            PrimitiveType.Cube,
+            collider.transform,
+            material ?? DefaultMaterial,
+            name: $"ImpVis_{name ?? collider.GetInstanceID().ToString()}"
+        );
+
+        var transform = collider.transform;
+        visualizer.transform.position = transform.position;
+        visualizer.transform.localPosition = collider.center;
+        visualizer.transform.localScale = collider.size;
+        visualizer.transform.rotation = transform.rotation;
+
+        return visualizer;
+    }
+
+    public static GameObject VisualizeCapsuleCollider(CapsuleCollider collider, Material material, string name = null)
+    {
+        if (!collider) return null;
+
+        var visualizer = ImpUtils.Geometry.CreatePrimitive(
+            PrimitiveType.Capsule,
+            collider.transform,
+            material ?? DefaultMaterial,
+            name: $"ImpVis_{name ?? collider.GetInstanceID().ToString()}"
+        );
+
+        visualizer.transform.position = collider.transform.position;
+        visualizer.transform.localPosition = collider.center;
+        visualizer.transform.localScale = new Vector3(collider.radius * 2, collider.height / 2, collider.radius * 2);
+        visualizer.transform.rotation = collider.transform.rotation;
+
+        return visualizer;
     }
 
     private void Visualize(
@@ -189,15 +276,11 @@ internal class Visualization
             return;
 
         ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[obj.GetInstanceID()] =
-            ImpUtils.Geometry.CreatePrimitive(
-                PrimitiveType.Sphere, obj.transform, material, size, name: $"ImpVis_{uniqueIdentifier}"
-            );
+            VisualizePoint(obj, size, material, uniqueIdentifier);
     }
 
     private void VisualizeCollider(GameObject obj, string uniqueIdentifier, float thickness, Material material)
     {
-        material ??= ImpAssets.WireframeCyanMaterial;
-
         foreach (var collider in obj.GetComponents<BoxCollider>())
         {
             // Visualizer for object collider has already been created
@@ -205,7 +288,7 @@ internal class Visualization
                 .ContainsKey(collider.GetInstanceID())) return;
 
             ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[collider.GetInstanceID()] =
-                VisualizeBoxCollider(collider, uniqueIdentifier, material);
+                VisualizeBoxCollider(collider, material, uniqueIdentifier);
         }
 
         foreach (var collider in obj.GetComponents<CapsuleCollider>())
@@ -214,35 +297,8 @@ internal class Visualization
             if (ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)
                 .ContainsKey(collider.GetInstanceID())) return;
 
-            // Always use amaranth colored material for capsule colliders
-            var visualizer = ImpUtils.Geometry.CreatePrimitive(
-                PrimitiveType.Capsule, obj.transform, ImpAssets.WireframeAmaranthMaterial,
-                name: $"ImpVis_{uniqueIdentifier}"
-            );
-
-            visualizer.transform.position = obj.transform.position;
-            visualizer.transform.localPosition = collider.center;
-            visualizer.transform.localScale =
-                new Vector3(collider.radius * 2, collider.height / 2, collider.radius * 2);
-            visualizer.transform.rotation = obj.transform.rotation;
-
             ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[collider.GetInstanceID()] =
-                visualizer;
+                VisualizeCapsuleCollider(collider, material, uniqueIdentifier);
         }
-    }
-
-    public static GameObject VisualizeBoxCollider(BoxCollider collider, string name, Material material)
-    {
-        var visualizer = ImpUtils.Geometry.CreatePrimitive(
-            PrimitiveType.Cube, collider.transform, material, name: $"ImpVis_{name}"
-        );
-
-        var transform = collider.transform;
-        visualizer.transform.position = transform.position;
-        visualizer.transform.localPosition = collider.center;
-        visualizer.transform.localScale = collider.size;
-        visualizer.transform.rotation = transform.rotation;
-
-        return visualizer;
     }
 }

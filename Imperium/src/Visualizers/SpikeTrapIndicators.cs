@@ -18,17 +18,17 @@ internal class SpikeTrapIndicators(ImpBinding<HashSet<SpikeRoofTrap>> objectsBin
     {
         ClearObjects();
 
-        foreach (var landmine in objects.Where(obj => obj))
+        foreach (var spikeTrap in objects.Where(obj => obj))
         {
-            if (!indicatorObjects.ContainsKey(landmine.GetInstanceID()))
+            if (!indicatorObjects.ContainsKey(spikeTrap.GetInstanceID()))
             {
                 var indicatorObject = new GameObject();
-                indicatorObject.transform.SetParent(landmine.transform);
+                indicatorObject.transform.SetParent(spikeTrap.transform);
                 var indicator = indicatorObject.AddComponent<SpikeTrapIndicator>();
-                indicator.Init(landmine);
+                indicator.Init(spikeTrap);
                 indicatorObject.SetActive(ImpSettings.Visualizations.SpikeTrapIndicators.Value);
 
-                indicatorObjects[landmine.GetInstanceID()] = indicatorObject;
+                indicatorObjects[spikeTrap.GetInstanceID()] = indicatorObject;
             }
         }
     }

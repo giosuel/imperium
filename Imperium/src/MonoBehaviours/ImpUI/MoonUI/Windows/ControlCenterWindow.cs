@@ -2,6 +2,8 @@
 
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Types;
+using Imperium.Util.Binding;
 using TMPro;
 
 #endregion
@@ -27,19 +29,57 @@ internal class ControlCenterWindow : BaseWindow
 
     private void InitSpawnPropertyFields()
     {
-        ImpInput.Bind("EntitySpawning/MinIndoorSpawns/Input", content, Imperium.GameManager.MinIndoorSpawns);
-        ImpInput.Bind("EntitySpawning/MinOutdoorSpawns/Input", content, Imperium.GameManager.MinOutdoorSpawns);
+        ImpInput.Bind(
+            "EntitySpawning/MinIndoorSpawns/Input",
+            content,
+            Imperium.GameManager.MinIndoorSpawns,
+            themeBinding
+        );
+        ImpInput.Bind(
+            "EntitySpawning/MinOutdoorSpawns/Input",
+            content,
+            Imperium.GameManager.MinOutdoorSpawns,
+            themeBinding
+        );
+        ImpInput.Bind(
+            "EntitySpawning/MaxIndoorPower/Input",
+            content,
+            Imperium.GameManager.MaxIndoorPower,
+            themeBinding
+        );
+        ImpInput.Bind(
+            "EntitySpawning/MaxOutdoorPower/Input",
+            content,
+            Imperium.GameManager.MaxOutdoorPower,
+            themeBinding
+        );
+        ImpInput.Bind(
+            "EntitySpawning/MaxDaytimePower/Input",
+            content,
+            Imperium.GameManager.MaxDaytimePower,
+            themeBinding
+        );
+        ImpInput.Bind(
+            "EntitySpawning/IndoorDeviation/Input",
+            content,
+            Imperium.GameManager.IndoorDeviation,
+            themeBinding
+        );
+        ImpInput.CreateStatic(
+            "EntitySpawning/OutdoorDeviation/Input",
+            content,
+            "3",
+            themeBinding
+        );
+        ImpInput.Bind(
+            "EntitySpawning/DaytimeDeviation/Input",
+            content,
+            Imperium.GameManager.DaytimeDeviation,
+            themeBinding
+        );
 
-        ImpInput.Bind("EntitySpawning/MaxIndoorPower/Input", content, Imperium.GameManager.MaxIndoorPower);
-        ImpInput.Bind("EntitySpawning/MaxOutdoorPower/Input", content, Imperium.GameManager.MaxOutdoorPower);
-        ImpInput.Bind("EntitySpawning/MaxDaytimePower/Input", content, Imperium.GameManager.MaxDaytimePower);
-
-        ImpInput.Bind("EntitySpawning/IndoorDeviation/Input", content, Imperium.GameManager.IndoorDeviation);
-        ImpInput.CreateStatic("EntitySpawning/OutdoorDeviation/Input", content, "3");
-        ImpInput.Bind("EntitySpawning/DaytimeDeviation/Input", content, Imperium.GameManager.DaytimeDeviation);
-
-        ImpInput.Bind("WeatherVariables/Variable1/Input", content, Imperium.GameManager.WeatherVariable1);
-        ImpInput.Bind("WeatherVariables/Variable2/Input", content, Imperium.GameManager.WeatherVariable2);
+        ImpInput.Bind("WeatherVariables/Variable1/Input", content, Imperium.GameManager.WeatherVariable1, themeBinding);
+        ImpInput.Bind("WeatherVariables/Variable2/Input", content, Imperium.GameManager.WeatherVariable2, themeBinding);
     }
 
     private void InitMapObstacleButtons()
@@ -47,84 +87,96 @@ internal class ControlCenterWindow : BaseWindow
         ImpButton.Bind(
             "MapObstacles/Doors/Left/OpenDoors",
             content,
-            () => GameManager.ToggleDoors(true),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleDoors(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/Doors/Left/CloseDoors",
             content,
-            () => GameManager.ToggleDoors(false),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleDoors(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/Doors/Right/LockDoors",
             content,
-            () => GameManager.ToggleDoorLocks(true),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleDoorLocks(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/Doors/Right/UnlockDoors",
             content,
-            () => GameManager.ToggleDoorLocks(false),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleDoorLocks(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/Electronics/Left/OpenSecurity",
             content,
-            () => GameManager.ToggleSecurityDoors(true),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleSecurityDoors(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
         ImpButton.Bind(
             "MapObstacles/Electronics/Left/CloseSecurity",
             content,
-            () => GameManager.ToggleSecurityDoors(false),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleSecurityDoors(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/Electronics/Right/TurnOnBreakers",
             content,
-            () => GameManager.ToggleBreakers(true),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleBreakers(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/Electronics/Right/TurnOffBreakers",
             content,
-            () => GameManager.ToggleBreakers(false),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleBreakers(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/MapHazards/Left/EnableTurrets",
             content,
-            () => GameManager.ToggleTurrets(true),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleTurrets(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/MapHazards/Left/DisableTurrets",
             content,
-            () => GameManager.ToggleTurrets(false),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleTurrets(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/MapHazards/Right/EnableLandmines",
             content,
-            () => GameManager.ToggleLandmines(true),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleLandmines(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
 
         ImpButton.Bind(
             "MapObstacles/MapHazards/Right/DisableLandmines",
             content,
-            () => GameManager.ToggleLandmines(false),
-            interactableBindings: Imperium.IsSceneLoaded
+            () => MoonManager.ToggleLandmines(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: themeBinding
         );
     }
 }

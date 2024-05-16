@@ -2,7 +2,10 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Reflection;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 
 #endregion
 
@@ -76,7 +79,7 @@ internal static class Reflection
         typeof(T).InvokeMember(propertyName, bindingFlags | BindingFlags.SetProperty, null, instance, [value]);
     }
 
-    internal static void Copy<T>(
+    internal static void CopyField<T>(
         T source,
         T target,
         string fieldName,

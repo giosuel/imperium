@@ -1,5 +1,6 @@
 #region
 
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 #endregion
@@ -20,6 +21,12 @@ public class ImpInputBindings
         BaseMap.AddAction("Freecam", binding: "<Keyboard>/f");
         BaseMap.AddAction("Minicam", binding: "<Keyboard>/x");
         BaseMap.AddAction("ToggleHUD", binding: "<Keyboard>/z");
+        BaseMap.AddAction("Look", binding: "<Mouse>/delta");
+        BaseMap.AddAction("LeftClick", binding: "<Mouse>/leftButton");
+        BaseMap.AddAction("RightClick", binding: "<Mouse>/rightButton");
+        BaseMap.AddAction("Reset", binding: "<Keyboard>/r");
+        BaseMap.AddAction("Minimap", binding: "<Keyboard>/m");
+        BaseMap.AddAction("Alt", binding: "<Keyboard>/alt");
         BaseMap.Enable();
 
         SpawningMap.AddAction("ArrowUp", binding: "<Keyboard>/upArrow");
@@ -32,8 +39,6 @@ public class ImpInputBindings
             .With("Down", "<Keyboard>/s")
             .With("Left", "<Keyboard>/a")
             .With("Right", "<Keyboard>/d");
-        FreecamMap.AddAction("Look", binding: "<Mouse>/delta");
-        FreecamMap.AddAction("Reset", binding: "<Keyboard>/r");
         FreecamMap.AddAction("Ascend", binding: "<Keyboard>/q");
         FreecamMap.AddAction("Descend", binding: "<Keyboard>/e");
         FreecamMap.AddAction("LayerSelector", binding: "<Keyboard>/l");

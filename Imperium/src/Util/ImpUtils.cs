@@ -2,10 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Imperium.Core;
 using JetBrains.Annotations;
+using MonoMod.Cil;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,7 +20,7 @@ using Random = System.Random;
 
 namespace Imperium.Util;
 
-internal abstract class ImpUtils
+public abstract class ImpUtils
 {
     internal static int RandomItemValue(Item item)
     {
@@ -52,12 +55,12 @@ internal abstract class ImpUtils
     {
         var cloned = new Random();
 
-        // The seed array needs to be deep-copied since its a referenced type
+        // The seed array needs to be deep-copied since arrays are referenced types
         var seedArray = Reflection.Get<Random, int[]>(random, "_seedArray");
         Reflection.Set(cloned, "_seedArray", seedArray.ToArray());
 
-        Reflection.Copy(random, cloned, "_inextp");
-        Reflection.Copy(random, cloned, "_inext");
+        Reflection.CopyField(random, cloned, "_inextp");
+        Reflection.CopyField(random, cloned, "_inext");
 
         return cloned;
     }
@@ -109,12 +112,17 @@ internal abstract class ImpUtils
         return $"{seconds:0.0}s";
     }
 
-    internal static string FormatVector(Vector3 input, int roundDigits = -1)
+    internal static string FormatVector(
+        Vector3 input,
+        int roundDigits = -1,
+        string separator = "/",
+        string unit = ""
+    )
     {
         var x = roundDigits > -1 ? MathF.Round(input.x, roundDigits) : input.x;
         var y = roundDigits > -1 ? MathF.Round(input.y, roundDigits) : input.y;
         var z = roundDigits > -1 ? MathF.Round(input.z, roundDigits) : input.z;
-        return $"({x}/{y}/{z})";
+        return $"({x}{unit}{separator}{y}{unit}{separator}{z}{unit})";
     }
 
     internal static T InvokeDefaultOnNull<T>(Func<T> callback)
@@ -127,6 +135,27 @@ internal abstract class ImpUtils
         {
             return default;
         }
+    }
+
+    /// <summary>
+    /// Formats the parents of a Unity transform into a string.
+    ///
+    /// e.g. "ImpInterface/imperium_ui/Container/Window/Content"
+    /// </summary>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    internal static string GetTransformPath(Transform root)
+    {
+        if (!root) return "";
+
+        List<string> path = [];
+        while (root)
+        {
+            path.Add(root.name);
+            root = root.parent;
+        }
+
+        return path.AsEnumerable().Reverse().Aggregate((a, b) => a + "/" + b);
     }
 
     internal static Item AddScrapToSpawnList(
@@ -167,18 +196,27 @@ internal abstract class ImpUtils
         return layerMask | (1 << layer);
     }
 
+    internal static int ToggleLayersInMask(int layerMask, params int[] layers)
+    {
+        return layers.Aggregate(layerMask, ToggleLayerInMask);
+    }
+
     internal abstract class Interface
     {
         internal static void ToggleImageActive(Image image, bool isOn)
         {
-            image.color = ChangeAlpha(image.color,
-                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.ImageDisabled);
+            image.color = ChangeAlpha(
+                image.color,
+                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.ImageDisabled
+            );
         }
 
         internal static void ToggleTextActive(TMP_Text text, bool isOn)
         {
-            text.color = ChangeAlpha(text.color,
-                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled);
+            text.color = ChangeAlpha(
+                text.color,
+                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled
+            );
         }
 
         internal static Color ChangeAlpha(Color oldColor, float newAlpha)
@@ -254,9 +292,9 @@ internal abstract class ImpUtils
         }
     }
 
-    internal abstract class Geometry
+    public abstract class Geometry
     {
-        internal static LineRenderer CreateLine(
+        public static LineRenderer CreateLine(
             Transform parent,
             float thickness = 0.05f,
             bool useWorldSpace = false,
@@ -280,13 +318,13 @@ internal abstract class ImpUtils
             return lineRenderer;
         }
 
-        internal static void SetLineColor(LineRenderer lineRenderer, Color color)
+        public static void SetLineColor(LineRenderer lineRenderer, Color color)
         {
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;
         }
 
-        internal static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
+        public static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
         {
             lineRenderer.positionCount = positions.Length;
             for (var i = 0; i < positions.Length; i++)

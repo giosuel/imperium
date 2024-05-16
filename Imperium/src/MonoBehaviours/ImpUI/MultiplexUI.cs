@@ -1,6 +1,8 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.Types;
+using Imperium.Util.Binding;
 
 #endregion
 
@@ -17,12 +19,17 @@ internal abstract class MultiplexUI : BaseUI
     ///     Registers a new window within the current UI
     /// </summary>
     /// <param name="windowName"></param>
-    /// <param name="isCollapsible">Whether the window has a collapse button or not</param>
-    protected T RegisterWindow<T>(string windowName, bool isCollapsible = true) where T : BaseWindow
+    /// <param name="themeBinding">The theme to use for the UI.</param>
+    protected T RegisterWindow<T>(
+        string windowName,
+        ImpBinding<ImpTheme> themeBinding
+    ) where T : BaseWindow
     {
+        theme = themeBinding;
+
         var windowObject = container.Find(windowName);
         var window = windowObject.gameObject.AddComponent<T>();
-        window.RegisterWindow(this, isCollapsible);
+        window.RegisterWindow(this, theme);
 
         Windows[windowName] = window;
 

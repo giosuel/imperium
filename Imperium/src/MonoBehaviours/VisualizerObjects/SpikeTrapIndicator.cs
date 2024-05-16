@@ -72,7 +72,7 @@ public class SpikeTrapIndicator : MonoBehaviour
                 + spikeTrap.timeSinceMovingUp,
                 0
             );
-            spikeTimerText.text = $"{timeLeft:0.0}s";
+            spikeTimerText.text = $"{timeLeft:0.0}";
         }
 
         // Set collider visualizer colors based on if the trap does damage.
@@ -117,8 +117,9 @@ public class SpikeTrapIndicator : MonoBehaviour
 
         foreach (var collider in trap.GetComponentsInChildren<BoxCollider>())
         {
-            var visualizer =
-                Visualization.VisualizeBoxCollider(collider, "SpikeTrap", ImpAssets.WireframeGreenMaterial);
+            var visualizer = Visualization.VisualizeBoxCollider(
+                collider, ImpAssets.WireframeGreenMaterial, "SpikeTrap"
+            );
             visualizer.SetActive(false);
             colliders.Add(visualizer);
         }

@@ -2,11 +2,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Logging;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util.Binding;
+using Unity.Netcode;
 using UnityEngine;
+using LogLevel = BepInEx.Logging.LogLevel;
 
 #endregion
 
@@ -14,7 +15,7 @@ namespace Imperium.Util;
 
 internal abstract class ImpOutput
 {
-    private static readonly Dictionary<NotificationType, ImpConfig<bool>> NotificationSettings = new()
+    private static readonly Dictionary<NotificationType, ImpBinding<bool>> NotificationSettings = new()
     {
         { NotificationType.GodMode, ImpSettings.Preferences.NotificationsGodMode },
         { NotificationType.OracleUpdate, ImpSettings.Preferences.NotificationsOracle },
@@ -22,6 +23,7 @@ internal abstract class ImpOutput
         { NotificationType.SpawnReport, ImpSettings.Preferences.NotificationsSpawnReports },
         { NotificationType.Entities, ImpSettings.Preferences.NotificationsEntities },
         { NotificationType.Server, ImpSettings.Preferences.NotificationsServer },
+        { NotificationType.Required, new ImpBinding<bool>(true) },
         { NotificationType.Other, ImpSettings.Preferences.NotificationsOther }
     };
 
@@ -31,9 +33,12 @@ internal abstract class ImpOutput
         bool isWarning = false
     )
     {
-        if (!ImpNetworkManager.IsHost.Value) return;
+        if (!NetworkManager.Singleton.IsHost || !ImpSettings.Preferences.AllowClients.Value) return;
         ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning);
     }
+
+    internal static void Status(string text) => HUDManager.Instance.DisplayStatusEffect(text);
+    internal static void Debug(string text) => HUDManager.Instance.SetDebugText(text);
 
     internal static void Send(
         string text,
@@ -83,22 +88,26 @@ internal abstract class ImpOutput
 
 internal enum NotificationType
 {
-    // God mode notifications on taking damage and dying
+    // God mode notifications on taking damage and dying.
     GodMode,
 
-    // Oracle spawn prediction updates
+    // Oracle spawn prediction updates.
     OracleUpdate,
 
-    // Confirmation dialogs following user interaction
+    // Confirmation dialogs following user interaction.
     Confirmation,
 
-    // Spawn report every cycle
+    // Spawn report every cycle.
     SpawnReport,
 
-    // Entity related notifications (e.g. Entity took damage)
+    // Entity related notifications (e.g. Entity took damage).
     Entities,
 
-    // Any notifications coming from the host
+    // Any notifications coming from the host.
     Server,
+    
+    // Required notifications for important user-triggered events (can't be turned off).
+    Required,
+    
     Other
 }

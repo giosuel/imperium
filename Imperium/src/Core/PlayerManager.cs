@@ -28,11 +28,6 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         sceneLoaded
     );
 
-    internal readonly ImpExternalBinding<Vector3?, bool> FreecamTPAnchor = new(
-        () => freecam.transform.position,
-        sceneLoaded
-    );
-
     internal readonly ImpExternalBinding<Vector3?, bool> ApparatusTPAnchor = new(
         () => GameObject.Find("LungApparatus(Clone)")?.transform.position,
         sceneLoaded
@@ -56,9 +51,12 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
         player.TeleportPlayer(position);
         var isInFactory = position.y < -100;
-        // player.isInElevator = isInFactory;
         player.isInsideFactory = isInFactory;
-        // player.isInHangarShipRoom = isInFactory;
+
+        // There is no easy way to check this, so it will just be off by default for now
+        player.isInElevator = false;
+        player.isInHangarShipRoom = false;
+
         foreach (var heldItem in Imperium.Player.ItemSlots)
         {
             if (!heldItem) continue;
@@ -85,7 +83,7 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
         // ReSharper disable once Unity.PreferAddressByIdToGraphicsParams
         // This is taken directly from the game
-        if (player.playerBodyAnimator != null) player.playerBodyAnimator.SetBool("Limp", value: false);
+        if (player.playerBodyAnimator) player.playerBodyAnimator.SetBool("Limp", value: false);
         HUDManager.Instance.gasHelmetAnimator.SetBool("gasEmitting", value: false);
         HUDManager.Instance.gameOverAnimator.SetTrigger("revive");
 
@@ -148,7 +146,7 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
     internal static int GetItemHolderSlot(GrabbableObject grabbableObject)
     {
-        if (!grabbableObject.playerHeldBy) return -1;
+        if (!grabbableObject.playerHeldBy || !grabbableObject.playerHeldBy.currentlyHeldObjectServer) return -1;
 
         for (var i = 0; i < grabbableObject.playerHeldBy.ItemSlots.Length; i++)
         {
@@ -193,6 +191,15 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         throw new ArgumentOutOfRangeException();
     }
 
+    internal static PlayerControllerB GetPlayerFromID(int playerId)
+    {
+        if (playerId < 0 || playerId >= Imperium.StartOfRound.allPlayerScripts.Length)
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+        return Imperium.StartOfRound.allPlayerScripts[playerId];
+    }
+
     // Override for ImperiumSettings to use this as a method group
     internal static void UpdateCameras(bool _) => UpdateCameras();
 
@@ -219,45 +226,45 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
             camera.customRenderingSettings = true;
 
-            camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.DecalLayers, ImpSettings.Rendering.DecalLayers.Value);
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.DecalLayers] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.SSGI, ImpSettings.Rendering.SSGI.Value);
+                FrameSettingsField.DecalLayers, ImpSettings.Rendering.DecalLayers.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.SSGI] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.RayTracing, ImpSettings.Rendering.RayTracing.Value);
+                FrameSettingsField.SSGI, ImpSettings.Rendering.SSGI.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.RayTracing] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.VolumetricClouds, ImpSettings.Rendering.VolumetricClouds.Value);
+                FrameSettingsField.RayTracing, ImpSettings.Rendering.RayTracing.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.VolumetricClouds] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.SubsurfaceScattering, ImpSettings.Rendering.SubsurfaceScattering.Value);
+                FrameSettingsField.VolumetricClouds, ImpSettings.Rendering.VolumetricClouds.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.SubsurfaceScattering] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.ReprojectionForVolumetrics, ImpSettings.Rendering.VolumeReprojection.Value);
+                FrameSettingsField.SubsurfaceScattering, ImpSettings.Rendering.SSS.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.ReprojectionForVolumetrics] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.TransparentPrepass, ImpSettings.Rendering.TransparentPrepass.Value);
+                FrameSettingsField.ReprojectionForVolumetrics, ImpSettings.Rendering.VolumeReprojection.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.TransparentPrepass] = true;
-
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.TransparentPostpass, ImpSettings.Rendering.TransparentPostpass.Value);
+                FrameSettingsField.TransparentPrepass, ImpSettings.Rendering.TransparentPrepass.Value);
+
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.TransparentPostpass] = true;
+            camera.renderingPathCustomFrameSettings.SetEnabled(
+                FrameSettingsField.TransparentPostpass, ImpSettings.Rendering.TransparentPostpass.Value);
         }
     }
 }

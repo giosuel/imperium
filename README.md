@@ -16,7 +16,9 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 - Modular and user-centered UI system.
 - In-game overlays and indicators for hitboxes of shotguns, shovels, landmines, etc.
 - Customizable 3-axis freecam with built-in teleportation, night vision and custom FOV settings.
+- Built-in minimap and full-screen map with layer selection, zoom and more.
 - Visualization of game object hitboxes, spawn locations, tile borders and much more.
+- Eight different interface themes to pick from.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Ability to kill and revive players including the yourself.
 - Entity spawn prediction powered by the Oracle Prediction Algorithm.
@@ -33,7 +35,7 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 
 ## UI System and Keybinds
 
-Imperium is divided into 5 separate main interfaces that can be opened separately with the functional keys **F1** - **F6**. One UI can be opened at a time and opening another UI will result in the others being closed. This also works with the *Unity Explorer*. Many of the UIs consist of separate windows that can be collapsed if needed. It is currently not possible to re-bind any Imperium keybinds.
+Imperium is divided into multiple main interfaces that can be opened separately with the functional keys **F1** - **F8**. One UI can be opened at a time and opening another UI will result in the others being closed. This also works with the *Unity Explorer*. Many of the UIs consist of separate windows that can be collapsed if needed. It is currently not possible to re-bind any Imperium keybinds.
 
 | Keybind | Action                                                    |
 | ------- | --------------------------------------------------------- |
@@ -43,10 +45,13 @@ Imperium is divided into 5 separate main interfaces that can be opened separatel
 | F4  | Opens the weather forecaster.                             |
 | F5 | Opens the Oracle spawn prediction.                       |
 | F6    | Opens the ship navigator.                           |
-| T  | Opens the interactive teleportation indicator.            |
+| *F7* | *Reserved for Unity Explorer* |
+| F8 | Opens the full-screen map. |
+| T  | Toggles interactive teleportation.      |
 | F  | Toggles the Imperium freecam.                             |
-| X | Toggles the Imperium minicam / picture-in-picture mode. |
-| Z | Toggles the employee HUD. |
+| M | Toggles the Imperium minimap. |
+| X | Toggles the freecam's picture-in-picture mode. |
+| Z | Toggles the employee's HUD. |
 
 ## Imperium Control Panel
 
@@ -70,6 +75,23 @@ The object explorer allows you to easily manage the various game objects current
 - Entities (Despawn, Respawn, Teleport To)
 - Players (Kill, Revive, Teleport To, Teleport Player)
 - Map Hazards (Despawn, Teleport To)
+
+## Minimap / Map
+Imperium comes with it's own built-in map and minimap.
+
+![imperium-map](https://github.com/giosuel/imperium/blob/main/assets/imperium-map.png?raw=true)
+
+![imperium-minimap](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap.png?raw=true)
+
+![imperium-minimap2](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap2.png?raw=true)
+
+| Keybind    | Action                                                |
+| ---------- | ----------------------------------------------------- |
+| M          | Enable / Disable minimap.                             |
+| ScrollUp   | Zoom map in (Alt + ScrollUp when map is not open).    |
+| ScrollDown | Zoom map out (Alt + ScrollDown when map is not open). |
+| LMB Drag   | Rotate the map camera around the target.              |
+| RMG Drag   | Pan the map camera.                                   |
 
 ## Moon Settings
 
@@ -101,7 +123,7 @@ The render settings interface allows you to activate / deactivate render layers 
 
 Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).
 
-![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/save-file-editor.png?raw=true)
+![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/imperium-saves.png?raw=true)
 
 > [!CAUTION]
 > It is not recommended to use the save file editor unless you know what you are doing.
@@ -135,13 +157,7 @@ The freecam can be moved with **WASD** controls and **Q** and **E** for up and d
 
 Tha spawning console allows you to spawn entities, scrap and map hazards into the scene.
 
-There are three different spawn categories; **Entites**, **Items** and **Map Hazards**. The spawn category can be changed with **Tab**. To spawn the first entity in the autocomplete list, press **Return**.
-
-| Category   | Command Syntax                 |
-| ---------- | ------------------------------ |
-| Entity     | `entityName [amount] [health]` |
-| Item       | `itemName [amount] [value]`    |
-| Map Hazard | `mapHazardName [amount]`       |
+**Command Syntax:** `objectName [amount] [health / value]`
 
 ![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
 
@@ -214,7 +230,9 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 - [Swaggies](https://thunderstore.io/c/lethal-company/p/Swaggies), [aminoob](https://thunderstore.io/c/lethal-company/p/aminoob/) and star0138 for the help with the testing of Imperium!
 
-- [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made DanceTools for the inspiration for Imperium!
+- [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
+
+- [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the inspiration for Imperium!
 
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
 

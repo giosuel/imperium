@@ -1,7 +1,9 @@
 #region
 
+using System;
 using System.Linq;
 using Imperium.Core;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using JetBrains.Annotations;
@@ -30,24 +32,28 @@ public abstract class ImpToggle
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="valueBinding">Binding that decides on the state of the toggle</param>
+    /// <param name="theme">The theme the button will use</param>
     /// <param name="interactableBindings">List of bindings that decide if the button is interactable</param>
     internal static Toggle Bind(
         string path,
         Transform container,
         ImpBinding<bool> valueBinding,
+        ImpBinding<ImpTheme> theme = null,
         params ImpBinding<bool>[] interactableBindings
     )
     {
         var toggleObject = container.Find(path);
+        if (!toggleObject) return null;
+
         var toggle = toggleObject.GetComponent<Toggle>();
         var checkmark = toggleObject.Find("Background/Checkmark")?.GetComponent<Image>()
                         ?? toggleObject.Find("Checkmark").GetComponent<Image>();
-        var text = toggleObject.Find("Text")?.GetComponent<TMP_Text>();
+        var text = (toggleObject.Find("Text") ?? toggleObject.Find("Text (TMP)"))?.GetComponent<TMP_Text>();
 
         toggle.isOn = valueBinding.Value;
         toggle.onValueChanged.AddListener(valueBinding.Set);
         toggle.onValueChanged.AddListener(_ => GameManager.PlayClip(ImpAssets.GrassClick));
-        valueBinding.syncOnUpdate += value => toggle.isOn = value;
+        valueBinding.onUpdateSync += value => toggle.isOn = value;
 
         if (interactableBindings.Length > 0)
         {
@@ -60,7 +66,25 @@ public abstract class ImpToggle
             }
         }
 
+        if (theme != null)
+        {
+            theme.onUpdate += value => OnThemeUpdate(value, toggleObject);
+            OnThemeUpdate(theme.Value, toggleObject);
+        }
+
         return toggle;
+    }
+
+    private static void OnThemeUpdate(ImpTheme theme, Transform container)
+    {
+        ImpThemeManager.Style(
+            theme,
+            container,
+            new StyleOverride("", Variant.FOREGROUND),
+            new StyleOverride("Background", Variant.FOREGROUND),
+            new StyleOverride("Checkmark", Variant.LIGHTER),
+            new StyleOverride("Background/Checkmark", Variant.LIGHTER)
+        );
     }
 
     private static void ToggleInteractable(
@@ -71,7 +95,7 @@ public abstract class ImpToggle
     )
     {
         toggle.interactable = isOn;
-        ImpUtils.Interface.ToggleImageActive(checkmark, isOn);
+        if (checkmark) ImpUtils.Interface.ToggleImageActive(checkmark, isOn);
         if (text) ImpUtils.Interface.ToggleTextActive(text, isOn);
     }
 }

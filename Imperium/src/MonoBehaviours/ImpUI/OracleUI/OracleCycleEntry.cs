@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Oracle;
+using Imperium.Types;
 using Imperium.Util;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 
@@ -33,6 +35,35 @@ public class OracleCycleEntry : MonoBehaviour
 
         entryTemplate = transform.Find("Panel/Indoor/List/Item").gameObject;
         entryTemplate.SetActive(false);
+    }
+
+    internal void Initialize(ImpBinding<ImpTheme> theme)
+    {
+        theme.onUpdate += OnThemeUpdate;
+    }
+
+    private void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            transform,
+            new StyleOverride("", Variant.BACKGROUND)
+        );
+
+        ImpThemeManager.Style(
+            themeUpdate,
+            entryTemplate.transform,
+            new StyleOverride("", Variant.DARKEST)
+        );
+
+        foreach (var report in reports)
+        {
+            ImpThemeManager.Style(
+                themeUpdate,
+                report.transform,
+                new StyleOverride("", Variant.DARKEST)
+            );
+        }
     }
 
     public void SetState(OracleState state, int cycleIndex)

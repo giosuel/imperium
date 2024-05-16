@@ -1,6 +1,59 @@
 # Changelog
 
-## Imperium 0.1.5 [Beta]
+## Imperium v0.1.6 [Beta] - The Map Update
+
+Imperium now has its own isometric map and minimap!
+
+Besides that, Imperium's UI got a complete overhaul with new components, better and more consistent alignment and brand new interface skins! There are currently 8 different interface skins to pick from.
+
+I also reworked the night vision system to be more uniform and comfortable to use.
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company. ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0))
+
+## Added
+
+- Added a hybrid 2D/3D isometric map - Open with **F8**.
+
+  - Added minimap - Open with **M**.
+
+  - **LMB** - Look, **RMB** - Move, **MMB** - Zoom, **R** - Reset
+
+- Added an option to prevent the ship from leaving automatically.
+
+- Added eight new interface skins to pick from.
+
+- Added option for host to allow or disallow Imperium commands from clients.
+
+- Added visualization for interact triggers.
+
+### Changes
+
+- Completely overhauled the look and feel of the Imperium interface.
+- Reworked night vision to be more uniform and comfortable to use.
+- The custom welcome message can now be turned off in the settings.
+
+### Internal Fixes
+
+- **Multiplayer works again!**
+- Security doors now correctly open and close.
+- Fixed a bug where changing weathers was causing an exception on certain moons.
+- Fixed the freecam teleport button in the Teleport UI.
+- Fixed a bug where Oracle crashed when a vent was overwritten.
+
+### QOL Changes
+
+- Teleport Indicator can now be toggled with **T**.
+- The "Vent" category in the object explorer can now be collapsed properly.
+
+### Known Issues
+- Switching between Unity Explorer and a Imperium UI directly breaks the cursor.
+  - To fix, just open and close Unity Explorer once.
+
+- Scanner overlays are broken at higher texture resolutions.
+
+## Imperium v0.1.5 [Beta] - The Compat Update
 
 I re-wrote the entity and item management system to improve the compatibility with mods that add items and entities with [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/).
 
@@ -9,11 +62,6 @@ In general, using Imperium in existing v50 modpacks should now work a lot better
 ### Compatibility
 
 This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company.
-
-#### Known Mod Incompatibilities
-
-- [NutcrackerFixes](https://thunderstore.io/c/lethal-company/p/Zaggy1024/NutcrackerFixes/) by Zaggy1024 - Breaks F-key menus
-- [Minimap](https://thunderstore.io/c/lethal-company/p/Tyzeron/Minimap/) by Tyzeron - Conflicts with the cursor locking
 
 ### Changes
 
@@ -37,7 +85,11 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - Freecam now spawns above the player when opened for the first time.
 - More overlays now correctly look at freecam when its active.
 
-## Imperium 0.1.4 [Beta]
+#### Known Mod Incompatibilities
+
+- [Minimap](https://thunderstore.io/c/lethal-company/p/Tyzeron/Minimap/) by Tyzeron - Conflicts with the cursor locking
+
+## Imperium v0.1.4 [Beta] - The Noise Update
 
 ### Compatibility
 
@@ -59,7 +111,7 @@ This version is compatible with the [v50 rev.4](https://steamdb.info/changelist/
 
 - Dead entities are now marked as dead in the object explorer.
 
-## Imperium 0.1.3 [Beta]
+## Imperium v0.1.3 [Beta] - Hotfix
 
 ### Compatibility
 
