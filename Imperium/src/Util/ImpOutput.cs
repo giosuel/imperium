@@ -2,11 +2,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Logging;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util.Binding;
+using Unity.Netcode;
 using UnityEngine;
+using LogLevel = BepInEx.Logging.LogLevel;
 
 #endregion
 
@@ -32,7 +33,7 @@ internal abstract class ImpOutput
         bool isWarning = false
     )
     {
-        if (!ImpNetworkManager.IsHost.Value || !ImpSettings.Preferences.AllowClients.Value) return;
+        if (!NetworkManager.Singleton.IsHost || !ImpSettings.Preferences.AllowClients.Value) return;
         ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning);
     }
 

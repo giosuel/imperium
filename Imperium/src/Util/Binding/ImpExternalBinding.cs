@@ -21,15 +21,15 @@ public class ImpExternalBinding<T, R> : ImpBinding<T>
     /// <param name="onUpdate">
     ///     <see cref="ImpBinding{T}.onUpdate" />
     /// </param>
-    /// <param name="syncOnUpdate">
-    ///     <see cref="ImpBinding{T}.syncOnUpdate" />
+    /// <param name="syncUpdate">
+    ///     <see cref="ImpBinding{T}.onUpdateSync" />
     /// </param>
     internal ImpExternalBinding(
         Func<T> valueGetter,
         ImpBinding<R> refresher,
         Action<T> onUpdate = null,
-        Action<T> syncOnUpdate = null
-    ) : base(ImpUtils.InvokeDefaultOnNull(valueGetter), onUpdate, syncOnUpdate)
+        Action<T> syncUpdate = null
+    ) : base(ImpUtils.InvokeDefaultOnNull(valueGetter), onUpdate, syncUpdate)
     {
         refresher.onUpdate += _ => Set(ImpUtils.InvokeDefaultOnNull(valueGetter));
     }

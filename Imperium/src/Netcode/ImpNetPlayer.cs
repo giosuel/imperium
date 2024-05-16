@@ -18,7 +18,7 @@ public class ImpNetPlayer : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (ImpNetworkManager.IsHost.Value && Instance)
+        if (NetworkManager.IsHost && Instance)
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
@@ -30,7 +30,7 @@ public class ImpNetPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void TeleportPlayerServerRpc(int playerId, ImpVector position)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         TeleportPlayerClientRpc(playerId, position);
     }
@@ -44,7 +44,7 @@ public class ImpNetPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void KillPlayerServerRpc(int playerId)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         KillPlayerClientRpc(playerId);
 
@@ -67,7 +67,7 @@ public class ImpNetPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void RespawnPlayerServerRpc(int playerId)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         RespawnPlayerClientRpc(playerId);
     }
@@ -83,7 +83,7 @@ public class ImpNetPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void DiscardHotbarItemServerRpc(int playerId, int itemSlot)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         DiscardHotbarItemClientRpc(playerId, itemSlot);
     }
@@ -97,7 +97,7 @@ public class ImpNetPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetAllPlayersDeadServerRpc(bool allPlayersDead)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         SetAllPlayersDeadClientRpc(allPlayersDead);
     }

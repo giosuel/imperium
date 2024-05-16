@@ -18,6 +18,7 @@ It is a client-side and server-side mod, meaning it works in singleplayer and mu
 - Customizable 3-axis freecam with built-in teleportation, night vision and custom FOV settings.
 - Built-in minimap and full-screen map with layer selection, zoom and more.
 - Visualization of game object hitboxes, spawn locations, tile borders and much more.
+- Eight different interface themes to pick from.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Ability to kill and revive players including the yourself.
 - Entity spawn prediction powered by the Oracle Prediction Algorithm.
@@ -74,6 +75,23 @@ The object explorer allows you to easily manage the various game objects current
 - Entities (Despawn, Respawn, Teleport To)
 - Players (Kill, Revive, Teleport To, Teleport Player)
 - Map Hazards (Despawn, Teleport To)
+
+## Minimap / Map
+Imperium comes with it's own built-in map and minimap.
+
+![imperium-map](https://github.com/giosuel/imperium/blob/main/assets/imperium-map.png?raw=true)
+
+![imperium-minimap](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap.png?raw=true)
+
+![imperium-minimap2](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap2.png?raw=true)
+
+| Keybind    | Action                                                |
+| ---------- | ----------------------------------------------------- |
+| M          | Enable / Disable minimap.                             |
+| ScrollUp   | Zoom map in (Alt + ScrollUp when map is not open).    |
+| ScrollDown | Zoom map out (Alt + ScrollDown when map is not open). |
+| LMB Drag   | Rotate the map camera around the target.              |
+| RMG Drag   | Pan the map camera.                                   |
 
 ## Moon Settings
 

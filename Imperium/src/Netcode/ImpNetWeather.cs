@@ -15,7 +15,7 @@ public class ImpNetWeather : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (ImpNetworkManager.IsHost.Value && Instance)
+        if (NetworkManager.IsHost && Instance)
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
@@ -27,7 +27,7 @@ public class ImpNetWeather : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void ChangeWeatherServerRpc(int levelIndex, LevelWeatherType weatherType)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         OnWeatherChangedClientRpc(levelIndex, weatherType);
     }

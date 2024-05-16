@@ -22,15 +22,17 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 
 - Added an option to prevent the ship from leaving automatically.
 
-- Added eight new interface skins to pick from. 
+- Added eight new interface skins to pick from.
 
 - Added option for host to allow or disallow Imperium commands from clients.
+
+- Added visualization for interact triggers.
 
 ### Changes
 
 - Completely overhauled the look and feel of the Imperium interfaces.
 - Reworked night vision to be more uniform and comfortable to use.
-- The custom welcome message can now be turned off in the settings. 
+- The custom welcome message can now be turned off in the settings.
 
 ### Internal Fixes
 
@@ -44,6 +46,10 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 
 - Teleport Indicator can now be toggled with **T**
 - The "Vent" category in the object explorer can now be collapsed properly.
+
+### Known Issues
+- Switching between Unity Explorer and a Imperium UI directly breaks the cursor. To fix, just open and close Unity Explorer once.
+- Scanner overlays are broken at higher resolutions.
 
 ## Imperium v0.1.5 [Beta] - The Compat Update
 

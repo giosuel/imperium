@@ -26,8 +26,8 @@ public class ImpConfig<T> : ImpBinding<T>
     /// <param name="onUpdate">
     ///     <see cref="ImpBinding{T}.onUpdate" />
     /// </param>
-    /// <param name="syncOnUpdate">
-    ///     <see cref="ImpBinding{T}.syncOnUpdate" />
+    /// <param name="syncUpdate">
+    ///     <see cref="ImpBinding{T}.onUpdateSync" />
     /// </param>
     /// <param name="ignoreRefresh">
     ///     <see cref="ImpBinding{T}.ignoreRefresh" />
@@ -37,9 +37,9 @@ public class ImpConfig<T> : ImpBinding<T>
         string key,
         T defaultValue,
         Action<T> onUpdate = null,
-        Action<T> syncOnUpdate = null,
+        Action<T> syncUpdate = null,
         bool ignoreRefresh = false
-    ) : base(defaultValue, onUpdate, syncOnUpdate, ignoreRefresh)
+    ) : base(defaultValue, onUpdate, syncUpdate, ignoreRefresh)
     {
         config = Imperium.ConfigFile.Bind(section, key, defaultValue);
         Value = config.Value;

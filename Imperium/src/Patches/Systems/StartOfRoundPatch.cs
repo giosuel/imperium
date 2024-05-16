@@ -32,8 +32,8 @@ public class StartOfRoundPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("unloadSceneForAllPlayers")]
-    private static void unloadSceneForAllPlayersPatch(StartOfRound __instance)
+    [HarmonyPatch("EndOfGameClientRpc")]
+    private static void EndOfGameClientRpcPatch(StartOfRound __instance)
     {
         Imperium.IsSceneLoaded.SetFalse();
     }

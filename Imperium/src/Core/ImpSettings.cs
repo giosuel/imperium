@@ -100,7 +100,7 @@ public abstract class ImpSettings
             "Game.Ship",
             "PreventShipLeave",
             false,
-            syncOnUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
+            syncUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
         );
     }
 
@@ -146,6 +146,13 @@ public abstract class ImpSettings
             "Foliage",
             false,
             value => Imperium.Visualization.Collider("EnemySpawn", type: IdentifierType.LAYER)(value)
+        );
+
+        internal static readonly ImpConfig<bool> InteractTriggers = new(
+            "Overlays",
+            "InteractTriggers",
+            false,
+            value => Imperium.Visualization.Collider("InteractTrigger", type: IdentifierType.TAG)(value)
         );
 
         internal static readonly ImpConfig<bool> AINodesIndoor = new(
@@ -215,7 +222,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> PlayerInfo = new(
             "Gizmos",
             "PlayerInfo",
-            true,
+            false,
             Imperium.Visualization.PlayerInfos.Toggle
         );
 
@@ -715,6 +722,7 @@ public abstract class ImpSettings
         Reinstantiate<Shovel>();
         Reinstantiate<Time>();
         Reinstantiate<Game>();
+        Reinstantiate<Map>();
         Reinstantiate<Visualizations>();
         Reinstantiate<Rendering>();
         Reinstantiate<Preferences>();

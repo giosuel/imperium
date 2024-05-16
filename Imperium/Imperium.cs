@@ -84,10 +84,15 @@ public class Imperium : BaseUnityPlugin
     // Global variable indicating if Imperium is loaded
     internal static bool IsImperiumReady;
 
+    internal static bool IsImperiumLaunched;
+
+    // Indicates if Imperium access was initially granted when the client joined the lobby
+    internal static bool WasImperiumAccessGranted;
+
     // Global variable indicating if ship is currently landed on a moon
     internal static ImpBinaryBinding IsSceneLoaded;
 
-    internal static readonly ImpBinding<ImpTheme> Theme = new(ImpThemeManager.DefaultTheme);
+    internal static ImpBinding<ImpTheme> Theme;
 
     private void Awake()
     {
@@ -121,6 +126,27 @@ public class Imperium : BaseUnityPlugin
         }
     }
 
+    internal static void DisableImperium()
+    {
+        if (!IsImperiumLaunched) return;
+
+        Interface.Close();
+        InputBindings.BaseMap.Disable();
+        InputBindings.FreecamMap.Disable();
+        InputBindings.SpawningMap.Disable();
+        Interface.StopListening();
+    }
+
+    internal static void EnableImperium()
+    {
+        if (!IsImperiumLaunched) return;
+
+        InputBindings.BaseMap.Enable();
+        InputBindings.FreecamMap.Enable();
+        InputBindings.SpawningMap.Enable();
+        Interface.StartListening();
+    }
+
     internal static void Launch()
     {
         if (!IsImperiumReady)
@@ -129,13 +155,14 @@ public class Imperium : BaseUnityPlugin
             return;
         }
 
+        IsImperiumLaunched = true;
+
         InputBindings = new ImpInputBindings();
         Terminal = GameObject.Find("TerminalScript").GetComponent<Terminal>();
         HUDManager = FindObjectOfType<HUDManager>();
 
         IsSceneLoaded = new ImpBinaryBinding(false);
-
-        ImpNetworkManager.IsHost.Set(NetworkManager.Singleton.IsHost);
+        Theme = new ImpBinding<ImpTheme>(ImpThemeManager.DefaultTheme);
 
         Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();
@@ -181,6 +208,9 @@ public class Imperium : BaseUnityPlugin
         ImpSettings.LoadAll();
         PlayerManager.UpdateCameras();
 
+        // Network syncing
+        ImpNetTime.Instance.BindNetworkVariables();
+
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
         harmony.PatchAll();
@@ -188,7 +218,7 @@ public class Imperium : BaseUnityPlugin
 
         SpawnUI();
 
-        if (!ImpNetworkManager.IsHost.Value) ImpNetTime.Instance.RequestTimeServerRpc();
+        if (!NetworkManager.Singleton.IsHost) ImpNetTime.Instance.RequestTimeServerRpc();
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
@@ -199,19 +229,19 @@ public class Imperium : BaseUnityPlugin
     internal static void Unload()
     {
         harmony.UnpatchSelf();
-        PreLaunchPatch();
 
-        InputBindings.BaseMap.Disable();
-        InputBindings.FreecamMap.Disable();
-        InputBindings.SpawningMap.Disable();
-        Interface.StopListening();
+        DisableImperium();
+
+        WasImperiumAccessGranted = false;
+        IsImperiumLaunched = false;
 
         ImpSettings.Reinstantiate();
+
+        PreLaunchPatch();
     }
 
     internal static void Reload()
     {
-        Interface.Close();
         Unload();
         Launch();
     }
