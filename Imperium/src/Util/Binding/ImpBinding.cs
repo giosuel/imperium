@@ -134,8 +134,6 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>
     internal virtual void Set(T value, bool skipSync)
     {
-        // if (EqualityComparer<T>.Default.Equals(Value, value)) return;
-
         Value = value;
 
         if (!skipSync) syncOnUpdate?.Invoke(value);

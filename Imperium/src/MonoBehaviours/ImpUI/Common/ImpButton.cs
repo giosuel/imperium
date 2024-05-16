@@ -26,6 +26,7 @@ public abstract class ImpButton
     /// <param name="theme">The theme the button will use</param>
     /// <param name="isIconButton">Whether the button represents an icon button (For theming)</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
+    /// <param name="playClickSound">Whether the click sound playes when the button is clicked.</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the button is interactable</param>
     internal static Button Bind(
         string path,
@@ -34,6 +35,7 @@ public abstract class ImpButton
         ImpBinding<ImpTheme> theme = null,
         bool isIconButton = false,
         bool interactableInvert = false,
+        bool playClickSound = true,
         params ImpBinding<bool>[] interactableBindings
     )
     {
@@ -42,7 +44,7 @@ public abstract class ImpButton
 
         var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(onClick);
-        button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
+        if (playClickSound) button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
 

@@ -51,9 +51,12 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
         player.TeleportPlayer(position);
         var isInFactory = position.y < -100;
-        // player.isInElevator = isInFactory;
         player.isInsideFactory = isInFactory;
-        // player.isInHangarShipRoom = isInFactory;
+
+        // There is no easy way to check this, so it will just be off by default for now
+        player.isInElevator = false;
+        player.isInHangarShipRoom = false;
+
         foreach (var heldItem in Imperium.Player.ItemSlots)
         {
             if (!heldItem) continue;
@@ -143,7 +146,7 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
     internal static int GetItemHolderSlot(GrabbableObject grabbableObject)
     {
-        if (!grabbableObject.playerHeldBy) return -1;
+        if (!grabbableObject.playerHeldBy || !grabbableObject.playerHeldBy.currentlyHeldObjectServer) return -1;
 
         for (var i = 0; i < grabbableObject.playerHeldBy.ItemSlots.Length; i++)
         {

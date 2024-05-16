@@ -20,7 +20,7 @@ using Random = System.Random;
 
 namespace Imperium.Util;
 
-internal abstract class ImpUtils
+public abstract class ImpUtils
 {
     internal static int RandomItemValue(Item item)
     {
@@ -205,14 +205,18 @@ internal abstract class ImpUtils
     {
         internal static void ToggleImageActive(Image image, bool isOn)
         {
-            image.color = ChangeAlpha(image.color,
-                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.ImageDisabled);
+            image.color = ChangeAlpha(
+                image.color,
+                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.ImageDisabled
+            );
         }
 
         internal static void ToggleTextActive(TMP_Text text, bool isOn)
         {
-            text.color = ChangeAlpha(text.color,
-                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled);
+            text.color = ChangeAlpha(
+                text.color,
+                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled
+            );
         }
 
         internal static Color ChangeAlpha(Color oldColor, float newAlpha)
@@ -288,9 +292,9 @@ internal abstract class ImpUtils
         }
     }
 
-    internal abstract class Geometry
+    public abstract class Geometry
     {
-        internal static LineRenderer CreateLine(
+        public static LineRenderer CreateLine(
             Transform parent,
             float thickness = 0.05f,
             bool useWorldSpace = false,
@@ -314,13 +318,13 @@ internal abstract class ImpUtils
             return lineRenderer;
         }
 
-        internal static void SetLineColor(LineRenderer lineRenderer, Color color)
+        public static void SetLineColor(LineRenderer lineRenderer, Color color)
         {
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;
         }
 
-        internal static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
+        public static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
         {
             lineRenderer.positionCount = positions.Length;
             for (var i = 0; i < positions.Length; i++)

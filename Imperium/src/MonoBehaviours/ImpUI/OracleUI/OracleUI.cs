@@ -28,6 +28,7 @@ internal class OracleUI : SingleplexUI
 
         // Initial cycle with only indoor
         entries[0] = content.Find("Header/InitialCycle").gameObject.AddComponent<OracleCycleEntry>();
+        entries[0].Initialize(theme);
 
         var index = 1;
         for (var i = 1; i <= 3; i++)
@@ -45,6 +46,16 @@ internal class OracleUI : SingleplexUI
         }
 
         Imperium.Oracle.State.onUpdate += OnOracleUpdate;
+    }
+
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            container.Find("Window/Content"),
+            new StyleOverride("Scrollbar", Variant.DARKEST),
+            new StyleOverride("Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
+        );
     }
 
     public override bool CanOpen()

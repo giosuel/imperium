@@ -15,8 +15,8 @@ public class ImpMap : MonoBehaviour
     internal MinimapOverlay Minimap { get; private set; }
     internal ImpBinding<HashSet<int>> FloorLevels { get; } = new([]);
 
-    internal readonly ImpBinding<float> CameraClipStart = new(9);
-    internal readonly ImpBinding<float> CameraClipEnd = new(50);
+    internal readonly ImpBinding<float> CameraNearClip = new(ImpConstants.DefaultMapCameraNearClip);
+    internal readonly ImpBinding<float> CameraFarClip = new(ImpConstants.DefaultMapCameraFarClip);
 
     internal static ImpMap Create() => new GameObject("ImpMap").AddComponent<ImpMap>();
 
@@ -47,11 +47,11 @@ public class ImpMap : MonoBehaviour
         Camera.orthographicSize = ImpSettings.Map.CameraZoom.Value;
         ImpSettings.Map.CameraZoom.onUpdate += value => Camera.orthographicSize = value;
 
-        Camera.farClipPlane = CameraClipEnd.Value;
-        CameraClipEnd.onUpdate += value => Camera.farClipPlane = value;
+        Camera.farClipPlane = CameraFarClip.Value;
+        CameraFarClip.onUpdate += value => Camera.farClipPlane = value;
 
-        Camera.nearClipPlane = CameraClipStart.Value;
-        CameraClipStart.onUpdate += value => Camera.nearClipPlane = value;
+        Camera.nearClipPlane = CameraNearClip.Value;
+        CameraNearClip.onUpdate += value => Camera.nearClipPlane = value;
 
         var hdCameraData = cameraMapObject.AddComponent<HDAdditionalCameraData>();
         hdCameraData.customRenderingSettings = true;

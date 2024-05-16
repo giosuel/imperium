@@ -61,7 +61,7 @@ internal class LayerSelector : SingleplexUI
         ImpThemeManager.Style(
             themeUpdate,
             layerTemplate.transform,
-            new StyleOverride("Selected", Variant.FADED)
+            new StyleOverride("Hover", Variant.FADED)
         );
 
         foreach (var toggle in layerToggles)
@@ -69,7 +69,7 @@ internal class LayerSelector : SingleplexUI
             ImpThemeManager.Style(
                 themeUpdate,
                 toggle.transform,
-                new StyleOverride("Selected", Variant.FADED)
+                new StyleOverride("Hover", Variant.FADED)
             );
         }
     }

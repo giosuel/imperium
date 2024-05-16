@@ -11,10 +11,8 @@ namespace Imperium.Netcode;
 
 public abstract class ImpNetworkManager
 {
-    internal static readonly ImpBinding<bool> IsHost = new(NetworkManager.Singleton.IsHost);
     internal static readonly ImpBinding<int> ConnectedPlayers = new(1);
     internal static GameObject NetworkPrefab;
-    // internal static bool ImperiumAccess;
 
     internal static void OnClientConnected(ulong clientId)
     {

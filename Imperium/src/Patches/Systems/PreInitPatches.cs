@@ -57,7 +57,6 @@ internal static class PreInitPatches
                     new HostSettings("Imperium Test Environment", false);
 
                 GameNetworkManager.Instance.StartHost();
-                ImpNetworkManager.IsHost.Set(true);
             }
         }
 

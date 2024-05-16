@@ -15,7 +15,7 @@ public class ImpNetQuota : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (ImpNetworkManager.IsHost.Value && Instance)
+        if (NetworkManager.IsHost && Instance)
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
@@ -27,7 +27,7 @@ public class ImpNetQuota : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetProfitQuotaServerRpc(int newProfitQuota)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         SetProfitQuotaClientRpc(newProfitQuota);
     }
@@ -42,7 +42,7 @@ public class ImpNetQuota : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetDeadlineDaysServerRpc(int days)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         OnChangeDeadlineDaysClientRpc(days);
     }
@@ -63,7 +63,7 @@ public class ImpNetQuota : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetGroupCreditsServerRpc(int credits)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         SetGroupCreditsClientRpc(credits);
     }
