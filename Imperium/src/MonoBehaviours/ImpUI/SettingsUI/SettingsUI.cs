@@ -8,6 +8,7 @@ using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
+using Unity.Netcode;
 
 #endregion
 
@@ -32,7 +33,13 @@ internal class SettingsUI : SingleplexUI
         );
 
         var hosting = content.Find("Grid/Hosting/Hosting");
-        ImpToggle.Bind("AllowClients", hosting, ImpSettings.Preferences.AllowClients, theme);
+        ImpToggle.Bind(
+            "AllowClients",
+            hosting,
+            ImpSettings.Preferences.AllowClients,
+            theme,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost)
+        );
 
         var notifications = content.Find("Grid/Notifications/Notifications");
         ImpToggle.Bind("GodModeToggle", notifications, ImpSettings.Preferences.NotificationsGodMode, theme);

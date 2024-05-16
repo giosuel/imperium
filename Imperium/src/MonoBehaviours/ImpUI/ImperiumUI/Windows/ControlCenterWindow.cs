@@ -204,6 +204,18 @@ internal class ControlCenterWindow : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
+            "Right/Colliders/TileBorders",
+            content,
+            ImpSettings.Visualizations.TileBorders,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/Colliders/InteractTriggers",
+            content,
+            ImpSettings.Visualizations.InteractTriggers,
+            themeBinding
+        );
+        ImpToggle.Bind(
             "Right/Overlays/Players",
             content,
             ImpSettings.Visualizations.PlayerInfo,
@@ -237,12 +249,6 @@ internal class ControlCenterWindow : BaseWindow
             "Right/Overlays/BeeSpawns",
             content,
             ImpSettings.Visualizations.BeeSpawns,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/TileBorders",
-            content,
-            ImpSettings.Visualizations.TileBorders,
             themeBinding
         );
         ImpToggle.Bind(

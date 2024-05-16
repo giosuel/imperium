@@ -65,6 +65,8 @@ internal class SpawningUI : SingleplexUI
             new StyleOverride("Results/MoreItems", Variant.DARKEST),
             new StyleOverride("Results/Template", Variant.DARKER)
         );
+
+        base.OnThemeUpdate(themeUpdate);
     }
 
     private void GenerateItems()

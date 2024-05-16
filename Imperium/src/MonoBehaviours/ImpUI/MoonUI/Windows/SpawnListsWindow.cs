@@ -7,6 +7,7 @@ using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util.Binding;
+using Unity.Netcode;
 using UnityEngine;
 
 #endregion
@@ -33,22 +34,22 @@ internal class SpawnListsWindow : BaseWindow
     {
         ImpButton.Bind(
             "EntitySpawnListTitle/Reset", content, OnEntitySpawnsReset,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "ScrapSpawnListTitle/Equal", content, OnEntitySpawnsEqual,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "ScrapSpawnListTitle/Reset", content, MoonManager.Current.ResetScrap,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "ScrapSpawnListTitle/Equal", content, MoonManager.Current.EqualScrap,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
 
@@ -59,14 +60,14 @@ internal class SpawnListsWindow : BaseWindow
             "EntitySpawnList/Viewport/Content/IndoorTitle/Reset",
             content,
             MoonManager.Current.ResetIndoorEntities,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/IndoorTitle/Equal",
             content,
             MoonManager.Current.EqualIndoorEntities,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
 
@@ -76,14 +77,14 @@ internal class SpawnListsWindow : BaseWindow
             "EntitySpawnList/Viewport/Content/OutdoorTitle/Reset",
             content,
             MoonManager.Current.ResetOutdoorEntities,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/OutdoorTitle/Equal",
             content,
             MoonManager.Current.EqualOutdoorEntities,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
 
@@ -93,14 +94,14 @@ internal class SpawnListsWindow : BaseWindow
             "EntitySpawnList/Viewport/Content/DaytimeTitle/Reset",
             content,
             MoonManager.Current.ResetDaytimeEntities,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/DaytimeTitle/Equal",
             content,
             MoonManager.Current.EqualDaytimeEntities,
-            interactableBindings: ImpNetworkManager.IsHost,
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
 

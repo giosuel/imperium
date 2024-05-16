@@ -13,9 +13,12 @@ public class ImpNetTime : NetworkBehaviour
 {
     internal static ImpNetTime Instance { get; private set; }
 
+    // private readonly NetworkVariable<float> TimeSpeed = new();
+    // private readonly NetworkVariable<bool> TimeIsPaused = new();
+
     public override void OnNetworkSpawn()
     {
-        if (ImpNetworkManager.IsHost.Value && Instance)
+        if (NetworkManager.IsHost && Instance)
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
         }
@@ -24,10 +27,23 @@ public class ImpNetTime : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
+    internal void BindNetworkVariables()
+    {
+        // TimeSpeed.OnValueChanged += (_, newTimeSpeed) => Imperium.GameManager.TimeSpeed.Set(
+        //     newTimeSpeed, skipSync: true
+        // );
+        // Imperium.GameManager.TimeSpeed.syncOnUpdate += TimeSpeed.Set;
+        //
+        // TimeIsPaused.OnValueChanged += (_, newTimeSpeed) => Imperium.GameManager.TimeIsPaused.Set(
+        //     newTimeSpeed, skipSync: true
+        // );
+        // Imperium.GameManager.TimeIsPaused.syncOnUpdate += TimeIsPaused.Set;
+    }
+
     [ServerRpc(RequireOwnership = false)]
     internal void RequestTimeServerRpc()
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         SyncTimeClientRpc(Imperium.GameManager.TimeSpeed.Value, Imperium.GameManager.TimeIsPaused.Value);
     }
@@ -35,7 +51,7 @@ public class ImpNetTime : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void UpdateTimeServerRpc(float timeSpeed, bool isPaused)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         SyncTimeClientRpc(timeSpeed, isPaused);
     }
@@ -50,7 +66,7 @@ public class ImpNetTime : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     internal void SetShipLeaveAutomaticallyServerRpc(bool leaveAutomatically)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value) return;
+        if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         SetShipLeaveAutomaticallyClientRpc(leaveAutomatically);
     }

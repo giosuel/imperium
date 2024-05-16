@@ -20,7 +20,7 @@
 
         <!-- Build Information -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>preview</LangVersion>
 
         <!-- NuGet Information -->
         <RestoreAdditionalProjectSources>
@@ -90,7 +90,6 @@
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Exec Command="cp /run/user/1000/gvfs/sftp:host=192.168.1.69/home/giosuel/Projects/imperium/imperium-assets/AssetBundles/StandaloneWindows/imperium_assets /home/giosuel/.config/r2modmanPlus-local/LethalCompany/profiles/playground/BepInEx/plugins/giosuel-Imperium\ \(Local\)/imperium_assets" />
     </Target>
-
 
     <!-- MinVer Set Mod Version from Git -->
     <Target Name="SetPluginVersion" BeforeTargets="AddGeneratedFile" DependsOnTargets="MinVer">

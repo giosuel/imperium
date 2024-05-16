@@ -48,7 +48,7 @@ public abstract class ImpToggle
         var toggle = toggleObject.GetComponent<Toggle>();
         var checkmark = toggleObject.Find("Background/Checkmark")?.GetComponent<Image>()
                         ?? toggleObject.Find("Checkmark").GetComponent<Image>();
-        var text = toggleObject.Find("Text")?.GetComponent<TMP_Text>();
+        var text = (toggleObject.Find("Text") ?? toggleObject.Find("Text (TMP)"))?.GetComponent<TMP_Text>();
 
         toggle.isOn = valueBinding.Value;
         toggle.onValueChanged.AddListener(valueBinding.Set);
@@ -95,7 +95,7 @@ public abstract class ImpToggle
     )
     {
         toggle.interactable = isOn;
-        ImpUtils.Interface.ToggleImageActive(checkmark, isOn);
+        if (checkmark) ImpUtils.Interface.ToggleImageActive(checkmark, isOn);
         if (text) ImpUtils.Interface.ToggleTextActive(text, isOn);
     }
 }

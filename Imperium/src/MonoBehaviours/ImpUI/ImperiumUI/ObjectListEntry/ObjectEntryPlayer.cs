@@ -50,6 +50,11 @@ internal class ObjectEntryPlayer : ObjectEntry
             }
         }
 
+        if (player.playerClientId == NetworkManager.ServerClientId)
+        {
+            playerName = ImpUtils.RichText.Bold(playerName);
+        }
+
         return player.isPlayerDead ? ImpUtils.RichText.Strikethrough(playerName) : playerName;
     }
 

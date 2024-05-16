@@ -18,13 +18,18 @@ public class ImpNetCommunication : NetworkBehaviour
 {
     internal static ImpNetCommunication Instance { get; private set; }
 
-    internal readonly HashSet<ulong> ImperiumUsers = [];
+    internal readonly HashSet<ulong> ImperiumUsers = [NetworkManager.ServerClientId];
 
     public override void OnNetworkSpawn()
     {
-        if (ImpNetworkManager.IsHost.Value && Instance)
+        if (NetworkManager.IsHost && Instance)
         {
             Instance.gameObject.GetComponent<NetworkObject>().Despawn();
+        }
+
+        if (NetworkManager.IsHost)
+        {
+            ImpSettings.Preferences.AllowClients.onUpdate += ToggleImperiumAccess;
         }
 
         Instance = this;
@@ -32,6 +37,18 @@ public class ImpNetCommunication : NetworkBehaviour
     }
 
     internal void RequestImperiumAccess() => StartCoroutine(waitForImperiumAccess());
+
+    private void ToggleImperiumAccess(bool hasAccess)
+    {
+        if (hasAccess)
+        {
+            EnableImperiumAccessClientRpc();
+        }
+        else
+        {
+            DisableImperiumAccessClientRpc();
+        }
+    }
 
     [ClientRpc]
     internal void SendClientRpc(
@@ -48,25 +65,32 @@ public class ImpNetCommunication : NetworkBehaviour
     /// It would be a shame if someone were to comment this out :(
     /// </summary>
     [ServerRpc(RequireOwnership = false)]
-    private void RequestImperiumAccessServerRpc(ulong clientId)
+    private void RequestImperiumAccessServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        if (!ImpSettings.Preferences.AllowClients.Value)
+        var clientId = serverRpcParams.Receive.SenderClientId;
+
+        if (ImpSettings.Preferences.AllowClients.Value)
+        {
+            ReceiveImperiumAccessClientRpc(clientId);
+        }
+        else
         {
             var playerName = PlayerManager.GetPlayerFromID((int)clientId)?.playerUsername ?? $"#{clientId}";
             ImpOutput.Send($"Imperium access was denied to client #{playerName}.");
             Imperium.Log.LogInfo($"[NET] Client #{clientId} failed to request Imperium access ({playerName})!");
-            return;
         }
-        ReceiveImperiumAccessClientRpc(clientId);
     }
 
     [ClientRpc]
     private void ReceiveImperiumAccessClientRpc(ulong clientId)
     {
+        if (Imperium.IsImperiumLaunched) return;
+
         if (clientId == NetworkManager.LocalClientId)
         {
             ImpOutput.Send($"Imperium access was granted!");
             Imperium.Log.LogInfo($"[NET] Imperium access was granted!");
+            Imperium.WasImperiumAccessGranted = true;
             Imperium.Launch();
         }
         else
@@ -79,11 +103,38 @@ public class ImpNetCommunication : NetworkBehaviour
         ImperiumUsers.Add(clientId);
     }
 
+    [ClientRpc]
+    private void DisableImperiumAccessClientRpc()
+    {
+        if (NetworkManager.IsHost) return;
+
+        ImpOutput.Send("Imperium access was revoked!", isWarning: true);
+        Imperium.Log.LogInfo($"[NET] Imperium access was revoked!");
+        Imperium.DisableImperium();
+    }
+
+    [ClientRpc]
+    private void EnableImperiumAccessClientRpc()
+    {
+        if (NetworkManager.IsHost) return;
+
+        ImpOutput.Send($"Imperium access was granted!");
+        Imperium.Log.LogInfo($"[NET] Imperium access was granted!");
+        if (Imperium.WasImperiumAccessGranted)
+        {
+            Imperium.EnableImperium();
+        }
+        else
+        {
+            Imperium.Launch();
+        }
+    }
+
     private IEnumerator waitForImperiumAccess()
     {
-        RequestImperiumAccessServerRpc(NetworkManager.Singleton.LocalClientId);
+        RequestImperiumAccessServerRpc();
         yield return new WaitForSeconds(5f);
-        if (Imperium.IsSceneLoaded == null)
+        if (!Imperium.IsImperiumLaunched)
         {
             ImpOutput.Send("Failed to aqcuire Imperium access! Shutting down...", isWarning: true);
         }
