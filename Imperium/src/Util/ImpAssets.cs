@@ -39,17 +39,19 @@ public abstract class ImpAssets
     internal static GameObject SpawnIndicator;
     internal static GameObject PlayerInfo;
     internal static GameObject EntityInfo;
-    internal static Material XrayMaterial;
-    internal static Material FresnelBlueMaterial;
-    internal static Material FresnelYellowMaterial;
-    internal static Material FresnelGreenMaterial;
-    internal static Material FresnelRedMaterial;
-    internal static Material WireframePurpleMaterial;
-    internal static Material WireframeCyanMaterial;
-    internal static Material WireframeAmaranthMaterial;
-    internal static Material WireframeYellowMaterial;
-    internal static Material WireframeGreenMaterial;
-    internal static Material WireframeRedMaterial;
+
+    // Imperium visualizer materials
+    public static Material XrayMaterial;
+    public static Material FresnelBlueMaterial;
+    public static Material FresnelYellowMaterial;
+    public static Material FresnelGreenMaterial;
+    public static Material FresnelRedMaterial;
+    public static Material WireframePurpleMaterial;
+    public static Material WireframeCyanMaterial;
+    public static Material WireframeAmaranthMaterial;
+    public static Material WireframeYellowMaterial;
+    public static Material WireframeGreenMaterial;
+    public static Material WireframeRedMaterial;
 
     internal static bool Load()
     {
