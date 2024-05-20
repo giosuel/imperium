@@ -111,9 +111,11 @@ public class NoiseIndicator : MonoBehaviour
             distanceText.text = $"{Vector3.Distance(playerPosition, worldPosition):0.0}m";
             noiseIdText.text = noiseId.ToString();
 
-            distanceText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
+            distanceText.color =
+                ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
             image.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
-            noiseIdText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
+            noiseIdText.color =
+                ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
         }
         else if (!isDone)
         {

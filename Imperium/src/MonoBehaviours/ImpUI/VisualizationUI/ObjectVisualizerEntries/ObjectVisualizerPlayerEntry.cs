@@ -1,9 +1,13 @@
+#region
+
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
 

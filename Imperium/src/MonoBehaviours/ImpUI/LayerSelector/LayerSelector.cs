@@ -3,7 +3,6 @@
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
-using Imperium.MonoBehaviours.ImpUI.RenderingUI;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -16,8 +15,9 @@ using UnityEngine.UI;
 namespace Imperium.MonoBehaviours.ImpUI.LayerSelector;
 
 /// <summary>
-/// This UI is a bit special as it is neither a child of another UI nor does it have a keybinding to open it at any time.
-/// Instead, this UI can only be opened by the <see cref="ImpFreecam"/> and the <see cref="MapUI"/>.
+///     This UI is a bit special as it is neither a child of another UI nor does it have a keybinding to open it at any
+///     time.
+///     Instead, this UI can only be opened by the <see cref="ImpFreecam" /> and the <see cref="MapUI" />.
 /// </summary>
 internal class LayerSelector : SingleplexUI
 {
@@ -27,7 +27,7 @@ internal class LayerSelector : SingleplexUI
 
     private ImpBinding<bool> IsEnabledBinding = new(false);
     private ImpBinding<int> LayerMaskBinding = new(0);
-    
+
     protected override void InitUI()
     {
         layerTemplate = content.Find("LayerItem").gameObject;

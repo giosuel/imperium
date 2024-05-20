@@ -1,4 +1,5 @@
-using System;
+#region
+
 using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
@@ -8,6 +9,8 @@ using Imperium.Types;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.MapUI;
 
@@ -326,9 +329,9 @@ internal class MapUI : LayerSelector.LayerSelector
     }
 
     /// <summary>
-    /// We need to do this because the map hazards are all stored in different lists as they are all different types.
-    /// Since we want to put them all in the same list here, we need to concat them into a list of key-value pairs.
-    /// The list has to subscribe to all the source bindings in order to be updated when something changes.
+    ///     We need to do this because the map hazards are all stored in different lists as they are all different types.
+    ///     Since we want to put them all in the same list here, we need to concat them into a list of key-value pairs.
+    ///     The list has to subscribe to all the source bindings in order to be updated when something changes.
     /// </summary>
     /// <returns></returns>
     private static ImpBinding<HashSet<KeyValuePair<GameObject, string>>> GenerateMapHazardBinding()
@@ -373,7 +376,7 @@ internal class MapUI : LayerSelector.LayerSelector
         // Set target to default top-down rotation and start animation
         var originX = ImpSettings.Map.RotationLock.Value ? target.rotation.eulerAngles.y : 0;
         cameraTargetRotation = ImpSettings.Map.UnlockView.Value
-            ? new Vector3(UnityEngine.Random.Range(0, 366), 40, 0)
+            ? new Vector3(Random.Range(0, 366), 40, 0)
             : new Vector3(originX, 89.9f, 0);
         snapBackAnimationTimer = 1;
 
@@ -401,8 +404,8 @@ internal class MapUI : LayerSelector.LayerSelector
     }
 
     /// <summary>
-    /// We don't call the base update function here, as the underlaying layer selector doesn't need to be
-    /// opened or closed.
+    ///     We don't call the base update function here, as the underlaying layer selector doesn't need to be
+    ///     opened or closed.
     /// </summary>
     private void Update()
     {

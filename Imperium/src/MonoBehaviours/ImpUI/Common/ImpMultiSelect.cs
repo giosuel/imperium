@@ -1,3 +1,5 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,20 +9,20 @@ using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+#endregion
+
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 
 public abstract class ImpMultiSelect
 {
     /// <summary>
-    /// MultiSelect ImpUI Component - Represents a multi-select UI system.
-    ///
-    /// Required UI Layout:
-    ///   Root
+    ///     MultiSelect ImpUI Component - Represents a multi-select UI system.
+    ///     Required UI Layout:
+    ///     Root
     ///     "Content" (ScrollRect)
-    ///       "Viewport" (Mask)
-    ///         "Content"
-    ///           "Template" (<see cref="ImpMultiSelectEntry"/>)
-    ///
+    ///     "Viewport" (Mask)
+    ///     "Content"
+    ///     "Template" (<see cref="ImpMultiSelectEntry" />)
     /// </summary>
     /// <param name="path">The path from the container to the UI component</param>
     /// <param name="container">The container of the UI component</param>

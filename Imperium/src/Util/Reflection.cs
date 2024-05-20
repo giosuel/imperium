@@ -2,10 +2,7 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Reflection;
-using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
 
 #endregion
 

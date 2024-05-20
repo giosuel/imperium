@@ -49,6 +49,7 @@ internal class ObjectEntryItem : ObjectEntry
             {
                 item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
             }
+
             item.FallToGround();
         }, origin);
     }

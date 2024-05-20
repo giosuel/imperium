@@ -2,7 +2,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 using Imperium.Core;
 using Imperium.Util;
 using Unity.Netcode;
@@ -62,8 +61,8 @@ public class ImpNetCommunication : NetworkBehaviour
     }
 
     /// <summary>
-    /// This guard makes it so clients can only use Imperium when the host also has it.
-    /// It would be a shame if someone were to comment this out :(
+    ///     This guard makes it so clients can only use Imperium when the host also has it.
+    ///     It would be a shame if someone were to comment this out :(
     /// </summary>
     [ServerRpc(RequireOwnership = false)]
     private void RequestImperiumAccessServerRpc(ServerRpcParams serverRpcParams = default)
@@ -93,10 +92,10 @@ public class ImpNetCommunication : NetworkBehaviour
         if (clientId == NetworkManager.LocalClientId)
         {
             ImpOutput.Send(
-                $"Imperium access was granted!",
+                "Imperium access was granted!",
                 type: NotificationType.AccessControl
             );
-            Imperium.Log.LogInfo($"[NET] Imperium access was granted!");
+            Imperium.Log.LogInfo("[NET] Imperium access was granted!");
             Imperium.WasImperiumAccessGranted = true;
             Imperium.Launch();
         }
@@ -123,7 +122,7 @@ public class ImpNetCommunication : NetworkBehaviour
             type: NotificationType.AccessControl,
             isWarning: true
         );
-        Imperium.Log.LogInfo($"[NET] Imperium access was revoked!");
+        Imperium.Log.LogInfo("[NET] Imperium access was revoked!");
         Imperium.DisableImperium();
     }
 
@@ -136,7 +135,7 @@ public class ImpNetCommunication : NetworkBehaviour
             "Imperium access was granted!",
             type: NotificationType.AccessControl
         );
-        Imperium.Log.LogInfo($"[NET] Imperium access was granted!");
+        Imperium.Log.LogInfo("[NET] Imperium access was granted!");
         if (Imperium.WasImperiumAccessGranted)
         {
             Imperium.EnableImperium();

@@ -1,8 +1,6 @@
 #region
 
 using Imperium.MonoBehaviours.ImpUI.MoonUI.Windows;
-using Imperium.Types;
-using Imperium.Util.Binding;
 
 #endregion
 

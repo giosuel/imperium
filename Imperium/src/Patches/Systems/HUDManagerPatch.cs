@@ -25,7 +25,7 @@ internal static class HUDManagerPatch
     }
 
     /// <summary>
-    /// Stops the ping from going through when the map is opened (Left click is used to drag the map)
+    ///     Stops the ping from going through when the map is opened (Left click is used to drag the map)
     /// </summary>
     [HarmonyPrefix]
     [HarmonyPatch("PingScan_performed")]

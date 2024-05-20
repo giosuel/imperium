@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -31,7 +30,7 @@ internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding, 
             }
         }
     }
-    
+
     internal void SnapshotPlayerHitbox(int landmineId)
     {
         if (!indicatorObjects.TryGetValue(landmineId, out var landmine)) return;

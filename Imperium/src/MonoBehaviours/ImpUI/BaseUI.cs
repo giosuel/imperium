@@ -14,31 +14,31 @@ using UnityEngine.InputSystem;
 namespace Imperium.MonoBehaviours.ImpUI;
 
 /// <summary>
-/// Basic Imperium UI. Can be used as part of an <see cref="ImpInterfaceManager"/> or as standalone UI.
+///     Basic Imperium UI. Can be used as part of an <see cref="ImpInterfaceManager" /> or as standalone UI.
 /// </summary>
 internal abstract class BaseUI : MonoBehaviour
 {
     internal bool IsOpen { get; private set; }
 
     /// <summary>
-    /// Reference to the container UI component
+    ///     Reference to the container UI component
     /// </summary>
     protected Transform container;
 
     /// <summary>
-    /// Whether the UI should be closed when a movement input is detected
+    ///     Whether the UI should be closed when a movement input is detected
     /// </summary>
     private bool closeOnMove { get; set; } = true;
 
     /// <summary>
-    /// Whether the UI should not react to tab inputs
+    ///     Whether the UI should not react to tab inputs
     /// </summary>
     internal bool IgnoreTab { get; private set; }
 
     /// <summary>
-    /// The binding that controls the theme of the UI component.
-    /// UIs can implement the function <see cref="OnThemeUpdate"/> to style components.
-    /// It is called every time the theme binding updates.
+    ///     The binding that controls the theme of the UI component.
+    ///     UIs can implement the function <see cref="OnThemeUpdate" /> to style components.
+    ///     It is called every time the theme binding updates.
     /// </summary>
     protected ImpBinding<ImpTheme> theme;
 
@@ -46,7 +46,7 @@ internal abstract class BaseUI : MonoBehaviour
     internal event Action onClose;
 
     /// <summary>
-    /// The interface manager this UI belongs to, if it belongs to a manager.
+    ///     The interface manager this UI belongs to, if it belongs to a manager.
     /// </summary>
     [CanBeNull] internal ImpInterfaceManager interfaceManager;
 
@@ -83,7 +83,7 @@ internal abstract class BaseUI : MonoBehaviour
     private void CloseEvent(InputAction.CallbackContext _) => CloseUI();
 
     /// <summary>
-    /// Closes the UI.
+    ///     Closes the UI.
     /// </summary>
     internal void CloseUI()
     {
@@ -98,7 +98,7 @@ internal abstract class BaseUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Opens the UI.
+    ///     Opens the UI.
     /// </summary>
     internal void OpenUI()
     {
@@ -139,7 +139,7 @@ internal abstract class BaseUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Called every time the theme binding updates.
+    ///     Called every time the theme binding updates.
     /// </summary>
     /// <param name="themeUpdate">The updated theme</param>
     protected virtual void OnThemeUpdate(ImpTheme themeUpdate)
@@ -147,14 +147,14 @@ internal abstract class BaseUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when the UI is opened.
+    ///     Called when the UI is opened.
     /// </summary>
     protected virtual void OnOpen()
     {
     }
 
     /// <summary>
-    /// Called when then UI is closed.
+    ///     Called when then UI is closed.
     /// </summary>
     protected virtual void OnClose()
     {

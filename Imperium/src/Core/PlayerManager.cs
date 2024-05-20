@@ -197,6 +197,7 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         {
             throw new ArgumentOutOfRangeException();
         }
+
         return Imperium.StartOfRound.allPlayerScripts[playerId];
     }
 

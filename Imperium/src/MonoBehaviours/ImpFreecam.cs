@@ -130,7 +130,7 @@ public class ImpFreecam : MonoBehaviour
 
         // Hide UI if view is not switching to minimap state
         if (!IsMinicamEnabled.Value) HUDManager.Instance.HideHUD(false);
-        
+
         Imperium.InputBindings.FreecamMap.Disable();
         FreecamCamera.enabled = false;
         Imperium.StartOfRound.SwitchCamera(gameplayCamera);
@@ -185,12 +185,14 @@ public class ImpFreecam : MonoBehaviour
 
         if (Imperium.InputBindings.FreecamMap["ArrowLeft"].IsPressed())
         {
-            ImpSettings.Freecam.FreecamFieldOfView.Set(Mathf.Max(-360, ImpSettings.Freecam.FreecamFieldOfView.Value - 1));
+            ImpSettings.Freecam.FreecamFieldOfView.Set(
+                Mathf.Max(-360, ImpSettings.Freecam.FreecamFieldOfView.Value - 1));
         }
 
         if (Imperium.InputBindings.FreecamMap["ArrowRight"].IsPressed())
         {
-            ImpSettings.Freecam.FreecamFieldOfView.Set(Mathf.Min(360, ImpSettings.Freecam.FreecamFieldOfView.Value + 1));
+            ImpSettings.Freecam.FreecamFieldOfView.Set(Mathf.Min(360,
+                ImpSettings.Freecam.FreecamFieldOfView.Value + 1));
         }
 
         FreecamCamera.fieldOfView = ImpSettings.Freecam.FreecamFieldOfView.Value;

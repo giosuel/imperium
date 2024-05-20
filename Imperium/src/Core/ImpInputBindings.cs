@@ -1,6 +1,5 @@
 #region
 
-using UnityEngine;
 using UnityEngine.InputSystem;
 
 #endregion

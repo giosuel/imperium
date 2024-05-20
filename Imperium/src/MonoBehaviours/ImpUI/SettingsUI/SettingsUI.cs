@@ -1,10 +1,8 @@
 #region
 
-using System;
 using BepInEx.Bootstrap;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;

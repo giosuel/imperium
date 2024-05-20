@@ -1,6 +1,5 @@
 #region
 
-using System.Linq;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;

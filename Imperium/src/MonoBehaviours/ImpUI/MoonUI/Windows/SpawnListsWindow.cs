@@ -5,7 +5,6 @@ using System.Linq;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Netcode;
-using Imperium.Types;
 using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;

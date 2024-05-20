@@ -114,9 +114,9 @@ internal enum NotificationType
 
     // Any notifications coming from the host.
     Server,
-    
+
     // Required notifications for important user-triggered events (can't be turned off).
     Required,
-    
+
     Other
 }

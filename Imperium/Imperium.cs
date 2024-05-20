@@ -1,6 +1,5 @@
 ﻿#region
 
-using System.Diagnostics;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -23,7 +22,6 @@ using Imperium.MonoBehaviours.ImpUI.SettingsUI;
 using Imperium.MonoBehaviours.ImpUI.SpawningUI;
 using Imperium.MonoBehaviours.ImpUI.TeleportUI;
 using Imperium.MonoBehaviours.ImpUI.VisualizationUI;
-using Imperium.MonoBehaviours.ImpUI.VisualizerUi;
 using Imperium.MonoBehaviours.ImpUI.WeatherUI;
 using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
@@ -32,8 +30,6 @@ using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;

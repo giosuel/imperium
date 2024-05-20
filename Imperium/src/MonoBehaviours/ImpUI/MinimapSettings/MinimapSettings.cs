@@ -1,7 +1,10 @@
+#region
+
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
-using Imperium.Util.Binding;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.MinimapSettings;
 

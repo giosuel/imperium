@@ -20,7 +20,7 @@ internal static class TerminalPatch
         private static void StartPatch()
         {
             if (!ImpSettings.Preferences.CustomWelcome.Value) return;
-            
+
             var ingamePlayerHud = GameObject.Find("IngamePlayerHUD");
             if (ingamePlayerHud)
             {
@@ -40,7 +40,7 @@ internal static class TerminalPatch
             __instance.itemSalesPercentages[i] = 31;
         }
     }
-    
+
     [HarmonyPrefix]
     [HarmonyPatch("BeginUsingTerminal")]
     private static void BeginUsingTerminalPatch()
