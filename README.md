@@ -57,7 +57,7 @@ Imperium is divided into multiple main interfaces that can be opened separately 
 
 The Main Control Panel allows you to change game and player settings as well as enabling and disabling the various overlays and gizmos Imperium offers. The control panel also allows access the Moon Settings, Render Settings, Imperium Settings, Save File Editor and the Object Settings menu.
 
-![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-ui.png?raw=true)
+![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-control-center.png?raw=true)
 
 - **Casting Indicators:** Raycast and physics collision indicators (*client-side*).
 - **Gizmos:** In-game objects that visualize spawn indicators and timers (*client-side*).
@@ -123,7 +123,7 @@ The render settings interface allows you to activate / deactivate render layers 
 
 Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).
 
-![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/save-file-editor.png?raw=true)
+![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/imperium-saves.png?raw=true)
 
 > [!CAUTION]
 > It is not recommended to use the save file editor unless you know what you are doing.

@@ -240,6 +240,17 @@ internal class ObjectManager : ImpLifecycleObject
                 }
                 else if (grabbableItem.itemProperties.dropSFX)
                 {
+                    var itemTransform = grabbableItem.transform;
+                    itemTransform.position = position + Vector3.up;
+                    grabbableItem.startFallingPosition = itemTransform.position;
+                    if (grabbableItem.transform.parent != null)
+                    {
+                        grabbableItem.startFallingPosition = grabbableItem.transform.parent.InverseTransformPoint(
+                            grabbableItem.startFallingPosition
+                        );
+                    }
+
+                    grabbableItem.FallToGround();
                     Imperium.Player.itemAudio.PlayOneShot(grabbableItem.itemProperties.dropSFX);
                 }
             }
