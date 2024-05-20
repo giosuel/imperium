@@ -53,7 +53,7 @@ public abstract class ImpToggle
         toggle.isOn = valueBinding.Value;
         toggle.onValueChanged.AddListener(valueBinding.Set);
         toggle.onValueChanged.AddListener(_ => GameManager.PlayClip(ImpAssets.GrassClick));
-        valueBinding.syncOnUpdate += value => toggle.isOn = value;
+        valueBinding.onUpdateSync += value => toggle.isOn = value;
 
         if (interactableBindings.Length > 0)
         {

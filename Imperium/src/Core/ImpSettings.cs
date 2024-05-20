@@ -100,7 +100,7 @@ public abstract class ImpSettings
             "Game.Ship",
             "PreventShipLeave",
             false,
-            syncOnUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
+            syncUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
         );
     }
 

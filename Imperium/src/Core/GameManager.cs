@@ -17,12 +17,12 @@ internal class GameManager : ImpLifecycleObject
     {
         TimeIsPaused = new ImpBinding<bool>(
             false,
-            syncOnUpdate: value =>
+            syncUpdate: value =>
                 ImpNetTime.Instance.UpdateTimeServerRpc(TimeSpeed?.Value ?? ImpConstants.DefaultTimeSpeed, value)
         );
         TimeSpeed = new ImpBinding<float>(
             ImpConstants.DefaultTimeSpeed,
-            syncOnUpdate: value =>
+            syncUpdate: value =>
                 ImpNetTime.Instance.UpdateTimeServerRpc(value, TimeIsPaused?.Value ?? false)
         );
     }
@@ -68,7 +68,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<float> MaxIndoorPower = new(
         Imperium.RoundManager.currentMaxInsidePower,
         value => Imperium.RoundManager.currentMaxInsidePower = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetMaxIndoorPowerServerRpc(value);
             ImpOutput.Send($"Indoor Power set to {value}!", notificationType: NotificationType.Confirmation);
@@ -77,7 +77,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<float> MaxOutdoorPower = new(
         Imperium.RoundManager.currentMaxOutsidePower,
         value => Imperium.RoundManager.currentMaxOutsidePower = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetMaxOutdoorPowerServerRpc(value);
             ImpOutput.Send($"Outdoor Power set to {value}!", notificationType: NotificationType.Confirmation);
@@ -86,7 +86,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<int> MaxDaytimePower = new(
         Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount,
         value => Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetMaxDaytimePowerServerRpc(value);
             ImpOutput.Send($"Daytime Power set to {value}!", notificationType: NotificationType.Confirmation);
@@ -95,7 +95,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<float> IndoorDeviation = new(
         Imperium.RoundManager.currentLevel.spawnProbabilityRange,
         value => Imperium.RoundManager.currentLevel.spawnProbabilityRange = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetIndoorDeviationServerRpc(value);
             ImpOutput.Send($"Indoor deviation set to {value}!", notificationType: NotificationType.Confirmation);
@@ -104,7 +104,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<float> DaytimeDeviation = new(
         Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange,
         value => Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetDaytimeDeviationServerRpc(value);
             ImpOutput.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
@@ -113,7 +113,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<int> MinIndoorSpawns = new(
         Imperium.RoundManager.minEnemiesToSpawn,
         value => Imperium.RoundManager.minEnemiesToSpawn = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetMinIndoorEntitiesServerRpc(value);
             ImpOutput.Send($"Daytime deviation set to {value}!", notificationType: NotificationType.Confirmation);
@@ -122,7 +122,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<int> MinOutdoorSpawns = new(
         Imperium.RoundManager.minOutsideEnemiesToSpawn,
         value => Imperium.RoundManager.minOutsideEnemiesToSpawn = value,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetMinOutdoorEntitiesServerRpc(value);
             ImpOutput.Send(
@@ -144,7 +144,7 @@ internal class GameManager : ImpLifecycleObject
             Imperium.TimeOfDay.currentWeatherVariable = value;
         },
         ignoreRefresh: true,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetWeatherVariable1ServerRpc(value);
             ImpOutput.Send($"Weather variable 1 set to {value}!", notificationType: NotificationType.Confirmation);
@@ -154,7 +154,7 @@ internal class GameManager : ImpLifecycleObject
         Imperium.TimeOfDay.currentWeatherVariable2,
         value => Imperium.TimeOfDay.currentWeatherVariable2 = value,
         ignoreRefresh: true,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetSpawning.Instance.SetWeatherVariable2ServerRpc(value);
             ImpOutput.Send($"Weather variable 2 set to {value}!", notificationType: NotificationType.Confirmation);
@@ -163,7 +163,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<int> GroupCredits = new(
         Imperium.Terminal.groupCredits,
         ignoreRefresh: true,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetQuota.Instance.SetGroupCreditsServerRpc(value);
             ImpOutput.Send(
@@ -175,7 +175,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<int> ProfitQuota = new(
         Imperium.TimeOfDay.profitQuota,
         ignoreRefresh: true,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetQuota.Instance.SetProfitQuotaServerRpc(value);
             ImpOutput.Send(
@@ -187,7 +187,7 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<int> QuotaDeadline = new(
         Imperium.TimeOfDay.daysUntilDeadline,
         ignoreRefresh: true,
-        syncOnUpdate: value =>
+        syncUpdate: value =>
         {
             ImpNetQuota.Instance.SetDeadlineDaysServerRpc(value);
             ImpOutput.Send(
@@ -199,8 +199,8 @@ internal class GameManager : ImpLifecycleObject
     internal readonly ImpBinding<bool> AllPlayersDead = new(
         false,
         ignoreRefresh: true,
-        onUpdate: value => Imperium.StartOfRound.allPlayersDead = value,
-        syncOnUpdate: value => ImpNetPlayer.Instance.SetAllPlayersDeadServerRpc(value)
+        update: value => Imperium.StartOfRound.allPlayersDead = value,
+        syncUpdate: value => ImpNetPlayer.Instance.SetAllPlayersDeadServerRpc(value)
     );
 
     [ImpAttributes.RemoteMethod]
