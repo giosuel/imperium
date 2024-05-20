@@ -8,7 +8,6 @@ using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
 using Imperium.Types;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

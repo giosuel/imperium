@@ -3,8 +3,6 @@
 using System;
 using Imperium.Util;
 using TMPro;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 #endregion
 

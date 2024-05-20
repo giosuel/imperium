@@ -1,3 +1,5 @@
+#region
+
 using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
@@ -6,6 +8,8 @@ using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
+
+#endregion
 
 namespace Imperium.MonoBehaviours;
 

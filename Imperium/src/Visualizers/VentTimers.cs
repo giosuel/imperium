@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util;
 using Imperium.Util.Binding;

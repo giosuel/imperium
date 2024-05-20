@@ -6,7 +6,7 @@ using Imperium.Types;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.VisualizerUi.Windows;
+namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.Windows;
 
 internal class VisualizersWindows : BaseWindow
 {

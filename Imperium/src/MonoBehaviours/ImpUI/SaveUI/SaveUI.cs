@@ -3,11 +3,9 @@
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
-using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using ContentType = TMPro.TMP_InputField.ContentType;
 
 #endregion

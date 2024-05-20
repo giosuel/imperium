@@ -2,13 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using Imperium.Core;
 using JetBrains.Annotations;
-using MonoMod.Cil;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -138,9 +135,8 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Formats the parents of a Unity transform into a string.
-    ///
-    /// e.g. "ImpInterface/imperium_ui/Container/Window/Content"
+    ///     Formats the parents of a Unity transform into a string.
+    ///     e.g. "ImpInterface/imperium_ui/Container/Window/Content"
     /// </summary>
     /// <param name="root"></param>
     /// <returns></returns>

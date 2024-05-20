@@ -39,7 +39,7 @@ public class PlayerInfo : MonoBehaviour
     {
         DrawInfoPanel(playerInfoConfig.Info.Value);
     }
-    
+
     internal void Init(PlayerInfoConfig config, PlayerControllerB player)
     {
         playerInfoConfig = config;

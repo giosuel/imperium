@@ -68,9 +68,9 @@ public class ImpBinding<T> : IRefreshable, IResettable
         Value = currentValue;
         DefaultValue = currentValue;
         this.ignoreRefresh = ignoreRefresh;
-        this.onUpdateSync = syncUpdate;
+        onUpdateSync = syncUpdate;
 
-        this.onUpdate += update;
+        onUpdate += update;
     }
 
     /// <summary>
@@ -98,9 +98,9 @@ public class ImpBinding<T> : IRefreshable, IResettable
         Value = currentValue;
         DefaultValue = defaultValue;
         this.ignoreRefresh = ignoreRefresh;
-        this.onUpdateSync = syncUpdate;
+        onUpdateSync = syncUpdate;
 
-        this.onUpdate += update;
+        onUpdate += update;
     }
 
     /// <summary>

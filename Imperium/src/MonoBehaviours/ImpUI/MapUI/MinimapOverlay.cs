@@ -1,8 +1,12 @@
+#region
+
 using Imperium.Core;
 using Imperium.Types;
 using Imperium.Util;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.MapUI;
 

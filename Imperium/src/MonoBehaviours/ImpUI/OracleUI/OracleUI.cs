@@ -3,7 +3,6 @@
 using Imperium.Oracle;
 using Imperium.Types;
 using Imperium.Util;
-using Imperium.Util.Binding;
 
 #endregion
 

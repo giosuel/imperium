@@ -2,8 +2,6 @@
 
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.Types;
-using Imperium.Util.Binding;
 using TMPro;
 
 #endregion

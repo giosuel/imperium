@@ -3,10 +3,8 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Netcode;
 using Imperium.Util;
-using Unity.Netcode;
 using UnityEngine;
 
 #endregion
