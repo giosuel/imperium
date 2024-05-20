@@ -376,6 +376,14 @@ internal class MapUI : LayerSelector.LayerSelector
             ? new Vector3(UnityEngine.Random.Range(0, 366), 40, 0)
             : new Vector3(originX, 89.9f, 0);
         snapBackAnimationTimer = 1;
+
+
+        // Use free-look clipping when camera is unlocked
+        if (ImpSettings.Map.UnlockView.Value)
+        {
+            Imperium.Map.CameraNearClip.Set(ImpConstants.DefaultMapCameraNearClipFreeLook);
+            Imperium.Map.CameraFarClip.Set(ImpConstants.DefaultMapCameraFarClipFreeLook);
+        }
     }
 
     protected override void OnOpen()
@@ -442,6 +450,7 @@ internal class MapUI : LayerSelector.LayerSelector
 
             // Reset clipping at the end of the animation if auto clipping is on
             if (ImpSettings.Map.AutoClipping.Value
+                && !ImpSettings.Map.UnlockView.Value
                 && snapBackAnimationTimer < 0.5f
                 && (Imperium.Player.isInsideFactory
                     || Imperium.Player.isInElevator

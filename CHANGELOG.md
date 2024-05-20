@@ -10,6 +10,7 @@
 ### QOL Changes
 
 - Fixed an issue where not all notifcations were toggleable.
+- Fixed a bug where the map camera clipping would not adjust when in unlocked mode.
 
 ### Internal Fixes
 
