@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using Imperium.Core;
+using Imperium.Util;
 using Imperium.Util.Binding;
 
 #endregion
@@ -21,8 +22,19 @@ internal class ScrapSpawnIndicators(
         {
             if (!indicatorObjects.ContainsKey(spawn.GetInstanceID()))
             {
-                indicatorObjects[spawn.GetInstanceID()] =
-                    Visualization.VisualizePoint(spawn.gameObject, spawn.itemSpawnRange);
+                var size = spawn.spawnedItemsCopyPosition
+                    ? 1f
+                    : spawn.itemSpawnRange;
+
+                var material = spawn.spawnedItemsCopyPosition
+                    ? ImpAssets.WireframeCyanMaterial
+                    : ImpAssets.WireframeAmaranthMaterial;
+
+                indicatorObjects[spawn.GetInstanceID()] = Visualization.VisualizePoint(
+                    spawn.gameObject,
+                    size,
+                    material: material
+                );
             }
         }
     }

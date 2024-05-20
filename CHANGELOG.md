@@ -1,5 +1,20 @@
 # Changelog
 
+## Imperium v0.1.8 [Beta] - The Visualizer Update
+
+### Added
+
+- Added a visualizer for scrap spawn locations.
+- Added a new notification type for access control and spawning notifications.
+
+### QOL Changes
+
+- Fixed an issue where not all notifcations were toggleable.
+
+### Internal Fixes
+
+- Fixed a bug where Imperium client access would lock out the host.
+
 ## Imperium v0.1.7 [Beta] - Hotfix
 
 ### Internal Fixes
