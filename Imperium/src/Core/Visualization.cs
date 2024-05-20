@@ -24,15 +24,37 @@ internal class Visualization
 
     internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager)
     {
-        ShotgunIndicators = new ShotgunIndicators();
-        ShovelIndicators = new ShovelIndicators();
-        KnifeIndicators = new KnifeIndicators();
-        LandmineIndicators = new LandmineIndicators(objectManager.CurrentLevelLandmines);
-        SpikeTrapIndicators = new SpikeTrapIndicators(objectManager.CurrentLevelSpikeTraps);
-        VentTimers = new VentTimers(objectManager.CurrentLevelVents);
-        SpawnIndicators = new SpawnIndicators(oracleStateBinding);
-        PlayerInfos = new PlayerInfos(objectManager.CurrentPlayers);
-        EntityInfos = new EntityInfos(objectManager.CurrentLevelEntities);
+        ShotgunIndicators = new ShotgunIndicators(ImpSettings.Visualizations.ShotgunIndicators);
+        ShovelIndicators = new ShovelIndicators(ImpSettings.Visualizations.ShovelIndicators);
+        KnifeIndicators = new KnifeIndicators(ImpSettings.Visualizations.KnifeIndicators);
+        LandmineIndicators = new LandmineIndicators(
+            objectManager.CurrentLevelLandmines,
+            ImpSettings.Visualizations.LandmineIndicators
+        );
+        SpikeTrapIndicators = new SpikeTrapIndicators(
+            objectManager.CurrentLevelSpikeTraps,
+            ImpSettings.Visualizations.SpikeTrapIndicators
+        );
+        VentTimers = new VentTimers(
+            objectManager.CurrentLevelVents,
+            ImpSettings.Visualizations.VentTimers
+        );
+        SpawnIndicators = new SpawnIndicators(
+            oracleStateBinding,
+            ImpSettings.Visualizations.SpawnIndicators
+        );
+        ScrapSpawns = new ScrapSpawnIndicators(
+            objectManager.CurrentScrapSpawnPoints,
+            ImpSettings.Visualizations.ScrapSpawns
+        );
+        PlayerInfos = new PlayerInfos(
+            objectManager.CurrentPlayers,
+            ImpSettings.Visualizations.PlayerInfo
+        );
+        EntityInfos = new EntityInfos(
+            objectManager.CurrentLevelEntities,
+            ImpSettings.Visualizations.EntityInfo
+        );
     }
 
     // Contains all registered visualizers with their UNIQUE identifier
@@ -54,6 +76,7 @@ internal class Visualization
     internal readonly VentTimers VentTimers;
     internal readonly PlayerInfos PlayerInfos;
     internal readonly EntityInfos EntityInfos;
+    internal readonly ScrapSpawnIndicators ScrapSpawns;
 
     /// <summary>
     ///     Visualizes the colliders of a group of game objects by tag or layer
@@ -106,7 +129,7 @@ internal class Visualization
         }
     }
 
-    public static GameObject VisualizePoint(GameObject obj, float size, Material material, string name = null)
+    public static GameObject VisualizePoint(GameObject obj, float size, Material material = null, string name = null)
     {
         return ImpUtils.Geometry.CreatePrimitive(
             PrimitiveType.Sphere,
@@ -229,14 +252,6 @@ internal class Visualization
                     visualizer(obj, uniqueIdentifier, size, material);
                 }
             }
-
-            if (!refresh)
-            {
-                ImpOutput.Send(
-                    $"Turned on Visualisation for {identifier}!",
-                    notificationType: NotificationType.Confirmation
-                );
-            }
         }
         else
         {
@@ -245,14 +260,6 @@ internal class Visualization
             if (VisualizationObjectMap.TryGetValue(uniqueIdentifier, out var objectDict))
             {
                 ImpUtils.ToggleGameObjects(objectDict.Values, false);
-            }
-
-            if (!refresh)
-            {
-                ImpOutput.Send(
-                    $"Turned off Visualisation for {identifier}!",
-                    notificationType: NotificationType.Confirmation
-                );
             }
         }
     }

@@ -23,6 +23,8 @@ internal abstract class ImpOutput
         { NotificationType.SpawnReport, ImpSettings.Preferences.NotificationsSpawnReports },
         { NotificationType.Entities, ImpSettings.Preferences.NotificationsEntities },
         { NotificationType.Server, ImpSettings.Preferences.NotificationsServer },
+        { NotificationType.AccessControl, ImpSettings.Preferences.NotificationsAccessControl },
+        { NotificationType.Spawning, ImpSettings.Preferences.NotificationsSpawning },
         { NotificationType.Required, new ImpBinding<bool>(true) },
         { NotificationType.Other, ImpSettings.Preferences.NotificationsOther }
     };
@@ -30,11 +32,12 @@ internal abstract class ImpOutput
     internal static void SendToClients(
         string text,
         string title = "Imperium",
-        bool isWarning = false
+        bool isWarning = false,
+        NotificationType type = NotificationType.Server
     )
     {
         if (!NetworkManager.Singleton.IsHost || !ImpSettings.Preferences.AllowClients.Value) return;
-        ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning);
+        ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning, type: type);
     }
 
     internal static void Status(string text) => HUDManager.Instance.DisplayStatusEffect(text);
@@ -44,7 +47,7 @@ internal abstract class ImpOutput
         string text,
         string title = "Imperium",
         bool isWarning = false,
-        NotificationType notificationType = NotificationType.Other
+        NotificationType type = NotificationType.Other
     )
     {
         if (!HUDManager.Instance)
@@ -54,9 +57,9 @@ internal abstract class ImpOutput
         }
 
         // Disable notifications if turned off or during loading of settings
-        if (!NotificationSettings[notificationType].Value || ImpSettings.IsLoading) return;
+        if (!NotificationSettings[type].Value || ImpSettings.IsLoading) return;
 
-        if (notificationType == NotificationType.OracleUpdate) title = "Oracle";
+        if (type == NotificationType.OracleUpdate) title = "Oracle";
 
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
@@ -102,6 +105,12 @@ internal enum NotificationType
 
     // Entity related notifications (e.g. Entity took damage).
     Entities,
+
+    // Imperium item / entity spawning.
+    Spawning,
+
+    // Access control / lobby control related things.
+    AccessControl,
 
     // Any notifications coming from the host.
     Server,

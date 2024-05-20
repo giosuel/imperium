@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -11,8 +10,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class SpikeTrapIndicators(ImpBinding<HashSet<SpikeRoofTrap>> objectsBinding) :
-    BaseVisualizer<HashSet<SpikeRoofTrap>>("Spike Trap Indicators", objectsBinding)
+internal class SpikeTrapIndicators(ImpBinding<HashSet<SpikeRoofTrap>> objectsBinding, ImpBinding<bool> visibleBinding) :
+    BaseVisualizer<HashSet<SpikeRoofTrap>>("Spike Trap Indicators", objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<SpikeRoofTrap> objects)
     {
@@ -26,7 +25,6 @@ internal class SpikeTrapIndicators(ImpBinding<HashSet<SpikeRoofTrap>> objectsBin
                 indicatorObject.transform.SetParent(spikeTrap.transform);
                 var indicator = indicatorObject.AddComponent<SpikeTrapIndicator>();
                 indicator.Init(spikeTrap);
-                indicatorObject.SetActive(ImpSettings.Visualizations.SpikeTrapIndicators.Value);
 
                 indicatorObjects[spikeTrap.GetInstanceID()] = indicatorObject;
             }

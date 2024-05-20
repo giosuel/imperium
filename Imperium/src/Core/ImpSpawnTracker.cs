@@ -28,7 +28,7 @@ public static class ImpSpawnTracker
         {
             ImpOutput.Send(
                 "Nothing spawned >.<", $"Spawn Report Cycle #{num * 9}",
-                notificationType: NotificationType.SpawnReport
+                type: NotificationType.SpawnReport
             );
             ImpOutput.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
         }
@@ -36,7 +36,7 @@ public static class ImpSpawnTracker
         {
             ImpOutput.Send(
                 output.Aggregate((a, b) => $"{a}\n{b}"), $"Spawn Report Cycle #{num * 9}",
-                notificationType: NotificationType.SpawnReport
+                type: NotificationType.SpawnReport
             );
             ImpOutput.LogBlock(output, title: "Spawn Tracker");
         }

@@ -2,14 +2,15 @@
 
 using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
+using Imperium.Util.Binding;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Visualizers;
 
-internal class 
-ShovelIndicators() : BaseVisualizer<Shovel>("Shovel Indicators")
+internal class
+    ShovelIndicators(ImpBinding<bool> visibleBinding) : BaseVisualizer<Shovel>("Shovel Indicators", visibleBinding)
 {
     internal void Refresh(Shovel shovel, bool isActivelyHolding)
     {

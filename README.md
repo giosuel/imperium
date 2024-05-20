@@ -239,4 +239,3 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
 
 - [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for making the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
-

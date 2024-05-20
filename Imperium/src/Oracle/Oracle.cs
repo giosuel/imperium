@@ -128,7 +128,7 @@ internal class Oracle
         {
             ImpOutput.Send(
                 $"Spawn predictions updated due to {reason}!",
-                notificationType: NotificationType.OracleUpdate
+                type: NotificationType.OracleUpdate
             );
         }
 

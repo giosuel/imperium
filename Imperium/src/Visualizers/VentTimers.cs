@@ -12,8 +12,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class VentTimers(ImpBinding<HashSet<EnemyVent>> objectsBinding)
-    : BaseVisualizer<HashSet<EnemyVent>>("Vent Timers", objectsBinding)
+internal class VentTimers(ImpBinding<HashSet<EnemyVent>> objectsBinding, ImpBinding<bool> visibleBinding)
+    : BaseVisualizer<HashSet<EnemyVent>>("Vent Timers", objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<EnemyVent> objects)
     {
@@ -30,7 +30,6 @@ internal class VentTimers(ImpBinding<HashSet<EnemyVent>> objectsBinding)
                 var timer = timerObject.AddComponent<VentTimer>();
                 timer.vent = entityVent;
 
-                timerObject.SetActive(ImpSettings.Visualizations.VentTimers.Value);
                 indicatorObjects[entityVent.GetInstanceID()] = timerObject;
             }
         }

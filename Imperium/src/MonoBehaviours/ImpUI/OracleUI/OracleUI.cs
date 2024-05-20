@@ -65,7 +65,7 @@ internal class OracleUI : SingleplexUI
             ImpOutput.Send(
                 "Nothing is spawning out here ._.",
                 title: "Oracle",
-                notificationType: NotificationType.Required
+                type: NotificationType.Required
             );
             return false;
         }

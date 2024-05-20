@@ -2,13 +2,15 @@
 
 using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
+using Imperium.Util.Binding;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Visualizers;
 
-internal class KnifeIndicators() : BaseVisualizer<Shovel>("Knife Indicators")
+internal class KnifeIndicators(ImpBinding<bool> visibleBinding)
+    : BaseVisualizer<Shovel>("Knife Indicators", visibleBinding)
 {
     internal void Refresh(KnifeItem knife, bool isActivelyHolding)
     {

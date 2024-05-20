@@ -188,8 +188,10 @@ public abstract class ImpSettings
             "Overlays",
             "BeeSpawns",
             false,
-            value => Imperium.Visualization.Point("OutsideAINode", size: 14,
-                material: ImpAssets.FresnelYellowMaterial)(value)
+            value => Imperium.Visualization.Point(
+                "OutsideAINode", size: 14,
+                material: ImpAssets.FresnelYellowMaterial
+            )(value)
         );
 
         internal static readonly ImpConfig<bool> TileBorders = new(
@@ -202,15 +204,13 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> SpawnIndicators = new(
             "Gizmos",
             "SpawnIndicators",
-            false,
-            Imperium.Visualization.SpawnIndicators.Toggle
+            false
         );
 
         internal static readonly ImpConfig<bool> VentTimers = new(
             "Gizmos",
             "VentTimers",
-            false,
-            Imperium.Visualization.VentTimers.Toggle
+            false
         );
 
         internal static readonly ImpConfig<bool> NoiseIndicators = new(
@@ -222,51 +222,49 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> PlayerInfo = new(
             "Gizmos",
             "PlayerInfo",
-            false,
-            Imperium.Visualization.PlayerInfos.Toggle
+            false
         );
 
         internal static readonly ImpConfig<bool> EntityInfo = new(
             "Gizmos",
             "EntityInfo",
-            false,
-            Imperium.Visualization.EntityInfos.Toggle
+            false
+        );
+
+        internal static readonly ImpConfig<bool> ScrapSpawns = new(
+            "Gizmos",
+            "ScrapSpawns",
+            false
         );
 
         internal static readonly ImpConfig<bool> ShotgunIndicators = new(
             "Gizmos",
             "ShotgunIndicators",
-            false,
-            Imperium.Visualization.ShotgunIndicators.Toggle
+            false
         );
 
         internal static readonly ImpConfig<bool> ShovelIndicators = new(
             "Gizmos",
             "ShovelIndicators",
-            false,
-            Imperium.Visualization.ShovelIndicators.Toggle
+            false
         );
 
         internal static readonly ImpConfig<bool> KnifeIndicators = new(
             "Gizmos",
             "KnifeIndicators",
-            false,
-            Imperium.Visualization.KnifeIndicators.Toggle
+            false
         );
-
 
         internal static readonly ImpConfig<bool> LandmineIndicators = new(
             "Gizmos",
             "LandmineIndicators",
-            false,
-            Imperium.Visualization.LandmineIndicators.Toggle
+            false
         );
 
         internal static readonly ImpConfig<bool> SpikeTrapIndicators = new(
             "Gizmos",
             "SpikeTrapIndicators",
-            false,
-            Imperium.Visualization.SpikeTrapIndicators.Toggle
+            false
         );
     }
 
@@ -543,6 +541,18 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> NotificationsEntities = new(
             "Preferences.Notifications",
             "Entities",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> NotificationsSpawning = new(
+            "Preferences.Notifications",
+            "Spawning",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> NotificationsAccessControl = new(
+            "Preferences.Notifications",
+            "AccessControl",
             true
         );
 

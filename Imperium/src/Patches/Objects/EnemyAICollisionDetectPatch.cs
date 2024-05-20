@@ -21,7 +21,7 @@ internal class EnemyAICollisionDetectPatch
         {
             ImpOutput.Send(
                 $"Entity {entityName} was hit by {force} damage.",
-                notificationType: NotificationType.Entities
+                type: NotificationType.Entities
             );
         }
     }
