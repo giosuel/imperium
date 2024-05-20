@@ -12,8 +12,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class EntityInfos(ImpBinding<HashSet<EnemyAI>> objectsBinding)
-    : BaseVisualizer<HashSet<EnemyAI>>("Entity Infos", objectsBinding)
+internal class EntityInfos(ImpBinding<HashSet<EnemyAI>> objectsBinding, ImpBinding<bool> visibleBinding)
+    : BaseVisualizer<HashSet<EnemyAI>>("Entity Infos", objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<EnemyAI> objects)
     {
@@ -44,7 +44,6 @@ internal class EntityInfos(ImpBinding<HashSet<EnemyAI>> objectsBinding)
                 var entityInfo = entityInfoObject.AddComponent<EntityInfo>();
                 entityInfo.Init(entity);
 
-                entityInfoObject.SetActive(ImpSettings.Visualizations.EntityInfo.Value);
                 indicatorObjects[entity.GetInstanceID()] = entityInfoObject;
             }
         }

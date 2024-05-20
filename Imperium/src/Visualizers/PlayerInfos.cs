@@ -12,8 +12,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class PlayerInfos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding)
-    : BaseVisualizer<HashSet<PlayerControllerB>>("Player Infos", objectsBinding)
+internal class PlayerInfos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding, ImpBinding<bool> visibleBinding)
+    : BaseVisualizer<HashSet<PlayerControllerB>>("Player Infos", objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<PlayerControllerB> objects)
     {
@@ -31,7 +31,6 @@ internal class PlayerInfos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding
                 var playerInfo = playerInfoObject.AddComponent<PlayerInfo>();
                 playerInfo.playerController = player.GetComponent<PlayerControllerB>();
 
-                playerInfoObject.SetActive(ImpSettings.Visualizations.PlayerInfo.Value);
                 indicatorObjects[player.GetInstanceID()] = playerInfoObject;
             }
         }

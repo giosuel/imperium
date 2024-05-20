@@ -47,7 +47,7 @@ public class StartOfRoundPatch
             // We have to revert this
             __instance.allPlayersDead = false;
 
-            ImpOutput.Send("Prevented the ship from leaving.", notificationType: NotificationType.Other);
+            ImpOutput.Send("Prevented the ship from leaving.", type: NotificationType.Other);
             Imperium.Log.LogInfo("[MON] Prevented the ship from leaving.");
             return false;
         }

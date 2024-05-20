@@ -2,13 +2,15 @@
 
 using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
+using Imperium.Util.Binding;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Visualizers;
 
-internal class ShotgunIndicators() : BaseVisualizer<ShotgunItem>("Shotgun Indicators")
+internal class ShotgunIndicators(ImpBinding<bool> visibleBinding)
+    : BaseVisualizer<ShotgunItem>("Shotgun Indicators", visibleBinding)
 {
     internal void Refresh(ShotgunItem shotgun, bool isActivelyHolding)
     {

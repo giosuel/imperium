@@ -228,6 +228,12 @@ internal class ControlCenterWindow : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
+            "Right/Overlays/ScrapSpawns",
+            content,
+            ImpSettings.Visualizations.ScrapSpawns,
+            themeBinding
+        );
+        ImpToggle.Bind(
             "Right/Overlays/AINodesIndoor",
             content,
             ImpSettings.Visualizations.AINodesIndoor,
