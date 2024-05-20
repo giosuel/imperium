@@ -17,8 +17,9 @@ internal static class EnemyAIPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("PlayerIsTargetable")]
-    private static bool PlayerIsTargetablePatch(EnemyAI __instance, PlayerControllerB playerScript,
-        ref bool __result)
+    private static bool PlayerIsTargetablePatch(
+        EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
+    )
     {
         if (!Imperium.IsImperiumReady) return true;
 
@@ -41,34 +42,37 @@ internal static class EnemyAIPatch
         );
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("CheckLineOfSightForPosition")]
+    private static void CheckLineOfSightForPositionPrefixPatch(EnemyAI __instance, float width, int range)
+    {
+        Imperium.Visualization.EntityInfos.LineOfSightUpdate(__instance, null, width, range);
+    }
+
     /// <summary>
     ///     Temporarily removes invisible player from allPlayerScripts
     /// </summary>
-    /// <param name="__instance"></param>
     [HarmonyPrefix]
     [HarmonyPatch("CheckLineOfSightForPlayer")]
-    private static void CheckLineOfSightForPlayerPrefixPatch(EnemyAI __instance)
+    private static void CheckLineOfSightForPlayerPrefixPatch(EnemyAI __instance, float width, int range)
     {
-        if (!Imperium.IsImperiumReady) return;
-
         if (ImpSettings.Player.Invisibility.Value)
         {
             playerBackup = Imperium.StartOfRound.allPlayerScripts;
             Imperium.StartOfRound.allPlayerScripts = Imperium.StartOfRound.allPlayerScripts
                 .Where(player => player != Imperium.Player).ToArray();
         }
+
+        Imperium.Visualization.EntityInfos.LineOfSightUpdate(__instance, null, width, range);
     }
 
     /// <summary>
     ///     Restores allPlayerScripts modified by prefix patch
     /// </summary>
-    /// <param name="__instance"></param>
     [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForPlayer")]
     private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
-
         if (ImpSettings.Player.Invisibility.Value)
         {
             Imperium.StartOfRound.allPlayerScripts = playerBackup;
@@ -78,31 +82,27 @@ internal static class EnemyAIPatch
     /// <summary>
     ///     Temporarily removes invisible player from allPlayerScripts
     /// </summary>
-    /// <param name="__instance"></param>
     [HarmonyPrefix]
     [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
-    private static void CheckLineOfSightForClosestPlayerPrefixPatch(EnemyAI __instance)
+    private static void CheckLineOfSightForClosestPlayerPrefixPatch(EnemyAI __instance, float width, int range)
     {
-        if (!Imperium.IsImperiumReady) return;
-
         if (ImpSettings.Player.Invisibility.Value)
         {
             playerBackup = Imperium.StartOfRound.allPlayerScripts;
             Imperium.StartOfRound.allPlayerScripts = Imperium.StartOfRound.allPlayerScripts
                 .Where(player => player != Imperium.Player).ToArray();
         }
+
+        Imperium.Visualization.EntityInfos.LineOfSightUpdate(__instance, null, width, range);
     }
 
     /// <summary>
     ///     Restores allPlayerScripts modified by prefix patch
     /// </summary>
-    /// <param name="__instance"></param>
     [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
     private static void CheckLineOfSightForClosestPlayerPostfixPatch(EnemyAI __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
-
         if (ImpSettings.Player.Invisibility.Value)
         {
             Imperium.StartOfRound.allPlayerScripts = playerBackup;

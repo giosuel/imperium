@@ -47,13 +47,13 @@ public class OracleCycleEntry : MonoBehaviour
         ImpThemeManager.Style(
             themeUpdate,
             transform,
-            new StyleOverride("", Variant.BACKGROUND)
+            new StyleOverride("", Variant.DARKER)
         );
 
         ImpThemeManager.Style(
             themeUpdate,
             entryTemplate.transform,
-            new StyleOverride("", Variant.DARKEST)
+            new StyleOverride("", Variant.LIGHTER)
         );
 
         foreach (var report in reports)
@@ -61,7 +61,7 @@ public class OracleCycleEntry : MonoBehaviour
             ImpThemeManager.Style(
                 themeUpdate,
                 report.transform,
-                new StyleOverride("", Variant.DARKEST)
+                new StyleOverride("", Variant.LIGHTER)
             );
         }
     }

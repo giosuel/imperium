@@ -24,6 +24,7 @@ public abstract class ImpAssets
     internal static GameObject RenderingUIObject;
     internal static GameObject OracleUIObject;
     internal static GameObject NavigatorUIObject;
+    internal static GameObject VisualizerUIObject;
     internal static GameObject IndicatorObject;
     internal static GameObject MapUIObject;
     internal static GameObject MinimapSettingsObject;
@@ -80,6 +81,7 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/rendering_ui.prefab", out RenderingUIObject),
             LoadFile(assets, "Assets/Prefabs/oracle_ui.prefab", out OracleUIObject),
             LoadFile(assets, "Assets/Prefabs/navigator_ui.prefab", out NavigatorUIObject),
+            LoadFile(assets, "Assets/Prefabs/visualizer_ui.prefab", out VisualizerUIObject),
             LoadFile(assets, "Assets/Prefabs/confirmation_ui.prefab", out ConfirmationUIObject),
             LoadFile(assets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
             LoadFile(assets, "Assets/Prefabs/map_ui.prefab", out MapUIObject),
