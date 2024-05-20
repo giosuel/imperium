@@ -203,7 +203,7 @@ public static class ImpThemeManager
         {
             "Nebula", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#2D082DF4"),
+                backgroundColor = HEXToRGB("#2D082DFA"),
                 primaryColor = HEXToRGB("#84168E"),
                 textColor = HEXToRGB("#FFFFFF")
             }

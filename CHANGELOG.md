@@ -14,7 +14,7 @@
 
 ### Internal Fixes
 
-- Fixed a bug where Imperium client access would lock out the host.
+- Fixed a bug where Imperium client access would lock the host out.
 
 ## Imperium v0.1.7 [Beta] - Hotfix
 

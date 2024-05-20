@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using Imperium.Core;
 
 #endregion
@@ -134,9 +135,10 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>
     internal virtual void Set(T value, bool skipSync)
     {
+        var isSame = EqualityComparer<T>.Default.Equals(Value, value);
         Value = value;
 
-        if (!skipSync) onUpdateSync?.Invoke(value);
+        if (!skipSync && !isSame) onUpdateSync?.Invoke(value);
         onUpdate?.Invoke(value);
         onTrigger?.Invoke();
     }

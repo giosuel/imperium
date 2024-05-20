@@ -15,6 +15,12 @@ internal abstract class BaseVisualizer<T>
     private readonly string displayName;
     protected readonly Dictionary<int, GameObject> indicatorObjects = [];
 
+    protected BaseVisualizer(string displayName, ImpBinding<T> objectsBinding)
+    {
+        this.displayName = displayName;
+        objectsBinding.onUpdate += Refresh;
+    }
+
     protected BaseVisualizer(string displayName, ImpBinding<bool> visibleBinding)
     {
         this.displayName = displayName;

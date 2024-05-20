@@ -219,18 +219,6 @@ public abstract class ImpSettings
             false
         );
 
-        internal static readonly ImpConfig<bool> PlayerInfo = new(
-            "Gizmos",
-            "PlayerInfo",
-            false
-        );
-
-        internal static readonly ImpConfig<bool> EntityInfo = new(
-            "Gizmos",
-            "EntityInfo",
-            false
-        );
-
         internal static readonly ImpConfig<bool> ScrapSpawns = new(
             "Gizmos",
             "ScrapSpawns",

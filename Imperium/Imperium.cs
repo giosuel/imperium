@@ -22,6 +22,8 @@ using Imperium.MonoBehaviours.ImpUI.SaveUI;
 using Imperium.MonoBehaviours.ImpUI.SettingsUI;
 using Imperium.MonoBehaviours.ImpUI.SpawningUI;
 using Imperium.MonoBehaviours.ImpUI.TeleportUI;
+using Imperium.MonoBehaviours.ImpUI.VisualizationUI;
+using Imperium.MonoBehaviours.ImpUI.VisualizerUi;
 using Imperium.MonoBehaviours.ImpUI.WeatherUI;
 using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
@@ -254,6 +256,7 @@ public class Imperium : BaseUnityPlugin
         Interface.Register<ObjectsUI, ImperiumUI>(ImpAssets.ObjectsUIObject);
         Interface.Register<MoonUI, ImperiumUI>(ImpAssets.MoonUIObject);
         Interface.Register<RenderingUI, ImperiumUI>(ImpAssets.RenderingUIObject);
+        Interface.Register<VisualizationUI>(ImpAssets.VisualizerUIObject);
         Interface.Register<MinimapSettings>(ImpAssets.MinimapSettingsObject);
         Interface.Register<ImperiumUI>(ImpAssets.ImperiumUIObject, "<Keyboard>/F1");
         Interface.Register<SpawningUI>(ImpAssets.SpawningUIObject, "<Keyboard>/F2", closeOnMovement: false);
