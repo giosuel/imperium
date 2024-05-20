@@ -25,6 +25,8 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
             removeRenderer: true
         );
         noiseListenerObj.transform.position = Imperium.Player.gameplayCamera.transform.position;
+        noiseListenerObj.GetComponent<Collider>().isTrigger = true;
+
         var noiseListener = noiseListenerObj.AddComponent<ImpNoiseListener>();
 
         var canvas = Instantiate(ImpAssets.NoiseOverlay);
