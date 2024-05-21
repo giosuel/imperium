@@ -95,17 +95,6 @@ internal class MinimapOverlay : SingleplexUI
         compassWest = compass.transform.Find("South");
     }
 
-    private static string GetLocationText()
-    {
-        var isAlone = !Imperium.Player.NearOtherPlayers(Imperium.Player, 17f) &&
-                      !Imperium.Player.PlayerIsHearingOthersThroughWalkieTalkie(Imperium.Player);
-        var appendix = isAlone ? " (Alone)" : "";
-        if (Imperium.Player.isInHangarShipRoom) return "Ship" + appendix;
-        if (Imperium.Player.isInElevator) return "Elevator" + appendix;
-
-        return (Imperium.Player.isInsideFactory ? "Indoors" : "Outdoors") + appendix;
-    }
-
     private void Update()
     {
         infoPanel.SetActive(ImpSettings.Map.MinimapInfoPanel.Value);
@@ -124,7 +113,7 @@ internal class MinimapOverlay : SingleplexUI
             var daysSpent = Imperium.StartOfRound.gameStats.daysSpent;
             timeText.text = $"{time} / Day {daysSpent}";
 
-            envText.text = GetLocationText();
+            envText.text = PlayerManager.GetLocationText(Imperium.Player);
         }
 
         // Only update the compass when it's activated

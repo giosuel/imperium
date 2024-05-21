@@ -38,11 +38,13 @@ public abstract class ImpAssets
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
-    internal static GameObject PlayerInfo;
-    internal static GameObject EntityInfo;
+
+    internal static GameObject PlayerInfoPanel;
+    internal static GameObject EntityInfoPanel;
 
     // Imperium visualizer materials
     public static Material XrayMaterial;
+    public static Material FresnelWhiteMaterial;
     public static Material FresnelBlueMaterial;
     public static Material FresnelYellowMaterial;
     public static Material FresnelGreenMaterial;
@@ -90,12 +92,13 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/layer_selector.prefab", out LayerSelector),
             LoadFile(assets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadFile(assets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
-            LoadFile(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfo),
-            LoadFile(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfo),
+            LoadFile(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfoPanel),
+            LoadFile(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfoPanel),
             LoadFile(assets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadFile(assets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadFile(assets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
             LoadFile(assets, "Assets/Materials/xray.mat", out XrayMaterial),
+            LoadFile(assets, "Assets/Materials/fresnel_white.mat", out FresnelWhiteMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_blue.mat", out FresnelBlueMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_green.mat", out FresnelGreenMaterial),

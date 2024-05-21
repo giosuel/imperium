@@ -275,20 +275,8 @@ internal class Visualization
         };
     }
 
-    private void VisualizePoint(GameObject obj, string uniqueIdentifier, float size, Material material)
-    {
-        if (ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)
-            .ContainsKey(obj.GetInstanceID()))
-            return;
-
-        ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[obj.GetInstanceID()] =
-            VisualizePoint(obj, size, material, uniqueIdentifier);
-    }
-
-    private static readonly Dictionary<float, Mesh> ConeCache = [];
-
-    private const float SPHERE_RINGS_COUNT = 32f;
-    private const float SPHERE_LINES_COUNT = 32f;
+    // A cache of generated cones indexed by cone opening angle
+    private readonly Dictionary<float, Mesh> ConeCache = [];
 
     internal Mesh GetOrGenerateCone(float angle)
     {
@@ -299,12 +287,30 @@ internal class Visualization
         return newCone;
     }
 
-    internal static string GenerateLOSHash(Object obj, Object origin, float angle, float size)
+    /// <summary>
+    /// Generates a unique "hash" for a line of sight visualizer for an entity.
+    /// </summary>
+    internal static string GenerateConeHash(Object obj, Object origin, float angle, float size)
     {
         return $"{obj.GetInstanceID()}{origin.GetInstanceID()}_{angle}_{size}";
     }
 
-    private Mesh GenerateCone(float angle)
+    /// <summary>
+    /// Generates a unique "hash" for a custom entity visualizer.
+    /// </summary>
+    internal static string GenerateSphereHash(Object obj, Object origin, float size)
+    {
+        return $"{obj.GetInstanceID()}{origin.GetInstanceID()}_{size}";
+    }
+
+    private const float SPHERE_RINGS_COUNT = 32f;
+    private const float SPHERE_LINES_COUNT = 32f;
+
+    /// <summary>
+    /// Generates a LOS cone mesh implementation by <see href="https://github.com/AdalynBlack/LC-EnemyDebug"/> :3
+    /// </summary>
+    /// <param name="angle">Angle of the generated cone</param>
+    private static Mesh GenerateCone(float angle)
     {
         var coneMesh = new Mesh();
 
@@ -385,6 +391,16 @@ internal class Visualization
         coneMesh.SetIndices(indices.ToList(), MeshTopology.Triangles, 0);
 
         return coneMesh;
+    }
+
+    private void VisualizePoint(GameObject obj, string uniqueIdentifier, float size, Material material)
+    {
+        if (ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)
+            .ContainsKey(obj.GetInstanceID()))
+            return;
+
+        ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[obj.GetInstanceID()] =
+            VisualizePoint(obj, size, material, uniqueIdentifier);
     }
 
     private void VisualizeCollider(GameObject obj, string uniqueIdentifier, float thickness, Material material)

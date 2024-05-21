@@ -201,6 +201,17 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         return Imperium.StartOfRound.allPlayerScripts[playerId];
     }
 
+    internal static string GetLocationText(PlayerControllerB player)
+    {
+        var isAlone = !player.NearOtherPlayers(player, 17f) &&
+                      !player.PlayerIsHearingOthersThroughWalkieTalkie(Imperium.Player);
+        var appendix = isAlone ? " (Alone)" : "";
+        if (Imperium.Player.isInHangarShipRoom) return "Ship" + appendix;
+        if (Imperium.Player.isInElevator) return "Elevator" + appendix;
+
+        return (Imperium.Player.isInsideFactory ? "Indoors" : "Outdoors") + appendix;
+    }
+
     // Override for ImperiumSettings to use this as a method group
     internal static void UpdateCameras(bool _) => UpdateCameras();
 

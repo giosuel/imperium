@@ -22,5 +22,6 @@ public class ObjectVisualizerEntityEntry : MonoBehaviour
         ImpToggle.Bind("Checkboxes/Targeting", transform, config.Targeting, theme: themeBinding);
         ImpToggle.Bind("Checkboxes/LineOfSight", transform, config.LineOfSight, theme: themeBinding);
         ImpToggle.Bind("Checkboxes/Hearing", transform, config.Hearing, theme: themeBinding);
+        ImpToggle.Bind("Checkboxes/Custom", transform, config.Custom, theme: themeBinding);
     }
 }

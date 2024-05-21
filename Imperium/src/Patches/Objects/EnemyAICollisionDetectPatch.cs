@@ -1,7 +1,9 @@
 #region
 
 using HarmonyLib;
+using Imperium.Core;
 using Imperium.Util;
+using UnityEngine;
 
 #endregion
 
@@ -24,5 +26,12 @@ internal class EnemyAICollisionDetectPatch
                 type: NotificationType.Entities
             );
         }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("INoiseListener.DetectNoise")]
+    private static void DetectNoisePatch(EnemyAICollisionDetect __instance, Vector3 noisePosition)
+    {
+        Imperium.Visualization.EntityInfos.NoiseVisualizerUpdate(__instance.mainScript, noisePosition);
     }
 }

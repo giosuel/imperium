@@ -63,8 +63,9 @@ internal class Oracle
         );
 
         // Cycle Variables
-        State.Value.currentCycle =
-            Mathf.RoundToInt(currentHour * Imperium.TimeOfDay.lengthOfHours / Imperium.TimeOfDay.totalTime * 9);
+        State.Value.currentCycle = Mathf.RoundToInt(
+            currentHour * Imperium.TimeOfDay.lengthOfHours / Imperium.TimeOfDay.totalTime * 9
+        );
 
         for (var i = State.Value.currentCycle; i <= 9; i++)
         {
