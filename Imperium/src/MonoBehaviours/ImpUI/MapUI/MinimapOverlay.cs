@@ -18,6 +18,8 @@ internal class MinimapOverlay : SingleplexUI
     private TMP_Text envText;
     private TMP_Text rotationText;
     private GameObject infoPanel;
+    private Transform mapBorder;
+    private Canvas canvas;
 
     private GameObject compass;
     private Transform compassNorth;
@@ -29,7 +31,7 @@ internal class MinimapOverlay : SingleplexUI
 
     protected override void InitUI()
     {
-        var mapBorder = container.Find("MapBorder");
+        mapBorder = container.Find("MapBorder");
         timeText = container.Find("MapBorder/Clock/Text").GetComponent<TMP_Text>();
         envText = container.Find("MapBorder/Clock/Day/Text").GetComponent<TMP_Text>();
         positionText = container.Find("MapBorder/InfoPanel/Position").GetComponent<TMP_Text>();
@@ -38,11 +40,24 @@ internal class MinimapOverlay : SingleplexUI
         timeText = container.Find("MapBorder/InfoPanel/Time").GetComponent<TMP_Text>();
         infoPanel = container.Find("MapBorder/InfoPanel").gameObject;
 
-        var canvasScale = GetComponent<Canvas>().scaleFactor;
+        canvas = GetComponent<Canvas>();
+
+        var baseCanvasScale = canvas.scaleFactor;
+        ImpSettings.Map.MinimapScale.onUpdate += value => InitMapScale(baseCanvasScale * value);
+
+        InitMapScale(baseCanvasScale * ImpSettings.Map.MinimapScale.Value);
+        InitCompass();
+    }
+
+
+    private void InitMapScale(float scaleFactor)
+    {
+        canvas.scaleFactor = scaleFactor;
+
         var mapBorderPosition = mapBorder.gameObject.GetComponent<RectTransform>().position;
         var mapBorderSize = mapBorder.gameObject.GetComponent<RectTransform>().sizeDelta;
-        var mapContainerWidth = mapBorderSize.x * canvasScale - BorderThickness * 2;
-        var mapContainerHeight = mapBorderSize.y * canvasScale - BorderThickness * 2;
+        var mapContainerWidth = mapBorderSize.x * canvas.scaleFactor - BorderThickness * 2;
+        var mapContainerHeight = mapBorderSize.y * canvas.scaleFactor - BorderThickness * 2;
 
         CameraRect = new Rect(
             (mapBorderPosition.x + BorderThickness) / Screen.width,
@@ -51,7 +66,7 @@ internal class MinimapOverlay : SingleplexUI
             mapContainerHeight / Screen.height
         );
 
-        InitCompass();
+        if (IsOpen) Imperium.Map.Camera.rect = CameraRect;
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -130,7 +145,8 @@ internal class MinimapOverlay : SingleplexUI
         }
 
         // Automatically open this UI when nothing else is open
-        if (Imperium.Player.quickMenuManager.isMenuOpen
+        if ((Imperium.Player.quickMenuManager.isMenuOpen &&
+             !Imperium.Interface.Get<MinimapSettings.MinimapSettings>().IsOpen)
             || !ImpSettings.Map.MinimapEnabled.Value
             || Imperium.Freecam.IsFreecamEnabled.Value)
         {

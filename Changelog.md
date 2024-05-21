@@ -4,28 +4,37 @@
 
 I reworked the whole visualizer system and added a lot of new visualizers and indicators, including indicators for entity LOS and noise detection.
 
-There is a new UI from which all the visualizers can be managed!
+There is a new UI from which all visualizers can be managed!
 
 ### Added
 
 - Added many new visualizers for various game objects and layers.
 - Added a new notification type for access control and spawning notifications.
 - Added a new interface to manage all the visualizers in one place.
-- Added entity LOS, proximity and hearing visualizations.
-- Added an option to disable out-of-bound triggers.
+- Added entity LOS, proximity and noise detection visualizations.
+- Added an option to disable out-of-bounds triggers.
 - Added an option to unlock all unlockable items in the terminal shop.
+- Added a scaling option for the minimap in the minimap settings.
 
 ### QOL Changes
 
-- Fixed an issue where not all notifcations were toggleable.
-- Fixed a bug where the map camera clipping would not adjust when in unlocked mode.
 - Entity and Player info panels are now rendered in screen-space, resulting in higher resolution.
 - The size of the visualizers for indoor and outdoor nodes has been decreased.
+- Clamped the freecam movement speed between 1 and 200.
 
 ### Internal Fixes
 
 - Fixed a bug where Imperium client access would lock the host out.
 - Fixed a bug where the render pipeline changed the aspect ratio of some screens.
+- Fixed an issue where not all notifcations were toggleable.
+- Fixed a bug where the map camera clipping would not adjust when in unlocked mode.
+
+### Known Issues
+
+- Switching between Unity Explorer and a Imperium UI directly breaks the cursor.
+  - To fix, just open and close Unity Explorer once.
+
+- Scanner overlays are broken at higher texture resolutions.
 
 ### Compatibility
 

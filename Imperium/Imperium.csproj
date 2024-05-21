@@ -5,7 +5,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Title>Imperium</Title>
         <PackageId>Imperium</PackageId>
-        <Version>0.1.7</Version>
+        <Version>0.1.8</Version>
         <AssemblyName>giosuel.Imperium</AssemblyName>
         <Description>All-in-one debugging mod for Lethal Company.</Description>
         <RootNamespace>Imperium</RootNamespace>

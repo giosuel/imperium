@@ -123,6 +123,7 @@ public class PlayerInfo : MonoBehaviour
                 0.01f, 1.5f
             );
         }
+
         infoPanelRect.localScale = panelScaleFactor * Vector3.one;
 
         var playerThreat = (IVisibleThreat)playerController;
