@@ -178,7 +178,7 @@ public class ImpFreecam : MonoBehaviour
 
         ImpSettings.Freecam.FreecamMovementSpeed.Set(scrollValue switch
         {
-            > 0 => Mathf.Min(ImpSettings.Freecam.FreecamMovementSpeed.Value + 1f, 1000),
+            > 0 => Mathf.Min(ImpSettings.Freecam.FreecamMovementSpeed.Value + 1f, 200),
             < 0 => Mathf.Max(ImpSettings.Freecam.FreecamMovementSpeed.Value - 1f, 1f),
             _ => ImpSettings.Freecam.FreecamMovementSpeed.Value
         });
@@ -186,13 +186,15 @@ public class ImpFreecam : MonoBehaviour
         if (Imperium.InputBindings.FreecamMap["ArrowLeft"].IsPressed())
         {
             ImpSettings.Freecam.FreecamFieldOfView.Set(
-                Mathf.Max(-360, ImpSettings.Freecam.FreecamFieldOfView.Value - 1));
+                Mathf.Max(-360, ImpSettings.Freecam.FreecamFieldOfView.Value - 1)
+            );
         }
 
         if (Imperium.InputBindings.FreecamMap["ArrowRight"].IsPressed())
         {
-            ImpSettings.Freecam.FreecamFieldOfView.Set(Mathf.Min(360,
-                ImpSettings.Freecam.FreecamFieldOfView.Value + 1));
+            ImpSettings.Freecam.FreecamFieldOfView.Set(
+                Mathf.Min(360, ImpSettings.Freecam.FreecamFieldOfView.Value + 1)
+            );
         }
 
         FreecamCamera.fieldOfView = ImpSettings.Freecam.FreecamFieldOfView.Value;
@@ -202,6 +204,10 @@ public class ImpFreecam : MonoBehaviour
         var rotation = Imperium.InputBindings.BaseMap["Look"].ReadValue<Vector2>();
         lookInput.x += rotation.x * 0.008f * Imperium.IngamePlayerSettings.settings.lookSensitivity;
         lookInput.y += rotation.y * 0.008f * Imperium.IngamePlayerSettings.settings.lookSensitivity;
+
+        // Clamp the Y rotation to [-90;90] so the camera can't turn on it's head
+        lookInput.y = Mathf.Clamp(lookInput.y, -90, 90);
+
         cameraTransform.rotation = Quaternion.Euler(-lookInput.y, lookInput.x, 0);
 
         var movement = Imperium.InputBindings.FreecamMap["Move"].ReadValue<Vector2>();

@@ -278,6 +278,7 @@ public class EntityInfo : MonoBehaviour
                 0.01f, 1.5f
             );
         }
+
         infoPanelRect.localScale = panelScaleFactor * Vector3.one;
 
         nameText.text = Imperium.ObjectManager.GetDisplayName(entityController.enemyType.enemyName);
@@ -384,7 +385,6 @@ public class EntityInfo : MonoBehaviour
         }
     }
 }
-
 
 internal class EntityInfoConfig
 {

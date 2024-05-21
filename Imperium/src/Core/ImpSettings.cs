@@ -765,15 +765,9 @@ public abstract class ImpSettings
             true
         );
 
-        internal static readonly ImpConfig<float> MinimapWidth = new(
+        internal static readonly ImpConfig<float> MinimapScale = new(
             "Preferences.Minimap",
-            "Width",
-            1
-        );
-
-        internal static readonly ImpConfig<float> MinimapHeight = new(
-            "Preferences.Minimap",
-            "Height",
+            "Scale",
             1
         );
 
