@@ -59,10 +59,6 @@ The Main Control Panel allows you to change game and player settings as well as 
 
 ![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-control-center.png?raw=true)
 
-- **Casting Indicators:** Raycast and physics collision indicators (*client-side*).
-- **Gizmos:** In-game objects that visualize spawn indicators and timers (*client-side*).
-- **Colliders:** Collider visualization of predefined game objects by tag or layer (*client-side*).
-- **Overlays:** Various in-game overlays for path-finding, spawn locations, etc. (*client-side*).
 - **Player Settings:** Player tweaks and adjustments (*client-side*).
 - **Game Settings:** General game settings and adjustments (*client-side*).
 - **Time Settings:** Time-related settings (*client- and server-side*).
@@ -92,6 +88,18 @@ Imperium comes with it's own built-in map and minimap.
 | ScrollDown | Zoom map out (Alt + ScrollDown when map is not open). |
 | LMB Drag   | Rotate the map camera around the target.              |
 | RMG Drag   | Pan the map camera.                                   |
+
+## Visualizers
+
+The visualizers windows allows access to all the static and dynamic collider visualizers, gizmos and screen-space overlays.
+
+![imperium-visualizers](https://github.com/giosuel/imperium/blob/main/assets/imperium-visualizers.png?raw=true)
+
+- **Overlays:** Various in-game overlays for nodes, vents and other static objects.
+- **Colliders:** Collider visualization of predefined game objects by tag or layer.
+- **Gizmos:** In-game objects that help visualize casts, effect ranges and more.
+
+![imperium-los-vis](https://github.com/giosuel/imperium/blob/main/assets/imperium-los-vis.png?raw=true)
 
 ## Moon Settings
 
@@ -240,4 +248,4 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
 
-- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for making the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for wA the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!

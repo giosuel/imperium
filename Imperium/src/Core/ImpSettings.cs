@@ -315,7 +315,7 @@ public abstract class ImpSettings
             value => Imperium.Visualization.Point(
                 "AINode",
                 IdentifierType.TAG,
-                size: 0.2f,
+                size: 0.5f,
                 material: ImpAssets.FresnelWhiteMaterial
             )(value)
         );
@@ -327,7 +327,7 @@ public abstract class ImpSettings
             value => Imperium.Visualization.Point(
                 "OutsideAINode",
                 IdentifierType.TAG,
-                size: 0.2f,
+                size: 0.8f,
                 material: ImpAssets.FresnelWhiteMaterial
             )(value)
         );
