@@ -107,9 +107,8 @@ public abstract class ImpSettings
     internal abstract class Visualizations
     {
         /// <summary>
-        /// Visualizer preferences
+        ///     Visualizer preferences
         /// </summary>
-
         internal static readonly ImpConfig<bool> SmoothAnimations = new(
             "Preferences.Visualizers",
             "SmoothAnimations",
@@ -141,7 +140,7 @@ public abstract class ImpSettings
         );
 
         /// <summary>
-        /// Colliders
+        ///     Colliders
         /// </summary>
         internal static readonly ImpConfig<bool> Employees = new(
             "Colliders",
@@ -284,7 +283,7 @@ public abstract class ImpSettings
         );
 
         /// <summary>
-        /// Overlays
+        ///     Overlays
         /// </summary>
         internal static readonly ImpConfig<bool> Vents = new(
             "Overlays",
@@ -346,7 +345,7 @@ public abstract class ImpSettings
         );
 
         /// <summary>
-        /// Gizmos
+        ///     Gizmos
         /// </summary>
         internal static readonly ImpConfig<bool> SpawnIndicators = new(
             "Gizmos",

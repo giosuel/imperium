@@ -80,7 +80,8 @@ internal static class EnemyAIPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("CheckLineOfSight")]
-    private static void CheckLineOfSightPrefixPatch(EnemyAI __instance, List<GameObject> objectsToLookFor, float width, int range, float proximityAwareness)
+    private static void CheckLineOfSightPrefixPatch(EnemyAI __instance, List<GameObject> objectsToLookFor, float width,
+        int range, float proximityAwareness)
     {
         Imperium.Visualization.EntityInfos.ConeVisualizerUpdate(
             __instance,
@@ -146,7 +147,7 @@ internal static class EnemyAIPatch
     }
 
     /// <summary>
-    /// Restores allPlayerScripts modified by prefix patch
+    ///     Restores allPlayerScripts modified by prefix patch
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForPlayer")]

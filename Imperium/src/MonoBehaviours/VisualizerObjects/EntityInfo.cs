@@ -86,7 +86,7 @@ public class EntityInfo : MonoBehaviour
     internal void NoiseVisualizerUpdate(Vector3 origin)
     {
         ImpUtils.Geometry.SetLinePositions(lastHeardNoise, entityController.transform.position, origin);
-        lastHeardNoise.gameObject.SetActive(true);
+        lastHeardNoise.gameObject.SetActive(entityConfig.Hearing.Value);
 
         lastHeardNoisePosition = origin;
         lastHeardNoiseTimer = Time.realtimeSinceStartup;
@@ -193,7 +193,21 @@ public class EntityInfo : MonoBehaviour
             }
         }
 
-        // Remove the noise line after 5 seconds
+        DrawInfoPanel(entityConfig.Info.Value);
+        DrawPathLines(entityConfig.Pathfinding.Value);
+        DrawNoiseLine(entityConfig.Hearing.Value);
+        DrawLookingAtLine(entityConfig.LookingAt.Value);
+        DrawTargetPlayerLine(entityConfig.Targeting.Value);
+    }
+
+    private void DrawNoiseLine(bool isShown)
+    {
+        if (!isShown)
+        {
+            lastHeardNoise.gameObject.SetActive(false);
+            return;
+        }
+
         if (Time.realtimeSinceStartup - lastHeardNoiseTimer > 5)
         {
             lastHeardNoise.gameObject.SetActive(false);
@@ -206,11 +220,6 @@ public class EntityInfo : MonoBehaviour
                 lastHeardNoisePosition
             );
         }
-
-        DrawInfoPanel(entityConfig.Info.Value);
-        DrawLookingAtLine(entityConfig.LookingAt.Value);
-        DrawTargetPlayerLine(entityConfig.Targeting.Value);
-        DrawPathLines(entityConfig.Pathfinding.Value);
     }
 
     private void DrawInfoPanel(bool isShown)

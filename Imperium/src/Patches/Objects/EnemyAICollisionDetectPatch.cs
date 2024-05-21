@@ -1,7 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
 using Imperium.Util;
 using UnityEngine;
 
