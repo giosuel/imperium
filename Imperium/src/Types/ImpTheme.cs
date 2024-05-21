@@ -214,7 +214,7 @@ public static class ImpThemeManager
         {
             "Vertex", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#23020AF4"),
+                backgroundColor = HEXToRGB("#23020AF8"),
                 primaryColor = HEXToRGB("#B21845"),
                 textColor = HEXToRGB("#FFFFFF")
             }

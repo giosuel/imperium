@@ -158,6 +158,11 @@ internal class ControlCenterWindow : BaseWindow
             theme: themeBinding
         );
         ImpToggle.Bind(
+            "Right/GameSettings/UnlockShop",
+            content, ImpSettings.Game.UnlockShop,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
             "Right/GameSettings/AllPlayersDead",
             content, Imperium.GameManager.AllPlayersDead,
             theme: themeBinding
@@ -181,6 +186,12 @@ internal class ControlCenterWindow : BaseWindow
             "Right/PlayerSettings/PickupOverwrite",
             content,
             ImpSettings.Player.PickupOverwrite,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/PlayerSettings/DisableOOB",
+            content,
+            ImpSettings.Player.DisableOOB,
             themeBinding
         );
         ImpSlider.Bind(

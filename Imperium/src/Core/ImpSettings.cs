@@ -29,6 +29,7 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> Invisibility = new("Player", "Invisibility", false);
         internal static readonly ImpConfig<bool> Muted = new("Player", "Muted", false);
         internal static readonly ImpConfig<bool> PickupOverwrite = new("Player", "PickupOverwrite", false);
+        internal static readonly ImpConfig<bool> DisableOOB = new("Player", "DisableOOB", false);
 
         internal static readonly ImpConfig<float> CustomFieldOfView = new(
             "Player",
@@ -101,6 +102,17 @@ public abstract class ImpSettings
             "PreventShipLeave",
             false,
             syncUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
+        );
+
+        internal static readonly ImpConfig<bool> UnlockShop = new(
+            "Game.Terminal",
+            "UnlockShop",
+            false,
+            onUpdate: value =>
+            {
+                // Reset selection when locking shop
+                if (!value) Imperium.Terminal.RotateShipDecorSelection();
+            }
         );
     }
 

@@ -52,14 +52,23 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         player.TeleportPlayer(position);
         var isInFactory = position.y < -100;
         player.isInsideFactory = isInFactory;
+        if (isInFactory)
+        {
+            TimeOfDay.Instance.DisableAllWeather();
+        }
 
         // There is no easy way to check this, so it will just be off by default for now
-        player.isInElevator = false;
-        player.isInHangarShipRoom = false;
+        var isInElevator = Imperium.StartOfRound.shipBounds.bounds.Contains(position);
+        player.isInElevator = isInElevator;
+
+        var isInShip = Imperium.StartOfRound.shipInnerRoomBounds.bounds.Contains(position);
+        player.isInHangarShipRoom = isInShip;
 
         foreach (var heldItem in Imperium.Player.ItemSlots)
         {
             if (!heldItem) continue;
+            heldItem.isInFactory = isInFactory;
+            heldItem.isInShipRoom = isInShip;
             heldItem.isInFactory = isInFactory;
         }
     }
@@ -201,11 +210,11 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         return Imperium.StartOfRound.allPlayerScripts[playerId];
     }
 
-    internal static string GetLocationText(PlayerControllerB player)
+    internal static string GetLocationText(PlayerControllerB player, bool locationOnly = false)
     {
         var isAlone = !player.NearOtherPlayers(player, 17f) &&
                       !player.PlayerIsHearingOthersThroughWalkieTalkie(Imperium.Player);
-        var appendix = isAlone ? " (Alone)" : "";
+        var appendix = !locationOnly && isAlone ? " (Alone)" : "";
         if (Imperium.Player.isInHangarShipRoom) return "Ship" + appendix;
         if (Imperium.Player.isInElevator) return "Elevator" + appendix;
 

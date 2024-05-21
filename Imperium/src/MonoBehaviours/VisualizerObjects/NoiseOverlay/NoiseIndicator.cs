@@ -30,8 +30,6 @@ public class NoiseIndicator : MonoBehaviour
     private RectTransform indicatorTransform;
     private RectTransform arrowTransform;
 
-    internal event Action onDone;
-
     private readonly Color indicatorColor = new(0.737f, 0.463f, 0.243f);
 
     internal void Init(Canvas parent)
@@ -98,7 +96,7 @@ public class NoiseIndicator : MonoBehaviour
             var playerPosition = Imperium.Player.transform.position;
             transform.localScale = Vector3.one * Math.Clamp(
                 5 / Vector3.Distance(playerPosition, worldPosition),
-                1f, 2.5f
+                0.5f, 1f
             );
 
             var angle = Vector2.SignedAngle(
@@ -125,7 +123,6 @@ public class NoiseIndicator : MonoBehaviour
         {
             isDone = true;
             gameObject.SetActive(false);
-            onDone?.Invoke();
         }
     }
 }
