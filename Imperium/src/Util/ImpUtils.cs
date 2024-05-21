@@ -46,7 +46,7 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Clones a random number generator. The new generator will produce the same sequence of numbers as the original.
+    ///     Clones a random number generator. The new generator will produce the same sequence of numbers as the original.
     /// </summary>
     public static Random CloneRandom(Random random)
     {
@@ -63,9 +63,8 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Converts an absolute timestamp to a normalized one (between 0 and 1).
-    ///
-    /// Total time is provided by <see cref="TimeOfDay.totalTime"/>.
+    ///     Converts an absolute timestamp to a normalized one (between 0 and 1).
+    ///     Total time is provided by <see cref="TimeOfDay.totalTime" />.
     /// </summary>
     public static float TimeToNormalized(float currentTime) => currentTime / Imperium.TimeOfDay.totalTime;
 
@@ -90,12 +89,10 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Formats a normalized timestamp (<see cref="TimeToNormalized"/>) to a readable time string.
-    ///
-    /// Length of hours from <see cref="TimeOfDay.lengthOfHours"/>.
-    /// Number of hour from <see cref="TimeOfDay.numberOfHours"/>.
-    ///
-    /// Format: "hh:mm a"
+    ///     Formats a normalized timestamp (<see cref="TimeToNormalized" />) to a readable time string.
+    ///     Length of hours from <see cref="TimeOfDay.lengthOfHours" />.
+    ///     Number of hour from <see cref="TimeOfDay.numberOfHours" />.
+    ///     Format: "hh:mm a"
     /// </summary>
     /// <param name="normalizedTime"></param>
     /// <returns></returns>
@@ -119,11 +116,9 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Creates a formatted string from a unity <see cref="Vector3"/>.
-    ///
-    /// If a unit is provided, the unit will be appended to each scalar.
-    ///
-    /// Format: "(x[unit](separator)y[unit](separator)z[unit])"
+    ///     Creates a formatted string from a unity <see cref="Vector3" />.
+    ///     If a unit is provided, the unit will be appended to each scalar.
+    ///     Format: "(x[unit](separator)y[unit](separator)z[unit])"
     /// </summary>
     /// <param name="input"></param>
     /// <param name="roundDigits">To how many digits the scalars should be rounded</param>
@@ -144,9 +139,8 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Attempts to invoke a callback.
-    ///
-    /// If the callback throws a <see cref="NullReferenceException"/> returns default.
+    ///     Attempts to invoke a callback.
+    ///     If the callback throws a <see cref="NullReferenceException" /> returns default.
     /// </summary>
     /// <param name="callback"></param>
     /// <typeparam name="T"></typeparam>
@@ -164,9 +158,8 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Formats the parents of a Unity transform into a string.
-    ///
-    /// e.g. "ImpInterface/imperium_ui/Container/Window/Content"
+    ///     Formats the parents of a Unity transform into a string.
+    ///     e.g. "ImpInterface/imperium_ui/Container/Window/Content"
     /// </summary>
     /// <param name="root"></param>
     /// <returns></returns>
@@ -267,7 +260,7 @@ public abstract class ImpUtils
         }
 
         /// <summary>
-        /// Formats a normalized float to a percentage chance.
+        ///     Formats a normalized float to a percentage chance.
         /// </summary>
         /// <param name="chance"></param>
         /// <returns></returns>
@@ -276,9 +269,8 @@ public abstract class ImpUtils
         ).ToString(CultureInfo.InvariantCulture) + "%";
 
         /// <summary>
-        /// Removes trailing zeros from float if decimals are equal to zero
-        ///
-        /// e.g. 100.00 => 100
+        ///     Removes trailing zeros from float if decimals are equal to zero
+        ///     e.g. 100.00 => 100
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

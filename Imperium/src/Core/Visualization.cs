@@ -288,7 +288,7 @@ internal class Visualization
     }
 
     /// <summary>
-    /// Generates a unique "hash" for a line of sight visualizer for an entity.
+    ///     Generates a unique "hash" for a line of sight visualizer for an entity.
     /// </summary>
     internal static string GenerateConeHash(Object obj, Object origin, float angle, float size)
     {
@@ -296,7 +296,7 @@ internal class Visualization
     }
 
     /// <summary>
-    /// Generates a unique "hash" for a custom entity visualizer.
+    ///     Generates a unique "hash" for a custom entity visualizer.
     /// </summary>
     internal static string GenerateSphereHash(Object obj, Object origin, float size)
     {
@@ -307,7 +307,7 @@ internal class Visualization
     private const float SPHERE_LINES_COUNT = 32f;
 
     /// <summary>
-    /// Generates a LOS cone mesh implementation by <see href="https://github.com/AdalynBlack/LC-EnemyDebug"/> :3
+    ///     Generates a LOS cone mesh implementation by <see href="https://github.com/AdalynBlack/LC-EnemyDebug" /> :3
     /// </summary>
     /// <param name="angle">Angle of the generated cone</param>
     private static Mesh GenerateCone(float angle)
