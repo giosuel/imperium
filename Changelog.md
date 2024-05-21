@@ -27,6 +27,10 @@ There is a new UI from which all the visualizers can be managed!
 - Fixed a bug where Imperium client access would lock the host out.
 - Fixed a bug where the render pipeline changed the aspect ratio of some screens.
 
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company. ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0))
+
 ## Imperium v0.1.7 [Beta] - Hotfix
 
 ### Internal Fixes
