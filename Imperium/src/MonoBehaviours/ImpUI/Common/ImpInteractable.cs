@@ -8,25 +8,26 @@ using UnityEngine.EventSystems;
 
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 
-internal class ImpInteractable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IDragHandler
+internal class ImpInteractable : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler,
+    IDragHandler
 {
     /// <summary>
-    /// OnPointerEnter
+    ///     OnPointerEnter
     /// </summary>
     internal event Action onEnter;
 
     /// <summary>
-    /// OnPointerExit
+    ///     OnPointerExit
     /// </summary>
     internal event Action onExit;
 
     /// <summary>
-    /// OnPointerClick
+    ///     OnPointerClick
     /// </summary>
     internal event Action onClick;
 
     /// <summary>
-    /// OnPointerDrag
+    ///     OnPointerDrag
     /// </summary>
     internal event Action<Vector3, Vector3> onDrag;
 

@@ -24,6 +24,7 @@ public abstract class ImpAssets
     internal static GameObject RenderingUIObject;
     internal static GameObject OracleUIObject;
     internal static GameObject NavigatorUIObject;
+    internal static GameObject VisualizerUIObject;
     internal static GameObject IndicatorObject;
     internal static GameObject MapUIObject;
     internal static GameObject MinimapSettingsObject;
@@ -37,19 +38,23 @@ public abstract class ImpAssets
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
-    internal static GameObject PlayerInfo;
-    internal static GameObject EntityInfo;
-    internal static Material XrayMaterial;
-    internal static Material FresnelBlueMaterial;
-    internal static Material FresnelYellowMaterial;
-    internal static Material FresnelGreenMaterial;
-    internal static Material FresnelRedMaterial;
-    internal static Material WireframePurpleMaterial;
-    internal static Material WireframeCyanMaterial;
-    internal static Material WireframeAmaranthMaterial;
-    internal static Material WireframeYellowMaterial;
-    internal static Material WireframeGreenMaterial;
-    internal static Material WireframeRedMaterial;
+
+    internal static GameObject PlayerInfoPanel;
+    internal static GameObject EntityInfoPanel;
+
+    // Imperium visualizer materials
+    public static Material XrayMaterial;
+    public static Material FresnelWhiteMaterial;
+    public static Material FresnelBlueMaterial;
+    public static Material FresnelYellowMaterial;
+    public static Material FresnelGreenMaterial;
+    public static Material FresnelRedMaterial;
+    public static Material WireframePurpleMaterial;
+    public static Material WireframeCyanMaterial;
+    public static Material WireframeAmaranthMaterial;
+    public static Material WireframeYellowMaterial;
+    public static Material WireframeGreenMaterial;
+    public static Material WireframeRedMaterial;
 
     internal static bool Load()
     {
@@ -78,6 +83,7 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/rendering_ui.prefab", out RenderingUIObject),
             LoadFile(assets, "Assets/Prefabs/oracle_ui.prefab", out OracleUIObject),
             LoadFile(assets, "Assets/Prefabs/navigator_ui.prefab", out NavigatorUIObject),
+            LoadFile(assets, "Assets/Prefabs/visualizer_ui.prefab", out VisualizerUIObject),
             LoadFile(assets, "Assets/Prefabs/confirmation_ui.prefab", out ConfirmationUIObject),
             LoadFile(assets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
             LoadFile(assets, "Assets/Prefabs/map_ui.prefab", out MapUIObject),
@@ -86,12 +92,13 @@ public abstract class ImpAssets
             LoadFile(assets, "Assets/Prefabs/layer_selector.prefab", out LayerSelector),
             LoadFile(assets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadFile(assets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
-            LoadFile(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfo),
-            LoadFile(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfo),
+            LoadFile(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfoPanel),
+            LoadFile(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfoPanel),
             LoadFile(assets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadFile(assets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadFile(assets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
             LoadFile(assets, "Assets/Materials/xray.mat", out XrayMaterial),
+            LoadFile(assets, "Assets/Materials/fresnel_white.mat", out FresnelWhiteMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_blue.mat", out FresnelBlueMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
             LoadFile(assets, "Assets/Materials/fresnel_green.mat", out FresnelGreenMaterial),

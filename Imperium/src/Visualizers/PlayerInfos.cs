@@ -2,9 +2,7 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
-using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
-using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 
@@ -12,9 +10,20 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class PlayerInfos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding)
-    : BaseVisualizer<HashSet<PlayerControllerB>>("Player Infos", objectsBinding)
+internal class PlayerInfos : BaseVisualizer<HashSet<PlayerControllerB>>
 {
+    internal readonly Dictionary<PlayerControllerB, PlayerInfoConfig> PlayerInfoConfigs = [];
+
+    internal PlayerInfos(
+        ImpBinding<HashSet<PlayerControllerB>> objectsBinding
+    ) : base("Player Infos", objectsBinding)
+    {
+        foreach (var player in Imperium.StartOfRound.allPlayerScripts)
+        {
+            PlayerInfoConfigs[player] = new PlayerInfoConfig(player.playerUsername);
+        }
+    }
+
     protected override void Refresh(HashSet<PlayerControllerB> objects)
     {
         ClearObjects();
@@ -23,15 +32,10 @@ internal class PlayerInfos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding
         {
             if (!indicatorObjects.ContainsKey(player.GetInstanceID()))
             {
-                var parent = player.transform;
-                var playerInfoObject = Object.Instantiate(ImpAssets.PlayerInfo, parent, true);
-                playerInfoObject.transform.position = parent.position + Vector3.up * 1.4f;
-                playerInfoObject.transform.localScale = Vector3.one * 0.4f;
-
+                var playerInfoObject = new GameObject($"Imp_PlayerInfo_{player.GetInstanceID()}");
                 var playerInfo = playerInfoObject.AddComponent<PlayerInfo>();
-                playerInfo.playerController = player.GetComponent<PlayerControllerB>();
+                playerInfo.Init(PlayerInfoConfigs[player], player.GetComponent<PlayerControllerB>());
 
-                playerInfoObject.SetActive(ImpSettings.Visualizations.PlayerInfo.Value);
                 indicatorObjects[player.GetInstanceID()] = playerInfoObject;
             }
         }

@@ -30,8 +30,6 @@ public class NoiseIndicator : MonoBehaviour
     private RectTransform indicatorTransform;
     private RectTransform arrowTransform;
 
-    internal event Action onDone;
-
     private readonly Color indicatorColor = new(0.737f, 0.463f, 0.243f);
 
     internal void Init(Canvas parent)
@@ -97,8 +95,8 @@ public class NoiseIndicator : MonoBehaviour
             indicatorTransform.anchoredPosition = new Vector2(positionX, positionY);
             var playerPosition = Imperium.Player.transform.position;
             transform.localScale = Vector3.one * Math.Clamp(
-                2 / Vector3.Distance(playerPosition, worldPosition),
-                0.5f, 1.5f
+                5 / Vector3.Distance(playerPosition, worldPosition),
+                0.5f, 1f
             );
 
             var angle = Vector2.SignedAngle(
@@ -109,17 +107,22 @@ public class NoiseIndicator : MonoBehaviour
 
             timer -= Time.deltaTime;
             distanceText.text = $"{Vector3.Distance(playerPosition, worldPosition):0.0}m";
-            noiseIdText.text = noiseId.ToString();
+            noiseIdText.text = $"ID: {noiseId}";
 
-            distanceText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
-            image.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
-            noiseIdText.color = ImpUtils.Interface.ChangeAlpha(indicatorColor, image.color.a - Time.deltaTime / totalTime);
+            distanceText.color = ImpUtils.Interface.ChangeAlpha(
+                indicatorColor, image.color.a - Time.deltaTime / totalTime
+            );
+            image.color = ImpUtils.Interface.ChangeAlpha(
+                indicatorColor, image.color.a - Time.deltaTime / totalTime
+            );
+            noiseIdText.color = ImpUtils.Interface.ChangeAlpha(
+                indicatorColor, image.color.a - Time.deltaTime / totalTime
+            );
         }
         else if (!isDone)
         {
             isDone = true;
             gameObject.SetActive(false);
-            onDone?.Invoke();
         }
     }
 }

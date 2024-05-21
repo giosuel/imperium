@@ -1,8 +1,6 @@
 #region
 
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
-using Imperium.Types;
-using Imperium.Util.Binding;
 
 #endregion
 

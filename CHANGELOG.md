@@ -1,12 +1,53 @@
 # Changelog
 
+## Imperium v0.1.8 [Beta] - The Visualizer Update
+
+I reworked the whole visualizer system and added a lot of new visualizers and indicators, including indicators for entity LOS and noise detection.
+
+There is a new UI from which all visualizers can be managed!
+
+### Added
+
+- Added many new visualizers for various game objects and layers.
+- Added a new notification type for access control and spawning notifications.
+- Added a new interface to manage all the visualizers in one place.
+- Added entity LOS, proximity and noise detection visualizations.
+- Added an option to disable out-of-bounds triggers.
+- Added an option to unlock all unlockable items in the terminal shop.
+- Added a scaling option for the minimap in the minimap settings.
+
+### QOL Changes
+
+- Entity and Player info panels are now rendered in screen-space, resulting in higher resolution.
+- The size of the visualizers for indoor and outdoor nodes has been decreased.
+- Clamped the freecam movement speed between 1 and 200.
+- Fixed a bug where changing the resolution would tank frames.
+
+### Internal Fixes
+
+- Fixed a bug where Imperium client access would lock the host out.
+- Fixed a bug where the render pipeline changed the aspect ratio of some screens.
+- Fixed an issue where not all notifcations were toggleable.
+- Fixed a bug where the map camera clipping would not adjust when in unlocked mode.
+
+### Known Issues
+
+- Switching between Unity Explorer and a Imperium UI directly breaks the cursor.
+  - To fix, just open and close Unity Explorer once.
+
+- Scanner overlays are broken at higher texture resolutions.
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company. ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0))
+
 ## Imperium v0.1.7 [Beta] - Hotfix
 
 ### Internal Fixes
 - Removed unnecessary debug statements.
 - Fixed a bug where items would fall through the ground when teleporting them.
 - Fixed a bug where the version wouldn't display correctly.
-- FIxed a big where spawned items would fall through the ground.
+- FIxed a bug where spawned items would fall through the ground.
 
 ## Imperium v0.1.6 [Beta] - The Map Update
 

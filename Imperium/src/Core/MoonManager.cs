@@ -181,7 +181,7 @@ public class MoonManager
 
         ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
-    
+
     internal static void ToggleDoors(bool isOpen)
     {
         Imperium.ObjectManager.CurrentLevelDoors.Value

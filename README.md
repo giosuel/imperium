@@ -59,10 +59,6 @@ The Main Control Panel allows you to change game and player settings as well as 
 
 ![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-control-center.png?raw=true)
 
-- **Casting Indicators:** Raycast and physics collision indicators (*client-side*).
-- **Gizmos:** In-game objects that visualize spawn indicators and timers (*client-side*).
-- **Colliders:** Collider visualization of predefined game objects by tag or layer (*client-side*).
-- **Overlays:** Various in-game overlays for path-finding, spawn locations, etc. (*client-side*).
 - **Player Settings:** Player tweaks and adjustments (*client-side*).
 - **Game Settings:** General game settings and adjustments (*client-side*).
 - **Time Settings:** Time-related settings (*client- and server-side*).
@@ -83,8 +79,6 @@ Imperium comes with it's own built-in map and minimap.
 
 ![imperium-minimap](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap.png?raw=true)
 
-![imperium-minimap2](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap2.png?raw=true)
-
 | Keybind    | Action                                                |
 | ---------- | ----------------------------------------------------- |
 | M          | Enable / Disable minimap.                             |
@@ -92,6 +86,22 @@ Imperium comes with it's own built-in map and minimap.
 | ScrollDown | Zoom map out (Alt + ScrollDown when map is not open). |
 | LMB Drag   | Rotate the map camera around the target.              |
 | RMG Drag   | Pan the map camera.                                   |
+
+## Visualizers
+
+The visualizers windows allows access to all the static and dynamic collider visualizers, gizmos and screen-space overlays.
+
+![imperium-visualizers](https://github.com/giosuel/imperium/blob/main/assets/imperium-visualizers.png?raw=true)
+
+- **Overlays:** Various in-game overlays for nodes, vents and other static objects.
+- **Colliders:** Collider visualization of predefined game objects by tag or layer.
+- **Gizmos:** In-game objects that help visualize casts, effect ranges and more.
+
+![imperium-los-vis](https://github.com/giosuel/imperium/blob/main/assets/imperium-los-vis.png?raw=true)
+
+Dynamic screen-space overlays for entities and players, allowing easy access to important object-related values such as target HP, location, behaviour state and more.
+
+![imperium-los-vis](https://github.com/giosuel/imperium/blob/main/assets/imperium-vis-infos.png?raw=true)
 
 ## Moon Settings
 
@@ -228,15 +238,16 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 - [Nebby](https://thunderstore.io/c/lethal-company/p/Nebulaetrix/) for helping with the documentation and the testing!
 
+- [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for her amazing [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
+
 - [Swaggies](https://thunderstore.io/c/lethal-company/p/Swaggies), [aminoob](https://thunderstore.io/c/lethal-company/p/aminoob/) and star0138 for the help with the testing of Imperium!
 
 - [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
 
-- [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the inspiration for Imperium!
+- [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
 
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
 
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
 
-- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for making the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
-
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for wA the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!

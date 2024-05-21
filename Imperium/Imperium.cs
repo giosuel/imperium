@@ -1,6 +1,5 @@
 ﻿#region
 
-using System.Diagnostics;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -22,6 +21,7 @@ using Imperium.MonoBehaviours.ImpUI.SaveUI;
 using Imperium.MonoBehaviours.ImpUI.SettingsUI;
 using Imperium.MonoBehaviours.ImpUI.SpawningUI;
 using Imperium.MonoBehaviours.ImpUI.TeleportUI;
+using Imperium.MonoBehaviours.ImpUI.VisualizationUI;
 using Imperium.MonoBehaviours.ImpUI.WeatherUI;
 using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
@@ -30,8 +30,6 @@ using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -48,7 +46,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.1.7";
+    public const string PLUGIN_VERSION = "0.1.8";
 
     internal static ManualLogSource Log;
     internal static ConfigFile ConfigFile;
@@ -254,6 +252,7 @@ public class Imperium : BaseUnityPlugin
         Interface.Register<ObjectsUI, ImperiumUI>(ImpAssets.ObjectsUIObject);
         Interface.Register<MoonUI, ImperiumUI>(ImpAssets.MoonUIObject);
         Interface.Register<RenderingUI, ImperiumUI>(ImpAssets.RenderingUIObject);
+        Interface.Register<VisualizationUI>(ImpAssets.VisualizerUIObject);
         Interface.Register<MinimapSettings>(ImpAssets.MinimapSettingsObject);
         Interface.Register<ImperiumUI>(ImpAssets.ImperiumUIObject, "<Keyboard>/F1");
         Interface.Register<SpawningUI>(ImpAssets.SpawningUIObject, "<Keyboard>/F2", closeOnMovement: false);

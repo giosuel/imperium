@@ -2,13 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using Imperium.Core;
 using JetBrains.Annotations;
-using MonoMod.Cil;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -45,13 +42,13 @@ public abstract class ImpUtils
 
     internal static void ToggleGameObjects(IEnumerable<GameObject> list, bool isOn)
     {
-        foreach (var obj in list.Where(obj => obj != null))
-        {
-            obj.SetActive(isOn);
-        }
+        foreach (var obj in list.Where(obj => obj)) obj.SetActive(isOn);
     }
 
-    internal static Random CloneRandom(Random random)
+    /// <summary>
+    ///     Clones a random number generator. The new generator will produce the same sequence of numbers as the original.
+    /// </summary>
+    public static Random CloneRandom(Random random)
     {
         var cloned = new Random();
 
@@ -65,14 +62,18 @@ public abstract class ImpUtils
         return cloned;
     }
 
-    internal static float TimeToNormalized(float currentTime) => currentTime / Imperium.TimeOfDay.totalTime;
+    /// <summary>
+    ///     Converts an absolute timestamp to a normalized one (between 0 and 1).
+    ///     Total time is provided by <see cref="TimeOfDay.totalTime" />.
+    /// </summary>
+    public static float TimeToNormalized(float currentTime) => currentTime / Imperium.TimeOfDay.totalTime;
 
     /// <summary>
     ///     Formats daytime like RoundManager.currentDayTime or TimeOfDay.globalTime
     /// </summary>
-    /// <param name="dayTime"></param>
+    /// <param name="dayTime">Absolute timestamp</param>
     /// <returns></returns>
-    internal static string FormatDayTime(float dayTime) => FormatTime(TimeToNormalized(dayTime));
+    public static string FormatDayTime(float dayTime) => FormatTime(TimeToNormalized(dayTime));
 
     /// <summary>
     ///     Generates a formatted string of a fraction; '(num1, num2)'
@@ -81,13 +82,21 @@ public abstract class ImpUtils
     /// <param name="num2"></param>
     /// <param name="ignoreEmpty">If the function should return an empty string if both parameters are zero</param>
     /// <returns></returns>
-    internal static string FormatFraction(int num1, int num2, bool ignoreEmpty = true)
+    public static string FormatFraction(int num1, int num2, bool ignoreEmpty = true)
     {
         if (ignoreEmpty && num1 == 0 && num2 == 0) return "";
         return $"({num1}/{num2})";
     }
 
-    internal static string FormatTime(float normalizedTime)
+    /// <summary>
+    ///     Formats a normalized timestamp (<see cref="TimeToNormalized" />) to a readable time string.
+    ///     Length of hours from <see cref="TimeOfDay.lengthOfHours" />.
+    ///     Number of hour from <see cref="TimeOfDay.numberOfHours" />.
+    ///     Format: "hh:mm a"
+    /// </summary>
+    /// <param name="normalizedTime"></param>
+    /// <returns></returns>
+    public static string FormatTime(float normalizedTime)
     {
         var time = (int)(normalizedTime * Imperium.TimeOfDay.lengthOfHours * Imperium.TimeOfDay.numberOfHours) + 360;
         var minutes = time % 60;
@@ -106,12 +115,16 @@ public abstract class ImpUtils
         return $"{minutesLeft}:{secondsLeft:00}";
     }
 
-    internal static string FormatSeconds(float seconds)
-    {
-        ;
-        return $"{seconds:0.0}s";
-    }
-
+    /// <summary>
+    ///     Creates a formatted string from a unity <see cref="Vector3" />.
+    ///     If a unit is provided, the unit will be appended to each scalar.
+    ///     Format: "(x[unit](separator)y[unit](separator)z[unit])"
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="roundDigits">To how many digits the scalars should be rounded</param>
+    /// <param name="separator">Scalar separator</param>
+    /// <param name="unit">Optional scalar unit</param>
+    /// <returns></returns>
     internal static string FormatVector(
         Vector3 input,
         int roundDigits = -1,
@@ -125,6 +138,13 @@ public abstract class ImpUtils
         return $"({x}{unit}{separator}{y}{unit}{separator}{z}{unit})";
     }
 
+    /// <summary>
+    ///     Attempts to invoke a callback.
+    ///     If the callback throws a <see cref="NullReferenceException" /> returns default.
+    /// </summary>
+    /// <param name="callback"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     internal static T InvokeDefaultOnNull<T>(Func<T> callback)
     {
         try
@@ -138,9 +158,8 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Formats the parents of a Unity transform into a string.
-    ///
-    /// e.g. "ImpInterface/imperium_ui/Container/Window/Content"
+    ///     Formats the parents of a Unity transform into a string.
+    ///     e.g. "ImpInterface/imperium_ui/Container/Window/Content"
     /// </summary>
     /// <param name="root"></param>
     /// <returns></returns>
@@ -178,15 +197,15 @@ public abstract class ImpUtils
         return entityType;
     }
 
-    internal abstract class RichText
+    public abstract class RichText
     {
-        internal static string Strikethrough(string value) => $"<s>{value}</s>";
-        internal static string Underlined(string value) => $"<u>{value}</u>";
-        internal static string Bold(string value) => $"<b>{value}</b>";
-        internal static string Italic(string value) => $"<i>{value}</i>";
+        public static string Strikethrough(string value) => $"<s>{value}</s>";
+        public static string Underlined(string value) => $"<u>{value}</u>";
+        public static string Bold(string value) => $"<b>{value}</b>";
+        public static string Italic(string value) => $"<i>{value}</i>";
     }
 
-    internal static int ToggleLayerInMask(int layerMask, int layer)
+    public static int ToggleLayerInMask(int layerMask, int layer)
     {
         if ((layerMask & (1 << layer)) != 0)
         {
@@ -196,7 +215,7 @@ public abstract class ImpUtils
         return layerMask | (1 << layer);
     }
 
-    internal static int ToggleLayersInMask(int layerMask, params int[] layers)
+    public static int ToggleLayersInMask(int layerMask, params int[] layers)
     {
         return layers.Aggregate(layerMask, ToggleLayerInMask);
     }
@@ -235,13 +254,19 @@ public abstract class ImpUtils
 
     internal abstract class Math
     {
-        internal static float SampleQuadraticBezier(float start, float end, float control, float x)
+        internal static float SampleQuadraticBezier(float start, float end, float control, float t)
         {
-            return (1 - x) * (1 - x) * start + 2 * (1 - x) * x * control + x * x * end;
+            return (1 - t) * (1 - t) * start + 2 * (1 - t) * t * control + t * t * end;
         }
 
-        internal static string FormatChance(float chance) =>
-            NormalizeFloat(MathF.Round(chance * 100, 2)).ToString(CultureInfo.InvariantCulture) + "%";
+        /// <summary>
+        ///     Formats a normalized float to a percentage chance.
+        /// </summary>
+        /// <param name="chance"></param>
+        /// <returns></returns>
+        internal static string FormatChance(float chance) => NormalizeFloat(
+            MathF.Round(chance * 100, 2)
+        ).ToString(CultureInfo.InvariantCulture) + "%";
 
         /// <summary>
         ///     Removes trailing zeros from float if decimals are equal to zero
@@ -371,7 +396,7 @@ public abstract class ImpUtils
             var renderer = sphere.GetComponent<MeshRenderer>();
             renderer.shadowCastingMode = ShadowCastingMode.Off;
 
-            if (material != null)
+            if (material)
             {
                 renderer.material = material;
             }

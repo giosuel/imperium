@@ -1,9 +1,13 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.Types;
 
@@ -45,12 +49,12 @@ public enum Variant
 public readonly struct StyleOverride(string componentPath, Variant styleVariant)
 {
     /// <summary>
-    /// Path to the child element relative to the provided root.
+    ///     Path to the child element relative to the provided root.
     /// </summary>
     public string Path { get; } = componentPath;
 
     /// <summary>
-    /// The variant of style to use for the given component.
+    ///     The variant of style to use for the given component.
     /// </summary>
     public Variant Variant { get; } = styleVariant;
 }
@@ -58,8 +62,7 @@ public readonly struct StyleOverride(string componentPath, Variant styleVariant)
 public static class ImpThemeManager
 {
     /// <summary>
-    /// Applies styles to a UI component and it's children based on overrides.
-    ///
+    ///     Applies styles to a UI component and it's children based on overrides.
     /// </summary>
     /// <param name="theme">The theme to use for the styling</param>
     /// <param name="container">The root container that contians all the UI components</param>
@@ -203,7 +206,7 @@ public static class ImpThemeManager
         {
             "Nebula", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#2D082DF4"),
+                backgroundColor = HEXToRGB("#2D082DFA"),
                 primaryColor = HEXToRGB("#84168E"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -211,7 +214,7 @@ public static class ImpThemeManager
         {
             "Vertex", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#23020AF4"),
+                backgroundColor = HEXToRGB("#23020AF8"),
                 primaryColor = HEXToRGB("#B21845"),
                 textColor = HEXToRGB("#FFFFFF")
             }

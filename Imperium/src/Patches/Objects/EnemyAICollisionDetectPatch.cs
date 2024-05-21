@@ -2,6 +2,7 @@
 
 using HarmonyLib;
 using Imperium.Util;
+using UnityEngine;
 
 #endregion
 
@@ -21,8 +22,15 @@ internal class EnemyAICollisionDetectPatch
         {
             ImpOutput.Send(
                 $"Entity {entityName} was hit by {force} damage.",
-                notificationType: NotificationType.Entities
+                type: NotificationType.Entities
             );
         }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("INoiseListener.DetectNoise")]
+    private static void DetectNoisePatch(EnemyAICollisionDetect __instance, Vector3 noisePosition)
+    {
+        Imperium.Visualization.EntityInfos.NoiseVisualizerUpdate(__instance.mainScript, noisePosition);
     }
 }

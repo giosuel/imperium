@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using Imperium.Core;
 
 #endregion
@@ -67,9 +68,9 @@ public class ImpBinding<T> : IRefreshable, IResettable
         Value = currentValue;
         DefaultValue = currentValue;
         this.ignoreRefresh = ignoreRefresh;
-        this.onUpdateSync = syncUpdate;
+        onUpdateSync = syncUpdate;
 
-        this.onUpdate += update;
+        onUpdate += update;
     }
 
     /// <summary>
@@ -97,9 +98,9 @@ public class ImpBinding<T> : IRefreshable, IResettable
         Value = currentValue;
         DefaultValue = defaultValue;
         this.ignoreRefresh = ignoreRefresh;
-        this.onUpdateSync = syncUpdate;
 
-        this.onUpdate += update;
+        onUpdate += update;
+        onUpdateSync += syncUpdate;
     }
 
     /// <summary>
@@ -134,9 +135,10 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>
     internal virtual void Set(T value, bool skipSync)
     {
+        var isSame = EqualityComparer<T>.Default.Equals(Value, value);
         Value = value;
 
-        if (!skipSync) onUpdateSync?.Invoke(value);
+        if (!skipSync && !isSame) onUpdateSync?.Invoke(value);
         onUpdate?.Invoke(value);
         onTrigger?.Invoke();
     }

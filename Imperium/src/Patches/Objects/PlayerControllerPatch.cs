@@ -3,10 +3,8 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Netcode;
 using Imperium.Util;
-using Unity.Netcode;
 using UnityEngine;
 
 #endregion
@@ -50,7 +48,7 @@ internal static class PlayerControllerPatch
 
             ImpOutput.Send(
                 $"God mode negated {damageNumber} damage from '{(causeOfDeath).ToString()}'",
-                notificationType: NotificationType.GodMode
+                type: NotificationType.GodMode
             );
         }
     }
@@ -62,7 +60,7 @@ internal static class PlayerControllerPatch
         if (ImpSettings.Player.GodMode.Value)
         {
             ImpOutput.Send($"God mode saved you from death by '{(causeOfDeath).ToString()}'",
-                notificationType: NotificationType.GodMode);
+                type: NotificationType.GodMode);
         }
     }
 
@@ -90,7 +88,7 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("KillPlayerClientRpc")]
     private static void KillPlayerClientRpc(PlayerControllerB __instance, int playerId)
     {
-        ImpOutput.Send($"Employee {__instance.playerUsername} has died!", notificationType: NotificationType.Other);
+        ImpOutput.Send($"Employee {__instance.playerUsername} has died!", type: NotificationType.Other);
     }
 
     [HarmonyPrefix]

@@ -15,15 +15,36 @@ internal abstract class BaseVisualizer<T>
     private readonly string displayName;
     protected readonly Dictionary<int, GameObject> indicatorObjects = [];
 
-    protected BaseVisualizer(string displayName)
-    {
-        this.displayName = displayName;
-    }
-
     protected BaseVisualizer(string displayName, ImpBinding<T> objectsBinding)
     {
         this.displayName = displayName;
         objectsBinding.onUpdate += Refresh;
+    }
+
+    protected BaseVisualizer(string displayName, ImpBinding<bool> visibleBinding)
+    {
+        this.displayName = displayName;
+        visibleBinding.onUpdate += OnVisibilityUpdate;
+    }
+
+    protected BaseVisualizer(string displayName, ImpBinding<T> objectsBinding, ImpBinding<bool> visibleBinding)
+    {
+        this.displayName = displayName;
+        objectsBinding.onUpdate += objects =>
+        {
+            Refresh(objects);
+            OnVisibilityUpdate(visibleBinding.Value);
+        };
+
+        visibleBinding.onUpdate += OnVisibilityUpdate;
+    }
+
+    private void OnVisibilityUpdate(bool isVisible)
+    {
+        foreach (var obj in indicatorObjects.Values)
+        {
+            obj.SetActive(isVisible);
+        }
     }
 
     internal virtual void Toggle(bool isOn)
@@ -32,7 +53,7 @@ internal abstract class BaseVisualizer<T>
 
         ImpOutput.Send(
             isOn ? $"Successfully enabled {displayName}!" : $"Successfully disabled {displayName}!",
-            notificationType: NotificationType.Confirmation
+            type: NotificationType.Confirmation
         );
     }
 

@@ -1,6 +1,5 @@
 #region
 
-using System;
 using System.Linq;
 using Imperium.Core;
 using Imperium.Types;
@@ -52,8 +51,10 @@ public abstract class ImpToggle
 
         toggle.isOn = valueBinding.Value;
         toggle.onValueChanged.AddListener(valueBinding.Set);
-        toggle.onValueChanged.AddListener(_ => GameManager.PlayClip(ImpAssets.GrassClick));
-        valueBinding.onUpdateSync += value => toggle.isOn = value;
+        valueBinding.onUpdate += value => toggle.isOn = value;
+
+        // The click sound is in sync update, this way clients can choose to not play the sound when bulk updating
+        valueBinding.onUpdateSync += _ => GameManager.PlayClip(ImpAssets.GrassClick);
 
         if (interactableBindings.Length > 0)
         {

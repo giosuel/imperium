@@ -3,7 +3,6 @@
 using Imperium.Oracle;
 using Imperium.Types;
 using Imperium.Util;
-using Imperium.Util.Binding;
 
 #endregion
 
@@ -65,7 +64,7 @@ internal class OracleUI : SingleplexUI
             ImpOutput.Send(
                 "Nothing is spawning out here ._.",
                 title: "Oracle",
-                notificationType: NotificationType.Required
+                type: NotificationType.Required
             );
             return false;
         }

@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -11,8 +10,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding) :
-    BaseVisualizer<HashSet<Landmine>>("Landmine Indicators", objectsBinding)
+internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding, ImpBinding<bool> visibleBinding) :
+    BaseVisualizer<HashSet<Landmine>>("Landmine Indicators", objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<Landmine> objects)
     {
@@ -26,13 +25,12 @@ internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding) 
                 indicatorObject.transform.SetParent(landmine.transform);
                 var indicator = indicatorObject.AddComponent<LandmineIndicator>();
                 indicator.Init(landmine);
-                indicatorObject.SetActive(ImpSettings.Visualizations.LandmineIndicators.Value);
 
                 indicatorObjects[landmine.GetInstanceID()] = indicatorObject;
             }
         }
     }
-    
+
     internal void SnapshotPlayerHitbox(int landmineId)
     {
         if (!indicatorObjects.TryGetValue(landmineId, out var landmine)) return;

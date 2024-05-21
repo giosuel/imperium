@@ -1,6 +1,7 @@
 #region
 
 using HarmonyLib;
+using Imperium.Core;
 
 #endregion
 
@@ -13,6 +14,6 @@ internal static class OutOfBoundsTriggerPatch
     [HarmonyPatch("OnTriggerEnter")]
     private static bool OnTriggerEnterPatch()
     {
-        return true;
+        return !ImpSettings.Player.DisableOOB.Value;
     }
 }

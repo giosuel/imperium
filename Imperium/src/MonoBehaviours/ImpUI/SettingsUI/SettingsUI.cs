@@ -1,10 +1,8 @@
 #region
 
-using System;
 using BepInEx.Bootstrap;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
@@ -47,6 +45,8 @@ internal class SettingsUI : SingleplexUI
         ImpToggle.Bind("SpawnReportsToggle", notifications, ImpSettings.Preferences.NotificationsSpawnReports, theme);
         ImpToggle.Bind("ConfirmationToggle", notifications, ImpSettings.Preferences.NotificationsConfirmation, theme);
         ImpToggle.Bind("EntitiesToggle", notifications, ImpSettings.Preferences.NotificationsEntities, theme);
+        ImpToggle.Bind("SpawningToggle", notifications, ImpSettings.Preferences.NotificationsSpawning, theme);
+        ImpToggle.Bind("AccessControl", notifications, ImpSettings.Preferences.NotificationsAccessControl, theme);
         ImpToggle.Bind("OtherToggle", notifications, ImpSettings.Preferences.NotificationsOther, theme);
 
         var quickload = content.Find("Grid/Quickload/Quickload");

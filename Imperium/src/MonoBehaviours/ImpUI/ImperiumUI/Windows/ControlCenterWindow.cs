@@ -1,6 +1,5 @@
 #region
 
-using System;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.SaveUI;
@@ -26,13 +25,13 @@ internal class ControlCenterWindow : BaseWindow
 
         ImpButton.Bind("RenderSettings", content, OpenRenderingUI, theme: themeBinding);
         ImpButton.Bind("MoonSettings", content, OpenMoonUI, theme: themeBinding);
+        ImpButton.Bind("Visualization", content, OpenVisualizationUI, theme: themeBinding);
 
         InitQuotaAndCredits();
         InitEntitySpawning();
         InitGeneration();
         InitPlayerSettings();
         InitGameSettings();
-        InitOverlays();
         InitTimeSpeed();
     }
 
@@ -159,145 +158,14 @@ internal class ControlCenterWindow : BaseWindow
             theme: themeBinding
         );
         ImpToggle.Bind(
+            "Right/GameSettings/UnlockShop",
+            content, ImpSettings.Game.UnlockShop,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
             "Right/GameSettings/AllPlayersDead",
             content, Imperium.GameManager.AllPlayersDead,
             theme: themeBinding
-        );
-    }
-
-    private void InitOverlays()
-    {
-        ImpToggle.Bind(
-            "Right/Colliders/Employees",
-            content,
-            ImpSettings.Visualizations.Employees,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/Entities",
-            content,
-            ImpSettings.Visualizations.Entities,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/MapHazards",
-            content,
-            ImpSettings.Visualizations.MapHazards,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/Props",
-            content,
-            ImpSettings.Visualizations.Props,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/Vents",
-            content,
-            ImpSettings.Visualizations.Vents,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/Foliage",
-            content,
-            ImpSettings.Visualizations.Foliage,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/TileBorders",
-            content,
-            ImpSettings.Visualizations.TileBorders,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Colliders/InteractTriggers",
-            content,
-            ImpSettings.Visualizations.InteractTriggers,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/Players",
-            content,
-            ImpSettings.Visualizations.PlayerInfo,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/Entities",
-            content,
-            ImpSettings.Visualizations.EntityInfo,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/AINodesIndoor",
-            content,
-            ImpSettings.Visualizations.AINodesIndoor,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/AINodesOutdoor",
-            content,
-            ImpSettings.Visualizations.AINodesOutdoor,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/SpawnDenialPoints",
-            content,
-            ImpSettings.Visualizations.SpawnDenialPoints,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/Overlays/BeeSpawns",
-            content,
-            ImpSettings.Visualizations.BeeSpawns,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/Gizmos/SpawnIndicators",
-            content,
-            ImpSettings.Visualizations.SpawnIndicators,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/Gizmos/SpawnTimers",
-            content,
-            ImpSettings.Visualizations.VentTimers,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/Gizmos/NoiseIndicators",
-            content,
-            ImpSettings.Visualizations.NoiseIndicators,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/CastingIndicators/Shotguns",
-            content,
-            ImpSettings.Visualizations.ShotgunIndicators,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/CastingIndicators/Shovels",
-            content,
-            ImpSettings.Visualizations.ShovelIndicators,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/CastingIndicators/Knives",
-            content,
-            ImpSettings.Visualizations.KnifeIndicators,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/CastingIndicators/Landmines",
-            content,
-            ImpSettings.Visualizations.LandmineIndicators,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Left/CastingIndicators/SpikeTraps",
-            content,
-            ImpSettings.Visualizations.SpikeTrapIndicators,
-            themeBinding
         );
     }
 
@@ -318,6 +186,12 @@ internal class ControlCenterWindow : BaseWindow
             "Right/PlayerSettings/PickupOverwrite",
             content,
             ImpSettings.Player.PickupOverwrite,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/PlayerSettings/DisableOOB",
+            content,
+            ImpSettings.Player.DisableOOB,
             themeBinding
         );
         ImpSlider.Bind(
@@ -390,4 +264,5 @@ internal class ControlCenterWindow : BaseWindow
     private static void OpenRenderingUI() => Imperium.Interface.Open<RenderingUI.RenderingUI>();
     private static void OpenSettingsUI() => Imperium.Interface.Open<SettingsUI.SettingsUI>();
     private static void OpenSaveUI() => Imperium.Interface.Open<ConfirmationUI>();
+    private static void OpenVisualizationUI() => Imperium.Interface.Open<VisualizationUI.VisualizationUI>();
 }

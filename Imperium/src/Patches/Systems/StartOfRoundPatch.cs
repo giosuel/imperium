@@ -31,6 +31,13 @@ public class StartOfRoundPatch
         }
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("TeleportPlayerInShipIfOutOfRoomBounds")]
+    private static bool TeleportPlayerInShipIfOutOfRoomBoundsPatch()
+    {
+        return !ImpSettings.Player.DisableOOB.Value;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("EndOfGameClientRpc")]
     private static void EndOfGameClientRpcPatch(StartOfRound __instance)
@@ -47,7 +54,7 @@ public class StartOfRoundPatch
             // We have to revert this
             __instance.allPlayersDead = false;
 
-            ImpOutput.Send("Prevented the ship from leaving.", notificationType: NotificationType.Other);
+            ImpOutput.Send("Prevented the ship from leaving.", type: NotificationType.Other);
             Imperium.Log.LogInfo("[MON] Prevented the ship from leaving.");
             return false;
         }

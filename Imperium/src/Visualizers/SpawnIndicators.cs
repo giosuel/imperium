@@ -1,6 +1,5 @@
 #region
 
-using Imperium.Core;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Oracle;
 using Imperium.Util;
@@ -11,8 +10,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class SpawnIndicators(ImpBinding<OracleState> oracleStateBinding)
-    : BaseVisualizer<OracleState>("Spawn Indicators", oracleStateBinding)
+internal class SpawnIndicators(ImpBinding<OracleState> oracleStateBinding, ImpBinding<bool> visibleBinding)
+    : BaseVisualizer<OracleState>("Spawn Indicators", oracleStateBinding, visibleBinding)
 {
     protected override void Refresh(OracleState state)
     {
@@ -30,7 +29,6 @@ internal class SpawnIndicators(ImpBinding<OracleState> oracleStateBinding)
                     spawnReport.spawnTime
                 );
 
-                indicatorObject.SetActive(ImpSettings.Visualizations.SpawnIndicators.Value);
                 indicatorObjects[indicatorObject.GetInstanceID()] = indicatorObject;
             }
         }

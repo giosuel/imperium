@@ -80,6 +80,9 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<HashSet<GrabbableObject>> CurrentLevelItems = new([]);
     internal readonly ImpBinding<HashSet<PlayerControllerB>> CurrentPlayers = new([]);
 
+    // Misc Objects
+    internal readonly ImpBinding<HashSet<RandomScrapSpawn>> CurrentScrapSpawnPoints = new([]);
+
     // Used by the server to execute a despawn request from a client via network ID
     private readonly Dictionary<ulong, GameObject> CurrentLevelObjects = [];
 
@@ -175,7 +178,8 @@ internal class ObjectManager : ImpLifecycleObject
         if (sendNotification)
         {
             ImpOutput.SendToClients(
-                $"{mountString} loyal {GetDisplayName(entityName)} {verbString} been spawned!"
+                $"{mountString} loyal {GetDisplayName(entityName)} {verbString} been spawned!",
+                type: NotificationType.Spawning
             );
         }
 
@@ -259,7 +263,10 @@ internal class ObjectManager : ImpLifecycleObject
         var mountString = amount == 1 ? "A" : $"{amount.ToString()}x";
         var verbString = amount == 1 ? "has" : "have";
 
-        ImpOutput.SendToClients($"{mountString} {itemName} {verbString} been spawned!");
+        ImpOutput.SendToClients(
+            $"{mountString} {itemName} {verbString} been spawned!",
+            type: NotificationType.Spawning
+        );
 
         ImpNetSpawning.Instance.OnItemsChangedClientRpc();
     }
@@ -292,7 +299,10 @@ internal class ObjectManager : ImpLifecycleObject
         var mountString = amount == 1 ? "A" : $"{amount.ToString()}x";
         var verbString = amount == 1 ? "has" : "have";
 
-        ImpOutput.SendToClients($"{mountString} {objectName} {verbString} been spawned!");
+        ImpOutput.SendToClients(
+            $"{mountString} {objectName} {verbString} been spawned!",
+            type: NotificationType.Spawning
+        );
 
         ImpNetSpawning.Instance.OnMapHazardsChangedClientRpc();
     }
@@ -527,6 +537,7 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<GameObject> currentLevelSteamleaks = [];
         HashSet<EnemyVent> currentLevelVents = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
+        HashSet<RandomScrapSpawn> currentScrapSpawnPoints = [];
 
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
         {
@@ -566,6 +577,9 @@ internal class ObjectManager : ImpLifecycleObject
                         break;
                     case SandSpiderWebTrap spiderWeb when !currentLevelSpiderWebs.Contains(spiderWeb):
                         currentLevelSpiderWebs.Add(spiderWeb);
+                        break;
+                    case RandomScrapSpawn scrapSpawn:
+                        currentScrapSpawnPoints.Add(scrapSpawn);
                         break;
                 }
             }
@@ -617,6 +631,11 @@ internal class ObjectManager : ImpLifecycleObject
         if (currentLevelSpiderWebs.Count > 0)
         {
             CurrentLevelSpiderWebs.Set(CurrentLevelSpiderWebs.Value.Union(currentLevelSpiderWebs).ToHashSet());
+        }
+
+        if (currentScrapSpawnPoints.Count > 0)
+        {
+            CurrentScrapSpawnPoints.Set(CurrentScrapSpawnPoints.Value.Union(currentScrapSpawnPoints).ToHashSet());
         }
     }
 

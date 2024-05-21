@@ -29,15 +29,14 @@ public class ImpSlider : MonoBehaviour
 
     /// <summary>
     ///     Factory method to create and bind an ImpSlider to a valid slider object.
-    ///
-    /// Required UI Layout:
-    ///   Root
+    ///     Required UI Layout:
+    ///     Root
     ///     "Reset" (Button?) - Optional reset button
     ///     "Slider" (Slider)
-    ///       "SliderArea" (Image)
-    ///         "SlideArea"
-    ///           "Handle" (Image)
-    ///             "Text" (TMP_Text) - Optional indicator text
+    ///     "SliderArea" (Image)
+    ///     "SlideArea"
+    ///     "Handle" (Image)
+    ///     "Text" (TMP_Text) - Optional indicator text
     /// </summary>
     /// <param name="path">The path to the UI element relative to the parent.</param>
     /// <param name="container">The parent object of the UI elmeent.</param>
@@ -133,7 +132,8 @@ public class ImpSlider : MonoBehaviour
 
         valueBinding.onUpdate += newValue =>
         {
-            impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(newValue) : newValue;;
+            impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(newValue) : newValue;
+            ;
 
             // Use option label if options are used
             impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }

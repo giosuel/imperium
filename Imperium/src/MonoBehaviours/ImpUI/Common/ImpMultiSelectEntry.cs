@@ -1,23 +1,25 @@
+#region
+
 using System.Collections.Generic;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 
+#endregion
+
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 
 internal abstract class ImpMultiSelectEntry
 {
     /// <summary>
-    /// MultiSelectEntry ImpUI Component - Represents an entry in a <see cref="ImpMultiSelect"/>.
-    /// Note: This can also be used without ImpMultiSelect.
-    ///
-    /// Required UI Layout:
-    ///   Template
+    ///     MultiSelectEntry ImpUI Component - Represents an entry in a <see cref="ImpMultiSelect" />.
+    ///     Note: This can also be used without ImpMultiSelect.
+    ///     Required UI Layout:
+    ///     Template
     ///     "Selected" (Image?) - Overlay that's shown when the entry is selected.
     ///     "Hover" (Image?) - Overlay that's shown when the mouse hovers over the entry.
     ///     "Text" (TMP_Text?) - Text that contains the label string.
-    ///
     /// </summary>
     /// <param name="value">The value the current entry represents</param>
     /// <param name="entryObj">The UI component.</param>

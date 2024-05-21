@@ -1,7 +1,11 @@
+#region
+
 using System.Linq;
 using DunGen;
 using HarmonyLib;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Patches.Systems;
 

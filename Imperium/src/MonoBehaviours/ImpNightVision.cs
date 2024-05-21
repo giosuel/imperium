@@ -1,5 +1,9 @@
+#region
+
 using Imperium.Core;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.MonoBehaviours;
 

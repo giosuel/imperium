@@ -1,7 +1,10 @@
+#region
+
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
-using Imperium.Util.Binding;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.MinimapSettings;
 
@@ -11,8 +14,13 @@ internal class MinimapSettings : SingleplexUI
     {
         ImpToggle.Bind("Gizmos/ShowInfoPanel", content, ImpSettings.Map.MinimapInfoPanel, theme);
 
-        ImpSlider.Bind("Width", content, ImpSettings.Map.MinimapWidth, theme);
-        ImpSlider.Bind("Height", content, ImpSettings.Map.MinimapHeight, theme);
+        ImpSlider.Bind(
+            path: "Scale",
+            container: content,
+            valueBinding: ImpSettings.Map.MinimapScale,
+            indicatorFormatter: value => $"{value:0.0}",
+            theme: theme
+        );
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)

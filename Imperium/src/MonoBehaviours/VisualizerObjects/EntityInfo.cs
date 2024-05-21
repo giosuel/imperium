@@ -1,7 +1,10 @@
 #region
 
 using System;
+using System.Collections.Generic;
+using Imperium.Core;
 using Imperium.Util;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,79 +18,285 @@ public class EntityInfo : MonoBehaviour
 {
     private EnemyAI entityController;
 
-    private GameObject canvas;
+    private GameObject infoPanel;
+    private RectTransform infoPanelRect;
+    private RectTransform infoPanelCanvasRect;
+
     private TMP_Text nameText;
     private TMP_Text healthText;
     private TMP_Text stateText;
     private TMP_Text movementSpeedText;
     private TMP_Text stunTimeText;
     private TMP_Text targetText;
+    private TMP_Text locationText;
     private Image deathOverlay;
 
-    private LineRenderer lookAtLine;
+    private EntityInfoConfig entityConfig;
 
-    private LineRenderer targetPlayer;
+    private Visualization visualization;
+
+    private LineRenderer targetLookLine;
+    private LineRenderer targetPlayerLine;
 
     private readonly LineRenderer[] pathLines = new LineRenderer[20];
 
-    private void Awake()
-    {
-        canvas = transform.Find("Canvas").gameObject;
-        nameText = transform.Find("Canvas/Name").GetComponent<TMP_Text>();
-        healthText = transform.Find("Canvas/Health/Value").GetComponent<TMP_Text>();
-        stateText = transform.Find("Canvas/State/Value").GetComponent<TMP_Text>();
-        movementSpeedText = transform.Find("Canvas/MovementSpeed/Value").GetComponent<TMP_Text>();
-        stunTimeText = transform.Find("Canvas/StunTime/Value").GetComponent<TMP_Text>();
-        targetText = transform.Find("Canvas/Target/Value").GetComponent<TMP_Text>();
+    private readonly Dictionary<string, GameObject> VisualizerObjects = [];
+    private readonly Dictionary<string, float> VisualizerTimers = [];
 
-        deathOverlay = transform.Find("Canvas/Death").GetComponent<Image>();
-    }
+    private LineRenderer lastHeardNoise;
+    private Vector3 lastHeardNoisePosition;
+    private float lastHeardNoiseTimer;
 
-    internal void Init(EnemyAI entity)
+    internal void Init(EntityInfoConfig config, Visualization visualizer, EnemyAI entity)
     {
+        entityConfig = config;
+        visualization = visualizer;
         entityController = entity;
-        lookAtLine = ImpUtils.Geometry.CreateLine(entity.transform, 0.02f, true);
 
-        targetPlayer = ImpUtils.Geometry.CreateLine(entity.transform, 0.02f, true);
+        targetLookLine = ImpUtils.Geometry.CreateLine(entity.transform, 0.03f, true);
+
+        targetPlayerLine = ImpUtils.Geometry.CreateLine(entity.transform, 0.03f, true);
         for (var i = 0; i < pathLines.Length; i++)
         {
-            pathLines[i] = ImpUtils.Geometry.CreateLine(transform, 0.05f, true);
+            pathLines[i] = ImpUtils.Geometry.CreateLine(transform, 0.1f, true);
         }
+
+        lastHeardNoise = ImpUtils.Geometry.CreateLine(entity.transform, 0.03f, true);
+
+        InitInfoPanel();
+    }
+
+    private void InitInfoPanel()
+    {
+        infoPanel = Instantiate(ImpAssets.EntityInfoPanel, transform);
+        infoPanelRect = infoPanel.transform.Find("Panel").GetComponent<RectTransform>();
+        infoPanelCanvasRect = infoPanel.GetComponent<RectTransform>();
+
+        deathOverlay = infoPanel.transform.Find("Panel/Death").GetComponent<Image>();
+
+        nameText = infoPanel.transform.Find("Panel/Name").GetComponent<TMP_Text>();
+        healthText = infoPanel.transform.Find("Panel/Health/Value").GetComponent<TMP_Text>();
+        stateText = infoPanel.transform.Find("Panel/State/Value").GetComponent<TMP_Text>();
+        movementSpeedText = infoPanel.transform.Find("Panel/MovementSpeed/Value").GetComponent<TMP_Text>();
+        stunTimeText = infoPanel.transform.Find("Panel/StunTime/Value").GetComponent<TMP_Text>();
+        targetText = infoPanel.transform.Find("Panel/Target/Value").GetComponent<TMP_Text>();
+        locationText = infoPanel.transform.Find("Panel/Location/Value").GetComponent<TMP_Text>();
+    }
+
+    internal void NoiseVisualizerUpdate(Vector3 origin)
+    {
+        ImpUtils.Geometry.SetLinePositions(lastHeardNoise, entityController.transform.position, origin);
+        lastHeardNoise.gameObject.SetActive(entityConfig.Hearing.Value);
+
+        lastHeardNoisePosition = origin;
+        lastHeardNoiseTimer = Time.realtimeSinceStartup;
+    }
+
+    internal void ConeVisualizerUpdate(
+        Transform eye,
+        float angle, float size,
+        Material material,
+        Func<EntityInfoConfig, ImpBinding<bool>> configGetter
+    )
+    {
+        var identifier = Visualization.GenerateConeHash(entityController, eye, angle, size);
+
+        if (!VisualizerObjects.TryGetValue(identifier, out var visualizer))
+        {
+            visualizer = new GameObject($"ImpVis_LOS_{identifier}");
+            visualizer.AddComponent<MeshRenderer>().material = material;
+            visualizer.AddComponent<MeshFilter>().mesh = visualization.GetOrGenerateCone(angle);
+
+            VisualizerObjects[identifier] = visualizer;
+        }
+
+        if (ImpSettings.Visualizations.SmoothAnimations.Value)
+        {
+            visualizer.transform.localPosition = Vector3.zero;
+            visualizer.transform.localRotation = Quaternion.identity;
+            visualizer.transform.SetParent(eye);
+        }
+        else
+        {
+            visualizer.transform.position = eye.position;
+            visualizer.transform.rotation = eye.rotation;
+            visualizer.transform.SetParent(null);
+        }
+
+        visualizer.transform.localScale = Vector3.one * size;
+
+        // Enable / Disable based on config
+        visualizer.gameObject.SetActive(configGetter(entityConfig).Value);
+
+        // Update the visualizer timer
+        VisualizerTimers[identifier] = Time.realtimeSinceStartup;
+    }
+
+    internal void SphereVisualizerUpdate(
+        Transform eye,
+        float size, Material material,
+        Func<EntityInfoConfig, ImpBinding<bool>> configGetter
+    )
+    {
+        var identifier = Visualization.GenerateSphereHash(entityController, eye, size);
+
+        if (!VisualizerObjects.TryGetValue(identifier, out var visualizer))
+        {
+            visualizer = ImpUtils.Geometry.CreatePrimitive(
+                PrimitiveType.Sphere,
+                // Parent the visualizer to the eye if smooth animations are enabled
+                parent: ImpSettings.Visualizations.SmoothAnimations.Value ? eye : null,
+                material: material,
+                size: size,
+                name: $"ImpVis_Custom_{identifier}"
+            );
+
+            VisualizerObjects[identifier] = visualizer;
+        }
+
+        if (ImpSettings.Visualizations.SmoothAnimations.Value)
+        {
+            visualizer.transform.localPosition = Vector3.zero;
+            visualizer.transform.localRotation = Quaternion.identity;
+            visualizer.transform.SetParent(eye);
+        }
+        else
+        {
+            visualizer.transform.SetParent(null);
+            visualizer.transform.position = eye.position;
+            visualizer.transform.rotation = eye.rotation;
+        }
+
+        visualizer.transform.localScale = Vector3.one * size;
+
+        visualizer.transform.localPosition = Vector3.zero;
+        visualizer.transform.localRotation = Quaternion.identity;
+        visualizer.transform.localScale = Vector3.one * size;
+
+        // Enable / Disable based on the provided config
+        visualizer.gameObject.SetActive(configGetter(entityConfig).Value);
+
+        // Update the visualizer timer
+        VisualizerTimers[identifier] = Time.realtimeSinceStartup;
     }
 
     private void Update()
     {
-        canvas.SetActive(entityController);
         if (!entityController) return;
 
-        deathOverlay.gameObject.SetActive(entityController.isEnemyDead);
+        // Remove all visualizers whose timer expired
+        foreach (var (identifier, timer) in VisualizerTimers)
+        {
+            if (Time.realtimeSinceStartup - timer > 0.76f)
+            {
+                VisualizerObjects[identifier].gameObject.SetActive(false);
+            }
+        }
 
-        nameText.text = Imperium.ObjectManager.GetDisplayName(entityController.enemyType.enemyName);
-
-        healthText.text = entityController.enemyHP.ToString();
-
-        var state = entityController.currentBehaviourStateIndex.ToString();
-        stateText.text = state;
-
-        var movementSpeed = ImpUtils.Math.FormatFloatToThreeDigits(entityController.agent.speed);
-        movementSpeedText.text = movementSpeed;
-
-        var stunTime = $"{ImpUtils.Math.FormatFloatToThreeDigits(Math.Max(0, entityController.stunNormalizedTimer))}s";
-        stunTimeText.text = stunTime;
-
-        var target = entityController.targetPlayer ? entityController.targetPlayer.playerUsername : "-";
-        targetText.text = target;
-
-        canvas.transform.LookAt(Imperium.Freecam.IsFreecamEnabled.Value
-            ? Imperium.Freecam.transform.position
-            : Imperium.Player.gameplayCamera.transform.position);
-
-        DrawLookingLine();
-        DrawTargetPlayerLine();
-        DrawPathLines();
+        DrawInfoPanel(entityConfig.Info.Value);
+        DrawPathLines(entityConfig.Pathfinding.Value);
+        DrawNoiseLine(entityConfig.Hearing.Value);
+        DrawLookingAtLine(entityConfig.LookingAt.Value);
+        DrawTargetPlayerLine(entityConfig.Targeting.Value);
     }
 
-    private void DrawPathLines()
+    private void DrawNoiseLine(bool isShown)
+    {
+        if (!isShown)
+        {
+            lastHeardNoise.gameObject.SetActive(false);
+            return;
+        }
+
+        if (Time.realtimeSinceStartup - lastHeardNoiseTimer > 5)
+        {
+            lastHeardNoise.gameObject.SetActive(false);
+        }
+        else
+        {
+            ImpUtils.Geometry.SetLinePositions(
+                lastHeardNoise,
+                entityController.transform.position,
+                lastHeardNoisePosition
+            );
+        }
+    }
+
+    private void DrawInfoPanel(bool isShown)
+    {
+        if (!isShown)
+        {
+            infoPanel.SetActive(false);
+            return;
+        }
+
+        // Death overlay / disable on death
+        if (entityController.isEnemyDead)
+        {
+            if (ImpSettings.Visualizations.SSHideInactive.Value) return;
+            deathOverlay.gameObject.SetActive(true);
+        }
+        else
+        {
+            deathOverlay.gameObject.SetActive(false);
+        }
+
+        var camera = Imperium.Freecam.IsFreecamEnabled.Value
+            ? Imperium.Freecam.FreecamCamera
+            : Imperium.Player.hasBegunSpectating
+                ? Imperium.StartOfRound.spectateCamera
+                : Imperium.Player.gameplayCamera;
+
+        // Panel placement
+        var worldPosition = entityController.transform.position + Vector3.up * 3f;
+        var screenPosition = camera.WorldToScreenPoint(worldPosition);
+
+        var playerHasLOS = !Physics.Linecast(
+            camera.transform.position, worldPosition,
+            StartOfRound.Instance.collidersAndRoomMaskAndDefault
+        );
+
+        if ((!playerHasLOS && !ImpSettings.Visualizations.SSAlwaysOnTop.Value) || screenPosition.z < 0)
+        {
+            infoPanel.SetActive(false);
+            return;
+        }
+
+        var activeTexture = camera.activeTexture;
+        var scaleFactor = activeTexture.width / infoPanelCanvasRect.sizeDelta.x;
+
+        var positionX = screenPosition.x / scaleFactor;
+        var positionY = screenPosition.y / scaleFactor;
+        infoPanelRect.anchoredPosition = new Vector2(positionX, positionY);
+
+        // Panel scaling
+        var panelScaleFactor = ImpSettings.Visualizations.SSOverlayScale.Value;
+        if (ImpSettings.Visualizations.SSAutoScale.Value)
+        {
+            panelScaleFactor *= Math.Clamp(
+                5 / Vector3.Distance(camera.transform.position, worldPosition),
+                0.01f, 1.5f
+            );
+        }
+
+        infoPanelRect.localScale = panelScaleFactor * Vector3.one;
+
+        nameText.text = Imperium.ObjectManager.GetDisplayName(entityController.enemyType.enemyName);
+        healthText.text = $"{entityController.enemyHP} HP";
+        stateText.text = entityController.currentBehaviourStateIndex.ToString();
+        movementSpeedText.text = $"{entityController.agent.speed:0.0}";
+        stunTimeText.text = $"{Math.Max(0, entityController.stunNormalizedTimer):0.0}s";
+        targetText.text = entityController.targetPlayer ? entityController.targetPlayer.playerUsername : "-";
+        locationText.text = entityController.isOutside
+            ? "Outdoors"
+            : entityController.isInsidePlayerShip
+                ? "In Ship"
+                : "Indoors";
+
+        infoPanel.SetActive(true);
+    }
+
+    private void DrawPathLines(bool isShown)
     {
         var corners = entityController.agent.path.corners;
         var previousCorner = entityController.transform.position;
@@ -95,7 +304,10 @@ public class EntityInfo : MonoBehaviour
         {
             if (i < corners.Length)
             {
-                pathLines[i].gameObject.SetActive(true);
+                // Enable / Disable based on config
+                pathLines[i].gameObject.SetActive(isShown);
+                if (!isShown) continue;
+
                 ImpUtils.Geometry.SetLinePositions(
                     pathLines[i],
                     previousCorner,
@@ -111,8 +323,14 @@ public class EntityInfo : MonoBehaviour
         }
     }
 
-    private void DrawLookingLine()
+    private void DrawLookingAtLine(bool isShown)
     {
+        if (!isShown)
+        {
+            targetLookLine.gameObject.SetActive(false);
+            return;
+        }
+
         Vector3? lookAtPosition = null;
 
         switch (entityController)
@@ -127,37 +345,69 @@ public class EntityInfo : MonoBehaviour
 
         if (lookAtPosition.HasValue && lookAtPosition != Vector3.zero)
         {
-            lookAtLine.gameObject.SetActive(true);
+            targetLookLine.gameObject.SetActive(true);
 
             ImpUtils.Geometry.SetLinePositions(
-                lookAtLine,
+                targetLookLine,
                 entityController.transform.position,
                 lookAtPosition.Value
             );
-            ImpUtils.Geometry.SetLineColor(lookAtLine, new Color(0.47f, 0.66f, 0.35f));
+            ImpUtils.Geometry.SetLineColor(targetLookLine, new Color(0.47f, 0.66f, 0.35f));
         }
         else
         {
-            lookAtLine.gameObject.SetActive(false);
+            targetLookLine.gameObject.SetActive(false);
         }
     }
 
-    private void DrawTargetPlayerLine()
+    private void DrawTargetPlayerLine(bool isShown)
     {
+        if (!isShown)
+        {
+            targetPlayerLine.gameObject.SetActive(false);
+            return;
+        }
+
         if (entityController.movingTowardsTargetPlayer && entityController.targetPlayer)
         {
-            targetPlayer.gameObject.SetActive(true);
+            targetPlayerLine.gameObject.SetActive(true);
 
             ImpUtils.Geometry.SetLinePositions(
-                targetPlayer,
+                targetPlayerLine,
                 entityController.transform.position,
                 entityController.targetPlayer.transform.position
             );
-            ImpUtils.Geometry.SetLineColor(targetPlayer, Color.red);
+            ImpUtils.Geometry.SetLineColor(targetPlayerLine, Color.red);
         }
         else
         {
-            targetPlayer.gameObject.SetActive(false);
+            targetPlayerLine.gameObject.SetActive(false);
         }
+    }
+}
+
+internal class EntityInfoConfig
+{
+    internal readonly string entityName;
+
+    internal readonly ImpConfig<bool> Info;
+    internal readonly ImpConfig<bool> Pathfinding;
+    internal readonly ImpConfig<bool> Targeting;
+    internal readonly ImpConfig<bool> LookingAt;
+    internal readonly ImpConfig<bool> LineOfSight;
+    internal readonly ImpConfig<bool> Hearing;
+    internal readonly ImpConfig<bool> Custom;
+
+    internal EntityInfoConfig(string entityName)
+    {
+        this.entityName = entityName;
+
+        Info = new ImpConfig<bool>("Visualizers.Info", entityName, false);
+        Pathfinding = new ImpConfig<bool>("Visualizers.Pathfinding", entityName, false);
+        Targeting = new ImpConfig<bool>("Visualizers.Targeting", entityName, false);
+        LookingAt = new ImpConfig<bool>("Visualizers.LookingAt", entityName, false);
+        LineOfSight = new ImpConfig<bool>("Visualizers.LineOfSight", entityName, false);
+        Hearing = new ImpConfig<bool>("Visualizers.Hearing", entityName, false);
+        Custom = new ImpConfig<bool>("Visualizers.Custom", entityName, false);
     }
 }

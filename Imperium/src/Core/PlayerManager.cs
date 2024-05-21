@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using GameNetcodeStuff;
 using Imperium.Netcode;
 using Imperium.Types;
@@ -52,14 +53,23 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         player.TeleportPlayer(position);
         var isInFactory = position.y < -100;
         player.isInsideFactory = isInFactory;
+        if (isInFactory)
+        {
+            TimeOfDay.Instance.DisableAllWeather();
+        }
 
         // There is no easy way to check this, so it will just be off by default for now
-        player.isInElevator = false;
-        player.isInHangarShipRoom = false;
+        var isInElevator = Imperium.StartOfRound.shipBounds.bounds.Contains(position);
+        player.isInElevator = isInElevator;
+
+        var isInShip = Imperium.StartOfRound.shipInnerRoomBounds.bounds.Contains(position);
+        player.isInHangarShipRoom = isInShip;
 
         foreach (var heldItem in Imperium.Player.ItemSlots)
         {
             if (!heldItem) continue;
+            heldItem.isInFactory = isInFactory;
+            heldItem.isInShipRoom = isInShip;
             heldItem.isInFactory = isInFactory;
         }
     }
@@ -197,28 +207,52 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         {
             throw new ArgumentOutOfRangeException();
         }
+
         return Imperium.StartOfRound.allPlayerScripts[playerId];
+    }
+
+    internal static string GetLocationText(PlayerControllerB player, bool locationOnly = false)
+    {
+        var isAlone = !player.NearOtherPlayers(player, 17f) &&
+                      !player.PlayerIsHearingOthersThroughWalkieTalkie(Imperium.Player);
+        var appendix = !locationOnly && isAlone ? " (Alone)" : "";
+        if (Imperium.Player.isInHangarShipRoom) return "Ship" + appendix;
+        if (Imperium.Player.isInElevator) return "Elevator" + appendix;
+
+        return (Imperium.Player.isInsideFactory ? "Indoors" : "Outdoors") + appendix;
     }
 
     // Override for ImperiumSettings to use this as a method group
     internal static void UpdateCameras(bool _) => UpdateCameras();
+
+    private static readonly Dictionary<int, Vector2> CameraOriginalResolutions = [];
 
     [ImpAttributes.LocalMethod]
     internal static void UpdateCameras()
     {
         foreach (var camera in Object.FindObjectsOfType<Camera>())
         {
-            if (camera.gameObject.name == "MapCamera") continue;
+            if (camera.gameObject.name == "MapCamera" || !camera.targetTexture) continue;
 
-            if (!camera.targetTexture) continue;
             var targetTexture = camera.targetTexture;
-            targetTexture.Release();
-            targetTexture.width = Mathf.RoundToInt(860 * ImpSettings.Rendering.ResolutionMultiplier.Value);
-            targetTexture.height = Mathf.RoundToInt(520 * ImpSettings.Rendering.ResolutionMultiplier.Value);
-            targetTexture.Create();
 
-            Resources.UnloadUnusedAssets();
+            if (!CameraOriginalResolutions.TryGetValue(targetTexture.GetInstanceID(), out var originalResolution))
+            {
+                originalResolution = new Vector2(targetTexture.width, targetTexture.height);
+                CameraOriginalResolutions[targetTexture.GetInstanceID()] = originalResolution;
+            }
+
+            targetTexture.Release();
+            targetTexture.width = Mathf.RoundToInt(
+                originalResolution.x * ImpSettings.Rendering.ResolutionMultiplier.Value
+            );
+            targetTexture.height = Mathf.RoundToInt(
+                originalResolution.y * ImpSettings.Rendering.ResolutionMultiplier.Value
+            );
+            targetTexture.Create();
         }
+
+        Resources.UnloadUnusedAssets();
 
         foreach (var camera in Resources.FindObjectsOfTypeAll<HDAdditionalCameraData>())
         {
@@ -229,42 +263,50 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.DecalLayers] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.DecalLayers, ImpSettings.Rendering.DecalLayers.Value);
+                FrameSettingsField.DecalLayers, ImpSettings.Rendering.DecalLayers.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.SSGI] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.SSGI, ImpSettings.Rendering.SSGI.Value);
+                FrameSettingsField.SSGI, ImpSettings.Rendering.SSGI.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.RayTracing] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.RayTracing, ImpSettings.Rendering.RayTracing.Value);
+                FrameSettingsField.RayTracing, ImpSettings.Rendering.RayTracing.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.VolumetricClouds] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.VolumetricClouds, ImpSettings.Rendering.VolumetricClouds.Value);
+                FrameSettingsField.VolumetricClouds, ImpSettings.Rendering.VolumetricClouds.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.SubsurfaceScattering] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.SubsurfaceScattering, ImpSettings.Rendering.SSS.Value);
+                FrameSettingsField.SubsurfaceScattering, ImpSettings.Rendering.SSS.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.ReprojectionForVolumetrics] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.ReprojectionForVolumetrics, ImpSettings.Rendering.VolumeReprojection.Value);
+                FrameSettingsField.ReprojectionForVolumetrics, ImpSettings.Rendering.VolumeReprojection.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.TransparentPrepass] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.TransparentPrepass, ImpSettings.Rendering.TransparentPrepass.Value);
+                FrameSettingsField.TransparentPrepass, ImpSettings.Rendering.TransparentPrepass.Value
+            );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
                 [(int)FrameSettingsField.TransparentPostpass] = true;
             camera.renderingPathCustomFrameSettings.SetEnabled(
-                FrameSettingsField.TransparentPostpass, ImpSettings.Rendering.TransparentPostpass.Value);
+                FrameSettingsField.TransparentPostpass, ImpSettings.Rendering.TransparentPostpass.Value
+            );
         }
     }
 }
