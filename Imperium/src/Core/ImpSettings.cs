@@ -107,10 +107,42 @@ public abstract class ImpSettings
     internal abstract class Visualizations
     {
         /// <summary>
-        /// Colliders
+        /// Visualizer preferences
         /// </summary>
 
+        internal static readonly ImpConfig<bool> SmoothAnimations = new(
+            "Preferences.Visualizers",
+            "SmoothAnimations",
+            true
+        );
 
+        internal static readonly ImpConfig<bool> SSAlwaysOnTop = new(
+            "Preferences.Visualizers.ScreenSpace",
+            "AlwaysOnTop",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> SSAutoScale = new(
+            "Preferences.Visualizers.ScreenSpace",
+            "AutoScale",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> SSHideInactive = new(
+            "Preferences.Visualizers.ScreenSpace",
+            "HideInactive",
+            false
+        );
+
+        internal static readonly ImpConfig<float> SSOverlayScale = new(
+            "Preferences.Visualizers.ScreenSpace",
+            "OverlayScale",
+            1
+        );
+
+        /// <summary>
+        /// Colliders
+        /// </summary>
         internal static readonly ImpConfig<bool> Employees = new(
             "Colliders",
             "Employees",
@@ -244,10 +276,16 @@ public abstract class ImpSettings
             value => Imperium.Visualization.Collider("MiscLevelGeometry", IdentifierType.LAYER)(value)
         );
 
+        internal static readonly ImpConfig<bool> ScanNode = new(
+            "Colliders",
+            "ScanNode",
+            false,
+            value => Imperium.Visualization.Collider("ScanNode", IdentifierType.LAYER)(value)
+        );
+
         /// <summary>
         /// Overlays
         /// </summary>
-
         internal static readonly ImpConfig<bool> Vents = new(
             "Overlays",
             "Vents",
@@ -266,8 +304,8 @@ public abstract class ImpSettings
             value => Imperium.Visualization.Point(
                 "AINode",
                 IdentifierType.TAG,
-                size: 1,
-                material: ImpAssets.FresnelGreenMaterial
+                size: 0.2f,
+                material: ImpAssets.FresnelWhiteMaterial
             )(value)
         );
 
@@ -278,8 +316,8 @@ public abstract class ImpSettings
             value => Imperium.Visualization.Point(
                 "OutsideAINode",
                 IdentifierType.TAG,
-                size: 1,
-                material: ImpAssets.FresnelGreenMaterial
+                size: 0.2f,
+                material: ImpAssets.FresnelWhiteMaterial
             )(value)
         );
 
@@ -307,22 +345,9 @@ public abstract class ImpSettings
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> ScanNodes = new(
-            "Overlays",
-            "ScanNodes",
-            false,
-            value => Imperium.Visualization.Point(
-                "ScanNode",
-                IdentifierType.TAG,
-                size: 14,
-                material: ImpAssets.FresnelYellowMaterial
-            )(value)
-        );
-
         /// <summary>
         /// Gizmos
         /// </summary>
-
         internal static readonly ImpConfig<bool> SpawnIndicators = new(
             "Gizmos",
             "SpawnIndicators",

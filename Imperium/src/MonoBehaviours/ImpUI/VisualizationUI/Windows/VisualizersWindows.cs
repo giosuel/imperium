@@ -126,7 +126,12 @@ internal class VisualizersWindows : BaseWindow
             ImpSettings.Visualizations.MiscLevelGeometry,
             themeBinding
         );
-
+        ImpToggle.Bind(
+            "Colliders/ScanNodes",
+            content,
+            ImpSettings.Visualizations.ScanNode,
+            themeBinding
+        );
 
         ImpToggle.Bind(
             "Overlays/Vents",
@@ -162,12 +167,6 @@ internal class VisualizersWindows : BaseWindow
             "Overlays/BeeSpawns",
             content,
             ImpSettings.Visualizations.BeeSpawns,
-            themeBinding
-        );
-        ImpToggle.Bind(
-            "Overlays/ScanNodes",
-            content,
-            ImpSettings.Visualizations.ScanNodes,
             themeBinding
         );
 
@@ -218,15 +217,6 @@ internal class VisualizersWindows : BaseWindow
             content,
             ImpSettings.Visualizations.SpikeTrapIndicators,
             themeBinding
-        );
-    }
-
-    protected override void OnThemeUpdate(ImpTheme theme)
-    {
-        ImpThemeManager.Style(
-            theme,
-            content,
-            new StyleOverride("Separator", Variant.DARKER)
         );
     }
 }

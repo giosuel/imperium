@@ -79,6 +79,13 @@ internal class ObjectVisualizersWindow : BaseWindow
             theme: themeBinding,
             isIconButton: true
         );
+        ImpButton.Bind(
+            "EntitiesHeader/Icons/Custom",
+            content,
+            () => ToggleEntityConfig(config => config.Custom),
+            theme: themeBinding,
+            isIconButton: true
+        );
 
         Imperium.ObjectManager.CurrentPlayers.onTrigger += Refresh;
     }
