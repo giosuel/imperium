@@ -25,6 +25,7 @@ There is a new UI from which all the visualizers can be managed!
 ### Internal Fixes
 
 - Fixed a bug where Imperium client access would lock the host out.
+- Fixed a bug where the render pipeline changed the aspect ratio of some screens.
 
 ## Imperium v0.1.7 [Beta] - Hotfix
 
