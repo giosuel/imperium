@@ -396,6 +396,7 @@ public class EntityInfo : MonoBehaviour
     }
 }
 
+
 internal class EntityInfoConfig
 {
     internal readonly string entityName;
