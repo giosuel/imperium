@@ -31,6 +31,13 @@ public class StartOfRoundPatch
         }
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("TeleportPlayerInShipIfOutOfRoomBounds")]
+    private static bool TeleportPlayerInShipIfOutOfRoomBoundsPatch()
+    {
+        return !ImpSettings.Player.DisableOOB.Value;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("EndOfGameClientRpc")]
     private static void EndOfGameClientRpcPatch(StartOfRound __instance)

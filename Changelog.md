@@ -12,6 +12,8 @@ There is a new UI from which all the visualizers can be managed!
 - Added a new notification type for access control and spawning notifications.
 - Added a new interface to manage all the visualizers in one place.
 - Added entity LOS, proximity and hearing visualizations.
+- Added an option to disable out-of-bound triggers.
+- Added an option to unlock all unlockable items in the terminal shop.
 
 ### QOL Changes
 
@@ -30,7 +32,7 @@ There is a new UI from which all the visualizers can be managed!
 - Removed unnecessary debug statements.
 - Fixed a bug where items would fall through the ground when teleporting them.
 - Fixed a bug where the version wouldn't display correctly.
-- FIxed a big where spawned items would fall through the ground.
+- FIxed a bug where spawned items would fall through the ground.
 
 ## Imperium v0.1.6 [Beta] - The Map Update
 

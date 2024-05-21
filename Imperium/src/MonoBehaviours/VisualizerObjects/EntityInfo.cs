@@ -278,25 +278,14 @@ public class EntityInfo : MonoBehaviour
                 0.01f, 1.5f
             );
         }
-
         infoPanelRect.localScale = panelScaleFactor * Vector3.one;
 
-        // Panel texts
         nameText.text = Imperium.ObjectManager.GetDisplayName(entityController.enemyType.enemyName);
-        healthText.text = entityController.enemyHP.ToString();
-
-        var state = entityController.currentBehaviourStateIndex.ToString();
-        stateText.text = state;
-
-        var movementSpeed = ImpUtils.Math.FormatFloatToThreeDigits(entityController.agent.speed);
-        movementSpeedText.text = movementSpeed;
-
-        var stunTime = $"{ImpUtils.Math.FormatFloatToThreeDigits(Math.Max(0, entityController.stunNormalizedTimer))}s";
-        stunTimeText.text = stunTime;
-
-        var target = entityController.targetPlayer ? entityController.targetPlayer.playerUsername : "-";
-        targetText.text = target;
-
+        healthText.text = $"{entityController.enemyHP} HP";
+        stateText.text = entityController.currentBehaviourStateIndex.ToString();
+        movementSpeedText.text = $"{entityController.agent.speed:0.0}";
+        stunTimeText.text = $"{Math.Max(0, entityController.stunNormalizedTimer):0.0}s";
+        targetText.text = entityController.targetPlayer ? entityController.targetPlayer.playerUsername : "-";
         locationText.text = entityController.isOutside
             ? "Outdoors"
             : entityController.isInsidePlayerShip

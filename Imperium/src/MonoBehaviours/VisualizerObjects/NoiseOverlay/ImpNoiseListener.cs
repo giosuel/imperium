@@ -11,8 +11,8 @@ namespace Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 
 internal class ImpNoiseListener : MonoBehaviour, INoiseListener
 {
-    private readonly HashSet<NoiseIndicator> indicators = [];
-    private readonly Queue<NoiseIndicator> arrowQueue = new();
+    private readonly NoiseIndicator[] noiseArrows = new NoiseIndicator[20];
+    private int noiseArrowIndex;
 
     internal static ImpNoiseListener Create()
     {
@@ -33,14 +33,12 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
         var template = canvas.transform.Find("Indicator");
         template.gameObject.SetActive(false);
 
-        for (var i = 0; i < 20; i++)
+        for (var i = 0; i < noiseListener.noiseArrows.Length; i++)
         {
             var noiseIndicatorObj = Instantiate(template, canvas.transform);
             var noiseIndicator = noiseIndicatorObj.gameObject.AddComponent<NoiseIndicator>();
             noiseIndicator.Init(canvas.GetComponent<Canvas>());
-            noiseIndicator.onDone += () => noiseListener.arrowQueue.Enqueue(noiseIndicator);
-            noiseListener.indicators.Add(noiseIndicator);
-            noiseListener.arrowQueue.Enqueue(noiseIndicator);
+            noiseListener.noiseArrows[i] = noiseIndicator;
         }
 
         return noiseListener;
@@ -50,6 +48,7 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
     {
         if (!ImpSettings.Visualizations.NoiseIndicators.Value) return;
 
-        arrowQueue.Dequeue().Activate(noisePosition, 10, noiseLoudness, noiseID);
+        noiseArrows[noiseArrowIndex].Activate(noisePosition, 10, noiseLoudness, noiseID);
+        noiseArrowIndex = (noiseArrowIndex + 1) % noiseArrows.Length;
     }
 }

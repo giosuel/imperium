@@ -56,6 +56,8 @@ public class PlayerInfo : MonoBehaviour
         staminaText = infoPanel.transform.Find("Panel/Stamina/Value").GetComponent<TMP_Text>();
         weightText = infoPanel.transform.Find("Panel/Weight/Value").GetComponent<TMP_Text>();
         locationText = infoPanel.transform.Find("Panel/Location/Value").GetComponent<TMP_Text>();
+
+        infoPanel.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -91,7 +93,7 @@ public class PlayerInfo : MonoBehaviour
                 : Imperium.Player.gameplayCamera;
 
         // Panel placement
-        var worldPosition = playerController.transform.position + Vector3.up * 2f;
+        var worldPosition = playerController.gameplayCamera.transform.position + Vector3.up;
         var screenPosition = camera.WorldToScreenPoint(worldPosition);
 
         var playerHasLOS = !Physics.Linecast(
@@ -121,22 +123,17 @@ public class PlayerInfo : MonoBehaviour
                 0.01f, 1.5f
             );
         }
-
         infoPanelRect.localScale = panelScaleFactor * Vector3.one;
 
+        var playerThreat = (IVisibleThreat)playerController;
+
         healthText.text = playerController.health.ToString();
-
         nameText.text = playerController.playerUsername;
-
-        threatText.text = ((IVisibleThreat)playerController)
-            .GetThreatLevel(Imperium.Player.gameplayCamera.transform.position).ToString();
-        visibilityText.text = Math.Round(((IVisibleThreat)playerController)
-            .GetVisibility(), 2).ToString(CultureInfo.InvariantCulture);
+        threatText.text = playerThreat.GetThreatLevel(Imperium.Player.gameplayCamera.transform.position).ToString();
+        visibilityText.text = Math.Round(playerThreat.GetVisibility(), 2).ToString(CultureInfo.InvariantCulture);
         staminaText.text = Math.Round(playerController.sprintMeter, 2).ToString(CultureInfo.InvariantCulture);
-        weightText.text =
-            $"{Mathf.RoundToInt((playerController.carryWeight - 1) * 105).ToString(CultureInfo.InvariantCulture)}lb";
-
-        locationText.text = PlayerManager.GetLocationText(Imperium.Player);
+        weightText.text = $"{Mathf.RoundToInt((playerController.carryWeight - 1) * 105)}lb";
+        locationText.text = PlayerManager.GetLocationText(Imperium.Player, locationOnly: true);
 
         infoPanel.SetActive(true);
     }
