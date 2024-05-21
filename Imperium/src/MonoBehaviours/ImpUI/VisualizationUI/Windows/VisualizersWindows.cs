@@ -37,12 +37,6 @@ internal class VisualizersWindows : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
-            "Colliders/Vents",
-            content,
-            ImpSettings.Visualizations.Vents,
-            themeBinding
-        );
-        ImpToggle.Bind(
             "Colliders/Foliage",
             content,
             ImpSettings.Visualizations.Foliage,
@@ -55,9 +49,89 @@ internal class VisualizersWindows : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
+            "Colliders/Room",
+            content,
+            ImpSettings.Visualizations.Room,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/Colliders",
+            content,
+            ImpSettings.Visualizations.Colliders,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/Triggers",
+            content,
+            ImpSettings.Visualizations.Triggers,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/PhysicsObject",
+            content,
+            ImpSettings.Visualizations.PhysicsObject,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/NavigationSurface",
+            content,
+            ImpSettings.Visualizations.NavigationSurface,
+            themeBinding
+        );
+        ImpToggle.Bind(
             "Colliders/InteractTriggers",
             content,
             ImpSettings.Visualizations.InteractTriggers,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/RoomLight",
+            content,
+            ImpSettings.Visualizations.RoomLight,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/Anomaly",
+            content,
+            ImpSettings.Visualizations.Anomaly,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/Railing",
+            content,
+            ImpSettings.Visualizations.Railing,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/PlacementBlocker",
+            content,
+            ImpSettings.Visualizations.PlacementBlocker,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/Terrain",
+            content,
+            ImpSettings.Visualizations.Terrain,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/PlaceableShipObjects",
+            content,
+            ImpSettings.Visualizations.PlaceableShipObjects,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Colliders/MiscLevelGeometry",
+            content,
+            ImpSettings.Visualizations.MiscLevelGeometry,
+            themeBinding
+        );
+
+
+        ImpToggle.Bind(
+            "Overlays/Vents",
+            content,
+            ImpSettings.Visualizations.Vents,
             themeBinding
         );
         ImpToggle.Bind(
@@ -91,6 +165,13 @@ internal class VisualizersWindows : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
+            "Overlays/ScanNodes",
+            content,
+            ImpSettings.Visualizations.ScanNodes,
+            themeBinding
+        );
+
+        ImpToggle.Bind(
             "Gizmos/SpawnIndicators",
             content,
             ImpSettings.Visualizations.SpawnIndicators,
@@ -109,31 +190,31 @@ internal class VisualizersWindows : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
-            "CastingIndicators/Shotguns",
+            "Gizmos/Shotguns",
             content,
             ImpSettings.Visualizations.ShotgunIndicators,
             themeBinding
         );
         ImpToggle.Bind(
-            "CastingIndicators/Shovels",
+            "Gizmos/Shovels",
             content,
             ImpSettings.Visualizations.ShovelIndicators,
             themeBinding
         );
         ImpToggle.Bind(
-            "CastingIndicators/Knives",
+            "Gizmos/Knives",
             content,
             ImpSettings.Visualizations.KnifeIndicators,
             themeBinding
         );
         ImpToggle.Bind(
-            "CastingIndicators/Landmines",
+            "Gizmos/Landmines",
             content,
             ImpSettings.Visualizations.LandmineIndicators,
             themeBinding
         );
         ImpToggle.Bind(
-            "CastingIndicators/SpikeTraps",
+            "Gizmos/SpikeTraps",
             content,
             ImpSettings.Visualizations.SpikeTrapIndicators,
             themeBinding

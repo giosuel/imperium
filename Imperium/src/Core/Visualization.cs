@@ -88,7 +88,7 @@ internal class Visualization
     /// <returns></returns>
     internal Action<bool> Collider(
         string identifier,
-        IdentifierType type = IdentifierType.TAG,
+        IdentifierType type,
         float thickness = 0.05f,
         Material material = null
     ) => isOn => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
@@ -104,7 +104,7 @@ internal class Visualization
     /// <returns></returns>
     internal Action<bool> Point(
         string identifier,
-        IdentifierType type = IdentifierType.TAG,
+        IdentifierType type,
         float size = 1,
         Material material = null
     ) => isOn => Visualize(identifier, isOn, VisualizePoint, type, false, size, material);

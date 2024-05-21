@@ -234,7 +234,7 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 - [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
 
-- [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the inspiration for Imperium!
+- [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
 
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
 
