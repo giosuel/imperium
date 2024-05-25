@@ -24,6 +24,8 @@ public class LandmineIndicator : MonoBehaviour
 
     public void SnapshotHitboxes()
     {
+        var explosionPosition = landmine.transform.position + Vector3.up;
+
         // ReSharper disable once Unity.PreferNonAllocApi
         // Allocating cast since this is a replication of the actual algorithm
         var colliders =
@@ -32,13 +34,12 @@ public class LandmineIndicator : MonoBehaviour
         foreach (var collider in colliders)
         {
             var colliderPosition = collider.transform.position;
-            var landminePosition = landmine.transform.position;
 
-            var distance = Vector3.Distance(landminePosition, colliderPosition);
+            var distance = Vector3.Distance(explosionPosition, colliderPosition);
 
             // Check if mine would have missed the collider based on line of sight and distance
             var lineOfSightObstructed = distance > 4f &&
-                                        Physics.Linecast(landminePosition,
+                                        Physics.Linecast(explosionPosition,
                                             colliderPosition + Vector3.up * 0.3f,
                                             256, QueryTriggerInteraction.Ignore);
 
@@ -51,8 +52,13 @@ public class LandmineIndicator : MonoBehaviour
             {
                 case 3:
                 {
+                    // Set color to green if out of range
+                    if (!lineOfSightObstructed && distance >= 6f)
+                    {
+                        snapshotRayColor = Color.green;
+                    }
                     // Set color to orange when player would only get damaged and not killed
-                    if (!lineOfSightObstructed && distance >= 5.7f)
+                    else if (!lineOfSightObstructed && distance >= 5.7f)
                     {
                         snapshotRayColor = new Color(1f, 0.63f, 0.2f);
                     }
@@ -133,7 +139,7 @@ public class LandmineIndicator : MonoBehaviour
             {
                 var snapshotRay = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
                 ImpUtils.Geometry.SetLineColor(snapshotRay, snapshotRayColor);
-                ImpUtils.Geometry.SetLinePositions(snapshotRay, landminePosition, colliderPosition + Vector3.up * 0.3f);
+                ImpUtils.Geometry.SetLinePositions(snapshotRay, explosionPosition, colliderPosition + Vector3.up * 0.3f);
             }
         }
     }
@@ -155,10 +161,12 @@ public class LandmineIndicator : MonoBehaviour
             return;
         }
 
+        var explosionPosition = landmine.transform.position + Vector3.up;
+
         // ReSharper disable Unity.PreferNonAllocApi
         // Allocating cast since this is a replication of the actual algorithm
         var colliders =
-            Physics.OverlapSphere(landmine.transform.position, 6f, 2621448, QueryTriggerInteraction.Collide);
+            Physics.OverlapSphere(explosionPosition, 6f, 2621448, QueryTriggerInteraction.Collide);
 
         var collisionIds = new HashSet<int>();
         foreach (var collider in colliders)
@@ -173,13 +181,12 @@ public class LandmineIndicator : MonoBehaviour
             }
 
             var colliderPosition = collider.transform.position;
-            var landminePosition = landmine.transform.position;
 
-            var distance = Vector3.Distance(landminePosition, colliderPosition);
+            var distance = Vector3.Distance(explosionPosition, colliderPosition);
 
             // Check if mine would have missed the collider based on line of sight and distance
             var lineOfSightObstructed = distance > 4f &&
-                                        Physics.Linecast(landminePosition,
+                                        Physics.Linecast(explosionPosition,
                                             colliderPosition + Vector3.up * 0.3f,
                                             256, QueryTriggerInteraction.Ignore);
 
@@ -192,8 +199,13 @@ public class LandmineIndicator : MonoBehaviour
             {
                 case 3:
                 {
+                    // Set color to green if out of range
+                    if (!lineOfSightObstructed && distance >= 6f)
+                    {
+                        snapshotRayColor = Color.green;
+                    }
                     // Set color to orange when player would only get damaged and not killed
-                    if (!lineOfSightObstructed && distance >= 5.7f)
+                    else if (!lineOfSightObstructed && distance >= 5.7f)
                     {
                         snapshotRayColor = new Color(1f, 0.63f, 0.2f);
                     }
@@ -225,7 +237,7 @@ public class LandmineIndicator : MonoBehaviour
             {
                 collisionIds.Add(instanceId);
                 ImpUtils.Geometry.SetLineColor(lineRenderer, snapshotRayColor);
-                ImpUtils.Geometry.SetLinePositions(lineRenderer, landmine.transform.position, colliderPosition);
+                ImpUtils.Geometry.SetLinePositions(lineRenderer, explosionPosition, colliderPosition + Vector3.up * 0.3f);
             }
         }
 
