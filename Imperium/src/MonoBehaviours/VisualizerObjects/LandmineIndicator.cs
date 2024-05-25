@@ -29,7 +29,7 @@ public class LandmineIndicator : MonoBehaviour
         // ReSharper disable once Unity.PreferNonAllocApi
         // Allocating cast since this is a replication of the actual algorithm
         var colliders =
-            Physics.OverlapSphere(landmine.transform.position, 6f, 2621448, QueryTriggerInteraction.Collide);
+            Physics.OverlapSphere(explosionPosition, 6f, 2621448, QueryTriggerInteraction.Collide);
 
         foreach (var collider in colliders)
         {
@@ -82,7 +82,10 @@ public class LandmineIndicator : MonoBehaviour
                 }
                 case 19:
                 {
-                    if (distance >= 4.5f) break;
+                    if (distance >= 4.5f)
+                    {
+                        snapshotRayColor = Color.green;
+                    }
 
                     var entityColliderScript = collider.GetComponentInChildren<EnemyAICollisionDetect>();
                     if (entityColliderScript == null) break;
