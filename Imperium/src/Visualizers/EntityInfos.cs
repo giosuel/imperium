@@ -33,6 +33,7 @@ internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
             if (!indicatorObjects.ContainsKey(entity.GetInstanceID()))
             {
                 var entityInfoObject = new GameObject($"Imp_EntityInfo_{entity.GetInstanceID()}");
+                entityInfoObject.transform.SetParent(entity.transform);
                 var entityInfo = entityInfoObject.AddComponent<EntityInfo>();
                 entityInfo.Init(EntityInfoConfigs[entity.enemyType], Imperium.Visualization, entity);
 
