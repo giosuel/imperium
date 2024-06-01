@@ -1,8 +1,10 @@
 #region
 
+using System.Collections.Generic;
 using System.Linq;
 using DunGen;
 using HarmonyLib;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -18,7 +20,7 @@ internal class DungeonPatch
     {
         Imperium.Map.FloorLevels.Set(
             proxyDungeon.AllTiles
-                .SelectMany(tile => tile.doorways)
+                .SelectMany(tile => Reflection.Get<TileProxy, List<DoorwayProxy>>(tile, "doorways"))
                 .Select(door => Mathf.RoundToInt(door.Position.y))
                 .OrderBy(positionY => positionY)
                 .ToHashSet()

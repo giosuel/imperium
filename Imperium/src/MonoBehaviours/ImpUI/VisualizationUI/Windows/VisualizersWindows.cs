@@ -145,6 +145,12 @@ internal class VisualizersWindows : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
+            "Overlays/HazardSpawns",
+            content,
+            ImpSettings.Visualizations.HazardSpawns,
+            themeBinding
+        );
+        ImpToggle.Bind(
             "Overlays/AINodesIndoor",
             content,
             ImpSettings.Visualizations.AINodesIndoor,
@@ -166,6 +172,12 @@ internal class VisualizersWindows : BaseWindow
             "Overlays/BeeSpawns",
             content,
             ImpSettings.Visualizations.BeeSpawns,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Overlays/OutsideEntitySpawns",
+            content,
+            ImpSettings.Visualizations.OutsideEntitySpawns,
             themeBinding
         );
 

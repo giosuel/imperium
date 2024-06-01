@@ -47,6 +47,9 @@ public class PlayerInfo : MonoBehaviour
         infoPanelRect = infoPanel.transform.Find("Panel").GetComponent<RectTransform>();
         infoPanelCanvasRect = infoPanel.GetComponent<RectTransform>();
 
+        infoPanel.GetComponent<Canvas>().sortingOrder = -100;
+        infoPanel.GetComponent<Canvas>().overrideSorting = true;
+
         deathOverlay = infoPanel.transform.Find("Panel/Death").GetComponent<Image>();
 
         nameText = infoPanel.transform.Find("Panel/Name").GetComponent<TMP_Text>();

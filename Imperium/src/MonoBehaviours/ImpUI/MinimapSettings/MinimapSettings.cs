@@ -13,6 +13,7 @@ internal class MinimapSettings : SingleplexUI
     protected override void InitUI()
     {
         ImpToggle.Bind("Gizmos/ShowInfoPanel", content, ImpSettings.Map.MinimapInfoPanel, theme);
+        ImpToggle.Bind("Gizmos/ShowLocationPanel", content, ImpSettings.Map.MinimapLocationPanel, theme);
 
         ImpSlider.Bind(
             path: "Scale",

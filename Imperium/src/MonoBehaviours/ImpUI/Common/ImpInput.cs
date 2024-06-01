@@ -3,6 +3,7 @@
 using System.Globalization;
 using System.Linq;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -37,7 +38,11 @@ public abstract class ImpInput
     )
     {
         var inputObject = container.Find(path);
-        if (!inputObject) return null;
+        if (!inputObject)
+        {
+            Imperium.Log.LogInfo($"[UI] Failed to input '{ImpUtils.GetTransformPath(container)}/{path}'");
+            return null;
+        }
 
         var input = inputObject.gameObject.GetComponent<TMP_InputField>();
         input.contentType = TMP_InputField.ContentType.IntegerNumber;

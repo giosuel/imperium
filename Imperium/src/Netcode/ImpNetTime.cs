@@ -74,6 +74,6 @@ public class ImpNetTime : NetworkBehaviour
     [ClientRpc]
     private void SetShipLeaveAutomaticallyClientRpc(bool leaveAutomatically)
     {
-        ImpSettings.Game.PreventShipLeave.Set(!leaveAutomatically, skipSync: true);
+        ImpSettings.Ship.PreventLeave.Set(leaveAutomatically, skipSync: true);
     }
 }

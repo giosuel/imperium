@@ -195,6 +195,14 @@ internal class GameManager : ImpLifecycleObject
             );
         });
 
+    internal readonly ImpBinding<bool> DisableQuota = new(
+        false,
+        update: value =>
+        {
+            if (value) Imperium.TimeOfDay.timeUntilDeadline = Imperium.TimeOfDay.totalTime * 3f;
+        }
+    );
+
     internal readonly ImpBinding<bool> AllPlayersDead = new(
         false,
         ignoreRefresh: true,

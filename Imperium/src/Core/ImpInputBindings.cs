@@ -1,5 +1,6 @@
 #region
 
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 #endregion
@@ -13,6 +14,8 @@ public class ImpInputBindings
     internal readonly InputActionMap SpawningMap = new();
 
     internal static PlayerActions GameMap => Imperium.Player.playerActions;
+
+    internal static float SpaceDoubleClickTimer = 0;
 
     internal ImpInputBindings()
     {
@@ -46,5 +49,11 @@ public class ImpInputBindings
         FreecamMap.AddAction("ArrowDown", binding: "<Keyboard>/downArrow");
         FreecamMap.AddAction("ArrowLeft", binding: "<Keyboard>/leftArrow");
         FreecamMap.AddAction("ArrowRight", binding: "<Keyboard>/rightArrow");
+
+        Imperium.IngamePlayerSettings.playerInput.actions["Jump"].performed += _ =>
+        {
+            if (Time.realtimeSinceStartup - SpaceDoubleClickTimer < 1f) Imperium.PlayerManager.IsFlying.Toggle();
+            SpaceDoubleClickTimer = Time.realtimeSinceStartup;
+        };
     }
 }

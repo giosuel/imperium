@@ -14,9 +14,7 @@ internal class PlayerInfos : BaseVisualizer<HashSet<PlayerControllerB>>
 {
     internal readonly Dictionary<PlayerControllerB, PlayerInfoConfig> PlayerInfoConfigs = [];
 
-    internal PlayerInfos(
-        ImpBinding<HashSet<PlayerControllerB>> objectsBinding
-    ) : base("Player Infos", objectsBinding)
+    internal PlayerInfos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding) : base(objectsBinding)
     {
         foreach (var player in Imperium.StartOfRound.allPlayerScripts)
         {

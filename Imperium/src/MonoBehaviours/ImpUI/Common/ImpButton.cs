@@ -39,7 +39,11 @@ public abstract class ImpButton
     )
     {
         var buttonObject = container.Find(path);
-        if (!buttonObject) return null;
+        if (!buttonObject)
+        {
+            Imperium.Log.LogInfo($"[UI] Failed to bind button '{ImpUtils.GetTransformPath(container)}/{path}'");
+            return null;
+        }
 
         var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(onClick);

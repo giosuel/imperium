@@ -72,6 +72,9 @@ public class EntityInfo : MonoBehaviour
         infoPanelRect = infoPanel.transform.Find("Panel").GetComponent<RectTransform>();
         infoPanelCanvasRect = infoPanel.GetComponent<RectTransform>();
 
+        infoPanel.GetComponent<Canvas>().sortingOrder = -100;
+        infoPanel.GetComponent<Canvas>().overrideSorting = true;
+
         deathOverlay = infoPanel.transform.Find("Panel/Death").GetComponent<Image>();
 
         nameText = infoPanel.transform.Find("Panel/Name").GetComponent<TMP_Text>();
@@ -182,7 +185,11 @@ public class EntityInfo : MonoBehaviour
 
     private void Update()
     {
-        if (!entityController) return;
+        if (!entityController)
+        {
+            infoPanel.SetActive(false);
+            return;
+        }
 
         // Remove all visualizers whose timer expired
         foreach (var (identifier, timer) in VisualizerTimers)
@@ -256,7 +263,7 @@ public class EntityInfo : MonoBehaviour
             StartOfRound.Instance.collidersAndRoomMaskAndDefault
         );
 
-        if ((!playerHasLOS && !ImpSettings.Visualizations.SSAlwaysOnTop.Value) || screenPosition.z < 0)
+        if (!playerHasLOS && !ImpSettings.Visualizations.SSAlwaysOnTop.Value || screenPosition.z < 0)
         {
             infoPanel.SetActive(false);
             return;
@@ -287,10 +294,10 @@ public class EntityInfo : MonoBehaviour
         movementSpeedText.text = $"{entityController.agent.speed:0.0}";
         stunTimeText.text = $"{Math.Max(0, entityController.stunNormalizedTimer):0.0}s";
         targetText.text = entityController.targetPlayer ? entityController.targetPlayer.playerUsername : "-";
-        locationText.text = entityController.isOutside
-            ? "Outdoors"
-            : entityController.isInsidePlayerShip
-                ? "In Ship"
+        locationText.text = entityController.isInsidePlayerShip
+            ? "In Ship"
+            : entityController.isOutside
+                ? "Outdoors"
                 : "Indoors";
 
         infoPanel.SetActive(true);

@@ -42,7 +42,11 @@ public abstract class ImpToggle
     )
     {
         var toggleObject = container.Find(path);
-        if (!toggleObject) return null;
+        if (!toggleObject)
+        {
+            Imperium.Log.LogInfo($"[UI] Failed to bind toggle '{ImpUtils.GetTransformPath(container)}/{path}'");
+            return null;
+        }
 
         var toggle = toggleObject.GetComponent<Toggle>();
         var checkmark = toggleObject.Find("Background/Checkmark")?.GetComponent<Image>()

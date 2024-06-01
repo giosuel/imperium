@@ -1,5 +1,8 @@
 #region
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.Netcode;
@@ -32,6 +35,30 @@ public class StartOfRoundPatch
     }
 
     [HarmonyPrefix]
+    [HarmonyPatch("StartGame")]
+    private static void StartGamePrefixPatch(StartOfRound __instance)
+    {
+        if (ImpSettings.Ship.InstantLanding.Value) __instance.shipAnimator.enabled = false;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("ShipLeave")]
+    private static void ShipLeavePrefixPatch(StartOfRound __instance)
+    {
+        if (ImpSettings.Ship.InstantTakeoff.Value) __instance.shipAnimator.enabled = false;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("ShipLeave")]
+    private static void ShipLeavePostfixPatch(StartOfRound __instance)
+    {
+        if (ImpSettings.Ship.InstantTakeoff.Value)
+        {
+            Object.FindObjectOfType<ElevatorAnimationEvents>().ElevatorFullyRunning();
+        }
+    }
+
+    [HarmonyPrefix]
     [HarmonyPatch("TeleportPlayerInShipIfOutOfRoomBounds")]
     private static bool TeleportPlayerInShipIfOutOfRoomBoundsPatch()
     {
@@ -39,8 +66,8 @@ public class StartOfRoundPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("EndOfGameClientRpc")]
-    private static void EndOfGameClientRpcPatch(StartOfRound __instance)
+    [HarmonyPatch("EndOfGame")]
+    private static void EndOfGamePostfixPatch(StartOfRound __instance)
     {
         Imperium.IsSceneLoaded.SetFalse();
     }
@@ -49,7 +76,7 @@ public class StartOfRoundPatch
     [HarmonyPatch("ShipLeaveAutomatically")]
     private static bool ShipLeaveAutomaticallyPatch(StartOfRound __instance)
     {
-        if (ImpSettings.Game.PreventShipLeave.Value)
+        if (ImpSettings.Ship.PreventLeave.Value)
         {
             // We have to revert this
             __instance.allPlayersDead = false;
@@ -69,6 +96,39 @@ public class StartOfRoundPatch
         if (Imperium.GameManager.CustomSeed.Value != -1)
         {
             __instance.randomMapSeed = Imperium.GameManager.CustomSeed.Value;
+        }
+    }
+
+    internal static readonly Harmony InstantLandingHarmony = new(Imperium.PLUGIN_GUID + ".InstantLanding");
+    internal static readonly Harmony InstantTakeoffHarmony = new(Imperium.PLUGIN_GUID + ".InstantTakeoff");
+
+    internal static class InstantLandingPatches
+    {
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(StartOfRound), "openingDoorsSequence", MethodType.Enumerator)]
+        private static IEnumerable<CodeInstruction> openingDoorsSequenceTranspiler(
+            IEnumerable<CodeInstruction> instructions)
+        {
+            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
+        }
+    }
+
+    internal static class InstantTakeoffPatches
+    {
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(StartOfRound),"EndOfGame", MethodType.Enumerator)]
+        private static IEnumerable<CodeInstruction> EndOfGameTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
+        }
+
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(RoundManager),"DetectElevatorRunning", MethodType.Enumerator)]
+        private static IEnumerable<CodeInstruction> DetectElevatorRunningTranspiler(
+            IEnumerable<CodeInstruction> instructions
+        )
+        {
+            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
         }
     }
 }

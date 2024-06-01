@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -12,54 +13,32 @@ namespace Imperium.Visualizers;
 
 internal abstract class BaseVisualizer<T>
 {
-    private readonly string displayName;
     protected readonly Dictionary<int, GameObject> indicatorObjects = [];
 
-    protected BaseVisualizer(string displayName, ImpBinding<T> objectsBinding)
+    protected BaseVisualizer(ImpBinding<T> objectsBinding = null, ImpBinding<bool> visibleBinding = null)
     {
-        this.displayName = displayName;
-        objectsBinding.onUpdate += Refresh;
-    }
-
-    protected BaseVisualizer(string displayName, ImpBinding<bool> visibleBinding)
-    {
-        this.displayName = displayName;
-        visibleBinding.onUpdate += OnVisibilityUpdate;
-    }
-
-    protected BaseVisualizer(string displayName, ImpBinding<T> objectsBinding, ImpBinding<bool> visibleBinding)
-    {
-        this.displayName = displayName;
-        objectsBinding.onUpdate += objects =>
+        if (objectsBinding != null)
         {
-            Refresh(objects);
-            OnVisibilityUpdate(visibleBinding.Value);
-        };
+            objectsBinding.onUpdate += objects =>
+            {
+                Refresh(objects);
+                if (visibleBinding != null) OnVisibilityUpdate(visibleBinding.Value);
+            };
+        }
 
-        visibleBinding.onUpdate += OnVisibilityUpdate;
+        if (visibleBinding != null) visibleBinding.onUpdate += OnVisibilityUpdate;
     }
 
     private void OnVisibilityUpdate(bool isVisible)
     {
-        foreach (var obj in indicatorObjects.Values)
-        {
-            obj.SetActive(isVisible);
-        }
+        foreach (var obj in indicatorObjects.Values.Where(obj => obj)) obj.SetActive(isVisible);
     }
 
-    internal virtual void Toggle(bool isOn)
-    {
-        ImpUtils.ToggleGameObjects(indicatorObjects.Values, isOn);
-
-        ImpOutput.Send(
-            isOn ? $"Successfully enabled {displayName}!" : $"Successfully disabled {displayName}!",
-            type: NotificationType.Confirmation
-        );
-    }
+    internal virtual void Toggle(bool isOn) => ImpUtils.ToggleGameObjects(indicatorObjects.Values, isOn);
 
     protected void ClearObjects()
     {
-        foreach (var indicatorObject in indicatorObjects.Values.Where(indicator => indicator != null))
+        foreach (var indicatorObject in indicatorObjects.Values.Where(indicator => indicator))
         {
             Object.Destroy(indicatorObject);
         }

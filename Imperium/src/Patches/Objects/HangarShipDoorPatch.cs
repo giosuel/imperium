@@ -14,7 +14,7 @@ internal static class HangarShipDoorPatch
     [HarmonyPatch("PlayDoorAnimation")]
     private static bool PlayDoorAnimationPatch(HangarShipDoor __instance, bool closed)
     {
-        if (ImpSettings.Game.OverwriteShipDoors.Value)
+        if (ImpSettings.Ship.OverwriteDoors.Value)
         {
             __instance.shipDoorsAnimator.SetBool("Closed", closed);
             return false;

@@ -11,8 +11,10 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class VentTimers(ImpBinding<HashSet<EnemyVent>> objectsBinding, ImpBinding<bool> visibleBinding)
-    : BaseVisualizer<HashSet<EnemyVent>>("Vent Timers", objectsBinding, visibleBinding)
+internal class VentTimers(
+    ImpBinding<HashSet<EnemyVent>> objectsBinding,
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<HashSet<EnemyVent>>(objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<EnemyVent> objects)
     {

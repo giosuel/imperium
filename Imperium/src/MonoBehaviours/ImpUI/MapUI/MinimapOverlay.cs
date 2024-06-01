@@ -17,7 +17,9 @@ internal class MinimapOverlay : SingleplexUI
     private TMP_Text timeText;
     private TMP_Text envText;
     private TMP_Text rotationText;
+    private TMP_Text locationText;
     private GameObject infoPanel;
+    private GameObject locationPanel;
     private Transform mapBorder;
     private Canvas canvas;
 
@@ -39,6 +41,8 @@ internal class MinimapOverlay : SingleplexUI
         envText = container.Find("MapBorder/InfoPanel/Location").GetComponent<TMP_Text>();
         timeText = container.Find("MapBorder/InfoPanel/Time").GetComponent<TMP_Text>();
         infoPanel = container.Find("MapBorder/InfoPanel").gameObject;
+        locationPanel = container.Find("MapBorder/LocationPanel").gameObject;
+        locationText = locationPanel.transform.Find("Text").GetComponent<TMP_Text>();
 
         canvas = GetComponent<Canvas>();
 
@@ -78,7 +82,9 @@ internal class MinimapOverlay : SingleplexUI
             new StyleOverride("Compass", Variant.FOREGROUND),
             new StyleOverride("Compass/Icon", Variant.FOREGROUND),
             new StyleOverride("InfoPanel", Variant.BACKGROUND),
-            new StyleOverride("InfoPanel/Border", Variant.DARKER)
+            new StyleOverride("InfoPanel/Border", Variant.DARKER),
+            new StyleOverride("LocationPanel", Variant.BACKGROUND),
+            new StyleOverride("LocationPanel/Border", Variant.DARKER)
         );
         ImpThemeManager.StyleText(
             themeUpdate,
@@ -94,7 +100,8 @@ internal class MinimapOverlay : SingleplexUI
             new StyleOverride("InfoPanel/Location", Variant.FOREGROUND),
             new StyleOverride("InfoPanel/LocationTitle", Variant.FOREGROUND),
             new StyleOverride("InfoPanel/Time", Variant.FOREGROUND),
-            new StyleOverride("InfoPanel/TimeTitle", Variant.FOREGROUND)
+            new StyleOverride("InfoPanel/TimeTitle", Variant.FOREGROUND),
+            new StyleOverride("LocationPanel/Text", Variant.FOREGROUND)
         );
     }
 
@@ -113,6 +120,9 @@ internal class MinimapOverlay : SingleplexUI
     private void Update()
     {
         infoPanel.SetActive(ImpSettings.Map.MinimapInfoPanel.Value);
+        locationPanel.SetActive(ImpSettings.Map.MinimapLocationPanel.Value);
+
+        locationText.SetText(Imperium.RoundManager.currentLevel.PlanetName);
 
         // Only update the panel when it's activated
         if (ImpSettings.Map.MinimapInfoPanel.Value)

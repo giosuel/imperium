@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Oracle;
+using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -45,6 +46,10 @@ internal class Visualization
             objectManager.CurrentScrapSpawnPoints,
             ImpSettings.Visualizations.ScrapSpawns
         );
+        HazardSpawns = new MapHazardIndicators(
+            RoundManagerPatch.MapHazardPositions,
+            ImpSettings.Visualizations.HazardSpawns
+        );
 
         // Weapon indicators are different as they are only updated via patches
         ShotgunIndicators = new ShotgunIndicators(ImpSettings.Visualizations.ShotgunIndicators);
@@ -76,6 +81,7 @@ internal class Visualization
     internal readonly PlayerInfos PlayerInfos;
     internal readonly EntityInfos EntityInfos;
     internal readonly ScrapSpawnIndicators ScrapSpawns;
+    internal readonly MapHazardIndicators HazardSpawns;
 
     /// <summary>
     ///     Visualizes the colliders of a group of game objects by tag or layer
@@ -132,10 +138,10 @@ internal class Visualization
     {
         return ImpUtils.Geometry.CreatePrimitive(
             PrimitiveType.Sphere,
-            obj.transform,
+            obj?.transform,
             material: material ?? DefaultMaterial,
             size,
-            name: $"ImpVis_{name ?? obj.GetInstanceID().ToString()}"
+            name: $"ImpVis_{name ?? obj?.GetInstanceID().ToString()}"
         );
     }
 

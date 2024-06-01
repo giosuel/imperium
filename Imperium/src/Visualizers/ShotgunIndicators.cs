@@ -9,8 +9,9 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class ShotgunIndicators(ImpBinding<bool> visibleBinding)
-    : BaseVisualizer<ShotgunItem>("Shotgun Indicators", visibleBinding)
+internal class ShotgunIndicators(
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<ShotgunItem>(visibleBinding: visibleBinding)
 {
     internal void Refresh(ShotgunItem shotgun, bool isActivelyHolding)
     {

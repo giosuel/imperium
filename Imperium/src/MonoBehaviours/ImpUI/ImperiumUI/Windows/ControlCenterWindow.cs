@@ -76,6 +76,10 @@ internal class ControlCenterWindow : BaseWindow
                 ? Imperium.GameManager.CustomSeed.Value.ToString()
                 : "";
 
+        Imperium.GameManager.ProfitQuota.Refresh();
+        Imperium.GameManager.GroupCredits.Refresh();
+        Imperium.GameManager.QuotaDeadline.Refresh();
+
         levelSeedInput.interactable = !Imperium.IsSceneLoaded.Value;
         ImpUtils.Interface.ToggleTextActive(levelSeedTitle, !Imperium.IsSceneLoaded.Value);
         ImpUtils.Interface.ToggleTextActive(levelSeedText, !Imperium.IsSceneLoaded.Value);
@@ -123,7 +127,10 @@ internal class ControlCenterWindow : BaseWindow
             content,
             Imperium.GameManager.QuotaDeadline,
             min: 0,
-            theme: themeBinding
+            max: 3,
+            theme: themeBinding,
+            interactableInvert: true,
+            interactableBindings: Imperium.GameManager.DisableQuota
         );
         ImpButton.Bind(
             "Left/ProfitButtons/FulfillQuota",
@@ -137,34 +144,84 @@ internal class ControlCenterWindow : BaseWindow
             Imperium.GameManager.ResetQuota,
             theme: themeBinding
         );
+
+        ImpToggle.Bind("Left/DisableQuota", content, Imperium.GameManager.DisableQuota, theme: themeBinding);
     }
 
     private void InitGameSettings()
     {
         ImpToggle.Bind(
-            "Right/GameSettings/OverwriteShipDoors",
-            content,
-            ImpSettings.Game.OverwriteShipDoors,
-            theme: themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/GameSettings/MuteShipSpeaker",
-            content, ImpSettings.Game.MuteShipSpeaker,
-            theme: themeBinding
-        );
-        ImpToggle.Bind(
-            "Right/GameSettings/PreventShipLeave",
-            content, ImpSettings.Game.PreventShipLeave,
-            theme: themeBinding
-        );
-        ImpToggle.Bind(
             "Right/GameSettings/UnlockShop",
-            content, ImpSettings.Game.UnlockShop,
+            content,
+            ImpSettings.Game.UnlockShop,
+            theme: themeBinding
+        );
+        // ImpToggle.Bind(
+        //     "Right/GameSettings/AllPlayersDead",
+        //     content,
+        //     Imperium.GameManager.AllPlayersDead,
+        //     theme: themeBinding
+        // );
+
+        ImpToggle.Bind(
+            "Right/ShipSettings/InstantLanding",
+            content,
+            ImpSettings.Ship.InstantLanding,
             theme: themeBinding
         );
         ImpToggle.Bind(
-            "Right/GameSettings/AllPlayersDead",
-            content, Imperium.GameManager.AllPlayersDead,
+            "Right/ShipSettings/InstantTakeoff",
+            content,
+            ImpSettings.Ship.InstantTakeoff,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/ShipSettings/OverwriteDoors",
+            content,
+            ImpSettings.Ship.OverwriteDoors,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/ShipSettings/MuteSpeaker",
+            content,
+            ImpSettings.Ship.MuteSpeaker,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/ShipSettings/PreventLeave",
+            content,
+            ImpSettings.Ship.PreventLeave,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/ShipSettings/DisableAbandoned",
+            content,
+            ImpSettings.Ship.DisableAbandoned,
+            theme: themeBinding
+        );
+
+        ImpToggle.Bind(
+            "Right/AnimationSettings/Scoreboard",
+            content,
+            ImpSettings.Animations.Scoreboard,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/AnimationSettings/PlayerSpawn",
+            content,
+            ImpSettings.Animations.PlayerSpawn,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/AnimationSettings/InteractHold",
+            content,
+            ImpSettings.Animations.InteractHold,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/AnimationSettings/Interact",
+            content,
+            ImpSettings.Animations.Interact,
             theme: themeBinding
         );
     }

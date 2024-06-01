@@ -9,8 +9,7 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class
-    ShovelIndicators(ImpBinding<bool> visibleBinding) : BaseVisualizer<Shovel>("Shovel Indicators", visibleBinding)
+internal class ShovelIndicators(ImpBinding<bool> visibleBinding) : BaseVisualizer<Shovel>(visibleBinding: visibleBinding)
 {
     internal void Refresh(Shovel shovel, bool isActivelyHolding)
     {

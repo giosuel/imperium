@@ -1,11 +1,16 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.Util;
+using Imperium.Util.Binding;
+using Imperium.Visualizers;
 using UnityEngine;
+using UnityEngine.AI;
+using Object = UnityEngine.Object;
 
 #endregion
 
@@ -58,6 +63,19 @@ internal static class RoundManagerPatch
     private static void SpawnScrapInLevelPostfixPatch()
     {
         Imperium.ObjectManager.RefreshLevelItems();
+    }
+
+    internal static readonly ImpBinding<HashSet<HazardIndicator>> MapHazardPositions = new([]);
+
+    [HarmonyPrefix]
+    [HarmonyPatch("SpawnMapObjects")]
+    private static void SpawnMapObjectsPatch()
+    {
+        MapHazardPositions.Set(
+            Object.FindObjectsOfType<RandomMapObject>()
+                .Select(node => new HazardIndicator(node.transform.position, node.spawnRange))
+                .ToHashSet()
+        );
     }
 
     [HarmonyPostfix]

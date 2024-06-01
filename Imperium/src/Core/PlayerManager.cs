@@ -34,6 +34,8 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         sceneLoaded
     );
 
+    internal readonly ImpBinaryBinding IsFlying = new(false);
+
     internal bool AllowPlayerDeathOverride;
 
     [ImpAttributes.LocalMethod]
@@ -167,6 +169,12 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
         }
 
         throw new ArgumentOutOfRangeException();
+    }
+
+    internal static void RestoreHealth(PlayerControllerB player)
+    {
+        player.health = 100;
+        HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
     }
 
     internal static int LocalPlayerId => GetPlayerID(Imperium.Player);

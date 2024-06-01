@@ -68,7 +68,11 @@ public class ImpSlider : MonoBehaviour
     )
     {
         var sliderObject = container.Find(path);
-        if (!sliderObject) return null;
+        if (!sliderObject)
+        {
+            Imperium.Log.LogInfo($"[UI] Failed to bind slider '{ImpUtils.GetTransformPath(container)}/{path}'");
+            return null;
+        }
 
         var impSlider = sliderObject.gameObject.AddComponent<ImpSlider>();
         impSlider.debounceTime = debounceTime;

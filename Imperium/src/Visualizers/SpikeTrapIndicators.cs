@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class SpikeTrapIndicators(ImpBinding<HashSet<SpikeRoofTrap>> objectsBinding, ImpBinding<bool> visibleBinding) :
-    BaseVisualizer<HashSet<SpikeRoofTrap>>("Spike Trap Indicators", objectsBinding, visibleBinding)
+internal class SpikeTrapIndicators(
+    ImpBinding<HashSet<SpikeRoofTrap>> objectsBinding,
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<HashSet<SpikeRoofTrap>>(objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<SpikeRoofTrap> objects)
     {

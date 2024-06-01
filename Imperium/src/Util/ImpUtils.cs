@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Emit;
+using HarmonyLib;
 using Imperium.Core;
 using JetBrains.Annotations;
 using TMPro;
@@ -299,6 +301,28 @@ public abstract class ImpUtils
                 >= 10 => MathF.Round(value, 1).ToString(CultureInfo.InvariantCulture),
                 _ => MathF.Round(value, 2).ToString(CultureInfo.InvariantCulture)
             };
+    }
+
+    internal abstract class Transpiling
+    {
+        internal static IEnumerable<CodeInstruction> SkipWaitingForSeconds(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+
+            for (var i = 0; i < codes.Count; i++)
+            {
+                if (i >= 2
+                    && codes[i].opcode == OpCodes.Stfld
+                    && codes[i - 1].opcode == OpCodes.Newobj
+                    && codes[i - 2].opcode == OpCodes.Ldc_R4
+                   )
+                {
+                    codes[i - 2].operand = 0f;
+                }
+            }
+
+            return codes.AsEnumerable();
+        }
     }
 
     internal abstract class VectorMath

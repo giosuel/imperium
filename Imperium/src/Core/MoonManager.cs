@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.Netcode;
 using Imperium.Types;
+using Imperium.Util;
+using UnityEngine.AI;
 
 #endregion
 
@@ -191,8 +193,9 @@ public class MoonManager
             {
                 var animation = door.gameObject.GetComponent<AnimatedObjectTrigger>();
                 animation.TriggerAnimation(Imperium.Player);
-                door.isDoorOpened = isOpen;
-                door.navMeshObstacle.enabled = !isOpen;
+
+                Reflection.Set(door, "isDoorOpened", isOpen);
+                Reflection.Get<DoorLock, NavMeshObstacle>(door, "isDoorOpened").enabled = !isOpen;
             });
     }
 

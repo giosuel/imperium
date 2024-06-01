@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class LandmineIndicators(ImpBinding<HashSet<Landmine>> objectsBinding, ImpBinding<bool> visibleBinding) :
-    BaseVisualizer<HashSet<Landmine>>("Landmine Indicators", objectsBinding, visibleBinding)
+internal class LandmineIndicators(
+    ImpBinding<HashSet<Landmine>> objectsBinding,
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<HashSet<Landmine>>(objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<Landmine> objects)
     {

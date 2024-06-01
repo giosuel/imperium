@@ -1,5 +1,33 @@
 # Changelog
 
+## Imperium v0.1.9 [Beta] - The Productivity Update
+
+This update is all about testing productivity and efficiency. I added a bunch of functions / animation bypasses that should decrease wasted time when repredidly testing mod features.
+
+This includes options to instantly land, take off and travel between planets as well as animations skips for scoreboard animations, interact triggers and more.
+
+### Added Stuff
+
+- Added creative flight with optional no-clip functionality to fly through terrain.
+- Added options for the ship to instantly land, take off and travel betwen planets.
+- Added an option that removes the hold time on interact triggers (e.g. ship lever or main entrance).
+
+### QOL Changes
+
+- I had to limit the possible quota deadline to 3 days as deadlines above 4 were actually breaking the game. Instead, I added an option to completely disable the quota deadline countdown for testing.
+- Turning on god mode now restores health to full and removes the damage overlay.
+
+### Known Issues
+
+- Switching between Unity Explorer and a Imperium UI directly breaks the cursor.
+  - To fix, just open and close Unity Explorer once.
+
+- Scanner overlays are broken at higher texture resolutions.
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0)).
+
 ## Imperium v0.1.8 [Beta] - The Visualizer Update
 
 ### Added
@@ -15,6 +43,17 @@
 ### Internal Fixes
 
 - Fixed a bug where Imperium client access would lock the host out.
+
+### Known Issues
+
+- Switching between Unity Explorer and a Imperium UI directly breaks the cursor.
+  - To fix, just open and close Unity Explorer once.
+
+- Scanner overlays are broken at higher texture resolutions.
+
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0)).
 
 ## Imperium v0.1.7 [Beta] - Hotfix
 
@@ -34,7 +73,7 @@ I also reworked the night vision system to be more uniform and comfortable to us
 
 ### Compatibility
 
-This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company. ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0))
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0)).
 
 ### Added
 

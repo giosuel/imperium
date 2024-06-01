@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Imperium.Netcode;
+using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -41,8 +42,13 @@ public abstract class ImpSettings
             "Player",
             "GodMode",
             false,
-            value => Imperium.StartOfRound.allowLocalPlayerDeath = value
-        );
+            value =>
+            {
+                Imperium.StartOfRound.allowLocalPlayerDeath = value;
+
+                // Restore health to full when turning on god mode
+                if (value) PlayerManager.RestoreHealth(Imperium.Player);
+            });
 
         internal static readonly ImpConfig<float> MovementSpeed = new(
             "Player",
@@ -82,28 +88,100 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> PermanentClock = new("Time", "PermanentClock", true);
     }
 
-    internal abstract class Game
+    internal abstract class Ship
     {
-        internal static readonly ImpConfig<bool> OverwriteShipDoors = new(
-            "Game.Ship",
-            "OverwriteShipDoors",
+        internal static readonly ImpConfig<bool> OverwriteDoors = new(
+            "Ship",
+            "OverwriteDoors",
             false
         );
 
-        internal static readonly ImpConfig<bool> MuteShipSpeaker = new(
-            "Game.Ship",
-            "MuteShipSpeaker",
+        internal static readonly ImpConfig<bool> MuteSpeaker = new(
+            "Ship",
+            "MuteSpeaker",
             true,
             value => Imperium.StartOfRound.speakerAudioSource.mute = value
         );
 
-        internal static readonly ImpConfig<bool> PreventShipLeave = new(
-            "Game.Ship",
-            "PreventShipLeave",
+        internal static readonly ImpConfig<bool> PreventLeave = new(
+            "Ship",
+            "PreventLeave",
             false,
             syncUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
         );
 
+        internal static readonly ImpConfig<bool> InstantLanding = new(
+            "Ship",
+            "InstantLanding",
+            false,
+            onUpdate: value =>
+            {
+                if (value)
+                {
+                    StartOfRoundPatch.InstantLandingHarmony.PatchAll(typeof(StartOfRoundPatch.InstantLandingPatches));
+                }
+                else
+                {
+                    StartOfRoundPatch.InstantLandingHarmony.UnpatchSelf();
+                    Imperium.StartOfRound.shipAnimator.enabled = true;
+                }
+            }
+        );
+
+        internal static readonly ImpConfig<bool> InstantTakeoff = new(
+            "Ship",
+            "InstantTakeoff",
+            false,
+            onUpdate: value =>
+            {
+                if (value)
+                {
+                    StartOfRoundPatch.InstantTakeoffHarmony.PatchAll(typeof(StartOfRoundPatch.InstantTakeoffPatches));
+                }
+                else
+                {
+                    StartOfRoundPatch.InstantTakeoffHarmony.UnpatchSelf();
+                    Imperium.StartOfRound.shipAnimator.enabled = true;
+                }
+            }
+        );
+
+        internal static readonly ImpConfig<bool> DisableAbandoned = new(
+            "Ship",
+            "DisableAbandoned",
+            false
+        );
+    }
+
+    internal abstract class Animations
+    {
+        internal static readonly ImpConfig<bool> Scoreboard = new(
+            "Animations",
+            "DisableAbandoned",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> PlayerSpawn = new(
+            "Animations",
+            "PlayerSpawn",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> InteractHold = new(
+            "Animations",
+            "InteractHold",
+            true
+        );
+
+        internal static readonly ImpConfig<bool> Interact = new(
+            "Animations",
+            "Interact",
+            true
+        );
+    }
+
+    internal abstract class Game
+    {
         internal static readonly ImpConfig<bool> UnlockShop = new(
             "Game.Terminal",
             "UnlockShop",
@@ -351,8 +429,20 @@ public abstract class ImpSettings
             value => Imperium.Visualization.Point(
                 "OutsideAINode",
                 IdentifierType.TAG,
-                size: 14,
+                size: 20f,
                 material: ImpAssets.FresnelYellowMaterial
+            )(value)
+        );
+
+        internal static readonly ImpConfig<bool> OutsideEntitySpawns = new(
+            "Overlays",
+            "OutsideEntitySpawns",
+            false,
+            value => Imperium.Visualization.Point(
+                "OutsideAINode",
+                IdentifierType.TAG,
+                size: 10f,
+                material: ImpAssets.FresnelGreenMaterial
             )(value)
         );
 
@@ -380,6 +470,12 @@ public abstract class ImpSettings
         internal static readonly ImpConfig<bool> ScrapSpawns = new(
             "Gizmos",
             "ScrapSpawns",
+            false
+        );
+
+        internal static readonly ImpConfig<bool> HazardSpawns = new(
+            "Gizmos",
+            "HazardSpawns",
             false
         );
 
@@ -776,6 +872,12 @@ public abstract class ImpSettings
             "InfoPanel",
             true
         );
+
+        internal static readonly ImpConfig<bool> MinimapLocationPanel = new(
+            "Preferences.Minimap",
+            "LocationPanel",
+            true
+        );
     }
 
     internal abstract class Freecam
@@ -842,6 +944,8 @@ public abstract class ImpSettings
         Load<Shovel>();
         Load<Time>();
         Load<Game>();
+        Load<Ship>();
+        Load<Animations>();
         Load<Visualizations>();
         Load<Rendering>();
         Load<Preferences>();
@@ -856,6 +960,8 @@ public abstract class ImpSettings
         Reset<Shovel>();
         Reset<Time>();
         Reset<Game>();
+        Reset<Ship>();
+        Reset<Animations>();
         Reset<Visualizations>();
         Reset<Rendering>();
         Reset<Preferences>();
@@ -872,6 +978,8 @@ public abstract class ImpSettings
         Reinstantiate<Shovel>();
         Reinstantiate<Time>();
         Reinstantiate<Game>();
+        Reinstantiate<Ship>();
+        Reinstantiate<Animations>();
         Reinstantiate<Map>();
         Reinstantiate<Visualizations>();
         Reinstantiate<Rendering>();

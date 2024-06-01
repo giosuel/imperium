@@ -1,11 +1,13 @@
 #region
 
+using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 #endregion
 
@@ -26,13 +28,6 @@ internal static class PlayerControllerPatch
 
             ImpNetCommunication.Instance.RequestImperiumAccess();
         }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("Update")]
-    private static void UpdatePatch(PlayerControllerB __instance)
-    {
-        if (ImpSettings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
     }
 
     [HarmonyPostfix]
@@ -98,6 +93,73 @@ internal static class PlayerControllerPatch
         return !ImpSettings.Player.Muted.Value;
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("SpawnPlayerAnimation")]
+    private static bool SpawnPlayerAnimationPatch(PlayerControllerB __instance)
+    {
+        return ImpSettings.Animations.PlayerSpawn.Value;
+    }
+
+    #region Interact Triggers
+
+    private static readonly Dictionary<int, bool> OriginalTriggerHold = [];
+
+    [HarmonyPrefix]
+    [HarmonyPatch("ClickHoldInteraction")]
+    private static void ClickHoldInteractionPrefixPatch(PlayerControllerB __instance)
+    {
+        if (!__instance.hoveringOverTrigger) return;
+
+        if (!ImpSettings.Animations.InteractHold.Value)
+        {
+            // Backup original hold
+            if (!OriginalTriggerHold.ContainsKey(__instance.hoveringOverTrigger.GetInstanceID()))
+            {
+                OriginalTriggerHold[__instance.hoveringOverTrigger.GetInstanceID()] =
+                    __instance.hoveringOverTrigger.holdInteraction;
+            }
+
+            __instance.hoveringOverTrigger.holdInteraction = false;
+        }
+        else
+        {
+            // Restore original hold if it has been changed before
+            if (OriginalTriggerHold.TryGetValue(__instance.hoveringOverTrigger.GetInstanceID(), out var originalHold))
+            {
+                __instance.hoveringOverTrigger.holdInteraction = originalHold;
+            }
+        }
+    }
+
+    #endregion
+
+    [HarmonyPrefix]
+    [HarmonyPatch("Update")]
+    private static void UpdatePrefixPatch(PlayerControllerB __instance)
+    {
+        if (Imperium.PlayerManager.IsFlying.Value)
+        {
+            var moveVector = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Move").ReadValue<Vector2>();
+            var upInput = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump").ReadValue<float>();
+            var downInput = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Crouch").ReadValue<float>();
+
+            upInput *= 15f;
+            downInput *= 15f;
+
+            var forceVector = new Vector3(moveVector.x, upInput - downInput, moveVector.y);
+
+            __instance.fallValue = 0;
+            __instance.fallValueUncapped = 0;
+            __instance.externalForces += forceVector;
+
+            __instance.playerBodyAnimator.SetBool("Walking", value: false);
+            __instance.playerBodyAnimator.SetBool("Sprinting", value: false);
+            __instance.playerBodyAnimator.SetBool("Sideways", value: false);
+            __instance.playerBodyAnimator.SetBool("crouching", value: false);
+            __instance.isCrouching = false;
+        }
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("Update")]
     private static void UpdatePostfixPatch(PlayerControllerB __instance)
@@ -108,6 +170,8 @@ internal static class PlayerControllerPatch
             __instance.snapToServerPosition = false;
             __instance.inSpecialInteractAnimation = false;
         }
+
+        if (ImpSettings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
 
         if (ImpSettings.Player.CustomFieldOfView.Value < 0) return;
 

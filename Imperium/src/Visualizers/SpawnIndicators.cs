@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class SpawnIndicators(ImpBinding<OracleState> oracleStateBinding, ImpBinding<bool> visibleBinding)
-    : BaseVisualizer<OracleState>("Spawn Indicators", oracleStateBinding, visibleBinding)
+internal class SpawnIndicators(
+    ImpBinding<OracleState> oracleStateBinding,
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<OracleState>(oracleStateBinding, visibleBinding)
 {
     protected override void Refresh(OracleState state)
     {

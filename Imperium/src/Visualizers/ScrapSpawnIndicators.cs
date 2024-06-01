@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using System.Linq;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -11,14 +12,14 @@ namespace Imperium.Visualizers;
 
 internal class ScrapSpawnIndicators(
     ImpBinding<HashSet<RandomScrapSpawn>> objectsBinding,
-    ImpBinding<bool> visibleBinding)
-    : BaseVisualizer<HashSet<RandomScrapSpawn>>("Scrap Spawns", objectsBinding, visibleBinding)
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<HashSet<RandomScrapSpawn>>(objectsBinding, visibleBinding)
 {
     protected override void Refresh(HashSet<RandomScrapSpawn> objects)
     {
         ClearObjects();
 
-        foreach (var spawn in objects)
+        foreach (var spawn in objects.Where(obj => obj))
         {
             if (!indicatorObjects.ContainsKey(spawn.GetInstanceID()))
             {

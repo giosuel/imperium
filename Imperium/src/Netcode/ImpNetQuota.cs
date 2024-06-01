@@ -2,6 +2,7 @@
 
 using Imperium.Core;
 using Unity.Netcode;
+using UnityEngine;
 
 #endregion
 
@@ -51,6 +52,11 @@ public class ImpNetQuota : NetworkBehaviour
     private void OnChangeDeadlineDaysClientRpc(int days)
     {
         Imperium.GameManager.QuotaDeadline.Set(days, skipSync: true);
+
+        // Reset the warning now that the quota has been reset
+        var startMatchLever = FindObjectOfType<StartMatchLever>();
+        startMatchLever.hasDisplayedTimeWarning = false;
+        startMatchLever.triggerScript.timeToHold = 0.7f;
 
         Imperium.TimeOfDay.timesFulfilledQuota--;
         Imperium.TimeOfDay.quotaVariables.deadlineDaysAmount = days;

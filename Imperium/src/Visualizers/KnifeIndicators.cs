@@ -9,8 +9,9 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class KnifeIndicators(ImpBinding<bool> visibleBinding)
-    : BaseVisualizer<Shovel>("Knife Indicators", visibleBinding)
+internal class KnifeIndicators(
+    ImpBinding<bool> visibleBinding
+) : BaseVisualizer<Shovel>(visibleBinding: visibleBinding)
 {
     internal void Refresh(KnifeItem knife, bool isActivelyHolding)
     {

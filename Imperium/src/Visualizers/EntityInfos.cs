@@ -16,9 +16,7 @@ internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
 
     internal readonly Dictionary<EnemyType, EntityInfoConfig> EntityInfoConfigs = [];
 
-    internal EntityInfos(
-        ImpBinding<HashSet<EnemyAI>> objectsBinding
-    ) : base("Entity Infos", objectsBinding)
+    internal EntityInfos(ImpBinding<HashSet<EnemyAI>> objectsBinding) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
@@ -28,6 +26,8 @@ internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
 
     protected override void Refresh(HashSet<EnemyAI> objects)
     {
+        ClearObjects();
+
         foreach (var entity in objects.Where(entity => entity))
         {
             if (!indicatorObjects.ContainsKey(entity.GetInstanceID()))

@@ -77,7 +77,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpPositionIndicator ImpPositionIndicator;
     internal static ImpInterfaceManager Interface;
 
-    private static Harmony harmony;
+    internal static Harmony Harmony;
 
     // Global variable indicating if Imperium is loaded
     internal static bool IsImperiumReady;
@@ -99,7 +99,7 @@ public class Imperium : BaseUnityPlugin
 
         if (!ImpAssets.Load()) return;
 
-        harmony = new Harmony(PLUGIN_GUID);
+        Harmony = new Harmony(PLUGIN_GUID);
         PreLaunchPatch();
         RunNetcodePatcher();
 
@@ -211,8 +211,8 @@ public class Imperium : BaseUnityPlugin
 
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
-        harmony.PatchAll();
-        UnityExplorerIntegration.PatchFunctions(harmony);
+        Harmony.PatchAll();
+        UnityExplorerIntegration.PatchFunctions(Harmony);
 
         SpawnUI();
 
@@ -221,12 +221,12 @@ public class Imperium : BaseUnityPlugin
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
     {
-        HUDManager.HideHUD(!HUDManager.hudHidden);
+        HUDManager.HideHUD(!Reflection.Get<HUDManager, bool>(HUDManager, "hudHidden"));
     }
 
     internal static void Unload()
     {
-        harmony.UnpatchSelf();
+        Harmony.UnpatchSelf();
 
         DisableImperium();
 
@@ -271,12 +271,12 @@ public class Imperium : BaseUnityPlugin
 
     private static void PreLaunchPatch()
     {
-        harmony.PatchAll(typeof(PlayerControllerPatch.PreloadPatches));
-        harmony.PatchAll(typeof(StartOfRoundPatch.PreloadPatches));
-        harmony.PatchAll(typeof(GameNetworkManagerPatch.PreloadPatches));
-        harmony.PatchAll(typeof(TerminalPatch.PreloadPatches));
+        Harmony.PatchAll(typeof(PlayerControllerPatch.PreloadPatches));
+        Harmony.PatchAll(typeof(StartOfRoundPatch.PreloadPatches));
+        Harmony.PatchAll(typeof(GameNetworkManagerPatch.PreloadPatches));
+        Harmony.PatchAll(typeof(TerminalPatch.PreloadPatches));
 
-        harmony.PatchAll(typeof(PreInitPatches.PreInitSceneScriptPatch));
-        harmony.PatchAll(typeof(PreInitPatches.MenuManagerPatch));
+        Harmony.PatchAll(typeof(PreInitPatches.PreInitSceneScriptPatch));
+        Harmony.PatchAll(typeof(PreInitPatches.MenuManagerPatch));
     }
 }
