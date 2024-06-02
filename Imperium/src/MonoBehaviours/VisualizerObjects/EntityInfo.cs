@@ -113,20 +113,20 @@ public class EntityInfo : MonoBehaviour
             VisualizerObjects[identifier] = visualizer;
         }
 
+        visualizer.transform.localScale = Vector3.one * size;
+
         if (ImpSettings.Visualizations.SmoothAnimations.Value)
         {
             visualizer.transform.localPosition = Vector3.zero;
             visualizer.transform.localRotation = Quaternion.identity;
-            visualizer.transform.SetParent(eye);
+            visualizer.transform.SetParent(eye, true);
         }
         else
         {
             visualizer.transform.position = eye.position;
             visualizer.transform.rotation = eye.rotation;
-            visualizer.transform.SetParent(null);
+            visualizer.transform.SetParent(null, true);
         }
-
-        visualizer.transform.localScale = Vector3.one * size;
 
         // Enable / Disable based on config
         visualizer.gameObject.SetActive(configGetter(entityConfig).Value);
@@ -157,24 +157,20 @@ public class EntityInfo : MonoBehaviour
             VisualizerObjects[identifier] = visualizer;
         }
 
+        visualizer.transform.localScale = Vector3.one * size;
+
         if (ImpSettings.Visualizations.SmoothAnimations.Value)
         {
             visualizer.transform.localPosition = Vector3.zero;
             visualizer.transform.localRotation = Quaternion.identity;
-            visualizer.transform.SetParent(eye);
+            visualizer.transform.SetParent(eye, true);
         }
         else
         {
-            visualizer.transform.SetParent(null);
             visualizer.transform.position = eye.position;
             visualizer.transform.rotation = eye.rotation;
+            visualizer.transform.SetParent(null, true);
         }
-
-        visualizer.transform.localScale = Vector3.one * size;
-
-        visualizer.transform.localPosition = Vector3.zero;
-        visualizer.transform.localRotation = Quaternion.identity;
-        visualizer.transform.localScale = Vector3.one * size;
 
         // Enable / Disable based on the provided config
         visualizer.gameObject.SetActive(configGetter(entityConfig).Value);

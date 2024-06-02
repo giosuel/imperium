@@ -310,7 +310,7 @@ internal class Visualization
     }
 
     private const float SPHERE_RINGS_COUNT = 32f;
-    private const float SPHERE_LINES_COUNT = 32f;
+    private const float SPHERE_LINES_COUNT = 16f;
 
     /// <summary>
     ///     Generates a LOS cone mesh implementation by <see href="https://github.com/AdalynBlack/LC-EnemyDebug" /> :3
@@ -319,6 +319,8 @@ internal class Visualization
     private static Mesh GenerateCone(float angle)
     {
         var coneMesh = new Mesh();
+
+        angle *= 2;
 
         // Ring count has to be 2 or higher, or it breaks because I don't get paid enough to fix it :D
         var ringsCount = Mathf.Max(2, (int)(SPHERE_RINGS_COUNT * (angle / 360f)) + 1);
