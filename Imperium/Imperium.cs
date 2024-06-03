@@ -221,6 +221,11 @@ public class Imperium : BaseUnityPlugin
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
     {
+        if (Player.quickMenuManager.isMenuOpen ||
+            Player.inTerminalMenu ||
+            Player.isTypingChat ||
+            ShipBuildModeManager.InBuildMode) return;
+
         HUDManager.HideHUD(!Reflection.Get<HUDManager, bool>(HUDManager, "hudHidden"));
     }
 

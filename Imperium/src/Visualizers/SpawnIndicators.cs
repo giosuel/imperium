@@ -4,6 +4,7 @@ using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Oracle;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
 
 #endregion
@@ -13,9 +14,9 @@ namespace Imperium.Visualizers;
 internal class SpawnIndicators(
     ImpBinding<OracleState> oracleStateBinding,
     ImpBinding<bool> visibleBinding
-) : BaseVisualizer<OracleState>(oracleStateBinding, visibleBinding)
+) : BaseVisualizer<OracleState, SpawnIndicator>(oracleStateBinding, visibleBinding)
 {
-    protected override void Refresh(OracleState state)
+    protected override void OnRefresh(OracleState state)
     {
         ClearObjects();
 
@@ -31,7 +32,7 @@ internal class SpawnIndicators(
                     spawnReport.spawnTime
                 );
 
-                indicatorObjects[indicatorObject.GetInstanceID()] = indicatorObject;
+                visualizerObjects[indicatorObject.GetInstanceID()] = indicator;
             }
         }
     }

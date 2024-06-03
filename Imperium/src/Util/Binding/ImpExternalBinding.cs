@@ -7,7 +7,7 @@ using System;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-///     Intermediate binding for when the a value can't be easily bound due to external changes
+///     Intermediate binding for when the value can't be easily bound due to external changes
 ///     Whenever the refresher binding is updated, the child refreshes it's value based on the provided getter function.
 ///     E.g This can be used when the binding depends on a game objects availability that depends on if the ship has landed
 ///     or is in space. The getter in this case is GameObject.Find and the parent is <see cref="Imperium.IsSceneLoaded" />

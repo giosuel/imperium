@@ -59,7 +59,7 @@ internal static class EnemyAIPatch
             coneSize = Mathf.Clamp(range, 0, 30);
         }
 
-        Imperium.Visualization.EntityInfos.ConeVisualizerUpdate(
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             eyeObject ? eyeObject : __instance.eye,
             width,
@@ -69,7 +69,7 @@ internal static class EnemyAIPatch
 
         if (proximityCheck > 0)
         {
-            Imperium.Visualization.EntityInfos.SphereVisualizerUpdate(
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
                 __instance,
                 null,
                 proximityCheck * 2,
@@ -83,7 +83,7 @@ internal static class EnemyAIPatch
     private static void CheckLineOfSightPrefixPatch(EnemyAI __instance, List<GameObject> objectsToLookFor, float width,
         int range, float proximityAwareness)
     {
-        Imperium.Visualization.EntityInfos.ConeVisualizerUpdate(
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             __instance.eye,
             width,
@@ -93,7 +93,7 @@ internal static class EnemyAIPatch
 
         if (proximityAwareness > 0)
         {
-            Imperium.Visualization.EntityInfos.SphereVisualizerUpdate(
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
                 __instance,
                 __instance.transform,
                 proximityAwareness * 2,
@@ -127,7 +127,7 @@ internal static class EnemyAIPatch
             coneSize = Mathf.Clamp(range, 0, 30);
         }
 
-        Imperium.Visualization.EntityInfos.ConeVisualizerUpdate(
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             __instance.eye,
             width,
@@ -137,7 +137,7 @@ internal static class EnemyAIPatch
 
         if (proximityAwareness > 0)
         {
-            Imperium.Visualization.EntityInfos.SphereVisualizerUpdate(
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
@@ -171,7 +171,7 @@ internal static class EnemyAIPatch
             return;
         }
 
-        Imperium.Visualization.EntityInfos.ConeVisualizerUpdate(
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             overrideEye ? overrideEye : __instance.eye,
             width,
@@ -181,7 +181,7 @@ internal static class EnemyAIPatch
 
         if (proximityAwareness > 0)
         {
-            Imperium.Visualization.EntityInfos.SphereVisualizerUpdate(
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
@@ -215,7 +215,7 @@ internal static class EnemyAIPatch
             coneSize = Mathf.Clamp(range, 0, 30);
         }
 
-        Imperium.Visualization.EntityInfos.ConeVisualizerUpdate(
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             null,
             width,
@@ -225,7 +225,7 @@ internal static class EnemyAIPatch
 
         if (proximityAwareness > 0)
         {
-            Imperium.Visualization.EntityInfos.SphereVisualizerUpdate(
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,

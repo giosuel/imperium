@@ -5,6 +5,7 @@ using System.Linq;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
 
 #endregion
@@ -14,24 +15,24 @@ namespace Imperium.Visualizers;
 internal class VentTimers(
     ImpBinding<HashSet<EnemyVent>> objectsBinding,
     ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<EnemyVent>>(objectsBinding, visibleBinding)
+) : BaseVisualizer<HashSet<EnemyVent>, VentTimer>(objectsBinding, visibleBinding)
 {
-    protected override void Refresh(HashSet<EnemyVent> objects)
+    protected override void OnRefresh(HashSet<EnemyVent> objects)
     {
         foreach (var entityVent in objects.Where(obj => obj))
         {
-            if (!indicatorObjects.ContainsKey(entityVent.GetInstanceID()))
+            if (!visualizerObjects.ContainsKey(entityVent.GetInstanceID()))
             {
-                var parent = entityVent.transform;
-                var timerObject = Object.Instantiate(ImpAssets.SpawnTimerObject, parent, true);
-                var rotation = parent.rotation;
-                timerObject.transform.rotation = rotation;
-                timerObject.transform.localRotation = Quaternion.Euler(0, 180, -90);
-                timerObject.transform.position = parent.position + Vector3.up * 0.8f;
-                var timer = timerObject.AddComponent<VentTimer>();
-                timer.vent = entityVent;
+                var ventTimerObject = Object.Instantiate(ImpAssets.SpawnTimerObject, entityVent.transform, true);
+                ventTimerObject.name = $"Imp_VentTimer_{entityVent.GetInstanceID()}";
+                ventTimerObject.transform.rotation = entityVent.transform.rotation;
+                ventTimerObject.transform.localRotation = Quaternion.Euler(0, 180, -90);
+                ventTimerObject.transform.position = entityVent.transform.position + Vector3.up * 0.8f;
 
-                indicatorObjects[entityVent.GetInstanceID()] = timerObject;
+                var ventTimer = ventTimerObject.AddComponent<VentTimer>();
+                ventTimer.vent = entityVent;
+
+                visualizerObjects[entityVent.GetInstanceID()] = ventTimer;
             }
         }
     }

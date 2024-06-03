@@ -26,10 +26,10 @@ internal static class GrabbableObjectPatch
         switch (__instance)
         {
             case Shovel shovel:
-                Imperium.Visualization.ShovelIndicators.Refresh(shovel, true);
+                Imperium.Visualization.ShovelGizmos.Refresh(shovel, true);
                 break;
             case KnifeItem knife:
-                Imperium.Visualization.KnifeIndicators.Refresh(knife, true);
+                Imperium.Visualization.KnifeGizmos.Refresh(knife, true);
                 break;
         }
 
@@ -45,10 +45,10 @@ internal static class GrabbableObjectPatch
         switch (__instance)
         {
             case Shovel shovel:
-                Imperium.Visualization.ShovelIndicators.Refresh(shovel, false);
+                Imperium.Visualization.ShovelGizmos.Refresh(shovel, false);
                 break;
             case KnifeItem knife:
-                Imperium.Visualization.KnifeIndicators.Refresh(knife, false);
+                Imperium.Visualization.KnifeGizmos.Refresh(knife, false);
                 break;
         }
     }

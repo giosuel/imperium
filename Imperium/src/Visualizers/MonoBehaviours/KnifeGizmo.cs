@@ -8,9 +8,9 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects;
+namespace Imperium.Visualizers.MonoBehaviours;
 
-public class KnifeIndicator : MonoBehaviour
+public class KnifeGizmo : MonoBehaviour
 {
     private GameObject capsule;
     private Dictionary<int, LineRenderer> targetRays = [];

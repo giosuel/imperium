@@ -31,6 +31,6 @@ internal class EnemyAICollisionDetectPatch
     [HarmonyPatch("INoiseListener.DetectNoise")]
     private static void DetectNoisePatch(EnemyAICollisionDetect __instance, Vector3 noisePosition)
     {
-        Imperium.Visualization.EntityInfos.NoiseVisualizerUpdate(__instance.mainScript, noisePosition);
+        Imperium.Visualization.EntityGizmos.NoiseVisualizerUpdate(__instance.mainScript, noisePosition);
     }
 }

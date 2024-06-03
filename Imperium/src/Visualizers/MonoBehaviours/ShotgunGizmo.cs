@@ -7,9 +7,9 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects;
+namespace Imperium.Visualizers.MonoBehaviours;
 
-public class ShotgunIndicator : MonoBehaviour
+public class ShotgunGizmo : MonoBehaviour
 {
     // Lock-on rays for players
     private readonly Dictionary<int, LineRenderer> playerRays = [];

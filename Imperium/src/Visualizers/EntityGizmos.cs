@@ -2,21 +2,22 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util.Binding;
+using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Visualizers;
 
-internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
+/// <summary>
+/// Entity-specific gizmos like LoS indicators, target rays, noise rays, etc.
+/// </summary>
+internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
 {
-    private readonly Dictionary<int, EntityInfo> indicatorComponents = [];
-
     internal readonly Dictionary<EnemyType, EntityInfoConfig> EntityInfoConfigs = [];
 
-    internal EntityInfos(ImpBinding<HashSet<EnemyAI>> objectsBinding) : base(objectsBinding)
+    internal EntityGizmos(ImpBinding<HashSet<EnemyAI>> objectsBinding) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
@@ -24,29 +25,26 @@ internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
         }
     }
 
-    protected override void Refresh(HashSet<EnemyAI> objects)
+    protected override void OnRefresh(HashSet<EnemyAI> objects)
     {
         ClearObjects();
 
         foreach (var entity in objects.Where(entity => entity))
         {
-            if (!indicatorObjects.ContainsKey(entity.GetInstanceID()))
+            if (!visualizerObjects.ContainsKey(entity.GetInstanceID()))
             {
-                var entityInfoObject = new GameObject($"Imp_EntityInfo_{entity.GetInstanceID()}");
-                var entityInfo = entityInfoObject.AddComponent<EntityInfo>();
-                entityInfo.Init(EntityInfoConfigs[entity.enemyType], Imperium.Visualization, entity);
+                var entityGizmoObject = new GameObject($"Imp_EntityInfo_{entity.GetInstanceID()}");
+                var entityGizmo = entityGizmoObject.AddComponent<EntityGizmo>();
+                entityGizmo.Init(EntityInfoConfigs[entity.enemyType], Imperium.Visualization, entity);
 
-                indicatorObjects[entity.GetInstanceID()] = entityInfoObject;
-
-                // This is a temporary fix
-                indicatorComponents[entity.GetInstanceID()] = entityInfo;
+                visualizerObjects[entity.GetInstanceID()] = entityGizmo;
             }
         }
     }
 
     internal void NoiseVisualizerUpdate(EnemyAI instance, Vector3 origin)
     {
-        if (indicatorComponents.TryGetValue(instance.GetInstanceID(), out var entity))
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.NoiseVisualizerUpdate(origin);
         }
@@ -56,7 +54,7 @@ internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
         EnemyAI instance, Transform eye, float angle, float size, Material material, bool isCustom = false
     )
     {
-        if (indicatorComponents.TryGetValue(instance.GetInstanceID(), out var entity))
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.ConeVisualizerUpdate(
                 eye ?? instance.transform,
@@ -70,7 +68,7 @@ internal class EntityInfos : BaseVisualizer<HashSet<EnemyAI>>
         EnemyAI instance, Transform eye, float size, Material material, bool isCustom = false
     )
     {
-        if (indicatorComponents.TryGetValue(instance.GetInstanceID(), out var entity))
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.SphereVisualizerUpdate(
                 eye ?? instance.transform,

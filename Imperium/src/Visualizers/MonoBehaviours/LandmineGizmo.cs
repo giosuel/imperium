@@ -7,9 +7,9 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects;
+namespace Imperium.Visualizers.MonoBehaviours;
 
-public class LandmineIndicator : MonoBehaviour
+public class LandmineGizmo : MonoBehaviour
 {
     private GameObject sphere;
     private Landmine landmine;

@@ -15,7 +15,7 @@ internal static class LandminePatch
     [HarmonyPatch("Detonate")]
     internal static void DetonatePatch(Landmine __instance)
     {
-        Imperium.Visualization.LandmineIndicators.SnapshotPlayerHitbox(__instance.GetInstanceID());
+        Imperium.Visualization.LandmineGizmos.SnapshotPlayerHitbox(__instance.GetInstanceID());
     }
 
     [HarmonyPrefix]

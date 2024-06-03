@@ -8,9 +8,9 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects;
+namespace Imperium.Visualizers.MonoBehaviours;
 
-public class SpikeTrapIndicator : MonoBehaviour
+public class SpikeTrapGizmo : MonoBehaviour
 {
     private GameObject sphere;
     private SpikeRoofTrap spikeTrap;

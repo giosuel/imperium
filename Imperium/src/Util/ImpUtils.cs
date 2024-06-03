@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection.Emit;
+using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
 using JetBrains.Annotations;
@@ -45,6 +46,11 @@ public abstract class ImpUtils
     internal static void ToggleGameObjects(IEnumerable<GameObject> list, bool isOn)
     {
         foreach (var obj in list.Where(obj => obj)) obj.SetActive(isOn);
+    }
+
+    internal static void ToggleGameObjects(IEnumerable<Component> list, bool isOn)
+    {
+        foreach (var obj in list.Where(obj => obj)) obj.gameObject.SetActive(isOn);
     }
 
     /// <summary>
@@ -222,6 +228,51 @@ public abstract class ImpUtils
         return layers.Aggregate(layerMask, ToggleLayerInMask);
     }
 
+    public static string GetEntityLocationText(EnemyAI entity)
+    {
+        return entity.isInsidePlayerShip
+            ? "In Ship"
+            : entity.isOutside
+                ? "Outdoors"
+                : "Indoors";
+    }
+
+    public static List<Type> GetParentTypes<T>() => GetParentTypes(typeof(T));
+
+    /// <summary>
+    /// Returns an ordered list of a type's parent types in ascending order.
+    ///
+    /// e.g. SpringManAI -> EnemyAI -> Component -> Object
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static List<Type> GetParentTypes(Type type)
+    {
+        var types = new List<Type>();
+        var typePointer = type;
+        while (typePointer != null)
+        {
+            types.Add(typePointer);
+            typePointer = typePointer.BaseType;
+        }
+
+        return types;
+    }
+
+    public static string GetPlayerLocationText(PlayerControllerB player, bool locationOnly = false)
+    {
+        var isNearOtherPlayers = Reflection.Invoke<PlayerControllerB, bool>(player, "NearOtherPlayers", Imperium.Player, 17f);
+        var isHearingOthers = Reflection.Invoke<PlayerControllerB, bool>(
+            player, "PlayerIsHearingOthersThroughWalkieTalkie", Imperium.Player
+        );
+
+        var isAlone = !locationOnly && !isNearOtherPlayers && !isHearingOthers ? " (Alone)" : "";
+        if (Imperium.Player.isInHangarShipRoom) return "Ship" + isAlone;
+        if (Imperium.Player.isInElevator) return "Elevator" + isAlone;
+
+        return (Imperium.Player.isInsideFactory ? "Indoors" : "Outdoors") + isAlone;
+    }
+
     internal abstract class Interface
     {
         internal static void ToggleImageActive(Image image, bool isOn)
@@ -341,9 +392,9 @@ public abstract class ImpUtils
         }
     }
 
-    public abstract class Geometry
+    internal abstract class Geometry
     {
-        public static LineRenderer CreateLine(
+        internal static LineRenderer CreateLine(
             Transform parent,
             float thickness = 0.05f,
             bool useWorldSpace = false,
@@ -367,13 +418,13 @@ public abstract class ImpUtils
             return lineRenderer;
         }
 
-        public static void SetLineColor(LineRenderer lineRenderer, Color color)
+        internal static void SetLineColor(LineRenderer lineRenderer, Color color)
         {
             lineRenderer.startColor = color;
             lineRenderer.endColor = color;
         }
 
-        public static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
+        internal static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
         {
             lineRenderer.positionCount = positions.Length;
             for (var i = 0; i < positions.Length; i++)

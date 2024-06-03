@@ -13,22 +13,22 @@ namespace Imperium.Visualizers;
 internal class MapHazardIndicators(
     ImpBinding<HashSet<HazardIndicator>> objectsBinding,
     ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<HazardIndicator>>(objectsBinding, visibleBinding)
+) : BaseVisualizer<HashSet<HazardIndicator>, Transform>(objectsBinding, visibleBinding)
 {
-    protected override void Refresh(HashSet<HazardIndicator> objects)
+    protected override void OnRefresh(HashSet<HazardIndicator> objects)
     {
         ClearObjects();
 
         foreach (var spawn in objects)
         {
-            if (!indicatorObjects.ContainsKey(spawn.GetHashCode()))
+            if (!visualizerObjects.ContainsKey(spawn.GetHashCode()))
             {
-                indicatorObjects[spawn.GetHashCode()] = Visualization.VisualizePoint(
+                visualizerObjects[spawn.GetHashCode()] = Visualization.VisualizePoint(
                     null,
                     spawn.spawnRange,
                     material: ImpAssets.WireframeRedMaterial
-                );
-                indicatorObjects[spawn.GetHashCode()].transform.position = spawn.position;
+                ).transform;
+                visualizerObjects[spawn.GetHashCode()].position = spawn.position;
             }
         }
     }
@@ -37,5 +37,5 @@ internal class MapHazardIndicators(
 internal class HazardIndicator(Vector3 position, float spawnRange)
 {
     internal Vector3 position = position;
-    internal float spawnRange = spawnRange;
+    internal readonly float spawnRange = spawnRange;
 }

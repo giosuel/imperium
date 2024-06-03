@@ -20,7 +20,7 @@ internal static class ShovelPatch
     [HarmonyPatch("DiscardItem")]
     internal static void DiscardItemPatch(Shovel __instance)
     {
-        Imperium.Visualization.ShovelIndicators.Refresh(__instance, false);
+        Imperium.Visualization.ShovelGizmos.Refresh(__instance, false);
     }
 
     [HarmonyPrefix]

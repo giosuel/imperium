@@ -12,9 +12,9 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects;
+namespace Imperium.Visualizers.MonoBehaviours;
 
-public class PlayerInfo : MonoBehaviour
+public class PlayerGizmo : MonoBehaviour
 {
     private PlayerControllerB playerController;
 
@@ -65,7 +65,11 @@ public class PlayerInfo : MonoBehaviour
 
     private void Update()
     {
-        if (!playerController) return;
+        if (!playerController)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         DrawInfoPanel(playerInfoConfig.Info.Value);
     }
@@ -137,7 +141,7 @@ public class PlayerInfo : MonoBehaviour
         visibilityText.text = Math.Round(playerThreat.GetVisibility(), 2).ToString(CultureInfo.InvariantCulture);
         staminaText.text = Math.Round(playerController.sprintMeter, 2).ToString(CultureInfo.InvariantCulture);
         weightText.text = $"{Mathf.RoundToInt((playerController.carryWeight - 1) * 105)}lb";
-        locationText.text = PlayerManager.GetLocationText(Imperium.Player, locationOnly: true);
+        locationText.text = ImpUtils.GetPlayerLocationText(Imperium.Player, locationOnly: true);
 
         infoPanel.SetActive(true);
     }

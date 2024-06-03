@@ -13,6 +13,6 @@ internal static class KnifePatch
     [HarmonyPatch("DiscardItem")]
     internal static void DiscardItemPatch(KnifeItem __instance)
     {
-        Imperium.Visualization.KnifeIndicators.Refresh(__instance, false);
+        Imperium.Visualization.KnifeGizmos.Refresh(__instance, false);
     }
 }

@@ -56,7 +56,7 @@ public class NoiseIndicator : MonoBehaviour
         transform.localScale = Vector3.one * loudness * 2;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (timer >= 0)
         {

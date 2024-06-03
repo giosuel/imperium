@@ -35,7 +35,7 @@ internal static class ShotgunItemPatch
     [HarmonyPatch("EquipItem")]
     private static void EquipItemPostfixPatch(ShotgunItem __instance)
     {
-        Imperium.Visualization.ShotgunIndicators.Refresh(__instance, true);
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, true);
     }
 
     [HarmonyPrefix]
@@ -45,7 +45,7 @@ internal static class ShotgunItemPatch
         // Reset shotgun cooldown to default value when pocketing
         __instance.useCooldown = ImpConstants.ShotgunDefaultCooldown;
 
-        Imperium.Visualization.ShotgunIndicators.Refresh(__instance, false);
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
     }
 
     [HarmonyPrefix]
@@ -55,6 +55,6 @@ internal static class ShotgunItemPatch
         // Reset shotgun cooldown to default value when dropping
         __instance.useCooldown = ImpConstants.ShotgunDefaultCooldown;
 
-        Imperium.Visualization.ShotgunIndicators.Refresh(__instance, false);
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
     }
 }

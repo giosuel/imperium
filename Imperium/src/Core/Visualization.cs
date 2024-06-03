@@ -26,11 +26,11 @@ internal class Visualization
     internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager)
     {
         // Static visualizers are updated by object lists
-        LandmineIndicators = new LandmineIndicators(
+        LandmineGizmos = new LandmineGizmos(
             objectManager.CurrentLevelLandmines,
             ImpSettings.Visualizations.LandmineIndicators
         );
-        SpikeTrapIndicators = new SpikeTrapIndicators(
+        SpikeTrapGizmos = new SpikeTrapGizmos(
             objectManager.CurrentLevelSpikeTraps,
             ImpSettings.Visualizations.SpikeTrapIndicators
         );
@@ -52,13 +52,21 @@ internal class Visualization
         );
 
         // Weapon indicators are different as they are only updated via patches
-        ShotgunIndicators = new ShotgunIndicators(ImpSettings.Visualizations.ShotgunIndicators);
-        ShovelIndicators = new ShovelIndicators(ImpSettings.Visualizations.ShovelIndicators);
-        KnifeIndicators = new KnifeIndicators(ImpSettings.Visualizations.KnifeIndicators);
+        ShotgunGizmos = new ShotgunGizmos(ImpSettings.Visualizations.ShotgunIndicators);
+        ShovelGizmos = new ShovelGizmos(ImpSettings.Visualizations.ShovelIndicators);
+        KnifeGizmos = new KnifeGizmos(ImpSettings.Visualizations.KnifeIndicators);
 
         // Player and entity infos are separate as they have their own configs
-        PlayerInfos = new PlayerInfos(objectManager.CurrentPlayers);
-        EntityInfos = new EntityInfos(objectManager.CurrentLevelEntities);
+        PlayerGizmos = new PlayerGizmos(objectManager.CurrentPlayers);
+        EntityGizmos = new EntityGizmos(objectManager.CurrentLevelEntities);
+
+        ObjectInsights = new ObjectInsights();
+        Imperium.IsSceneLoaded.onTrigger += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentPlayers.onTrigger += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentLevelItems.onTrigger += ObjectInsights.Refresh;
     }
 
     // Contains all registered visualizers with their UNIQUE identifier
@@ -71,17 +79,19 @@ internal class Visualization
     // Note: This dictionary will contain NULL values if objects are deleted
     private readonly Dictionary<string, Dictionary<int, GameObject>> VisualizationObjectMap = new();
 
-    internal readonly ShotgunIndicators ShotgunIndicators;
-    internal readonly ShovelIndicators ShovelIndicators;
-    internal readonly KnifeIndicators KnifeIndicators;
-    internal readonly LandmineIndicators LandmineIndicators;
-    internal readonly SpikeTrapIndicators SpikeTrapIndicators;
+    internal readonly ShotgunGizmos ShotgunGizmos;
+    internal readonly ShovelGizmos ShovelGizmos;
+    internal readonly KnifeGizmos KnifeGizmos;
+    internal readonly LandmineGizmos LandmineGizmos;
+    internal readonly SpikeTrapGizmos SpikeTrapGizmos;
     internal readonly SpawnIndicators SpawnIndicators;
     internal readonly VentTimers VentTimers;
-    internal readonly PlayerInfos PlayerInfos;
-    internal readonly EntityInfos EntityInfos;
+    internal readonly PlayerGizmos PlayerGizmos;
+    internal readonly EntityGizmos EntityGizmos;
     internal readonly ScrapSpawnIndicators ScrapSpawns;
     internal readonly MapHazardIndicators HazardSpawns;
+
+    internal readonly ObjectInsights ObjectInsights;
 
     /// <summary>
     ///     Visualizes the colliders of a group of game objects by tag or layer

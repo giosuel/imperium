@@ -138,8 +138,13 @@ public class ImpBinding<T> : IRefreshable, IResettable
         var isSame = EqualityComparer<T>.Default.Equals(Value, value);
         Value = value;
 
-        if (!skipSync && !isSame) onUpdateSync?.Invoke(value);
-        onUpdate?.Invoke(value);
+        BroadcastUpdate(isSame, skipSync);
+    }
+
+    protected void BroadcastUpdate(bool isSame, bool skipSync)
+    {
+        if (!skipSync && !isSame) onUpdateSync?.Invoke(Value);
+        onUpdate?.Invoke(Value);
         onTrigger?.Invoke();
     }
 }

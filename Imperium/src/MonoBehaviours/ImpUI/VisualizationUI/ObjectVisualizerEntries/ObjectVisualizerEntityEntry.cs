@@ -4,6 +4,7 @@ using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util.Binding;
+using Imperium.Visualizers.MonoBehaviours;
 using TMPro;
 using UnityEngine;
 
@@ -17,7 +18,6 @@ public class ObjectVisualizerEntityEntry : MonoBehaviour
     {
         transform.Find("Name").GetComponent<TMP_Text>().text = config.entityName;
 
-        ImpToggle.Bind("Checkboxes/Infos", transform, config.Info, theme: themeBinding);
         ImpToggle.Bind("Checkboxes/Pathfinding", transform, config.Pathfinding, theme: themeBinding);
         ImpToggle.Bind("Checkboxes/Targeting", transform, config.Targeting, theme: themeBinding);
         ImpToggle.Bind("Checkboxes/LineOfSight", transform, config.LineOfSight, theme: themeBinding);

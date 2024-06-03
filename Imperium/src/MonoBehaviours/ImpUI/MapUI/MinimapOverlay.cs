@@ -13,6 +13,7 @@ namespace Imperium.MonoBehaviours.ImpUI.MapUI;
 internal class MinimapOverlay : SingleplexUI
 {
     internal Rect CameraRect { get; private set; }
+    internal Rect MinimapRect { get; private set; }
     private TMP_Text positionText;
     private TMP_Text timeText;
     private TMP_Text envText;
@@ -45,7 +46,7 @@ internal class MinimapOverlay : SingleplexUI
         locationText = locationPanel.transform.Find("Text").GetComponent<TMP_Text>();
 
         canvas = GetComponent<Canvas>();
-
+        
         var baseCanvasScale = canvas.scaleFactor;
         ImpSettings.Map.MinimapScale.onUpdate += value => InitMapScale(baseCanvasScale * value);
 
@@ -138,7 +139,7 @@ internal class MinimapOverlay : SingleplexUI
             var daysSpent = Imperium.StartOfRound.gameStats.daysSpent;
             timeText.text = $"{time} / Day {daysSpent}";
 
-            envText.text = PlayerManager.GetLocationText(Imperium.Player);
+            envText.text = ImpUtils.GetPlayerLocationText(Imperium.Player);
         }
 
         // Only update the compass when it's activated

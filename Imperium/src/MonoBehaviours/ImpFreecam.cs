@@ -45,7 +45,7 @@ public class ImpFreecam : MonoBehaviour
         hdCameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(int)FrameSettingsField.Volumetrics] = true;
         hdCameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Volumetrics, false);
 
-        var layerSelectorObject = Instantiate(ImpAssets.LayerSelector, transform);
+        var layerSelectorObject = Instantiate(ImpAssets.LayerSelectorObject, transform);
         layerSelector = layerSelectorObject.AddComponent<LayerSelector>();
         layerSelector.InitializeUI(Imperium.Theme, false);
         layerSelector.Bind(ImpSettings.Freecam.LayerSelector, ImpSettings.Freecam.FreecamLayerMask);

@@ -1,9 +1,8 @@
 #region
 
-using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util.Binding;
+using Imperium.Visualizers.MonoBehaviours;
 using TMPro;
 using UnityEngine;
 
@@ -17,6 +16,6 @@ public class ObjectVisualizerPlayerEntry : MonoBehaviour
     {
         transform.Find("Name").GetComponent<TMP_Text>().text = config.playerName;
 
-        ImpToggle.Bind("Checkboxes/Infos", transform, config.Info, theme: themeBinding);
+        // ImpToggle.Bind("Checkboxes/Infos", transform, config.Info, theme: themeBinding);
     }
 }

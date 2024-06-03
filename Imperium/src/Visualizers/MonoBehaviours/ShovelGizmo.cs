@@ -8,9 +8,9 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects;
+namespace Imperium.Visualizers.MonoBehaviours;
 
-public class ShovelIndicator : MonoBehaviour
+public class ShovelGizmo : MonoBehaviour
 {
     private GameObject capsule;
     private Dictionary<int, LineRenderer> targetRays = [];

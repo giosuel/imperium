@@ -2,8 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Core;
-using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 
@@ -11,9 +9,9 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal abstract class BaseVisualizer<T>
+internal abstract class BaseVisualizer<T, R> where R : Component
 {
-    protected readonly Dictionary<int, GameObject> indicatorObjects = [];
+    protected readonly Dictionary<int, R> visualizerObjects = [];
 
     protected BaseVisualizer(ImpBinding<T> objectsBinding = null, ImpBinding<bool> visibleBinding = null)
     {
@@ -21,7 +19,7 @@ internal abstract class BaseVisualizer<T>
         {
             objectsBinding.onUpdate += objects =>
             {
-                Refresh(objects);
+                OnRefresh(objects);
                 if (visibleBinding != null) OnVisibilityUpdate(visibleBinding.Value);
             };
         }
@@ -31,22 +29,20 @@ internal abstract class BaseVisualizer<T>
 
     private void OnVisibilityUpdate(bool isVisible)
     {
-        foreach (var obj in indicatorObjects.Values.Where(obj => obj)) obj.SetActive(isVisible);
+        foreach (var obj in visualizerObjects.Values.Where(obj => obj)) obj.gameObject.SetActive(isVisible);
     }
-
-    internal virtual void Toggle(bool isOn) => ImpUtils.ToggleGameObjects(indicatorObjects.Values, isOn);
 
     protected void ClearObjects()
     {
-        foreach (var indicatorObject in indicatorObjects.Values.Where(indicator => indicator))
+        foreach (var indicatorObject in visualizerObjects.Values.Where(indicator => indicator))
         {
-            Object.Destroy(indicatorObject);
+            Object.Destroy(indicatorObject.gameObject);
         }
 
-        indicatorObjects.Clear();
+        visualizerObjects.Clear();
     }
 
-    protected virtual void Refresh(T objects)
+    protected virtual void OnRefresh(T objects)
     {
     }
 }
