@@ -16,7 +16,7 @@ internal class RenderingUI : SingleplexUI
             path: "Resolution",
             container: content,
             valueBinding: ImpSettings.Rendering.ResolutionMultiplier,
-            indicatorFormatter: value => $"{ImpUtils.Math.FormatFloatToThreeDigits(value)}",
+            indicatorFormatter: value => $"{Formatting.FormatFloatToThreeDigits(value)}",
             debounceTime: 0.2f,
             theme: theme
         );

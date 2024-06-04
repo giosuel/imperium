@@ -47,6 +47,6 @@ internal class ObjectEntryEntity : ObjectEntry
     {
         var entity = (EnemyAI)component;
         var entityName = entity.enemyType.enemyName;
-        return entity.isEnemyDead ? ImpUtils.RichText.Strikethrough(entityName) : entityName;
+        return entity.isEnemyDead ? RichText.Strikethrough(entityName) : entityName;
     }
 }

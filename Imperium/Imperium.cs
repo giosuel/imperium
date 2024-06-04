@@ -66,7 +66,7 @@ public class Imperium : BaseUnityPlugin
     internal static ObjectManager ObjectManager;
     internal static PlayerManager PlayerManager;
     internal static Visualization Visualization;
-    internal static Oracle.Oracle Oracle;
+    internal static Oracle Oracle;
 
     // Other Imperium objects
     internal static ImpMap Map;
@@ -172,7 +172,7 @@ public class Imperium : BaseUnityPlugin
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers, Freecam);
         GameManager = new GameManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers);
         ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers);
-        Oracle = new Oracle.Oracle();
+        Oracle = new Oracle();
         Visualization = new Visualization(Oracle.State, ObjectManager);
 
         MoonManager.Create(ObjectManager);

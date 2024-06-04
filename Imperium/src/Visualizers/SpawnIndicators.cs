@@ -1,7 +1,7 @@
 #region
 
 using Imperium.MonoBehaviours.VisualizerObjects;
-using Imperium.Oracle;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;

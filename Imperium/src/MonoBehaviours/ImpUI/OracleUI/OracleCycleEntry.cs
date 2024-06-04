@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.Oracle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -71,7 +70,7 @@ public class OracleCycleEntry : MonoBehaviour
         reports.ForEach(Destroy);
         reports.Clear();
 
-        title.text = $"Cycle #{cycleIndex} ({ImpUtils.FormatDayTime(state.cycles[cycleIndex].cycleTime)})";
+        title.text = $"Cycle #{cycleIndex} ({Formatting.FormatDayTime(state.cycles[cycleIndex].cycleTime)})";
 
         state.indoorCycles[cycleIndex].ForEach(entry => AddReport(entry, indoorList));
         if (outdoorList) state.outdoorCycles[cycleIndex].ForEach(entry => AddReport(entry, outdoorList));
@@ -85,11 +84,11 @@ public class OracleCycleEntry : MonoBehaviour
         reportObject.transform.Find("Name").GetComponent<TMP_Text>().text =
             Imperium.ObjectManager.GetDisplayName(report.entity.enemyName);
         reportObject.transform.Find("Time").GetComponent<TMP_Text>().text =
-            ImpUtils.FormatDayTime(report.spawnTime);
+            Formatting.FormatDayTime(report.spawnTime);
 
         var clickableText = reportObject.transform.Find("Position").gameObject.AddComponent<ImpClickableText>();
         clickableText.Init(
-            ImpUtils.FormatVector(report.position, 2),
+            Formatting.FormatVector(report.position, 2),
             () => PlayerManager.TeleportTo(report.position)
         );
 

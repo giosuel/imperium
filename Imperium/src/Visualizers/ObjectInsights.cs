@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using GameNetcodeStuff;
+using Imperium.API.Types;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -24,7 +25,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
     internal readonly ImpBinding<Dictionary<Type, ImpBinding<bool>>> InsightVisibilityBindings = new([]);
 
     internal readonly ImpConfig<bool> CustomInsights = new(
-        "Visualizers.ObjectInsights", "Custom", false
+        "Visualization.Insights", "Custom", false
     );
 
     // Holds all the logical insights, per-type
@@ -36,6 +37,8 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
     {
         RegisterDefaultInsights();
         Refresh();
+
+        registeredInsights.onTrigger += Refresh;
     }
 
     internal void Refresh()
@@ -53,7 +56,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
                     if (!visualizerObjects.TryGetValue(component.GetInstanceID(), out var objectInsight))
                     {
                         var objectInsightObject = new GameObject($"Imp_ObjectInsight_{obj.GetInstanceID()}");
-                        objectInsightObject.transform.SetParent(obj.transform);
+                        objectInsightObject.transform.SetParent(obj.transform, true);
                         insightVisualizerObjects.Add(objectInsightObject.GetInstanceID());
 
                         objectInsight = objectInsightObject.AddComponent<ObjectInsight>();
@@ -78,7 +81,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
     /// </summary>
     private InsightDefinition<Component> FindMostMatchingInsightDefinition(Type inputType)
     {
-        foreach (var type in ImpUtils.GetParentTypes(inputType))
+        foreach (var type in Debugging.GetParentTypes(inputType))
         {
             if (registeredInsights.Value.TryGetValue(type, out var typeInsight)) return typeInsight;
         }
@@ -93,50 +96,65 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             return insightsDefinition as InsightDefinition<T>;
         }
 
-        registeredInsights.Value[typeof(T)] = new InsightDefinitionImpl<T>(
-            registeredInsights.Value, InsightVisibilityBindings
-        );
+        var newInsightDefinition = new InsightDefinitionImpl<T>(registeredInsights.Value, InsightVisibilityBindings);
+        registeredInsights.Value[typeof(T)] = newInsightDefinition;
         registeredInsights.Refresh();
 
-        return registeredInsights.Value[typeof(T)] as InsightDefinition<T>;
+        return newInsightDefinition;
     }
 
     private void RegisterDefaultInsights()
     {
-        // InsightsFor<Transform>()
-        //     .RegisterInsight("Position", transform => ImpUtils.FormatVector(transform.position))
-        //     .SetConfigKey("Objects");
-
         InsightsFor<PlayerControllerB>()
-            .SetNameGenerator(player => player.playerUsername)
+            .SetNameGenerator(player => player.playerUsername ?? player.GetInstanceID().ToString())
+            .SetIsDeadGenerator(player => player.isPlayerDead)
             .RegisterInsight("Health", player => $"{player.health} HP")
+            .RegisterInsight("Stamina", player => $"{player.sprintTime:0.0}s")
+            .RegisterInsight("Visibility", player => $"{((IVisibleThreat)player).GetVisibility():0.0}")
+            .RegisterInsight("Location", ImpUtils.GetPlayerLocationText)
             .SetConfigKey("Players");
+
+        InsightsFor<GrabbableObject>()
+            .SetNameGenerator(item => item.itemProperties.itemName)
+            .RegisterInsight("Value", item => $"{item.scrapValue}$")
+            .RegisterInsight("Used Up", item => item.itemUsedUp ? "Yes" : "No")
+            .RegisterInsight("Held By", ImpUtils.GetItemHeldByText)
+            .RegisterInsight("Cooldown", item => $"{item.currentUseCooldown:0.0}s")
+            .RegisterInsight("Location", ImpUtils.GetItemLocationText)
+            .SetPositionOverride(DefaultPositionOverride)
+            .SetConfigKey("Items");
 
         InsightsFor<EnemyAI>()
             .SetNameGenerator(entity => entity.enemyType.enemyName)
+            .SetIsDeadGenerator(entity => entity.isEnemyDead)
             .RegisterInsight("Health", entity => $"{entity.enemyHP} HP")
             .RegisterInsight("Behaviour State", entity => entity.currentBehaviourStateIndex.ToString())
             .RegisterInsight("Movement Speed", entity => $"{entity.agent.speed:0.0}")
-            .RegisterInsight("Stun Time", entity => $"{Math.Max(0, entity.stunNormalizedTimer):0.0}s")
+            .RegisterInsight("Stun Timer", entity => $"{Math.Max(0, entity.stunNormalizedTimer):0.0}s")
             .RegisterInsight("Target", entity => entity.targetPlayer ? entity.targetPlayer.playerUsername : "-")
             .RegisterInsight("Location", ImpUtils.GetEntityLocationText)
-            .SetPositionOverride(EntityPositionOverride)
+            .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Entities");
 
         InsightsFor<Turret>()
             .SetNameGenerator(turret => $"Turret (#{turret.GetInstanceID()})")
+            .SetIsDeadGenerator(turret => !turret.turretActive)
             .RegisterInsight("Is Active", turret => turret.turretActive ? "Yes" : "No")
             .RegisterInsight("Turret Mode", turret => turret.turretMode.ToString())
             .RegisterInsight("Rotation Speed", turret => turret.rotationSpeed.ToString(CultureInfo.InvariantCulture))
+            .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Turrets");
 
         InsightsFor<Landmine>()
             .SetNameGenerator(landmine => $"Landmine (#{landmine.GetInstanceID()})")
+            .SetIsDeadGenerator(landmine => landmine.hasExploded)
             .RegisterInsight("Has Exploded", landmine => landmine.hasExploded ? "Yes" : "No")
+            .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Landmines");
 
         InsightsFor<BridgeTrigger>()
             .SetNameGenerator(bridge => $"Bridge (#{bridge.GetInstanceID()})")
+            .SetIsDeadGenerator(bridge => bridge.hasBridgeFallen)
             .RegisterInsight("Durability", trigger => $"{trigger.bridgeDurability}")
             .RegisterInsight(
                 "Has Fallen",
@@ -146,27 +164,31 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
                 "Giant On Bridge",
                 bridge => Reflection.Get<BridgeTrigger, bool>(bridge, "giantOnBridge") ? "Yes" : "No"
             )
+            .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Bridges");
-        Imperium.Log.LogInfo($"REGISTERED OBJECTS: {registeredInsights.Value.Count}");
     }
 
-    private readonly Dictionary<EnemyAI, Vector3?> entityColliderCache = [];
+    /*
+     * Default position override places the insight panel at 3/4 the hight of the object, based on the
+     * first child collider found.
+     */
+    private readonly Dictionary<int, Vector3?> entityColliderCache = [];
 
-    private Vector3 EntityPositionOverride(EnemyAI entity)
+    private Vector3 DefaultPositionOverride(Component obj)
     {
-        if (!entityColliderCache.TryGetValue(entity, out var colliderCenter))
+        if (!entityColliderCache.TryGetValue(obj.GetInstanceID(), out var colliderCenter))
         {
-            colliderCenter = entity.GetComponentInChildren<BoxCollider>()?.center
-                             ?? entity.GetComponentInChildren<CapsuleCollider>()?.center;
+            colliderCenter = obj.GetComponentInChildren<BoxCollider>()?.center
+                             ?? obj.GetComponentInChildren<CapsuleCollider>()?.center;
 
-            entityColliderCache[entity] = colliderCenter;
+            entityColliderCache[obj.GetInstanceID()] = colliderCenter;
         }
 
         return colliderCenter.HasValue
-            ? entity.transform.position
+            ? obj.transform.position
               + Vector3.up * colliderCenter.Value.y
-                           * entity.transform.localScale.y
+                           * obj.transform.localScale.y
                            * 1.5f
-            : entity.transform.position;
+            : obj.transform.position;
     }
 }

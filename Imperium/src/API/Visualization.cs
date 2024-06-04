@@ -1,11 +1,11 @@
-using Imperium.Types;
+using Imperium.API.Types;
 using UnityEngine;
 
-namespace Imperium.API.Visualization;
+namespace Imperium.API;
 
-public static class Insights
+public static class Visualization
 {
-    public static InsightDefinition<T> For<T>() where T : Component
+    public static InsightDefinition<T> InsightFor<T>() where T : Component
     {
         if (!Imperium.IsImperiumLaunched)
         {

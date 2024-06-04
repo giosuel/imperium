@@ -251,6 +251,20 @@ internal class ControlCenterWindow : BaseWindow
             ImpSettings.Player.DisableOOB,
             themeBinding
         );
+        ImpToggle.Bind(
+            "Right/PlayerSettings/EnableFlying",
+            content,
+            ImpSettings.Player.EnableFlying,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/PlayerSettings/FlyingNoClip",
+            content,
+            ImpSettings.Player.FlyingNoClip,
+            themeBinding,
+            interactableBindings: ImpSettings.Player.EnableFlying
+        );
+
         ImpSlider.Bind(
             path: "Right/FieldOfView",
             container: content,
@@ -299,7 +313,7 @@ internal class ControlCenterWindow : BaseWindow
             path: "Right/TimeSpeed",
             container: content,
             valueBinding: Imperium.GameManager.TimeSpeed,
-            indicatorFormatter: ImpUtils.Math.FormatFloatToThreeDigits,
+            indicatorFormatter: Formatting.FormatFloatToThreeDigits,
             useLogarithmicScale: true,
             debounceTime: 0.05f,
             theme: themeBinding,

@@ -21,7 +21,7 @@ public static class ImpSpawnTracker
         var num = Imperium.TimeOfDay.lengthOfHours * currentHour / Imperium.TimeOfDay.totalTime;
 
         var output = spawnedEntities
-            .Select(entity => $"{entity.enemyType.enemyName} at ({ImpUtils.FormatVector(entity.transform.position)})")
+            .Select(entity => $"{entity.enemyType.enemyName} at ({Formatting.FormatVector(entity.transform.position)})")
             .ToList();
 
         if (output.Count < 1)

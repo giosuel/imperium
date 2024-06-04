@@ -199,6 +199,7 @@ internal class MapUI : LayerSelector.LayerSelector
             container: container,
             valueBinding: Imperium.Map.CameraNearClip,
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
+            playClickSound: false,
             theme: theme
         );
         farClipSlider.gameObject.SetActive(!ImpSettings.Map.AutoClipping.Value);
@@ -209,6 +210,7 @@ internal class MapUI : LayerSelector.LayerSelector
             container: container,
             valueBinding: Imperium.Map.CameraFarClip,
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
+            playClickSound: false,
             theme: theme
         );
         nearClipSlider.gameObject.SetActive(!ImpSettings.Map.AutoClipping.Value);
@@ -382,11 +384,7 @@ internal class MapUI : LayerSelector.LayerSelector
 
 
         // Use free-look clipping when camera is unlocked
-        if (ImpSettings.Map.UnlockView.Value)
-        {
-            Imperium.Map.CameraNearClip.Set(ImpConstants.DefaultMapCameraNearClipFreeLook);
-            Imperium.Map.CameraFarClip.Set(ImpConstants.DefaultMapCameraFarClipFreeLook);
-        }
+        if (ImpSettings.Map.UnlockView.Value) Imperium.Map.SetCameraClipped(false);
     }
 
     protected override void OnOpen()
@@ -459,8 +457,7 @@ internal class MapUI : LayerSelector.LayerSelector
                     || Imperium.Player.isInElevator
                     || Imperium.Player.isInHangarShipRoom))
             {
-                Imperium.Map.CameraNearClip.Set(ImpConstants.DefaultMapCameraNearClip);
-                Imperium.Map.CameraFarClip.Set(ImpConstants.DefaultMapCameraFarClip);
+                Imperium.Map.SetCameraClipped(true);
             }
         }
         else if (target)

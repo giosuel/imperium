@@ -57,7 +57,7 @@ public class ScrapSpawnListEntry : MonoBehaviour
 
     internal void UpdateSpawnChance(int total)
     {
-        spawnChanceText.text = total == 0 ? "0%" : ImpUtils.Math.FormatChance(Rarity.Value / (float)total);
+        spawnChanceText.text = total == 0 ? "0%" : Formatting.FormatChance(Rarity.Value / (float)total);
     }
 
     private void OnExclusive()

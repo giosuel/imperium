@@ -211,8 +211,8 @@ public class ImpFreecam : MonoBehaviour
         cameraTransform.rotation = Quaternion.Euler(-lookInput.y, lookInput.x, 0);
 
         var movement = Imperium.InputBindings.FreecamMap["Move"].ReadValue<Vector2>();
-        var movementY = Imperium.InputBindings.FreecamMap["Ascend"].IsPressed() ? -1 :
-            Imperium.InputBindings.FreecamMap["Descend"].IsPressed() ? 1 : 0;
+        var movementY = Imperium.InputBindings.FreecamMap["Ascend"].IsPressed() ? 1 :
+            Imperium.InputBindings.FreecamMap["Descend"].IsPressed() ? -1 : 0;
         var deltaMove = new Vector3(movement.x, movementY, movement.y)
                         * (ImpSettings.Freecam.FreecamMovementSpeed.Value * Time.deltaTime);
         cameraTransform.Translate(deltaMove);

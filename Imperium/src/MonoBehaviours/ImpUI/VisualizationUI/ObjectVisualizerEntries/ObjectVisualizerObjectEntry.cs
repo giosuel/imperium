@@ -10,12 +10,12 @@ using UnityEngine;
 
 namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
 
-public class ObjectVisualizerObjectEntry : MonoBehaviour
+public class ObjectVisualizerInsightEntry : MonoBehaviour
 {
     internal void Init(string entryName, ImpBinding<bool> entryBinding, ImpBinding<ImpTheme> themeBinding)
     {
         transform.Find("Name").GetComponent<TMP_Text>().text = entryName;
 
-        ImpToggle.Bind("Checkboxes/Infos", transform, entryBinding, theme: themeBinding);
+        ImpToggle.Bind("Checkboxes/Insights", transform, entryBinding, theme: themeBinding);
     }
 }

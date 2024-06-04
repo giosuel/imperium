@@ -51,10 +51,10 @@ internal class ObjectEntryPlayer : ObjectEntry
 
         if (player.playerClientId == NetworkManager.ServerClientId)
         {
-            playerName = ImpUtils.RichText.Bold(playerName);
+            playerName = RichText.Bold(playerName);
         }
 
-        return player.isPlayerDead ? ImpUtils.RichText.Strikethrough(playerName) : playerName;
+        return player.isPlayerDead ? RichText.Strikethrough(playerName) : playerName;
     }
 
     protected override void Kill()

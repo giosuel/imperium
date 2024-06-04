@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HarmonyLib;
 using Imperium.Core;
@@ -53,7 +54,7 @@ internal static class RoundManagerPatch
             8912896,
             QueryTriggerInteraction.Collide
         );
-        colliders.FirstOrDefault(collider => collider && collider.gameObject.name == "ImpNoiseListener")
+        colliders.FirstOrDefault(collider => collider && collider.gameObject.name == "Imp_NoiseListener")
             ?.GetComponent<INoiseListener>()
             ?.DetectNoise(noisePosition, noiseLoudness, timesPlayedInSameSpot, noiseID);
     }

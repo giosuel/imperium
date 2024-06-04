@@ -1,16 +1,19 @@
 # Changelog
 
-## Imperium v0.1.9 [Beta] - The Productivity Update
+## Imperium v0.1.9 [Beta] - The API
 
-This update is all about testing productivity and efficiency. I added a bunch of functions / animation bypasses that should decrease wasted time when repredidly testing mod features.
+As so many of you have requested more advanced debugging functionality that can be accessed by other mods, I have started to implement an API that can be used either in the UE console or by other mods.
 
-This includes options to instantly land, take off and travel between planets as well as animations skips for scoreboard animations, interact triggers and more.
+I also started writing a wiki that should cover the basics on how to use Imperium as well as information for devs that want to work with Imperium or contribute to Imperium.
 
 ### Added Stuff
 
+- Added the Imperium API and a [wiki](https://github.com/giosuel/imperium/wiki) for it.
 - Added creative flight with optional no-clip functionality to fly through terrain.
 - Added options for the ship to instantly land, take off and travel betwen planets.
 - Added an option that removes the hold time on interact triggers (e.g. ship lever or main entrance).
+- Added new custom visualizer for Old Birds.
+- Added new custom visualizer for Baboon Hawks.
 
 ### QOL Changes
 

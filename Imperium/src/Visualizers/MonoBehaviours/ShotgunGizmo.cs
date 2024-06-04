@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using Imperium.Core;
+using Imperium.MonoBehaviours;
 using Imperium.Util;
 using UnityEngine;
 
@@ -37,20 +38,20 @@ public class ShotgunGizmo : MonoBehaviour
     {
         for (var i = 0; i < ImpConstants.ShotgunCollisionCount; i++)
         {
-            spheres[i] = ImpUtils.Geometry.CreatePrimitive(
+            spheres[i] = ImpGeometry.CreatePrimitive(
                 PrimitiveType.Sphere, transform, ImpAssets.WireframePurpleMaterial, 10
             );
 
-            collisionSpheres[i] = ImpUtils.Geometry.CreatePrimitive(
+            collisionSpheres[i] = ImpGeometry.CreatePrimitive(
                 PrimitiveType.Sphere, transform, Color.red, 0.2f
             );
 
-            entityRays[i] = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
-            sphereRays[i] = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
+            entityRays[i] = ImpGeometry.CreateLine(transform, useWorldSpace: true);
+            sphereRays[i] = ImpGeometry.CreateLine(transform, useWorldSpace: true);
         }
 
-        forwardRay = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
-        ImpUtils.Geometry.SetLineColor(forwardRay, new Color(0.41f, 0.41f, 0.41f));
+        forwardRay = ImpGeometry.CreateLine(transform, useWorldSpace: true);
+        ImpGeometry.SetLineColor(forwardRay, new Color(0.41f, 0.41f, 0.41f));
     }
 
     public void Init(ShotgunItem shotgunItem, bool isHolding)
@@ -83,7 +84,7 @@ public class ShotgunGizmo : MonoBehaviour
             {
                 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
                 // This is only executed when a new collider is detected
-                lineRenderer = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
+                lineRenderer = ImpGeometry.CreateLine(transform, useWorldSpace: true);
                 playerRays[player.GetInstanceID()] = lineRenderer;
             }
 
@@ -107,8 +108,8 @@ public class ShotgunGizmo : MonoBehaviour
                 playerRayColor = Color.red;
             }
 
-            ImpUtils.Geometry.SetLineColor(lineRenderer, playerRayColor);
-            ImpUtils.Geometry.SetLinePositions(lineRenderer, shotgunPosition, closestPoint);
+            ImpGeometry.SetLineColor(lineRenderer, playerRayColor);
+            ImpGeometry.SetLinePositions(lineRenderer, shotgunPosition, closestPoint);
         }
 
         var forwardRayColor = Color.red;
@@ -147,23 +148,23 @@ public class ShotgunGizmo : MonoBehaviour
             }
 
             entityRays[i].gameObject.SetActive(true);
-            ImpUtils.Geometry.SetLineColor(entityRays[i], entityRayColor);
-            ImpUtils.Geometry.SetLinePositions(entityRays[i], shotgunPosition, colliders[i].point);
+            ImpGeometry.SetLineColor(entityRays[i], entityRayColor);
+            ImpGeometry.SetLinePositions(entityRays[i], shotgunPosition, colliders[i].point);
 
             spheres[i].SetActive(true);
             collisionSpheres[i].SetActive(true);
             sphereRays[i].gameObject.SetActive(true);
 
-            var closestPointToRay = ImpUtils.VectorMath.ClosestPointAlongRay(ray, colliders[i].transform.position);
+            var closestPointToRay = ImpMath.ClosestPointAlongRay(ray, colliders[i].transform.position);
 
             spheres[i].transform.position = closestPointToRay;
             collisionSpheres[i].transform.position = colliders[i].point;
 
-            ImpUtils.Geometry.SetLinePositions(sphereRays[i], closestPointToRay, colliders[i].point);
+            ImpGeometry.SetLinePositions(sphereRays[i], closestPointToRay, colliders[i].point);
         }
 
-        ImpUtils.Geometry.SetLineColor(forwardRay, forwardRayColor);
-        ImpUtils.Geometry.SetLinePositions(forwardRay, shotgunPosition, shotgunPosition + shotgunForward * 15f);
+        ImpGeometry.SetLineColor(forwardRay, forwardRayColor);
+        ImpGeometry.SetLinePositions(forwardRay, shotgunPosition, shotgunPosition + shotgunForward * 15f);
     }
 
     private static (Vector3, Vector3) GetShotgunPosition(ShotgunItem shotgun)

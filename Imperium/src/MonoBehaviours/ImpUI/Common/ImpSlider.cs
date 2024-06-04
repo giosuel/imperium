@@ -50,6 +50,7 @@ public class ImpSlider : MonoBehaviour
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
     /// <param name="options">Override options with provided labels</param>
     /// <param name="clickAudio">The audio clip that is played when the slider value is changed.</param>
+    /// <param name="playClickSound">Whether the click sound playes when the slider value is changed.</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the slider is interactable</param>
     internal static ImpSlider Bind(
         string path,
@@ -64,13 +65,14 @@ public class ImpSlider : MonoBehaviour
         bool interactableInvert = false,
         ImpBinding<List<string>> options = null,
         AudioClip clickAudio = null,
+        bool playClickSound = true,
         params ImpBinding<bool>[] interactableBindings
     )
     {
         var sliderObject = container.Find(path);
         if (!sliderObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to bind slider '{ImpUtils.GetTransformPath(container)}/{path}'");
+            Imperium.Log.LogInfo($"[UI] Failed to bind slider '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
@@ -130,7 +132,7 @@ public class ImpSlider : MonoBehaviour
             else
             {
                 valueBinding.Set(bindingValue);
-                GameManager.PlayClip(clickAudio);
+                if(playClickSound) GameManager.PlayClip(clickAudio);
             }
         });
 

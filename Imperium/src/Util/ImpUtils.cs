@@ -22,7 +22,7 @@ namespace Imperium.Util;
 
 public abstract class ImpUtils
 {
-    internal static int RandomItemValue(Item item)
+    public static int RandomItemValue(Item item)
     {
         var random = Imperium.RoundManager.AnomalyRandom != null
             ? CloneRandom(Imperium.RoundManager.AnomalyRandom)
@@ -37,20 +37,15 @@ public abstract class ImpUtils
     ///     a new value of type T is created, indexed in the dictionary with the given key and returned.
     ///     Basically a helper function to emulate a default dictionary.
     /// </summary>
-    internal static T DictionaryGetOrNew<T>(IDictionary<string, T> map, string key) where T : new()
+    public static T DictionaryGetOrNew<T>(IDictionary<string, T> map, string key) where T : new()
     {
         if (map.TryGetValue(key, out var list)) return list;
         return map[key] = new T();
     }
 
-    internal static void ToggleGameObjects(IEnumerable<GameObject> list, bool isOn)
+    public static void ToggleGameObjects(IEnumerable<GameObject> list, bool isOn)
     {
         foreach (var obj in list.Where(obj => obj)) obj.SetActive(isOn);
-    }
-
-    internal static void ToggleGameObjects(IEnumerable<Component> list, bool isOn)
-    {
-        foreach (var obj in list.Where(obj => obj)) obj.gameObject.SetActive(isOn);
     }
 
     /// <summary>
@@ -71,89 +66,13 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    ///     Converts an absolute timestamp to a normalized one (between 0 and 1).
-    ///     Total time is provided by <see cref="TimeOfDay.totalTime" />.
-    /// </summary>
-    public static float TimeToNormalized(float currentTime) => currentTime / Imperium.TimeOfDay.totalTime;
-
-    /// <summary>
-    ///     Formats daytime like RoundManager.currentDayTime or TimeOfDay.globalTime
-    /// </summary>
-    /// <param name="dayTime">Absolute timestamp</param>
-    /// <returns></returns>
-    public static string FormatDayTime(float dayTime) => FormatTime(TimeToNormalized(dayTime));
-
-    /// <summary>
-    ///     Generates a formatted string of a fraction; '(num1, num2)'
-    /// </summary>
-    /// <param name="num1"></param>
-    /// <param name="num2"></param>
-    /// <param name="ignoreEmpty">If the function should return an empty string if both parameters are zero</param>
-    /// <returns></returns>
-    public static string FormatFraction(int num1, int num2, bool ignoreEmpty = true)
-    {
-        if (ignoreEmpty && num1 == 0 && num2 == 0) return "";
-        return $"({num1}/{num2})";
-    }
-
-    /// <summary>
-    ///     Formats a normalized timestamp (<see cref="TimeToNormalized" />) to a readable time string.
-    ///     Length of hours from <see cref="TimeOfDay.lengthOfHours" />.
-    ///     Number of hour from <see cref="TimeOfDay.numberOfHours" />.
-    ///     Format: "hh:mm a"
-    /// </summary>
-    /// <param name="normalizedTime"></param>
-    /// <returns></returns>
-    public static string FormatTime(float normalizedTime)
-    {
-        var time = (int)(normalizedTime * Imperium.TimeOfDay.lengthOfHours * Imperium.TimeOfDay.numberOfHours) + 360;
-        var minutes = time % 60;
-        var hours = time / 60;
-        var suffix = hours < 12 ? "AM" : "PM";
-        hours %= 12;
-        if (hours == 0) hours = 12;
-
-        return $"{hours:00}:{minutes:00} {suffix}";
-    }
-
-    internal static string FormatMinutesSeconds(float seconds)
-    {
-        var minutesLeft = Mathf.RoundToInt(seconds) / 60;
-        var secondsLeft = Mathf.RoundToInt(seconds) % 60;
-        return $"{minutesLeft}:{secondsLeft:00}";
-    }
-
-    /// <summary>
-    ///     Creates a formatted string from a unity <see cref="Vector3" />.
-    ///     If a unit is provided, the unit will be appended to each scalar.
-    ///     Format: "(x[unit](separator)y[unit](separator)z[unit])"
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="roundDigits">To how many digits the scalars should be rounded</param>
-    /// <param name="separator">Scalar separator</param>
-    /// <param name="unit">Optional scalar unit</param>
-    /// <returns></returns>
-    internal static string FormatVector(
-        Vector3 input,
-        int roundDigits = -1,
-        string separator = "/",
-        string unit = ""
-    )
-    {
-        var x = roundDigits > -1 ? MathF.Round(input.x, roundDigits) : input.x;
-        var y = roundDigits > -1 ? MathF.Round(input.y, roundDigits) : input.y;
-        var z = roundDigits > -1 ? MathF.Round(input.z, roundDigits) : input.z;
-        return $"({x}{unit}{separator}{y}{unit}{separator}{z}{unit})";
-    }
-
-    /// <summary>
     ///     Attempts to invoke a callback.
     ///     If the callback throws a <see cref="NullReferenceException" /> returns default.
     /// </summary>
     /// <param name="callback"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    internal static T InvokeDefaultOnNull<T>(Func<T> callback)
+    public static T InvokeDefaultOnNull<T>(Func<T> callback)
     {
         try
         {
@@ -163,54 +82,6 @@ public abstract class ImpUtils
         {
             return default;
         }
-    }
-
-    /// <summary>
-    ///     Formats the parents of a Unity transform into a string.
-    ///     e.g. "ImpInterface/imperium_ui/Container/Window/Content"
-    /// </summary>
-    /// <param name="root"></param>
-    /// <returns></returns>
-    internal static string GetTransformPath(Transform root)
-    {
-        if (!root) return "";
-
-        List<string> path = [];
-        while (root)
-        {
-            path.Add(root.name);
-            root = root.parent;
-        }
-
-        return path.AsEnumerable().Reverse().Aggregate((a, b) => a + "/" + b);
-    }
-
-    internal static Item AddScrapToSpawnList(
-        Item itemType,
-        ICollection<SpawnableItemWithRarity> scrapList
-    )
-    {
-        var newScrap = new SpawnableItemWithRarity { spawnableItem = itemType, rarity = 0 };
-        scrapList.Add(newScrap);
-        return itemType;
-    }
-
-    internal static EnemyType AddEntityToSpawnList(
-        EnemyType entityType,
-        ICollection<SpawnableEnemyWithRarity> entityList
-    )
-    {
-        var newEntity = new SpawnableEnemyWithRarity { enemyType = entityType, rarity = 0 };
-        entityList.Add(newEntity);
-        return entityType;
-    }
-
-    public abstract class RichText
-    {
-        public static string Strikethrough(string value) => $"<s>{value}</s>";
-        public static string Underlined(string value) => $"<u>{value}</u>";
-        public static string Bold(string value) => $"<b>{value}</b>";
-        public static string Italic(string value) => $"<i>{value}</i>";
     }
 
     public static int ToggleLayerInMask(int layerMask, int layer)
@@ -237,29 +108,9 @@ public abstract class ImpUtils
                 : "Indoors";
     }
 
-    public static List<Type> GetParentTypes<T>() => GetParentTypes(typeof(T));
+    public static string GetPlayerLocationText(PlayerControllerB player) => GetPlayerLocationText(player, false);
 
-    /// <summary>
-    /// Returns an ordered list of a type's parent types in ascending order.
-    ///
-    /// e.g. SpringManAI -> EnemyAI -> Component -> Object
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static List<Type> GetParentTypes(Type type)
-    {
-        var types = new List<Type>();
-        var typePointer = type;
-        while (typePointer != null)
-        {
-            types.Add(typePointer);
-            typePointer = typePointer.BaseType;
-        }
-
-        return types;
-    }
-
-    public static string GetPlayerLocationText(PlayerControllerB player, bool locationOnly = false)
+    public static string GetPlayerLocationText(PlayerControllerB player, bool locationOnly)
     {
         var isNearOtherPlayers = Reflection.Invoke<PlayerControllerB, bool>(player, "NearOtherPlayers", Imperium.Player, 17f);
         var isHearingOthers = Reflection.Invoke<PlayerControllerB, bool>(
@@ -271,6 +122,46 @@ public abstract class ImpUtils
         if (Imperium.Player.isInElevator) return "Elevator" + isAlone;
 
         return (Imperium.Player.isInsideFactory ? "Indoors" : "Outdoors") + isAlone;
+    }
+
+    public static string GetItemLocationText(GrabbableObject item)
+    {
+        return item.isInShipRoom
+            ? "In Ship"
+            : item.isInElevator
+                ? "Elevator"
+                : item.isInFactory
+                    ? "Indoors"
+                    : "Outdoors";
+    }
+
+    public static string GetItemHeldByText(GrabbableObject item)
+    {
+        return item.isHeldByEnemy
+            ? "An Entity"
+            : item.isHeld
+                ? "A Player"
+                : "Nobody";
+    }
+
+    internal static Item AddScrapToSpawnList(
+        Item itemType,
+        ICollection<SpawnableItemWithRarity> scrapList
+    )
+    {
+        var newScrap = new SpawnableItemWithRarity { spawnableItem = itemType, rarity = 0 };
+        scrapList.Add(newScrap);
+        return itemType;
+    }
+
+    internal static EnemyType AddEntityToSpawnList(
+        EnemyType entityType,
+        ICollection<SpawnableEnemyWithRarity> entityList
+    )
+    {
+        var newEntity = new SpawnableEnemyWithRarity { enemyType = entityType, rarity = 0 };
+        entityList.Add(newEntity);
+        return entityType;
     }
 
     internal abstract class Interface
@@ -305,55 +196,6 @@ public abstract class ImpUtils
         }
     }
 
-    internal abstract class Math
-    {
-        internal static float SampleQuadraticBezier(float start, float end, float control, float t)
-        {
-            return (1 - t) * (1 - t) * start + 2 * (1 - t) * t * control + t * t * end;
-        }
-
-        /// <summary>
-        ///     Formats a normalized float to a percentage chance.
-        /// </summary>
-        /// <param name="chance"></param>
-        /// <returns></returns>
-        internal static string FormatChance(float chance) => NormalizeFloat(
-            MathF.Round(chance * 100, 2)
-        ).ToString(CultureInfo.InvariantCulture) + "%";
-
-        /// <summary>
-        ///     Removes trailing zeros from float if decimals are equal to zero
-        ///     e.g. 100.00 => 100
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private static float NormalizeFloat(float value)
-        {
-            var parsed = value.ToString(CultureInfo.InvariantCulture).Split('.');
-            if (parsed.Length == 1) return value;
-
-            if (int.Parse(parsed[1]) == 0)
-            {
-                return (int)value;
-            }
-
-            return MathF.Round(value);
-        }
-
-        /// <summary>
-        ///     Limits a float to 3 digits.
-        ///     e.g 100.01 => 100, 14.23 => 12.3, 1.22 => 1.22, 0.1 => 0.1
-        ///     Note: This only works for positive numbers smaller than 999
-        /// </summary>
-        internal static string FormatFloatToThreeDigits(float value) =>
-            value switch
-            {
-                >= 100 => Mathf.RoundToInt(value).ToString(),
-                >= 10 => MathF.Round(value, 1).ToString(CultureInfo.InvariantCulture),
-                _ => MathF.Round(value, 2).ToString(CultureInfo.InvariantCulture)
-            };
-    }
-
     internal abstract class Transpiling
     {
         internal static IEnumerable<CodeInstruction> SkipWaitingForSeconds(IEnumerable<CodeInstruction> instructions)
@@ -373,165 +215,6 @@ public abstract class ImpUtils
             }
 
             return codes.AsEnumerable();
-        }
-    }
-
-    internal abstract class VectorMath
-    {
-        internal static Vector3 ClosestPointAlongRay(Ray ray, Vector3 point)
-        {
-            var a = ray.origin;
-            var b = ray.origin + ray.direction;
-
-            var ab = b - a;
-
-            var distance = Vector3.Dot(point - a, ab);
-            distance = Mathf.Max(distance, 0f);
-
-            return ray.origin + ray.direction * distance;
-        }
-    }
-
-    internal abstract class Geometry
-    {
-        internal static LineRenderer CreateLine(
-            Transform parent,
-            float thickness = 0.05f,
-            bool useWorldSpace = false,
-            Color? color = null,
-            params Vector3[] positions
-        )
-        {
-            var rayObject = new GameObject
-            {
-                transform = { parent = parent },
-                name = "ImpObject"
-            };
-
-            var lineRenderer = rayObject.AddComponent<LineRenderer>();
-            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            lineRenderer.startWidth = thickness;
-            lineRenderer.endWidth = thickness;
-            lineRenderer.useWorldSpace = useWorldSpace;
-            lineRenderer.positionCount = 2;
-
-            return lineRenderer;
-        }
-
-        internal static void SetLineColor(LineRenderer lineRenderer, Color color)
-        {
-            lineRenderer.startColor = color;
-            lineRenderer.endColor = color;
-        }
-
-        internal static void SetLinePositions(LineRenderer lineRenderer, params Vector3[] positions)
-        {
-            lineRenderer.positionCount = positions.Length;
-            for (var i = 0; i < positions.Length; i++)
-            {
-                lineRenderer.SetPosition(i, positions[i]);
-            }
-        }
-
-        internal static GameObject CreatePrimitive(
-            PrimitiveType type,
-            [CanBeNull] Transform parent,
-            Color color,
-            float size = 1,
-            int layer = 0,
-            string name = null,
-            bool removeCollider = true
-        )
-        {
-            var sphere = CreatePrimitive(type, parent, size, name, layer, removeCollider);
-
-            var renderer = sphere.GetComponent<MeshRenderer>();
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-
-            var material = renderer.material;
-            material.shader = Shader.Find("HDRP/Unlit");
-            material.color = color;
-
-            return sphere;
-        }
-
-        internal static GameObject CreatePrimitive(
-            PrimitiveType type,
-            [CanBeNull] Transform parent,
-            [CanBeNull] Material material,
-            float size = 1,
-            int layer = 0,
-            string name = null,
-            bool removeCollider = true
-        )
-        {
-            var sphere = CreatePrimitive(type, parent, size, name, layer, removeCollider);
-            if (name != null) sphere.name = name;
-
-            var renderer = sphere.GetComponent<MeshRenderer>();
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-
-            if (material)
-            {
-                renderer.material = material;
-            }
-            else
-            {
-                renderer.material.shader = Shader.Find("HDRP/Unlit");
-            }
-
-            return sphere;
-        }
-
-        internal static GameObject CreatePrimitive(
-            PrimitiveType type,
-            [CanBeNull] Transform parent,
-            float size = 1,
-            string name = "ImpObject",
-            int layer = 0,
-            bool removeCollider = true,
-            bool removeRenderer = false
-        )
-        {
-            var primitive = GameObject.CreatePrimitive(type);
-            primitive.name = name;
-            primitive.layer = layer;
-
-            if (removeCollider)
-            {
-                switch (type)
-                {
-                    case PrimitiveType.Sphere:
-                        Object.Destroy(primitive.GetComponent<SphereCollider>());
-                        break;
-                    case PrimitiveType.Cylinder:
-                    case PrimitiveType.Cube:
-                    case PrimitiveType.Plane:
-                    case PrimitiveType.Quad:
-                        Object.Destroy(primitive.GetComponent<BoxCollider>());
-                        break;
-                    case PrimitiveType.Capsule:
-                        Object.Destroy(primitive.GetComponent<CapsuleCollider>());
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
-                }
-            }
-
-            primitive.transform.localScale = Vector3.one * size;
-            if (parent)
-            {
-                primitive.transform.position = parent.position;
-                primitive.transform.SetParent(parent);
-            }
-
-            if (removeRenderer)
-            {
-                Object.Destroy(primitive.GetComponent<MeshRenderer>());
-                Object.Destroy(primitive.GetComponent<MeshFilter>());
-            }
-
-            return primitive;
         }
     }
 }

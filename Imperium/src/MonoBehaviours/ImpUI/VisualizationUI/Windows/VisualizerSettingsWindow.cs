@@ -41,7 +41,7 @@ internal class VisualizerSettingsWindows : BaseWindow
             path: "OverlayScale",
             container: content,
             valueBinding: ImpSettings.Visualizations.SSOverlayScale,
-            indicatorFormatter: ImpUtils.Math.FormatFloatToThreeDigits,
+            indicatorFormatter: Formatting.FormatFloatToThreeDigits,
             theme: themeBinding
         );
     }

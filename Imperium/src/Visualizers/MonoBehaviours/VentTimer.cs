@@ -40,7 +40,7 @@ public class VentTimer : MonoBehaviour
                 return;
             default:
                 entityText.text = Imperium.ObjectManager.GetDisplayName(vent.enemyType.enemyName);
-                timeText.text = ImpUtils.FormatMinutesSeconds(timeLeft);
+                timeText.text = Formatting.FormatMinutesSeconds(timeLeft);
                 return;
         }
     }

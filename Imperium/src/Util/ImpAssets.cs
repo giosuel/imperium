@@ -42,8 +42,7 @@ public abstract class ImpAssets
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
-    internal static GameObject PlayerInfoPanel;
-    internal static GameObject EntityInfoPanel;
+    internal static GameObject ObjectInsightPanel;
 
     /*
      * Audio Clips
@@ -60,6 +59,7 @@ public abstract class ImpAssets
     public static Material FresnelYellowMaterial;
     public static Material FresnelGreenMaterial;
     public static Material FresnelRedMaterial;
+    public static Material WireframeNavMeshMaterial;
     public static Material WireframePurpleMaterial;
     public static Material WireframeCyanMaterial;
     public static Material WireframeAmaranthMaterial;
@@ -103,8 +103,7 @@ public abstract class ImpAssets
             LoadAsset(assets, "Assets/Prefabs/layer_selector.prefab", out LayerSelectorObject),
             LoadAsset(assets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadAsset(assets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
-            LoadAsset(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfoPanel),
-            LoadAsset(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfoPanel),
+            LoadAsset(assets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
             LoadAsset(assets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(assets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadAsset(assets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
@@ -114,6 +113,7 @@ public abstract class ImpAssets
             LoadAsset(assets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
             LoadAsset(assets, "Assets/Materials/fresnel_green.mat", out FresnelGreenMaterial),
             LoadAsset(assets, "Assets/Materials/fresnel_yellow.mat", out FresnelYellowMaterial),
+            LoadAsset(assets, "Assets/Materials/wireframe_navmesh.mat", out WireframeNavMeshMaterial),
             LoadAsset(assets, "Assets/Materials/wireframe_purple.mat", out WireframePurpleMaterial),
             LoadAsset(assets, "Assets/Materials/wireframe_cyan.mat", out WireframeCyanMaterial),
             LoadAsset(assets, "Assets/Materials/wireframe_amaranth.mat", out WireframeAmaranthMaterial),

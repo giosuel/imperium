@@ -129,13 +129,13 @@ internal class MinimapOverlay : SingleplexUI
         if (ImpSettings.Map.MinimapInfoPanel.Value)
         {
             var playerPosition = Imperium.Player.transform.position;
-            positionText.text = $"{ImpUtils.FormatVector(playerPosition, separator: "/", roundDigits: 0)}";
+            positionText.text = $"{Formatting.FormatVector(playerPosition, separator: "/", roundDigits: 0)}";
 
             var playerRotation = Imperium.Player.gameplayCamera.transform.rotation.eulerAngles;
             rotationText.text =
-                $"{ImpUtils.FormatVector(playerRotation, separator: "/", roundDigits: 0, unit: "\u00b0")}";
+                $"{Formatting.FormatVector(playerRotation, separator: "/", roundDigits: 0, unit: "\u00b0")}";
 
-            var time = ImpUtils.FormatDayTime(Imperium.TimeOfDay.currentDayTime);
+            var time = Formatting.FormatDayTime(Imperium.TimeOfDay.currentDayTime);
             var daysSpent = Imperium.StartOfRound.gameStats.daysSpent;
             timeText.text = $"{time} / Day {daysSpent}";
 

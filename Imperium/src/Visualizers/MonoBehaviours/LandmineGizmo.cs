@@ -18,7 +18,7 @@ public class LandmineGizmo : MonoBehaviour
 
     private void Awake()
     {
-        sphere = ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Sphere, transform, ImpAssets.WireframeRedMaterial,
+        sphere = ImpGeometry.CreatePrimitive(PrimitiveType.Sphere, transform, ImpAssets.WireframeRedMaterial,
             12f);
     }
 
@@ -58,7 +58,7 @@ public class LandmineGizmo : MonoBehaviour
                     }
 
                     var snapshotHitbox =
-                        ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Cube, transform,
+                        ImpGeometry.CreatePrimitive(PrimitiveType.Cube, transform,
                             ImpAssets.WireframeYellowMaterial);
 
                     var player = collider.GetComponent<PlayerControllerB>();
@@ -86,7 +86,7 @@ public class LandmineGizmo : MonoBehaviour
                     if (entityColliderScript.TryGetComponent<BoxCollider>(out var boxCollider))
                     {
                         var snapshotHitbox =
-                            ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Cube, entityColliderScript.transform,
+                            ImpGeometry.CreatePrimitive(PrimitiveType.Cube, entityColliderScript.transform,
                                 ImpAssets.WireframeYellowMaterial);
 
                         snapshotHitbox.transform.position = entityTransform.position;
@@ -100,7 +100,7 @@ public class LandmineGizmo : MonoBehaviour
                     if (entityColliderScript.TryGetComponent<CapsuleCollider>(out var capsuleCollider))
                     {
                         var snapshotHitbox =
-                            ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Capsule, entityColliderScript.transform,
+                            ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, entityColliderScript.transform,
                                 ImpAssets.WireframeYellowMaterial);
 
                         snapshotHitbox.transform.position = entityTransform.position;
@@ -131,9 +131,9 @@ public class LandmineGizmo : MonoBehaviour
 
             if (drawRay)
             {
-                var snapshotRay = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
-                ImpUtils.Geometry.SetLineColor(snapshotRay, snapshotRayColor);
-                ImpUtils.Geometry.SetLinePositions(snapshotRay, landminePosition, colliderPosition + Vector3.up * 0.3f);
+                var snapshotRay = ImpGeometry.CreateLine(transform, useWorldSpace: true);
+                ImpGeometry.SetLineColor(snapshotRay, snapshotRayColor);
+                ImpGeometry.SetLinePositions(snapshotRay, landminePosition, colliderPosition + Vector3.up * 0.3f);
             }
         }
     }
@@ -168,7 +168,7 @@ public class LandmineGizmo : MonoBehaviour
             {
                 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
                 // This is only executed when a new collider is detected
-                lineRenderer = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
+                lineRenderer = ImpGeometry.CreateLine(transform, useWorldSpace: true);
                 targetRays[instanceId] = lineRenderer;
             }
 
@@ -224,8 +224,8 @@ public class LandmineGizmo : MonoBehaviour
             if (drawRay)
             {
                 collisionIds.Add(instanceId);
-                ImpUtils.Geometry.SetLineColor(lineRenderer, snapshotRayColor);
-                ImpUtils.Geometry.SetLinePositions(lineRenderer, landmine.transform.position, colliderPosition);
+                ImpGeometry.SetLineColor(lineRenderer, snapshotRayColor);
+                ImpGeometry.SetLinePositions(lineRenderer, landmine.transform.position, colliderPosition);
             }
         }
 

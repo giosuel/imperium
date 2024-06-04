@@ -14,7 +14,7 @@ namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
 
 public class ObjectVisualizerEntityEntry : MonoBehaviour
 {
-    internal void Init(EntityInfoConfig config, ImpBinding<ImpTheme> themeBinding)
+    internal void Init(EntityGizmoConfig config, ImpBinding<ImpTheme> themeBinding)
     {
         transform.Find("Name").GetComponent<TMP_Text>().text = config.entityName;
 

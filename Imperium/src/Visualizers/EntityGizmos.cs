@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Util.Binding;
@@ -15,13 +16,13 @@ namespace Imperium.Visualizers;
 /// </summary>
 internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
 {
-    internal readonly Dictionary<EnemyType, EntityInfoConfig> EntityInfoConfigs = [];
+    internal readonly Dictionary<EnemyType, EntityGizmoConfig> EntityInfoConfigs = [];
 
     internal EntityGizmos(ImpBinding<HashSet<EnemyAI>> objectsBinding) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
-            EntityInfoConfigs[entity] = new EntityInfoConfig(entity.enemyName);
+            EntityInfoConfigs[entity] = new EntityGizmoConfig(entity.enemyName);
         }
     }
 
@@ -51,7 +52,9 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
     }
 
     internal void ConeVisualizerUpdate(
-        EnemyAI instance, Transform eye, float angle, float size, Material material, bool isCustom = false
+        EnemyAI instance, Transform eye, float angle, float size, Material material, bool isCustom = false,
+        Func<Vector3> relativepositionOverride = null,
+        Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
@@ -59,13 +62,17 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
             entity.ConeVisualizerUpdate(
                 eye ?? instance.transform,
                 angle, size, material,
-                config => isCustom ? config.Custom : config.LineOfSight
+                config => isCustom ? config.Custom : config.LineOfSight,
+                relativepositionOverride,
+                absolutePositionOverride
             );
         }
     }
 
     internal void SphereVisualizerUpdate(
-        EnemyAI instance, Transform eye, float size, Material material, bool isCustom = false
+        EnemyAI instance, Transform eye, float size, Material material, bool isCustom = false,
+        Func<Vector3> relativepositionOverride = null,
+        Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
@@ -73,7 +80,9 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
             entity.SphereVisualizerUpdate(
                 eye ?? instance.transform,
                 size, material,
-                config => isCustom ? config.Custom : config.LineOfSight
+                config => isCustom ? config.Custom : config.LineOfSight,
+                relativepositionOverride,
+                absolutePositionOverride
             );
         }
     }

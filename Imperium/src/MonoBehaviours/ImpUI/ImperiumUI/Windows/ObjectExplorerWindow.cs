@@ -203,16 +203,16 @@ internal class ObjectExplorerWindow : BaseWindow
             .ToDictionary(entry => entry.Key, entry => entry.Value);
 
         var players = Imperium.StartOfRound.allPlayerScripts;
-        playerCount.text = ImpUtils.FormatFraction(players.Count(p => !p.isPlayerDead), players.Length);
+        playerCount.text = Formatting.FormatFraction(players.Count(p => !p.isPlayerDead), players.Length);
 
         var entities = Imperium.ObjectManager.CurrentLevelEntities.Value.Where(obj => obj != null).ToList();
-        entityCount.text = ImpUtils.FormatFraction(
+        entityCount.text = Formatting.FormatFraction(
             entities.Count(p => p.gameObject.activeSelf),
             entities.Count
         );
 
         var items = Imperium.ObjectManager.CurrentLevelItems.Value.Where(obj => obj != null).ToList();
-        itemCount.text = ImpUtils.FormatFraction(
+        itemCount.text = Formatting.FormatFraction(
             items.Count(p => p.gameObject.activeSelf),
             items.Count
         );
@@ -224,13 +224,13 @@ internal class ObjectExplorerWindow : BaseWindow
                 || entry.Key == typeof(ObjectEntrySpikeTrap)
             )
             .Select(entry => entry.Value).ToList();
-        hazardCount.text = ImpUtils.FormatFraction(
+        hazardCount.text = Formatting.FormatFraction(
             hazards.Count(p => p.gameObject.activeInHierarchy),
             hazards.Count
         );
 
         var vents = Imperium.ObjectManager.CurrentLevelVents.Value.Where(obj => obj != null).ToList();
-        ventCount.text = ImpUtils.FormatFraction(
+        ventCount.text = Formatting.FormatFraction(
             vents.Count(p => p.gameObject.activeInHierarchy),
             vents.Count
         );
@@ -239,7 +239,7 @@ internal class ObjectExplorerWindow : BaseWindow
             .Where(entry => entry.Key == typeof(ObjectEntryBreakerBox))
             .Select(entry => entry.Value)
             .ToList();
-        otherCount.text = ImpUtils.FormatFraction(
+        otherCount.text = Formatting.FormatFraction(
             other.Count(p => p.gameObject.activeInHierarchy),
             other.Count
         );

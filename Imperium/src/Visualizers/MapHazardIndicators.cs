@@ -26,7 +26,8 @@ internal class MapHazardIndicators(
                 visualizerObjects[spawn.GetHashCode()] = Visualization.VisualizePoint(
                     null,
                     spawn.spawnRange,
-                    material: ImpAssets.WireframeRedMaterial
+                    material: ImpAssets.WireframeRedMaterial,
+                    name: $"Imp_HazardSpawnIndicator"
                 ).transform;
                 visualizerObjects[spawn.GetHashCode()].position = spawn.position;
             }
