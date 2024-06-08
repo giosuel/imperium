@@ -44,7 +44,7 @@ public abstract class ImpToggle
         var toggleObject = container.Find(path);
         if (!toggleObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to bind toggle '{ImpUtils.GetTransformPath(container)}/{path}'");
+            Imperium.Log.LogInfo($"[UI] Failed to bind toggle '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 

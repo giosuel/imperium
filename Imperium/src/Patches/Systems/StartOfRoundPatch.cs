@@ -1,8 +1,6 @@
 #region
 
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
 using HarmonyLib;
 using Imperium.Core;
 using Imperium.Netcode;
@@ -116,14 +114,14 @@ public class StartOfRoundPatch
     internal static class InstantTakeoffPatches
     {
         [HarmonyTranspiler]
-        [HarmonyPatch(typeof(StartOfRound),"EndOfGame", MethodType.Enumerator)]
+        [HarmonyPatch(typeof(StartOfRound), "EndOfGame", MethodType.Enumerator)]
         private static IEnumerable<CodeInstruction> EndOfGameTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch(typeof(RoundManager),"DetectElevatorRunning", MethodType.Enumerator)]
+        [HarmonyPatch(typeof(RoundManager), "DetectElevatorRunning", MethodType.Enumerator)]
         private static IEnumerable<CodeInstruction> DetectElevatorRunningTranspiler(
             IEnumerable<CodeInstruction> instructions
         )

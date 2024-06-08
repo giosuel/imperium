@@ -72,12 +72,6 @@ internal class VisualizersWindows : BaseWindow
             themeBinding
         );
         ImpToggle.Bind(
-            "Colliders/NavigationSurface",
-            content,
-            ImpSettings.Visualizations.NavigationSurface,
-            themeBinding
-        );
-        ImpToggle.Bind(
             "Colliders/InteractTriggers",
             content,
             ImpSettings.Visualizations.InteractTriggers,
@@ -178,6 +172,12 @@ internal class VisualizersWindows : BaseWindow
             "Overlays/OutsideEntitySpawns",
             content,
             ImpSettings.Visualizations.OutsideEntitySpawns,
+            themeBinding
+        );
+        ImpToggle.Bind(
+            "Overlays/NavMeshSurfaces",
+            content,
+            ImpSettings.Visualizations.NavMeshSurfaces,
             themeBinding
         );
 

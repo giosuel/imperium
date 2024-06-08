@@ -19,13 +19,13 @@ public class ImpNightVision : MonoBehaviour
         var mapCamera = GameObject.Find("MapCamera").transform;
         transform.SetParent(mapCamera);
 
-        NearLight = new GameObject("Near").AddComponent<Light>();
+        NearLight = new GameObject("Imp_NightVision_Near").AddComponent<Light>();
         NearLight.transform.SetParent(transform);
         NearLight.transform.position = mapCamera.position + Vector3.up * 20f;
         NearLight.range = 70f;
         NearLight.color = new Color(0.875f, 0.788f, 0.791f, 1);
 
-        FarLight = new GameObject("Far").AddComponent<Light>();
+        FarLight = new GameObject("Imp_NightVision_Far").AddComponent<Light>();
         FarLight.transform.SetParent(transform);
         FarLight.transform.position = mapCamera.position + Vector3.up * 70f;
         FarLight.range = 500f;

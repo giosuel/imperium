@@ -1,11 +1,15 @@
-using Imperium.Types;
+#region
+
+using Imperium.API.Types;
 using UnityEngine;
 
-namespace Imperium.API.Visualization;
+#endregion
 
-public static class Insights
+namespace Imperium.API;
+
+public static class Visualization
 {
-    public static InsightDefinition<T> For<T>() where T : Component
+    public static InsightDefinition<T> InsightFor<T>() where T : Component
     {
         if (!Imperium.IsImperiumLaunched)
         {
@@ -17,4 +21,3 @@ public static class Insights
         return Imperium.Visualization.ObjectInsights.InsightsFor<T>();
     }
 }
-

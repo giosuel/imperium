@@ -24,7 +24,7 @@ public class ImpExternalBinding<T, R> : ImpBinding<T>
     /// <param name="syncUpdate">
     ///     <see cref="ImpBinding{T}.onUpdateSync" />
     /// </param>
-    internal ImpExternalBinding(
+    public ImpExternalBinding(
         Func<T> valueGetter,
         ImpBinding<R> refresher,
         Action<T> onUpdate = null,

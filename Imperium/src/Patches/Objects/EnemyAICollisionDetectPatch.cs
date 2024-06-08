@@ -13,12 +13,25 @@ internal class EnemyAICollisionDetectPatch
 {
     [HarmonyPrefix]
     [HarmonyPatch("IHittable.Hit")]
-    private static void HitPatch(EnemyAICollisionDetect __instance, int force, int hitID)
+    private static void HitPrefixPatch(EnemyAICollisionDetect __instance, out bool __state)
     {
+        // Pass true to postfix if enemy is currently alive
+        __state = !__instance.mainScript.isEnemyDead;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("IHittable.Hit")]
+    private static void HitPostfixPatch(
+        EnemyAICollisionDetect __instance, bool __result, bool __state, int force, int hitID
+    )
+    {
+        // If the hit didn't register, don't do anything
+        if (!__result) return;
+
         var entityName = __instance.mainScript.enemyType.enemyName;
         Imperium.Log.LogInfo(
             $"Entity {entityName} ({__instance.GetInstanceID()}) was hit by {force} damage, ID: {hitID}");
-        if (!__instance.mainScript.isEnemyDead)
+        if (__state)
         {
             ImpOutput.Send(
                 $"Entity {entityName} was hit by {force} damage.",

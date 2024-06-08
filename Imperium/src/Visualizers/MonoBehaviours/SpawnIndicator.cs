@@ -42,7 +42,7 @@ public class SpawnIndicator : MonoBehaviour
 
         entityText.text = entityName;
 
-        timeText.text = ImpUtils.FormatMinutesSeconds(timeLeft);
+        timeText.text = Formatting.FormatMinutesSeconds(timeLeft);
 
         if (!Imperium.Player) return;
         canvas.transform.LookAt(Imperium.Player.transform);

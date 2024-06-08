@@ -25,7 +25,8 @@ internal class ObjectEntryEntity : ObjectEntry
         ObjectManager.SpawnEntity(
             objectName,
             ((EnemyAI)component).enemyType.enemyPrefab.name,
-            spawnPosition
+            spawnPosition,
+            PlayerManager.LocalPlayerId
         );
     }
 
@@ -47,6 +48,6 @@ internal class ObjectEntryEntity : ObjectEntry
     {
         var entity = (EnemyAI)component;
         var entityName = entity.enemyType.enemyName;
-        return entity.isEnemyDead ? ImpUtils.RichText.Strikethrough(entityName) : entityName;
+        return entity.isEnemyDead ? RichText.Strikethrough(entityName) : entityName;
     }
 }

@@ -1,7 +1,11 @@
+#region
+
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+
+#endregion
 
 namespace Imperium.Patches.Objects;
 
@@ -14,9 +18,9 @@ internal static class InteractTriggerPatch
     [HarmonyPatch("specialInteractAnimation")]
     private static void specialInteractAnimationPrefixPatch(InteractTrigger __instance)
     {
-        if (!ImpSettings.Animations.Interact.Value)
+        if (ImpSettings.AnimationSkipping.Interact.Value)
         {
-            if (!ImpSettings.Animations.InteractHold.Value)
+            if (ImpSettings.AnimationSkipping.InteractHold.Value)
             {
                 // Backup original animation wait time
                 if (!OriginalAnimationWaitTimes.ContainsKey(__instance.GetInstanceID()))
@@ -41,7 +45,7 @@ internal static class InteractTriggerPatch
     [HarmonyPatch("specialInteractAnimation")]
     private static void specialInteractAnimationPatch(InteractTrigger __instance, PlayerControllerB playerController)
     {
-        if (!ImpSettings.Animations.Interact.Value)
+        if (ImpSettings.AnimationSkipping.Interact.Value)
         {
             playerController.playerBodyAnimator.ResetTrigger(__instance.animationString);
         }

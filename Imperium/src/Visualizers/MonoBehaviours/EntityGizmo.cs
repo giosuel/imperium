@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -16,9 +17,10 @@ public class EntityGizmo : MonoBehaviour
 {
     private EnemyAI entityController;
 
-    private EntityInfoConfig entityConfig;
+    private EntityGizmoConfig entityConfig;
     private Visualization visualization;
 
+    private LineRenderer lastHeardNoise;
     private LineRenderer targetLookLine;
     private LineRenderer targetPlayerLine;
 
@@ -27,30 +29,29 @@ public class EntityGizmo : MonoBehaviour
     private readonly Dictionary<string, GameObject> VisualizerObjects = [];
     private readonly Dictionary<string, float> VisualizerTimers = [];
 
-    private LineRenderer lastHeardNoise;
     private Vector3 lastHeardNoisePosition;
     private float lastHeardNoiseTimer;
 
-    internal void Init(EntityInfoConfig config, Visualization visualizer, EnemyAI entity)
+    internal void Init(EntityGizmoConfig config, Visualization visualizer, EnemyAI entity)
     {
         entityConfig = config;
         visualization = visualizer;
         entityController = entity;
 
-        targetLookLine = ImpUtils.Geometry.CreateLine(entity.transform, 0.03f, true);
+        targetLookLine = ImpGeometry.CreateLine(entity.transform, 0.03f, true);
 
-        targetPlayerLine = ImpUtils.Geometry.CreateLine(entity.transform, 0.03f, true);
+        targetPlayerLine = ImpGeometry.CreateLine(entity.transform, 0.03f, true);
         for (var i = 0; i < pathLines.Length; i++)
         {
-            pathLines[i] = ImpUtils.Geometry.CreateLine(transform, 0.1f, true);
+            pathLines[i] = ImpGeometry.CreateLine(transform, 0.1f, true);
         }
 
-        lastHeardNoise = ImpUtils.Geometry.CreateLine(entity.transform, 0.03f, true);
+        lastHeardNoise = ImpGeometry.CreateLine(entity.transform, 0.03f, true);
     }
 
     internal void NoiseVisualizerUpdate(Vector3 origin)
     {
-        ImpUtils.Geometry.SetLinePositions(lastHeardNoise, entityController.transform.position, origin);
+        ImpGeometry.SetLinePositions(lastHeardNoise, entityController.transform.position, origin);
         lastHeardNoise.gameObject.SetActive(entityConfig.Hearing.Value);
 
         lastHeardNoisePosition = origin;
@@ -61,7 +62,9 @@ public class EntityGizmo : MonoBehaviour
         Transform eye,
         float angle, float size,
         Material material,
-        Func<EntityInfoConfig, ImpBinding<bool>> configGetter
+        Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
+        Func<Vector3> relativepositionOverride = null,
+        Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
         var identifier = Visualization.GenerateConeHash(entityController, eye, angle, size);
@@ -79,13 +82,13 @@ public class EntityGizmo : MonoBehaviour
 
         if (ImpSettings.Visualizations.SmoothAnimations.Value)
         {
-            visualizer.transform.localPosition = Vector3.zero;
+            visualizer.transform.localPosition = relativepositionOverride?.Invoke() ?? Vector3.zero;
             visualizer.transform.localRotation = Quaternion.identity;
             visualizer.transform.SetParent(eye, true);
         }
         else
         {
-            visualizer.transform.position = eye.position;
+            visualizer.transform.position = absolutePositionOverride?.Invoke(eye) ?? eye.position;
             visualizer.transform.rotation = eye.rotation;
             visualizer.transform.SetParent(null, true);
         }
@@ -100,14 +103,16 @@ public class EntityGizmo : MonoBehaviour
     internal void SphereVisualizerUpdate(
         Transform eye,
         float size, Material material,
-        Func<EntityInfoConfig, ImpBinding<bool>> configGetter
+        Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
+        Func<Vector3> relativepositionOverride = null,
+        Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
         var identifier = Visualization.GenerateSphereHash(entityController, eye, size);
 
         if (!VisualizerObjects.TryGetValue(identifier, out var visualizer))
         {
-            visualizer = ImpUtils.Geometry.CreatePrimitive(
+            visualizer = ImpGeometry.CreatePrimitive(
                 PrimitiveType.Sphere,
                 // Parent the visualizer to the eye if smooth animations are enabled
                 parent: ImpSettings.Visualizations.SmoothAnimations.Value ? eye : null,
@@ -123,13 +128,13 @@ public class EntityGizmo : MonoBehaviour
 
         if (ImpSettings.Visualizations.SmoothAnimations.Value)
         {
-            visualizer.transform.localPosition = Vector3.zero;
+            visualizer.transform.localPosition = relativepositionOverride?.Invoke() ?? Vector3.zero;
             visualizer.transform.localRotation = Quaternion.identity;
             visualizer.transform.SetParent(eye, true);
         }
         else
         {
-            visualizer.transform.position = eye.position;
+            visualizer.transform.position = absolutePositionOverride?.Invoke(eye) ?? eye.position;
             visualizer.transform.rotation = eye.rotation;
             visualizer.transform.SetParent(null, true);
         }
@@ -141,10 +146,20 @@ public class EntityGizmo : MonoBehaviour
         VisualizerTimers[identifier] = Time.realtimeSinceStartup;
     }
 
+    private void OnDestroy()
+    {
+        foreach (var (_, obj) in VisualizerObjects) Destroy(obj);
+        foreach (var obj in pathLines.Where(obj => obj)) Destroy(obj.gameObject);
+        if (targetLookLine) Destroy(targetLookLine.gameObject);
+        if (targetPlayerLine) Destroy(targetPlayerLine.gameObject);
+        if (lastHeardNoise) Destroy(lastHeardNoise.gameObject);
+    }
+
     private void Update()
     {
         if (!entityController)
         {
+            foreach (var (_, obj) in VisualizerObjects) Destroy(obj);
             Destroy(gameObject);
             return;
         }
@@ -178,7 +193,7 @@ public class EntityGizmo : MonoBehaviour
         }
         else
         {
-            ImpUtils.Geometry.SetLinePositions(
+            ImpGeometry.SetLinePositions(
                 lastHeardNoise,
                 entityController.transform.position,
                 lastHeardNoisePosition
@@ -198,12 +213,12 @@ public class EntityGizmo : MonoBehaviour
                 pathLines[i].gameObject.SetActive(isShown);
                 if (!isShown) continue;
 
-                ImpUtils.Geometry.SetLinePositions(
+                ImpGeometry.SetLinePositions(
                     pathLines[i],
                     previousCorner,
                     corners[i]
                 );
-                ImpUtils.Geometry.SetLineColor(pathLines[i], Color.white);
+                ImpGeometry.SetLineColor(pathLines[i], Color.white);
                 previousCorner = corners[i];
             }
             else
@@ -237,12 +252,12 @@ public class EntityGizmo : MonoBehaviour
         {
             targetLookLine.gameObject.SetActive(true);
 
-            ImpUtils.Geometry.SetLinePositions(
+            ImpGeometry.SetLinePositions(
                 targetLookLine,
                 entityController.transform.position,
                 lookAtPosition.Value
             );
-            ImpUtils.Geometry.SetLineColor(targetLookLine, new Color(0.47f, 0.66f, 0.35f));
+            ImpGeometry.SetLineColor(targetLookLine, new Color(0.47f, 0.66f, 0.35f));
         }
         else
         {
@@ -262,12 +277,12 @@ public class EntityGizmo : MonoBehaviour
         {
             targetPlayerLine.gameObject.SetActive(true);
 
-            ImpUtils.Geometry.SetLinePositions(
+            ImpGeometry.SetLinePositions(
                 targetPlayerLine,
                 entityController.transform.position,
                 entityController.targetPlayer.transform.position
             );
-            ImpUtils.Geometry.SetLineColor(targetPlayerLine, Color.red);
+            ImpGeometry.SetLineColor(targetPlayerLine, Color.red);
         }
         else
         {
@@ -276,7 +291,7 @@ public class EntityGizmo : MonoBehaviour
     }
 }
 
-internal class EntityInfoConfig
+internal class EntityGizmoConfig
 {
     internal readonly string entityName;
 
@@ -288,16 +303,16 @@ internal class EntityInfoConfig
     internal readonly ImpConfig<bool> Hearing;
     internal readonly ImpConfig<bool> Custom;
 
-    internal EntityInfoConfig(string entityName)
+    internal EntityGizmoConfig(string entityName)
     {
         this.entityName = entityName;
 
-        Info = new ImpConfig<bool>("Visualizers.EntityGizmos.Info", entityName, false);
-        Pathfinding = new ImpConfig<bool>("Visualizers.EntityGizmos.Pathfinding", entityName, false);
-        Targeting = new ImpConfig<bool>("Visualizers.EntityGizmos.Targeting", entityName, false);
-        LookingAt = new ImpConfig<bool>("Visualizers.EntityGizmos.LookingAt", entityName, false);
-        LineOfSight = new ImpConfig<bool>("Visualizers.EntityGizmos.LineOfSight", entityName, false);
-        Hearing = new ImpConfig<bool>("Visualizers.EntityGizmos.Hearing", entityName, false);
-        Custom = new ImpConfig<bool>("Visualizers.EntityGizmos.Custom", entityName, false);
+        Info = new ImpConfig<bool>("Visualization.EntityGizmos.Info", entityName, false);
+        Pathfinding = new ImpConfig<bool>("Visualization.EntityGizmos.Pathfinding", entityName, false);
+        Targeting = new ImpConfig<bool>("Visualization.EntityGizmos.Targeting", entityName, false);
+        LookingAt = new ImpConfig<bool>("Visualization.EntityGizmos.LookingAt", entityName, false);
+        LineOfSight = new ImpConfig<bool>("Visualization.EntityGizmos.LineOfSight", entityName, false);
+        Hearing = new ImpConfig<bool>("Visualization.EntityGizmos.Hearing", entityName, false);
+        Custom = new ImpConfig<bool>("Visualization.EntityGizmos.Custom", entityName, false);
     }
 }

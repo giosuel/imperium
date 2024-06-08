@@ -1,13 +1,16 @@
+#region
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Imperium.API.Types;
 using Imperium.Core;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
-using Imperium.Types;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.Visualizers.MonoBehaviours;
 
@@ -15,11 +18,11 @@ public class ObjectInsight : MonoBehaviour
 {
     private Component targetObject;
 
-    private GameObject infoPanelObject;
+    private GameObject insightPanelObject;
     private Transform panelContainer;
-    private Transform infoPanel;
-    private RectTransform infoPanelRect;
-    private RectTransform infoPanelCanvasRect;
+    private Transform insightPanel;
+    private RectTransform insightPanelRect;
+    private RectTransform insightPanelCanvasRect;
 
     private TMP_Text panelObjectName;
     private GameObject panelEntryTemplate;
@@ -37,15 +40,15 @@ public class ObjectInsight : MonoBehaviour
         targetObject = target;
         InsightDefinition = definition;
 
-        infoPanelObject = Instantiate(ImpAssets.EntityInfoPanel, transform);
-        panelContainer = infoPanelObject.transform.Find("Container");
-        infoPanel = panelContainer.Find("Panel");
-        infoPanelRect = panelContainer.GetComponent<RectTransform>();
-        infoPanelCanvasRect = infoPanelObject.GetComponent<RectTransform>();
+        insightPanelObject = Instantiate(ImpAssets.ObjectInsightPanel, transform);
+        panelContainer = insightPanelObject.transform.Find("Container");
+        insightPanel = panelContainer.Find("Panel");
+        insightPanelRect = panelContainer.GetComponent<RectTransform>();
+        insightPanelCanvasRect = insightPanelObject.GetComponent<RectTransform>();
 
-        panelObjectName = infoPanel.Find("Name").GetComponent<TMP_Text>();
-        deathOverlay = infoPanel.Find("Death").GetComponent<Image>();
-        panelEntryTemplate = infoPanel.Find("Template").gameObject;
+        panelObjectName = insightPanel.Find("Name").GetComponent<TMP_Text>();
+        deathOverlay = insightPanel.Find("Death").GetComponent<Image>();
+        panelEntryTemplate = insightPanel.Find("Template").gameObject;
         panelEntryTemplate.SetActive(false);
 
         InsightDefinition.Insights.onUpdate += OnInsightsUpdate;
@@ -53,7 +56,7 @@ public class ObjectInsight : MonoBehaviour
     }
 
     /// <summary>
-    /// Replaces the current definition with a new one. Used, if a more specific insight was registered.
+    ///     Replaces the current definition with a new one. Used, if a more specific insight was registered.
     /// </summary>
     /// <param name="definition">New insight definition</param>
     internal void UpdateInsightDefinition(InsightDefinition<Component> definition)
@@ -76,6 +79,13 @@ public class ObjectInsight : MonoBehaviour
 
             insightEntry.Init(insightName, insightGenerator, targetObject);
         }
+
+        // Destroy insights that have been removed
+        foreach (var insightName in targetInsightEntries.Keys.ToHashSet().Except(insights.Keys.ToHashSet()))
+        {
+            Destroy(targetInsightEntries[insightName].gameObject);
+            targetInsightEntries.Remove(insightName);
+        }
     }
 
     private ObjectInsightEntry CreateInsightEntry(string insightName, Func<Component, string> insightGenerator)
@@ -86,7 +96,7 @@ public class ObjectInsight : MonoBehaviour
             Destroy(existingInsightEntry.gameObject);
         }
 
-        var insightEntryObject = Instantiate(panelEntryTemplate, infoPanel);
+        var insightEntryObject = Instantiate(panelEntryTemplate, insightPanel);
         insightEntryObject.SetActive(true);
         var insightEntry = insightEntryObject.gameObject.AddComponent<ObjectInsightEntry>();
         insightEntry.Init(insightName, insightGenerator, targetObject);
@@ -104,7 +114,7 @@ public class ObjectInsight : MonoBehaviour
 
         if (!InsightDefinition.VisibilityBinding.Value)
         {
-            infoPanelObject.SetActive(false);
+            insightPanelObject.SetActive(false);
             return;
         }
 
@@ -131,7 +141,7 @@ public class ObjectInsight : MonoBehaviour
 
         if (Imperium.Map.Minimap.CameraRect.Contains(screenPosition))
         {
-            infoPanelObject.SetActive(false);
+            insightPanelObject.SetActive(false);
             return;
         }
 
@@ -142,17 +152,17 @@ public class ObjectInsight : MonoBehaviour
 
         if (!playerHasLOS && !ImpSettings.Visualizations.SSAlwaysOnTop.Value || screenPosition.z < 0)
         {
-            infoPanelObject.SetActive(false);
+            insightPanelObject.SetActive(false);
             return;
         }
 
         var activeTexture = camera.activeTexture;
-        var scaleFactorX = activeTexture.width / infoPanelCanvasRect.sizeDelta.x;
-        var scaleFactorY = activeTexture.height / infoPanelCanvasRect.sizeDelta.y;
+        var scaleFactorX = activeTexture.width / insightPanelCanvasRect.sizeDelta.x;
+        var scaleFactorY = activeTexture.height / insightPanelCanvasRect.sizeDelta.y;
 
         var positionX = screenPosition.x / scaleFactorX;
         var positionY = screenPosition.y / scaleFactorY;
-        infoPanelRect.anchoredPosition = new Vector2(positionX, positionY);
+        insightPanelRect.anchoredPosition = new Vector2(positionX, positionY);
 
         // Panel scaling by distance to player
         var panelScaleFactor = ImpSettings.Visualizations.SSOverlayScale.Value;
@@ -164,12 +174,13 @@ public class ObjectInsight : MonoBehaviour
             );
         }
 
-        infoPanelRect.localScale = panelScaleFactor * Vector3.one;
+        transform.localScale = Vector3.one;
+        insightPanelRect.localScale = panelScaleFactor * Vector3.one;
 
         panelObjectName.text = InsightDefinition.NameGenerator != null
             ? InsightDefinition.NameGenerator(targetObject)
             : targetObject.GetInstanceID().ToString();
 
-        infoPanelObject.SetActive(true);
+        insightPanelObject.SetActive(true);
     }
 }

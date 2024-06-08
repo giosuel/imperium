@@ -24,7 +24,7 @@ public class KnifeGizmo : MonoBehaviour
 
     private void Awake()
     {
-        capsule = ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Capsule, transform,
+        capsule = ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, transform,
             ImpAssets.WireframePurpleMaterial);
     }
 
@@ -90,14 +90,14 @@ public class KnifeGizmo : MonoBehaviour
             {
                 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
                 // This is only executed when a new collider is detected
-                lineRenderer = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
+                lineRenderer = ImpGeometry.CreateLine(transform, useWorldSpace: true);
                 targetRays[instanceId] = lineRenderer;
             }
 
             collisionIds.Add(instanceId);
 
-            ImpUtils.Geometry.SetLineColor(lineRenderer, color);
-            ImpUtils.Geometry.SetLinePositions(lineRenderer, position + Vector3.up * 0.2f, hit.point);
+            ImpGeometry.SetLineColor(lineRenderer, color);
+            ImpGeometry.SetLinePositions(lineRenderer, position + Vector3.up * 0.2f, hit.point);
         }
 
         // Destroy old rays that are not drawn anymore

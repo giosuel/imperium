@@ -28,13 +28,13 @@ public class ImpMap : MonoBehaviour
     {
         var originalMapCam = GameObject.Find("MapCamera").GetComponent<Camera>();
 
-        var cameraMapObject = new GameObject("ImpMap");
+        var cameraMapObject = new GameObject("Imp_MapCamera");
         cameraMapObject.transform.SetParent(originalMapCam.transform);
         cameraMapObject.transform.position = originalMapCam.transform.position + Vector3.up * 20f;
         cameraMapObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 
         // Camera top-down light
-        var light = new GameObject("ImpMapLight").AddComponent<Light>();
+        var light = new GameObject("Imp_MapLight").AddComponent<Light>();
         light.transform.SetParent(transform);
         light.transform.position = originalMapCam.transform.position + Vector3.up * 30f;
         light.range = 200f;
@@ -81,6 +81,16 @@ public class ImpMap : MonoBehaviour
                 1,
                 100
             )
+        );
+    }
+
+    internal void SetCameraClipped(bool isClipped)
+    {
+        CameraNearClip.Set(
+            isClipped ? ImpConstants.DefaultMapCameraNearClip : ImpConstants.DefaultMapCameraNearClipFreeLook
+        );
+        CameraFarClip.Set(
+            isClipped ? ImpConstants.DefaultMapCameraFarClip : ImpConstants.DefaultMapCameraFarClipFreeLook
         );
     }
 

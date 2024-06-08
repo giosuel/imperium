@@ -35,7 +35,8 @@ internal class ScrapSpawnIndicators(
                 visualizerObjects[spawn.GetInstanceID()] = Visualization.VisualizePoint(
                     spawn.gameObject,
                     size,
-                    material: material
+                    material: material,
+                    name: $"Imp_ScrapSpawnIndicator_{spawn.GetInstanceID()}"
                 ).transform;
             }
         }

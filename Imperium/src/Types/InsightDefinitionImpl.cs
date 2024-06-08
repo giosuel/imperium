@@ -1,40 +1,17 @@
+#region
+
 using System;
 using System.Collections.Generic;
+using Imperium.API.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 
+#endregion
+
 namespace Imperium.Types;
 
-/// <summary>
-/// Definition of an object insight.
-///
-/// Holds insight generators for a specific type of object alongside a few more items.
-///  - Name Generator -> Function to get the name of the object
-///  - IsDead Generator -> Function to get the alive status of the object
-///  - Position Override -> Function to transform the object's target's position to the desired insight panel position.
-///
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public interface InsightDefinition<out T> where T : Component
-{
-    public ImpBinding<Dictionary<string, Func<Component, string>>> Insights { get; }
-    public Func<Component, string> NameGenerator { get; }
-    public Func<Component, bool> IsDeadGenerator { get; }
-    public Func<Component, Vector3> PositionOverride { get; }
-    public ImpBinding<bool> VisibilityBinding { get; }
-
-    public InsightDefinition<T> SetNameGenerator(Func<T, string> generator);
-
-    public InsightDefinition<T> SetIsDeadGenerator(Func<T, bool> generator);
-
-    public InsightDefinition<T> SetPositionOverride(Func<T, Vector3> @override);
-
-    public InsightDefinition<T> SetConfigKey(string configKey);
-    public InsightDefinition<T> RegisterInsight(string name, Func<T, string> generator);
-}
-
-public class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Component
+internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Component
 {
     private readonly Dictionary<Type, InsightDefinition<Component>> globalInsights;
     private readonly ImpBinding<Dictionary<Type, ImpBinding<bool>>> insightVisibilityBindings;
@@ -60,27 +37,27 @@ public class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Component
     public InsightDefinition<T> SetNameGenerator(Func<T, string> generator)
     {
         NameGenerator = obj => generator((T)obj);
-        PropagateNameGenerator(generator);
+        PropagateNameGenerator(obj => generator((T)obj));
         return this;
     }
 
     public InsightDefinition<T> SetIsDeadGenerator(Func<T, bool> generator)
     {
         IsDeadGenerator = obj => generator((T)obj);
-        PropagateIsDeadGenerator(generator);
+        PropagateIsDeadGenerator(obj => generator((T)obj));
         return this;
     }
 
     public InsightDefinition<T> SetPositionOverride(Func<T, Vector3> @override)
     {
         PositionOverride = obj => @override((T)obj);
-        PropagatePositionOverride(@override);
+        PropagatePositionOverride(obj => @override((T)obj));
         return this;
     }
 
     public InsightDefinition<T> SetConfigKey(string configKey)
     {
-        VisibilityBinding = new ImpConfig<bool>("Visualizers.Insights", configKey, false);
+        VisibilityBinding = new ImpConfig<bool>("Visualization.Insights", configKey, false);
 
         // Register possibly new binding in visibility binding list
         insightVisibilityBindings.Value[typeof(T)] = VisibilityBinding;
@@ -95,20 +72,33 @@ public class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Component
         // Refresh insights to signalize the users that an insight was added / changed
         Insights.Refresh();
 
-        PropagateInsight(name, obj => generator((T)obj));
+        PropagateInsightRegister(name, obj => generator((T)obj));
+
+        return this;
+    }
+
+    public InsightDefinition<T> UnregisterInsight(string name)
+    {
+        if (!Insights.Value.ContainsKey(name)) return this;
+
+        Insights.Value.Remove(name);
+
+        // Refresh insights to signalize the users that an insight was added / changed
+        Insights.Refresh();
+
+        PropagateInsightUnregister(name);
 
         return this;
     }
 
     /// <summary>
-    /// Inherits the properties from a possible parent InsightDefinition. Insights are merged and the closest generators
-    /// and overrides are picked.
-    ///
-    /// Only inherits properties that aren't defined yet. Does not override insights.
+    ///     Inherits the properties from a possible parent InsightDefinition. Insights are merged and the closest generators
+    ///     and overrides are picked.
+    ///     Only inherits properties that aren't defined yet. Does not override insights.
     /// </summary>
     private void InheritPropertiesFromParents()
     {
-        var parentTypes = ImpUtils.GetParentTypes<T>();
+        var parentTypes = Debugging.GetParentTypes<T>();
         foreach (var type in parentTypes)
         {
             if (globalInsights.TryGetValue(type, out var parentDefinition))
@@ -129,68 +119,90 @@ public class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Component
     }
 
     /// <summary>
-    /// Propagates a new insight to child types.
+    ///     Propagates the removal of an insight to child types.
     /// </summary>
-    private void PropagateInsight(string insightName, Func<Component, string> insightGenerator)
+    private void PropagateInsightUnregister(string insightName)
     {
         foreach (var (type, typeInsights) in globalInsights)
         {
             if (type.IsSubclassOf(typeof(T)))
             {
-                ((InsightDefinitionImpl<T>)typeInsights).AddInsightFromParent(insightName, insightGenerator);
+                typeInsights.RemoveInsightFromParent(insightName);
             }
         }
     }
 
     /// <summary>
-    /// Propagates the name generator to child types that don't have their own.
+    ///     Propagates the addition of an insight to child types.
     /// </summary>
-    private void PropagateNameGenerator(Func<T, string> generator)
+    private void PropagateInsightRegister(string insightName, Func<Component, string> insightGenerator)
     {
         foreach (var (type, typeInsights) in globalInsights)
         {
             if (type.IsSubclassOf(typeof(T)))
             {
-                ((InsightDefinitionImpl<T>)typeInsights).SetNameGeneratorFromParent(generator);
+                typeInsights.AddInsightFromParent(insightName, insightGenerator);
             }
         }
     }
 
     /// <summary>
-    /// Propagates the is dead generator to child types that don't have their own.
+    ///     Propagates the name generator to child types that don't have their own.
     /// </summary>
-    private void PropagateIsDeadGenerator(Func<T, bool> generator)
+    private void PropagateNameGenerator(Func<Component, string> generator)
     {
         foreach (var (type, typeInsights) in globalInsights)
         {
             if (type.IsSubclassOf(typeof(T)))
             {
-                ((InsightDefinitionImpl<T>)typeInsights).SetIsDeadGeneratorFromParent(generator);
+                typeInsights.SetNameGeneratorFromParent(generator);
             }
         }
     }
 
     /// <summary>
-    /// Propagates the position override to child types that don't have their own.
+    ///     Propagates the is dead generator to child types that don't have their own.
     /// </summary>
-    private void PropagatePositionOverride(Func<T, Vector3> @override)
+    private void PropagateIsDeadGenerator(Func<Component, bool> generator)
     {
         foreach (var (type, typeInsights) in globalInsights)
         {
             if (type.IsSubclassOf(typeof(T)))
             {
-                ((InsightDefinitionImpl<T>)typeInsights).SetPositionOverrideFromParent(@override);
+                typeInsights.SetIsDeadGeneratorFromParent(generator);
             }
         }
     }
 
-    private void AddInsightFromParent(string insightName, Func<Component, string> insightGenerator)
+    /// <summary>
+    ///     Propagates the position override to child types that don't have their own.
+    /// </summary>
+    private void PropagatePositionOverride(Func<Component, Vector3> @override)
+    {
+        foreach (var (type, typeInsights) in globalInsights)
+        {
+            if (type.IsSubclassOf(typeof(T)))
+            {
+                typeInsights.SetPositionOverrideFromParent(@override);
+            }
+        }
+    }
+
+    public void RemoveInsightFromParent(string insightName)
+    {
+        if (!Insights.Value.ContainsKey(insightName)) return;
+
+        Insights.Value.Remove(insightName);
+        Insights.Refresh();
+    }
+
+    public void AddInsightFromParent(string insightName, Func<Component, string> insightGenerator)
     {
         Insights.Value[insightName] = insightGenerator;
         Insights.Refresh();
     }
 
-    private void SetNameGeneratorFromParent(Func<T, string> generator) => NameGenerator ??= obj => generator((T)obj);
-    private void SetIsDeadGeneratorFromParent(Func<T, bool> generator) => IsDeadGenerator ??= obj => generator((T)obj);
-    private void SetPositionOverrideFromParent(Func<T, Vector3> @override) => PositionOverride ??= obj => @override((T)obj);
+    public void SetNameGeneratorFromParent(Func<T, string> generator) => NameGenerator ??= obj => generator((T)obj);
+    public void SetIsDeadGeneratorFromParent(Func<T, bool> generator) => IsDeadGenerator ??= obj => generator((T)obj);
+    public void SetPositionOverrideFromParent(Func<T, Vector3> @override) => PositionOverride ??= obj => @override((T)obj);
 }

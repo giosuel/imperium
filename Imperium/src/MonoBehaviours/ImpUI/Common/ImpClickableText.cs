@@ -25,7 +25,7 @@ internal class ImpClickableText : ImpInteractable
         textComponent = GetComponent<TMP_Text>();
         callback = action;
         text = value;
-        onHoverEffect = hoverEffect ?? ImpUtils.RichText.Underlined;
+        onHoverEffect = hoverEffect ?? RichText.Underlined;
         textComponent.text = text;
 
         onEnter += () => textComponent.text = onHoverEffect(text);

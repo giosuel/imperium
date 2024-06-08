@@ -41,7 +41,7 @@ public abstract class ImpButton
         var buttonObject = container.Find(path);
         if (!buttonObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to bind button '{ImpUtils.GetTransformPath(container)}/{path}'");
+            Imperium.Log.LogInfo($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 

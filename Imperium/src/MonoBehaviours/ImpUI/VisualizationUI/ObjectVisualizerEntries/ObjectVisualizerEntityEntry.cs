@@ -1,7 +1,6 @@
 #region
 
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
@@ -14,7 +13,7 @@ namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
 
 public class ObjectVisualizerEntityEntry : MonoBehaviour
 {
-    internal void Init(EntityInfoConfig config, ImpBinding<ImpTheme> themeBinding)
+    internal void Init(EntityGizmoConfig config, ImpBinding<ImpTheme> themeBinding)
     {
         transform.Find("Name").GetComponent<TMP_Text>().text = config.entityName;
 

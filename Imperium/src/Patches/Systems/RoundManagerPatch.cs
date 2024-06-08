@@ -1,6 +1,5 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -9,7 +8,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers;
 using UnityEngine;
-using UnityEngine.AI;
 using Object = UnityEngine.Object;
 
 #endregion
@@ -53,7 +51,7 @@ internal static class RoundManagerPatch
             8912896,
             QueryTriggerInteraction.Collide
         );
-        colliders.FirstOrDefault(collider => collider && collider.gameObject.name == "ImpNoiseListener")
+        colliders.FirstOrDefault(collider => collider && collider.gameObject.name == "Imp_NoiseListener")
             ?.GetComponent<INoiseListener>()
             ?.DetectNoise(noisePosition, noiseLoudness, timesPlayedInSameSpot, noiseID);
     }

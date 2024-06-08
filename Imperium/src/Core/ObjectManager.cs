@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
+using Imperium.MonoBehaviours;
 using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -91,6 +93,7 @@ internal class ObjectManager : ImpLifecycleObject
         string entityName,
         string prefabName,
         Vector3 position,
+        int spawningPlayerId,
         int amount = 1,
         int health = -1,
         bool sendNotification = false
@@ -100,6 +103,7 @@ internal class ObjectManager : ImpLifecycleObject
             entityName,
             prefabName,
             new ImpVector(position),
+            spawningPlayerId,
             amount,
             health,
             sendNotification
@@ -145,6 +149,7 @@ internal class ObjectManager : ImpLifecycleObject
         string entityName,
         string prefabName,
         Vector3 position,
+        int spawningPlayerId,
         int amount,
         int health,
         bool sendNotification
@@ -158,13 +163,27 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
+        // Raycast to find the ground to spawn the entity on
+        var hasGround = Physics.Raycast(
+            new Ray(position + Vector3.up * 2f, Vector3.down),
+            out var groundInfo, 100, ImpConstants.IndicatorMask
+        );
+        var actualSpawnPosition = hasGround
+            ? groundInfo.point
+            : PlayerManager.GetPlayerFromID(spawningPlayerId).transform.position;
+
         for (var i = 0; i < amount; i++)
         {
-            var entityObj = Object.Instantiate(
-                spawningEntity.enemyPrefab,
-                position,
-                Quaternion.Euler(Vector3.zero)
-            );
+            var entityObj = entityName switch
+            {
+                "Shiggy" => InstantiateShiggy(spawningEntity, actualSpawnPosition),
+                _ => Object.Instantiate(
+                    spawningEntity.enemyPrefab,
+                    actualSpawnPosition,
+                    Quaternion.identity
+                )
+            };
+
             if (health > 0) entityObj.GetComponent<EnemyAI>().enemyHP = health;
 
             var netObject = entityObj.gameObject.GetComponentInChildren<NetworkObject>();
@@ -184,6 +203,25 @@ internal class ObjectManager : ImpLifecycleObject
         }
 
         ImpNetSpawning.Instance.OnEntitiesChangedClientRpc();
+    }
+
+    private static GameObject InstantiateShiggy(EnemyType enemyType, Vector3 spawnPosition)
+    {
+        var shiggyPrefab = Object.Instantiate(enemyType.enemyPrefab, spawnPosition, Quaternion.identity);
+        shiggyPrefab.name = "ShiggyEntity";
+        Object.Destroy(shiggyPrefab.GetComponent<TestEnemy>());
+        Object.Destroy(shiggyPrefab.GetComponent<HDAdditionalLightData>());
+        Object.Destroy(shiggyPrefab.GetComponent<Light>());
+        Object.Destroy(shiggyPrefab.GetComponent<AudioSource>());
+        foreach (var componentsInChild in shiggyPrefab.GetComponentsInChildren<BoxCollider>())
+        {
+            Object.Destroy(componentsInChild);
+        }
+
+        var shiggyAI = shiggyPrefab.AddComponent<ShiggyAI>();
+        shiggyAI.enemyType = enemyType;
+
+        return shiggyPrefab;
     }
 
     [ImpAttributes.HostOnly]
@@ -247,7 +285,7 @@ internal class ObjectManager : ImpLifecycleObject
                     var itemTransform = grabbableItem.transform;
                     itemTransform.position = position + Vector3.up;
                     grabbableItem.startFallingPosition = itemTransform.position;
-                    if (grabbableItem.transform.parent != null)
+                    if (grabbableItem.transform.parent)
                     {
                         grabbableItem.startFallingPosition = grabbableItem.transform.parent.InverseTransformPoint(
                             grabbableItem.startFallingPosition
@@ -431,6 +469,8 @@ internal class ObjectManager : ImpLifecycleObject
         {
             allEntities.Add(enemyType);
 
+            if (enemyType.enemyName == "Red pill") allEntities.Add(CreateShiggyType(enemyType));
+
             if (enemyType.isDaytimeEnemy)
             {
                 allDaytimeEntities.Add(enemyType);
@@ -489,6 +529,14 @@ internal class ObjectManager : ImpLifecycleObject
         AllStaticPrefabs.Set(allStaticPrefabs);
 
         GenerateDisplayNameMap();
+    }
+
+    private static EnemyType CreateShiggyType(EnemyType type)
+    {
+        var shiggyType = Object.Instantiate(type);
+        shiggyType.enemyName = "Shiggy";
+
+        return shiggyType;
     }
 
     internal string GetStaticPrefabName(string objectName)

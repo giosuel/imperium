@@ -5,12 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 #endregion
 
@@ -18,26 +16,26 @@ namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.Windows;
 
 internal class ObjectVisualizersWindow : BaseWindow
 {
-    private GameObject objectTemplate;
+    private GameObject insightTemplate;
     private GameObject playerTemplate;
     private GameObject entityTemplate;
 
-    private Transform objectList;
+    private Transform insightsList;
     private Transform playerList;
     private Transform entityList;
 
-    private readonly Dictionary<string, ObjectVisualizerObjectEntry> objectEntries = [];
+    private readonly Dictionary<string, ObjectVisualizerInsightEntry> insightEntries = [];
     private readonly Dictionary<int, ObjectVisualizerPlayerEntry> playerEntries = [];
     private readonly Dictionary<int, ObjectVisualizerEntityEntry> entityEntries = [];
 
     protected override void RegisterWindow()
     {
-        objectList = content.Find("Objects/Content/Viewport/Content");
+        insightsList = content.Find("Insights/Content/Viewport/Content");
         playerList = content.Find("Players/Content/Viewport/Content");
         entityList = content.Find("Entities/Content/Viewport/Content");
 
-        objectTemplate = objectList.Find("Item").gameObject;
-        objectTemplate.SetActive(false);
+        insightTemplate = insightsList.Find("Item").gameObject;
+        insightTemplate.SetActive(false);
 
         playerTemplate = playerList.Find("Item").gameObject;
         playerTemplate.SetActive(false);
@@ -46,28 +44,13 @@ internal class ObjectVisualizersWindow : BaseWindow
         entityTemplate.SetActive(false);
 
         ImpButton.Bind(
-            "ObjectsHeader/Icons/Infos",
+            "PlayersHeader/Icons/NoiseRange",
             content,
-            ToggleObjectConfigs,
+            () => TogglePlayerConfigs(config => config.NoiseRange),
             theme: themeBinding,
             isIconButton: true
         );
 
-        ImpButton.Bind(
-            "PlayersHeader/Icons/Infos",
-            content,
-            () => TogglePlayerConfigs(config => config.Info),
-            theme: themeBinding,
-            isIconButton: true
-        );
-
-        ImpButton.Bind(
-            "EntitiesHeader/Icons/Infos",
-            content,
-            () => ToggleEntityConfigs(config => config.Info),
-            theme: themeBinding,
-            isIconButton: true
-        );
         ImpButton.Bind(
             "EntitiesHeader/Icons/Pathfinding",
             content,
@@ -113,9 +96,9 @@ internal class ObjectVisualizersWindow : BaseWindow
         ImpThemeManager.Style(
             theme,
             content,
-            new StyleOverride("Objects", Variant.DARKER),
-            new StyleOverride("Objects/Content/Scrollbar", Variant.DARKEST),
-            new StyleOverride("Objects/Content/Scrollbar/SlidingArea/Handle", Variant.LIGHTER),
+            new StyleOverride("Insights", Variant.DARKER),
+            new StyleOverride("Insights/Content/Scrollbar", Variant.DARKEST),
+            new StyleOverride("Insights/Content/Scrollbar/SlidingArea/Handle", Variant.LIGHTER),
             new StyleOverride("Players", Variant.DARKER),
             new StyleOverride("Players/Content/Scrollbar", Variant.DARKEST),
             new StyleOverride("Players/Content/Scrollbar/SlidingArea/Handle", Variant.LIGHTER),
@@ -125,22 +108,7 @@ internal class ObjectVisualizersWindow : BaseWindow
         );
     }
 
-    private static void ToggleObjectConfigs()
-    {
-        var total = Imperium.Visualization.ObjectInsights.InsightVisibilityBindings.Value.Count;
-        var activated = Imperium.Visualization.ObjectInsights.InsightVisibilityBindings.Value.Count(
-            entry => entry.Value.Value
-        );
-
-        // Set all active if at least half are inactive and vice-versa
-        var setActive = activated < total / 2;
-        foreach (var (_, insightConfig) in Imperium.Visualization.ObjectInsights.InsightVisibilityBindings.Value)
-        {
-            insightConfig.Set(setActive, skipSync: true);
-        }
-    }
-
-    private static void TogglePlayerConfigs(Func<PlayerInfoConfig, ImpBinding<bool>> configGetter)
+    private static void TogglePlayerConfigs(Func<PlayerGizmoConfig, ImpBinding<bool>> configGetter)
     {
         var total = Imperium.Visualization.PlayerGizmos.PlayerInfoConfigs.Count;
         var activated = Imperium.Visualization.PlayerGizmos.PlayerInfoConfigs.Values.Count(
@@ -155,7 +123,7 @@ internal class ObjectVisualizersWindow : BaseWindow
         }
     }
 
-    private static void ToggleEntityConfigs(Func<EntityInfoConfig, ImpBinding<bool>> configGetter)
+    private static void ToggleEntityConfigs(Func<EntityGizmoConfig, ImpBinding<bool>> configGetter)
     {
         var total = Imperium.Visualization.EntityGizmos.EntityInfoConfigs.Count;
         var activated = Imperium.Visualization.EntityGizmos.EntityInfoConfigs.Values.Count(
@@ -178,8 +146,8 @@ internal class ObjectVisualizersWindow : BaseWindow
         foreach (var entityEntry in entityEntries.Values) Destroy(entityEntry.gameObject);
         entityEntries.Clear();
 
-        foreach (var objectEntry in objectEntries.Values) Destroy(objectEntry.gameObject);
-        objectEntries.Clear();
+        foreach (var objectEntry in insightEntries.Values) Destroy(objectEntry.gameObject);
+        insightEntries.Clear();
 
         foreach (var player in Imperium.ObjectManager.CurrentPlayers.Value)
         {
@@ -194,7 +162,7 @@ internal class ObjectVisualizersWindow : BaseWindow
             playerEntries[player.GetInstanceID()] = playerEntry;
         }
 
-        foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
+        foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>().OrderBy(enemy => enemy.enemyName))
         {
             if (entityEntries.ContainsKey(entity.GetInstanceID())) continue;
 
@@ -209,22 +177,22 @@ internal class ObjectVisualizersWindow : BaseWindow
 
         foreach (var (objectType, objectConfig) in Imperium.Visualization.ObjectInsights.InsightVisibilityBindings.Value)
         {
-            var objectEntryObject = Instantiate(objectTemplate, objectList);
-            objectEntryObject.SetActive(true);
+            var insightEntryObject = Instantiate(insightTemplate, insightsList);
+            insightEntryObject.SetActive(true);
 
-            var objectEntry = objectEntryObject.AddComponent<ObjectVisualizerObjectEntry>();
-            objectEntry.Init(objectType.Name, objectConfig, themeBinding);
+            var insightEntry = insightEntryObject.AddComponent<ObjectVisualizerInsightEntry>();
+            insightEntry.Init(objectType.Name, objectConfig, themeBinding);
 
-            objectEntries[objectType.FullName ?? objectType.Name] = objectEntry;
+            insightEntries[objectType.FullName ?? objectType.Name] = insightEntry;
         }
 
         // Register custom object entry
-        var customObjectEntryObject = Instantiate(objectTemplate, entityList);
-        customObjectEntryObject.SetActive(true);
+        var customInsightEntryObject = Instantiate(insightTemplate, insightsList);
+        customInsightEntryObject.SetActive(true);
 
-        var customObjectEntry = customObjectEntryObject.AddComponent<ObjectVisualizerObjectEntry>();
-        customObjectEntry.Init("Custom", Imperium.Visualization.ObjectInsights.CustomInsights, themeBinding);
+        var customInsightEntry = customInsightEntryObject.AddComponent<ObjectVisualizerInsightEntry>();
+        customInsightEntry.Init("Custom", Imperium.Visualization.ObjectInsights.CustomInsights, themeBinding);
 
-        objectEntries["Special.CustomType"] = customObjectEntry;
+        insightEntries["Special.CustomType"] = customInsightEntry;
     }
 }

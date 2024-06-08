@@ -40,7 +40,7 @@ public abstract class ImpInput
         var inputObject = container.Find(path);
         if (!inputObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to input '{ImpUtils.GetTransformPath(container)}/{path}'");
+            Imperium.Log.LogInfo($"[UI] Failed to input '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 

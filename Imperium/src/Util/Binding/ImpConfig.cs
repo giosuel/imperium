@@ -32,7 +32,7 @@ public class ImpConfig<T> : ImpBinding<T>
     /// <param name="ignoreRefresh">
     ///     <see cref="ImpBinding{T}.ignoreRefresh" />
     /// </param>
-    internal ImpConfig(
+    public ImpConfig(
         string section,
         string key,
         T defaultValue,
@@ -45,7 +45,7 @@ public class ImpConfig<T> : ImpBinding<T>
         Value = config.Value;
     }
 
-    internal override void Set(T value, bool skipSync)
+    public override void Set(T value, bool skipSync)
     {
         config.Value = value;
         base.Set(config.Value, skipSync);

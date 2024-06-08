@@ -3,13 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Oracle;
 using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.GameObject;
 using Object = UnityEngine.Object;
 
@@ -21,6 +21,31 @@ internal delegate void Visualizer(GameObject obj, string identifier, float thick
 
 internal class Visualization
 {
+    // Contains all registered visualizers with their UNIQUE identifier
+    private readonly Dictionary<string, VisualizerDefinition> VisualizerDefinitions = new();
+
+    // Set of all the UNIQUE identifiers of the currently enabled visualizers
+    private readonly HashSet<string> EnabledVisualizers = [];
+
+    // Holds all the objects currently shown (unique identifier -> (instance ID -> visualizer objects))
+    // Note: This dictionary will contain NULL values if objects are deleted
+    private readonly Dictionary<string, Dictionary<int, GameObject>> VisualizationObjectMap = new();
+
+    internal readonly ShotgunGizmos ShotgunGizmos;
+    internal readonly ShovelGizmos ShovelGizmos;
+    internal readonly KnifeGizmos KnifeGizmos;
+    internal readonly LandmineGizmos LandmineGizmos;
+    internal readonly SpikeTrapGizmos SpikeTrapGizmos;
+    internal readonly SpawnIndicators SpawnIndicators;
+    internal readonly VentTimers VentTimers;
+    internal readonly PlayerGizmos PlayerGizmos;
+    internal readonly EntityGizmos EntityGizmos;
+    internal readonly ScrapSpawnIndicators ScrapSpawns;
+    internal readonly MapHazardIndicators HazardSpawns;
+    internal readonly NavMeshVisualizer NavMeshVisualizer;
+
+    internal readonly ObjectInsights ObjectInsights;
+
     private static Material DefaultMaterial => ImpAssets.WireframeCyanMaterial;
 
     internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager)
@@ -50,6 +75,10 @@ internal class Visualization
             RoundManagerPatch.MapHazardPositions,
             ImpSettings.Visualizations.HazardSpawns
         );
+        NavMeshVisualizer = new NavMeshVisualizer(
+            Imperium.IsSceneLoaded,
+            ImpSettings.Visualizations.NavMeshSurfaces
+        );
 
         // Weapon indicators are different as they are only updated via patches
         ShotgunGizmos = new ShotgunGizmos(ImpSettings.Visualizations.ShotgunIndicators);
@@ -68,30 +97,6 @@ internal class Visualization
         Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelItems.onTrigger += ObjectInsights.Refresh;
     }
-
-    // Contains all registered visualizers with their UNIQUE identifier
-    private readonly Dictionary<string, VisualizerDefinition> VisualizerDefinitions = new();
-
-    // Set of all the UNIQUE identifiers of the currently enabled visualizers
-    private readonly HashSet<string> EnabledVisualizers = [];
-
-    // Holds all the objects currently shown (unique identifier -> (instance ID -> visualizer objects))
-    // Note: This dictionary will contain NULL values if objects are deleted
-    private readonly Dictionary<string, Dictionary<int, GameObject>> VisualizationObjectMap = new();
-
-    internal readonly ShotgunGizmos ShotgunGizmos;
-    internal readonly ShovelGizmos ShovelGizmos;
-    internal readonly KnifeGizmos KnifeGizmos;
-    internal readonly LandmineGizmos LandmineGizmos;
-    internal readonly SpikeTrapGizmos SpikeTrapGizmos;
-    internal readonly SpawnIndicators SpawnIndicators;
-    internal readonly VentTimers VentTimers;
-    internal readonly PlayerGizmos PlayerGizmos;
-    internal readonly EntityGizmos EntityGizmos;
-    internal readonly ScrapSpawnIndicators ScrapSpawns;
-    internal readonly MapHazardIndicators HazardSpawns;
-
-    internal readonly ObjectInsights ObjectInsights;
 
     /// <summary>
     ///     Visualizes the colliders of a group of game objects by tag or layer
@@ -146,7 +151,7 @@ internal class Visualization
 
     public static GameObject VisualizePoint(GameObject obj, float size, Material material = null, string name = null)
     {
-        return ImpUtils.Geometry.CreatePrimitive(
+        return ImpGeometry.CreatePrimitive(
             PrimitiveType.Sphere,
             obj?.transform,
             material: material ?? DefaultMaterial,
@@ -194,7 +199,7 @@ internal class Visualization
     {
         if (!collider) return null;
 
-        var visualizer = ImpUtils.Geometry.CreatePrimitive(
+        var visualizer = ImpGeometry.CreatePrimitive(
             PrimitiveType.Cube,
             collider.transform,
             material ?? DefaultMaterial,
@@ -214,7 +219,7 @@ internal class Visualization
     {
         if (!collider) return null;
 
-        var visualizer = ImpUtils.Geometry.CreatePrimitive(
+        var visualizer = ImpGeometry.CreatePrimitive(
             PrimitiveType.Capsule,
             collider.transform,
             material ?? DefaultMaterial,
@@ -319,6 +324,14 @@ internal class Visualization
         return $"{obj.GetInstanceID()}{origin.GetInstanceID()}_{size}";
     }
 
+    /// <summary>
+    ///     Generates a unique "hash" for a custom entity visualizer.
+    /// </summary>
+    internal static string GenerateSphereHash(Object obj, float size)
+    {
+        return $"{obj.GetInstanceID()}_Custom_{size}";
+    }
+
     private const float SPHERE_RINGS_COUNT = 32f;
     private const float SPHERE_LINES_COUNT = 16f;
 
@@ -409,6 +422,37 @@ internal class Visualization
         coneMesh.SetIndices(indices.ToList(), MeshTopology.Triangles, 0);
 
         return coneMesh;
+    }
+
+    internal static List<Mesh> GetNavmeshSurfaces()
+    {
+        var triangulation = NavMesh.CalculateTriangulation();
+        var meshes = new List<Mesh> { GetNavmeshMeshFromTriangulation(triangulation) };
+
+        for (var i = 1; i <= 0x200; i *= 2) meshes.Add(GetNavmeshMeshFromTriangulation(triangulation, i));
+
+        return meshes;
+    }
+
+    private static Mesh GetNavmeshMeshFromTriangulation(NavMeshTriangulation triangulation, int? bitMask = null)
+    {
+        var rawMesh = new Mesh();
+        rawMesh.SetVertices(triangulation.vertices);
+
+        var indices = new List<int>();
+        for (var i = 0; i < triangulation.indices.Length / 3; i++)
+        {
+            if (bitMask == null || (triangulation.areas[i] & bitMask) != 0)
+            {
+                indices.Add(triangulation.indices[i * 3]);
+                indices.Add(triangulation.indices[i * 3 + 1]);
+                indices.Add(triangulation.indices[i * 3 + 2]);
+            }
+        }
+
+        rawMesh.SetIndices(indices, MeshTopology.Triangles, 0);
+
+        return rawMesh;
     }
 
     private void VisualizePoint(GameObject obj, string uniqueIdentifier, float size, Material material)

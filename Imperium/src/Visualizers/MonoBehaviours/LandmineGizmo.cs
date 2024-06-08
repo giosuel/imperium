@@ -18,27 +18,29 @@ public class LandmineGizmo : MonoBehaviour
 
     private void Awake()
     {
-        sphere = ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Sphere, transform, ImpAssets.WireframeRedMaterial,
+        sphere = ImpGeometry.CreatePrimitive(PrimitiveType.Sphere, transform, ImpAssets.WireframeRedMaterial,
             12f);
     }
 
     public void SnapshotHitboxes()
     {
+        var explosionPosition = landmine.transform.position + Vector3.up;
+
         // ReSharper disable once Unity.PreferNonAllocApi
         // Allocating cast since this is a replication of the actual algorithm
-        var colliders =
-            Physics.OverlapSphere(landmine.transform.position, 6f, 2621448, QueryTriggerInteraction.Collide);
+        var colliders = Physics.OverlapSphere(
+            explosionPosition, 6f, 2621448, QueryTriggerInteraction.Collide
+        );
 
         foreach (var collider in colliders)
         {
             var colliderPosition = collider.transform.position;
-            var landminePosition = landmine.transform.position;
 
-            var distance = Vector3.Distance(landminePosition, colliderPosition);
+            var distance = Vector3.Distance(explosionPosition, colliderPosition);
 
-            // Check if mine would have missed the collider based on line of sight and distance
+            // Check if mine had missed the collider based on LOS and distance
             var lineOfSightObstructed = distance > 4f &&
-                                        Physics.Linecast(landminePosition,
+                                        Physics.Linecast(explosionPosition,
                                             colliderPosition + Vector3.up * 0.3f,
                                             256, QueryTriggerInteraction.Ignore);
 
@@ -51,14 +53,17 @@ public class LandmineGizmo : MonoBehaviour
             {
                 case 3:
                 {
-                    // Set color to orange when player would only get damaged and not killed
-                    if (!lineOfSightObstructed && distance >= 5.7f)
+                    snapshotRayColor = distance switch
                     {
-                        snapshotRayColor = new Color(1f, 0.63f, 0.2f);
-                    }
+                        // Set color to green if out of range
+                        >= 6f when lineOfSightObstructed is false => Color.green,
+                        // Set color to orange when player would only get damaged and not killed
+                        >= 5.7f when lineOfSightObstructed is false => new Color(1f, 0.63f, 0.2f),
+                        _ => snapshotRayColor
+                    };
 
                     var snapshotHitbox =
-                        ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Cube, transform,
+                        ImpGeometry.CreatePrimitive(PrimitiveType.Cube, transform,
                             ImpAssets.WireframeYellowMaterial);
 
                     var player = collider.GetComponent<PlayerControllerB>();
@@ -76,7 +81,7 @@ public class LandmineGizmo : MonoBehaviour
                 }
                 case 19:
                 {
-                    if (distance >= 4.5f) break;
+                    if (distance >= 4.5f) snapshotRayColor = Color.green;
 
                     var entityColliderScript = collider.GetComponentInChildren<EnemyAICollisionDetect>();
                     if (entityColliderScript == null) break;
@@ -86,7 +91,7 @@ public class LandmineGizmo : MonoBehaviour
                     if (entityColliderScript.TryGetComponent<BoxCollider>(out var boxCollider))
                     {
                         var snapshotHitbox =
-                            ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Cube, entityColliderScript.transform,
+                            ImpGeometry.CreatePrimitive(PrimitiveType.Cube, entityColliderScript.transform,
                                 ImpAssets.WireframeYellowMaterial);
 
                         snapshotHitbox.transform.position = entityTransform.position;
@@ -100,7 +105,7 @@ public class LandmineGizmo : MonoBehaviour
                     if (entityColliderScript.TryGetComponent<CapsuleCollider>(out var capsuleCollider))
                     {
                         var snapshotHitbox =
-                            ImpUtils.Geometry.CreatePrimitive(PrimitiveType.Capsule, entityColliderScript.transform,
+                            ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, entityColliderScript.transform,
                                 ImpAssets.WireframeYellowMaterial);
 
                         snapshotHitbox.transform.position = entityTransform.position;
@@ -131,9 +136,9 @@ public class LandmineGizmo : MonoBehaviour
 
             if (drawRay)
             {
-                var snapshotRay = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
-                ImpUtils.Geometry.SetLineColor(snapshotRay, snapshotRayColor);
-                ImpUtils.Geometry.SetLinePositions(snapshotRay, landminePosition, colliderPosition + Vector3.up * 0.3f);
+                var snapshotRay = ImpGeometry.CreateLine(transform, useWorldSpace: true);
+                ImpGeometry.SetLineColor(snapshotRay, snapshotRayColor);
+                ImpGeometry.SetLinePositions(snapshotRay, explosionPosition, colliderPosition + Vector3.up * 0.3f);
             }
         }
     }
@@ -168,7 +173,7 @@ public class LandmineGizmo : MonoBehaviour
             {
                 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
                 // This is only executed when a new collider is detected
-                lineRenderer = ImpUtils.Geometry.CreateLine(transform, useWorldSpace: true);
+                lineRenderer = ImpGeometry.CreateLine(transform, useWorldSpace: true);
                 targetRays[instanceId] = lineRenderer;
             }
 
@@ -224,8 +229,8 @@ public class LandmineGizmo : MonoBehaviour
             if (drawRay)
             {
                 collisionIds.Add(instanceId);
-                ImpUtils.Geometry.SetLineColor(lineRenderer, snapshotRayColor);
-                ImpUtils.Geometry.SetLinePositions(lineRenderer, landmine.transform.position, colliderPosition);
+                ImpGeometry.SetLineColor(lineRenderer, snapshotRayColor);
+                ImpGeometry.SetLinePositions(lineRenderer, landmine.transform.position, colliderPosition);
             }
         }
 

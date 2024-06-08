@@ -1,5 +1,9 @@
+#region
+
 using HarmonyLib;
 using Imperium.Core;
+
+#endregion
 
 namespace Imperium.Patches.Systems;
 

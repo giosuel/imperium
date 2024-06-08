@@ -46,12 +46,12 @@ public class SpikeTrapGizmo : MonoBehaviour
 
             var eyeTransform = spikeTrap.laserEye.transform;
             var eyePosition = eyeTransform.position;
-            ImpUtils.Geometry.SetLinePositions(
+            ImpGeometry.SetLinePositions(
                 playerRay,
                 eyePosition,
                 eyePosition + eyeTransform.forward * 4.4f
             );
-            ImpUtils.Geometry.SetLineColor(playerRay, Color.red);
+            ImpGeometry.SetLineColor(playerRay, Color.red);
             isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp >= 0.75f;
         }
 
@@ -101,9 +101,9 @@ public class SpikeTrapGizmo : MonoBehaviour
     public void Init(SpikeRoofTrap trap)
     {
         spikeTrap = trap;
-        playerRay = ImpUtils.Geometry.CreateLine(spikeTrap.transform, useWorldSpace: true);
+        playerRay = ImpGeometry.CreateLine(spikeTrap.transform, useWorldSpace: true);
 
-        sphere = ImpUtils.Geometry.CreatePrimitive(
+        sphere = ImpGeometry.CreatePrimitive(
             PrimitiveType.Sphere, spikeTrap.transform,
             ImpAssets.WireframeRedMaterial, 8
         );

@@ -120,7 +120,7 @@ public class ImpPositionIndicator : MonoBehaviour
 
         for (var i = 0; i < 100; i++)
         {
-            var position2D = ImpUtils.Math.SampleQuadraticBezier(
+            var position2D = ImpMath.SampleQuadraticBezier(
                 startPosition.y,
                 endPosition.y,
                 startPosition.y + Math.Clamp(Math.Abs(forward.y * 20), 0, 10),

@@ -8,7 +8,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.Oracle;
+namespace Imperium.Types;
 
 public record CycleInformation
 {
@@ -50,17 +50,17 @@ public record OracleState
 
         for (var i = 0; i < 10; i++)
         {
-            var currentCycleTime = ImpUtils.FormatTime(ImpUtils.TimeToNormalized(cycles[i].cycleTime));
+            var currentCycleTime = Formatting.FormatTime(Formatting.TimeToNormalized(cycles[i].cycleTime));
             var cycleHeading = $" > CYCLE #{i} ({currentCycleTime})";
             if (i == currentCycle) cycleHeading += " (CURRENT)";
             output.Add(cycleHeading);
-            var minSpawnTime = ImpUtils.FormatTime(ImpUtils.TimeToNormalized(cycles[i].minSpawnTime));
-            var maxSpawnTime = ImpUtils.FormatTime(ImpUtils.TimeToNormalized(cycles[i].maxSpawnTime));
+            var minSpawnTime = Formatting.FormatTime(Formatting.TimeToNormalized(cycles[i].minSpawnTime));
+            var maxSpawnTime = Formatting.FormatTime(Formatting.TimeToNormalized(cycles[i].maxSpawnTime));
             var spawnTimeString = $"({minSpawnTime} - {maxSpawnTime})";
             output = output.Concat(BuildReportLog(indoorCycles, $"   Indoor Spawns {spawnTimeString}", i)).ToList();
             output = output.Concat(BuildReportLog(outdoorCycles, "   Outdoor Spawns", i)).ToList();
             output = output.Concat(BuildReportLog(daytimeCycles, "   Daytime Spawns", i)).ToList();
-            var nextCycle = ImpUtils.FormatTime(ImpUtils.TimeToNormalized(cycles[i].nextCycleTime));
+            var nextCycle = Formatting.FormatTime(Formatting.TimeToNormalized(cycles[i].nextCycleTime));
             output.Add($"   Next Cycle: {nextCycle}");
         }
 
@@ -79,8 +79,8 @@ public record OracleState
         List<string> lines = [title + ":"];
         lines.AddRange(
             from report in stateCycles[cycleNumber]
-            let positionString = ImpUtils.FormatVector(report.position, roundDigits: 1)
-            let timeString = report.spawnTime > 0 ? ImpUtils.FormatDayTime(report.spawnTime) : "NOW"
+            let positionString = Formatting.FormatVector(report.position, roundDigits: 1)
+            let timeString = report.spawnTime > 0 ? Formatting.FormatDayTime(report.spawnTime) : "NOW"
             select $"     - {report.entity.enemyName} at {timeString} | {positionString}"
         );
 

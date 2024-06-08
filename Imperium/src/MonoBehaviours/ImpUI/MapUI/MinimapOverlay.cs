@@ -13,7 +13,7 @@ namespace Imperium.MonoBehaviours.ImpUI.MapUI;
 internal class MinimapOverlay : SingleplexUI
 {
     internal Rect CameraRect { get; private set; }
-    internal Rect MinimapRect { get; private set; }
+    internal Rect MinimapRect { get; }
     private TMP_Text positionText;
     private TMP_Text timeText;
     private TMP_Text envText;
@@ -46,7 +46,7 @@ internal class MinimapOverlay : SingleplexUI
         locationText = locationPanel.transform.Find("Text").GetComponent<TMP_Text>();
 
         canvas = GetComponent<Canvas>();
-        
+
         var baseCanvasScale = canvas.scaleFactor;
         ImpSettings.Map.MinimapScale.onUpdate += value => InitMapScale(baseCanvasScale * value);
 
@@ -129,13 +129,13 @@ internal class MinimapOverlay : SingleplexUI
         if (ImpSettings.Map.MinimapInfoPanel.Value)
         {
             var playerPosition = Imperium.Player.transform.position;
-            positionText.text = $"{ImpUtils.FormatVector(playerPosition, separator: "/", roundDigits: 0)}";
+            positionText.text = $"{Formatting.FormatVector(playerPosition, separator: "/", roundDigits: 0)}";
 
             var playerRotation = Imperium.Player.gameplayCamera.transform.rotation.eulerAngles;
             rotationText.text =
-                $"{ImpUtils.FormatVector(playerRotation, separator: "/", roundDigits: 0, unit: "\u00b0")}";
+                $"{Formatting.FormatVector(playerRotation, separator: "/", roundDigits: 0, unit: "\u00b0")}";
 
-            var time = ImpUtils.FormatDayTime(Imperium.TimeOfDay.currentDayTime);
+            var time = Formatting.FormatDayTime(Imperium.TimeOfDay.currentDayTime);
             var daysSpent = Imperium.StartOfRound.gameStats.daysSpent;
             timeText.text = $"{time} / Day {daysSpent}";
 

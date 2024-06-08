@@ -1,21 +1,29 @@
 # Changelog
 
-## Imperium v0.1.9 [Beta] - The Productivity Update
+## Imperium v0.1.9 [Beta] - The API Update
 
-This update is all about testing productivity and efficiency. I added a bunch of functions / animation bypasses that should decrease wasted time when repredidly testing mod features.
+As so many of you have requested more advanced debugging functionality that can be accessed by other mods, I have started to implement an API that can be used either in the UE console or by other mods.
 
-This includes options to instantly land, take off and travel between planets as well as animations skips for scoreboard animations, interact triggers and more.
+I also started writing a wiki that should cover the basics on how to use Imperium as well as information for devs that want to work with Imperium or contribute to Imperium.
 
 ### Added Stuff
 
-- Added creative flight with optional no-clip functionality to fly through terrain.
+- Added the Imperium API and a [wiki](https://github.com/giosuel/imperium/wiki) for it.
+- Added minecraft-like creative flight.
 - Added options for the ship to instantly land, take off and travel betwen planets.
 - Added an option that removes the hold time on interact triggers (e.g. ship lever or main entrance).
+- Added new custom visualizer for Old Birds.
+- Added new custom visualizer for Baboon Hawks.
+- Added a moon indicator to the minimap.
 
 ### QOL Changes
 
-- I had to limit the possible quota deadline to 3 days as deadlines above 4 were actually breaking the game. Instead, I added an option to completely disable the quota deadline countdown for testing.
+- I had to limit the possible quota deadline to 3 days as deadlines above 4 were actually breaking the game. Instead, I added an option to completely disable the quota deadline for testing.
 - Turning on god mode now restores health to full and removes the damage overlay.
+
+### Internal Fixes
+
+- Fixed a bug where spawned entities would sometimes be placed below the ground.
 
 ### Known Issues
 
@@ -23,6 +31,8 @@ This includes options to instantly land, take off and travel between planets as 
   - To fix, just open and close Unity Explorer once.
 
 - Scanner overlays are broken at higher texture resolutions.
+
+- There are currently some issues with multiplayer. Mostly, when someone without Imperium is trying to join an Imperium lobby.
 
 ### Compatibility
 
@@ -30,19 +40,32 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 
 ## Imperium v0.1.8 [Beta] - The Visualizer Update
 
+I reworked the whole visualizer system and added a lot of new visualizers and indicators, including indicators for entity LOS and noise detection.
+
+There is a new UI from which all visualizers can be managed!
+
 ### Added
 
-- Added a visualizer for scrap spawn locations.
+- Added many new visualizers for various game objects and layers.
 - Added a new notification type for access control and spawning notifications.
+- Added a new interface to manage all the visualizers in one place.
+- Added entity LOS, proximity and noise detection visualizations.
+- Added an option to disable out-of-bounds triggers.
+- Added an option to unlock all unlockable items in the terminal shop.
+- Added a scaling option for the minimap in the minimap settings.
 
 ### QOL Changes
 
-- Fixed an issue where not all notifcations were toggleable.
-- Fixed a bug where the map camera clipping would not adjust when in unlocked mode.
+- Entity and Player info panels are now rendered in screen-space, resulting in higher resolution.
+- The size of the visualizers for indoor and outdoor nodes has been decreased.
+- Clamped the freecam movement speed between 1 and 200.
 
 ### Internal Fixes
 
 - Fixed a bug where Imperium client access would lock the host out.
+- Fixed a bug where the render pipeline changed the aspect ratio of some screens.
+- Fixed an issue where not all notifcations were toggleable.
+- Fixed a bug where the map camera clipping would not adjust when in unlocked mode.
 
 ### Known Issues
 
@@ -53,7 +76,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 
 ### Compatibility
 
-This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0)).
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company. ([Imperium Mod Compatibilities](https://docs.google.com/spreadsheets/d/1DR3VFAv5toT6UEv1PLRXMWODpXgcdFucxhm3qVJAyxA/edit#gid=0))
 
 ## Imperium v0.1.7 [Beta] - Hotfix
 

@@ -46,7 +46,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.1.8";
+    public const string PLUGIN_VERSION = "0.1.9";
 
     internal static ManualLogSource Log;
     internal static ConfigFile ConfigFile;
@@ -66,7 +66,7 @@ public class Imperium : BaseUnityPlugin
     internal static ObjectManager ObjectManager;
     internal static PlayerManager PlayerManager;
     internal static Visualization Visualization;
-    internal static Oracle.Oracle Oracle;
+    internal static Oracle Oracle;
 
     // Other Imperium objects
     internal static ImpMap Map;
@@ -172,7 +172,7 @@ public class Imperium : BaseUnityPlugin
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers, Freecam);
         GameManager = new GameManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers);
         ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers);
-        Oracle = new Oracle.Oracle();
+        Oracle = new Oracle();
         Visualization = new Visualization(Oracle.State, ObjectManager);
 
         MoonManager.Create(ObjectManager);

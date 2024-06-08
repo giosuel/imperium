@@ -8,10 +8,10 @@ namespace Imperium.Util.Binding;
 
 public class ImpBinaryBinding : ImpBinding<bool>
 {
-    internal event Action onTrue;
-    internal event Action onFalse;
+    public event Action onTrue;
+    public event Action onFalse;
 
-    internal ImpBinaryBinding(
+    public ImpBinaryBinding(
         bool currentValue,
         Action onTrue = null,
         Action onFalse = null
@@ -23,9 +23,9 @@ public class ImpBinaryBinding : ImpBinding<bool>
         onUpdate += OnUpdate;
     }
 
-    internal void Toggle() => Set(!Value);
-    internal void SetTrue() => Set(true);
-    internal void SetFalse() => Set(false);
+    public void Toggle() => Set(!Value);
+    public void SetTrue() => Set(true);
+    public void SetFalse() => Set(false);
 
     private void OnUpdate(bool value)
     {

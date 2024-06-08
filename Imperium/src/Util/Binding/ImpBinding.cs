@@ -44,7 +44,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// <summary>
     ///     Initializes default value and value with default value
     /// </summary>
-    internal ImpBinding()
+    public ImpBinding()
     {
     }
 
@@ -58,7 +58,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// <param name="ignoreRefresh">
     ///     <see cref="ignoreRefresh" />
     /// </param>
-    internal ImpBinding(
+    public ImpBinding(
         T currentValue,
         Action<T> update = null,
         Action<T> syncUpdate = null,
@@ -87,7 +87,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     /// <param name="ignoreRefresh">
     ///     <see cref="ignoreRefresh" />
     /// </param>
-    internal ImpBinding(
+    public ImpBinding(
         T currentValue,
         T defaultValue,
         Action<T> update = null,
@@ -107,7 +107,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
     ///     Resets the value of the bound variable to the default value
     /// </summary>
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>
-    internal void Reset(bool skipSync) => Set(DefaultValue, skipSync);
+    public void Reset(bool skipSync) => Set(DefaultValue, skipSync);
 
     public void Refresh()
     {
@@ -126,14 +126,14 @@ public class ImpBinding<T> : IRefreshable, IResettable
 
     public void Reset() => Reset(false);
 
-    internal void Set(T value) => Set(value, false);
+    public void Set(T value) => Set(value, false);
 
     /// <summary>
     ///     Sets the value of the bound variable and calls all callbacks if the new value isn't equal to the current value
     /// </summary>
     /// <param name="value"></param>
     /// <param name="skipSync">Whether the synchronize callback should not be executed</param>
-    internal virtual void Set(T value, bool skipSync)
+    public virtual void Set(T value, bool skipSync)
     {
         var isSame = EqualityComparer<T>.Default.Equals(Value, value);
         Value = value;
@@ -141,7 +141,7 @@ public class ImpBinding<T> : IRefreshable, IResettable
         BroadcastUpdate(isSame, skipSync);
     }
 
-    protected void BroadcastUpdate(bool isSame, bool skipSync)
+    private void BroadcastUpdate(bool isSame, bool skipSync)
     {
         if (!skipSync && !isSame) onUpdateSync?.Invoke(Value);
         onUpdate?.Invoke(Value);

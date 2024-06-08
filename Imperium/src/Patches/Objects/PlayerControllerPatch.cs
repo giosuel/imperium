@@ -97,7 +97,7 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("SpawnPlayerAnimation")]
     private static bool SpawnPlayerAnimationPatch(PlayerControllerB __instance)
     {
-        return ImpSettings.Animations.PlayerSpawn.Value;
+        return !ImpSettings.AnimationSkipping.PlayerSpawn.Value;
     }
 
     #region Interact Triggers
@@ -110,7 +110,7 @@ internal static class PlayerControllerPatch
     {
         if (!__instance.hoveringOverTrigger) return;
 
-        if (!ImpSettings.Animations.InteractHold.Value)
+        if (ImpSettings.AnimationSkipping.InteractHold.Value)
         {
             // Backup original hold
             if (!OriginalTriggerHold.ContainsKey(__instance.hoveringOverTrigger.GetInstanceID()))
@@ -139,23 +139,37 @@ internal static class PlayerControllerPatch
     {
         if (Imperium.PlayerManager.IsFlying.Value)
         {
-            var moveVector = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Move").ReadValue<Vector2>();
-            var upInput = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump").ReadValue<float>();
-            var downInput = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Crouch").ReadValue<float>();
+            if (!Imperium.Player.quickMenuManager.isMenuOpen
+                && !Imperium.Player.inTerminalMenu
+                && !Imperium.Player.isTypingChat
+                && !Imperium.Player.isClimbingLadder
+                && !Imperium.Player.inSpecialInteractAnimation
+                && !Imperium.Player.jetpackControls)
+            {
+                var moveVector = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Move").ReadValue<Vector2>();
+                var upInput = Imperium.PlayerManager.FlyIsAscending
+                    ? IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump").ReadValue<float>()
+                    : 0;
+                var downInput = Imperium.PlayerManager.FlyIsDescending
+                    ? IngamePlayerSettings.Instance.playerInput.actions.FindAction("Crouch").ReadValue<float>()
+                    : 0;
 
-            upInput *= 15f;
-            downInput *= 15f;
+                upInput *= 15f;
+                downInput *= 15f;
 
-            var forceVector = new Vector3(moveVector.x, upInput - downInput, moveVector.y);
+                var forceVector = new Vector3(moveVector.x * 10f, upInput - downInput, moveVector.y * 10f);
+                forceVector = Quaternion.AngleAxis(Imperium.Player.transform.eulerAngles.y, Vector3.up) * forceVector;
+                __instance.externalForces += forceVector;
+            }
 
             __instance.fallValue = 0;
             __instance.fallValueUncapped = 0;
-            __instance.externalForces += forceVector;
 
             __instance.playerBodyAnimator.SetBool("Walking", value: false);
             __instance.playerBodyAnimator.SetBool("Sprinting", value: false);
             __instance.playerBodyAnimator.SetBool("Sideways", value: false);
             __instance.playerBodyAnimator.SetBool("crouching", value: false);
+            __instance.playerBodyAnimator.SetBool("Jumping", value: true);
             __instance.isCrouching = false;
         }
     }
@@ -231,14 +245,18 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("Jump_performed")]
     private static bool Jump_performedPatch(PlayerControllerB __instance)
     {
-        return !__instance.quickMenuManager.isMenuOpen && !__instance.isFreeCamera;
+        return !__instance.quickMenuManager.isMenuOpen
+               && !__instance.isFreeCamera
+               && !Imperium.PlayerManager.IsFlying.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("Crouch_performed")]
     private static bool Crouch_performedPatch(PlayerControllerB __instance)
     {
-        return !__instance.quickMenuManager.isMenuOpen && !__instance.isFreeCamera;
+        return !__instance.quickMenuManager.isMenuOpen
+               && !__instance.isFreeCamera
+               && !Imperium.PlayerManager.IsFlying.Value;
     }
 
     [HarmonyPrefix]

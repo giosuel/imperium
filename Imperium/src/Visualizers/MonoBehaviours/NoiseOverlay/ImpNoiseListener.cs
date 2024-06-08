@@ -15,10 +15,10 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
 
     internal static ImpNoiseListener Create()
     {
-        var noiseListenerObj = ImpUtils.Geometry.CreatePrimitive(
+        var noiseListenerObj = ImpGeometry.CreatePrimitive(
             PrimitiveType.Sphere,
             Imperium.Player.gameplayCamera.transform,
-            name: "ImpNoiseListener",
+            name: "Imp_NoiseListener",
             layer: 19,
             removeCollider: false,
             removeRenderer: true

@@ -32,7 +32,7 @@ public abstract class ImpAssets
     internal static GameObject MinimapSettingsObject;
     internal static GameObject LayerSelectorObject;
     internal static GameObject MinimapOverlayObject;
-    
+
     /*
      * Other Prefabs
      */
@@ -42,15 +42,14 @@ public abstract class ImpAssets
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
-    internal static GameObject PlayerInfoPanel;
-    internal static GameObject EntityInfoPanel;
+    internal static GameObject ObjectInsightPanel;
 
     /*
      * Audio Clips
      */
     internal static AudioClip GrassClick;
     internal static AudioClip ButtonClick;
-    
+
     /*
      * Materials
      */
@@ -60,12 +59,16 @@ public abstract class ImpAssets
     public static Material FresnelYellowMaterial;
     public static Material FresnelGreenMaterial;
     public static Material FresnelRedMaterial;
+    public static Material WireframeNavMeshMaterial;
     public static Material WireframePurpleMaterial;
     public static Material WireframeCyanMaterial;
     public static Material WireframeAmaranthMaterial;
     public static Material WireframeYellowMaterial;
     public static Material WireframeGreenMaterial;
     public static Material WireframeRedMaterial;
+    public static Material ShiggyMaterial;
+
+    internal static AssetBundle ImperiumAssets;
 
     internal static bool Load()
     {
@@ -73,8 +76,8 @@ public abstract class ImpAssets
             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
             "imperium_assets"
         );
-        var assets = AssetBundle.LoadFromFile(assetFile);
-        if (assets == null)
+        ImperiumAssets = AssetBundle.LoadFromFile(assetFile);
+        if (ImperiumAssets == null)
         {
             Imperium.Log.LogInfo($"[PRELOAD] Failed to load assets from {assetFile}, aborting!");
             return false;
@@ -83,45 +86,46 @@ public abstract class ImpAssets
         logBuffer = [];
         List<bool> loadResults =
         [
-            LoadAsset(assets, "Assets/Prefabs/imperium_ui.prefab", out ImperiumUIObject),
-            LoadAsset(assets, "Assets/Prefabs/teleport_ui.prefab", out TeleportUIObject),
-            LoadAsset(assets, "Assets/Prefabs/weather_ui.prefab", out WeatherUIObject),
-            LoadAsset(assets, "Assets/Prefabs/spawning_ui.prefab", out SpawningUIObject),
-            LoadAsset(assets, "Assets/Prefabs/moon_ui.prefab", out MoonUIObject),
-            LoadAsset(assets, "Assets/Prefabs/save_ui.prefab", out SaveUIObject),
-            LoadAsset(assets, "Assets/Prefabs/objects_ui.prefab", out ObjectsUIObject),
-            LoadAsset(assets, "Assets/Prefabs/settings_ui.prefab", out SettingsUIObject),
-            LoadAsset(assets, "Assets/Prefabs/rendering_ui.prefab", out RenderingUIObject),
-            LoadAsset(assets, "Assets/Prefabs/oracle_ui.prefab", out OracleUIObject),
-            LoadAsset(assets, "Assets/Prefabs/navigator_ui.prefab", out NavigatorUIObject),
-            LoadAsset(assets, "Assets/Prefabs/visualizer_ui.prefab", out VisualizerUIObject),
-            LoadAsset(assets, "Assets/Prefabs/confirmation_ui.prefab", out ConfirmationUIObject),
-            LoadAsset(assets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
-            LoadAsset(assets, "Assets/Prefabs/map_ui.prefab", out MapUIObject),
-            LoadAsset(assets, "Assets/Prefabs/minimap.prefab", out MinimapOverlayObject),
-            LoadAsset(assets, "Assets/Prefabs/minimap_settings.prefab", out MinimapSettingsObject),
-            LoadAsset(assets, "Assets/Prefabs/layer_selector.prefab", out LayerSelectorObject),
-            LoadAsset(assets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
-            LoadAsset(assets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
-            LoadAsset(assets, "Assets/Prefabs/player_info.prefab", out PlayerInfoPanel),
-            LoadAsset(assets, "Assets/Prefabs/entity_info.prefab", out EntityInfoPanel),
-            LoadAsset(assets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
-            LoadAsset(assets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
-            LoadAsset(assets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
-            LoadAsset(assets, "Assets/Materials/xray.mat", out XrayMaterial),
-            LoadAsset(assets, "Assets/Materials/fresnel_white.mat", out FresnelWhiteMaterial),
-            LoadAsset(assets, "Assets/Materials/fresnel_blue.mat", out FresnelBlueMaterial),
-            LoadAsset(assets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
-            LoadAsset(assets, "Assets/Materials/fresnel_green.mat", out FresnelGreenMaterial),
-            LoadAsset(assets, "Assets/Materials/fresnel_yellow.mat", out FresnelYellowMaterial),
-            LoadAsset(assets, "Assets/Materials/wireframe_purple.mat", out WireframePurpleMaterial),
-            LoadAsset(assets, "Assets/Materials/wireframe_cyan.mat", out WireframeCyanMaterial),
-            LoadAsset(assets, "Assets/Materials/wireframe_amaranth.mat", out WireframeAmaranthMaterial),
-            LoadAsset(assets, "Assets/Materials/wireframe_yellow.mat", out WireframeYellowMaterial),
-            LoadAsset(assets, "Assets/Materials/wireframe_green.mat", out WireframeGreenMaterial),
-            LoadAsset(assets, "Assets/Materials/wireframe_red.mat", out WireframeRedMaterial),
-            LoadAsset(assets, "Assets/Audio/GrassClick.wav", out GrassClick),
-            LoadAsset(assets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/imperium_ui.prefab", out ImperiumUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/teleport_ui.prefab", out TeleportUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/weather_ui.prefab", out WeatherUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/spawning_ui.prefab", out SpawningUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/moon_ui.prefab", out MoonUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/save_ui.prefab", out SaveUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/objects_ui.prefab", out ObjectsUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/settings_ui.prefab", out SettingsUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/rendering_ui.prefab", out RenderingUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/oracle_ui.prefab", out OracleUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/navigator_ui.prefab", out NavigatorUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/visualizer_ui.prefab", out VisualizerUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/confirmation_ui.prefab", out ConfirmationUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/map_ui.prefab", out MapUIObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/minimap.prefab", out MinimapOverlayObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/minimap_settings.prefab", out MinimapSettingsObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/layer_selector.prefab", out LayerSelectorObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
+            LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XrayMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_white.mat", out FresnelWhiteMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_blue.mat", out FresnelBlueMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_green.mat", out FresnelGreenMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_yellow.mat", out FresnelYellowMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_navmesh.mat", out WireframeNavMeshMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_purple.mat", out WireframePurpleMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_cyan.mat", out WireframeCyanMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_amaranth.mat", out WireframeAmaranthMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_yellow.mat", out WireframeYellowMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out WireframeGreenMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out WireframeRedMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/shig.mat", out ShiggyMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Audio/GrassClick.wav", out GrassClick),
+            LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
         ];
 
 
