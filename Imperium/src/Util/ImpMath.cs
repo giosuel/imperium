@@ -1,6 +1,10 @@
+#region
+
 using System;
 using System.Globalization;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Util;
 

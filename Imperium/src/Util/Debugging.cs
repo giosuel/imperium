@@ -1,16 +1,19 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Util;
 
 public static class Debugging
 {
     /// <summary>
-    /// Returns an ordered list of a type's parent types in ascending order.
-    ///
-    /// e.g. SpringManAI -> EnemyAI -> Component -> Object
+    ///     Returns an ordered list of a type's parent types in ascending order.
+    ///     e.g. SpringManAI -> EnemyAI -> Component -> Object
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
@@ -28,7 +31,7 @@ public static class Debugging
     }
 
     /// <summary>
-    /// <see cref="GetParentTypes"/>
+    ///     <see cref="GetParentTypes" />
     /// </summary>
     public static List<Type> GetParentTypes<T>() => GetParentTypes(typeof(T));
 

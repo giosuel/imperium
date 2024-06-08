@@ -1,15 +1,16 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types;
 using Imperium.Core;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
-using Imperium.Types;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.Visualizers.MonoBehaviours;
 
@@ -55,7 +56,7 @@ public class ObjectInsight : MonoBehaviour
     }
 
     /// <summary>
-    /// Replaces the current definition with a new one. Used, if a more specific insight was registered.
+    ///     Replaces the current definition with a new one. Used, if a more specific insight was registered.
     /// </summary>
     /// <param name="definition">New insight definition</param>
     internal void UpdateInsightDefinition(InsightDefinition<Component> definition)

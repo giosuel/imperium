@@ -18,7 +18,7 @@ using Object = UnityEngine.Object;
 namespace Imperium.Visualizers;
 
 /// <summary>
-/// Screen-space overlays containing custom insights of objects (e.g. Health, Behaviour State, Movement Speed, etc.)
+///     Screen-space overlays containing custom insights of objects (e.g. Health, Behaviour State, Movement Speed, etc.)
 /// </summary>
 internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight>
 {
@@ -77,7 +77,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
     }
 
     /// <summary>
-    /// Finds the most matching registered object insight definition for a given type.
+    ///     Finds the most matching registered object insight definition for a given type.
     /// </summary>
     private InsightDefinition<Component> FindMostMatchingInsightDefinition(Type inputType)
     {

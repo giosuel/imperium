@@ -5,12 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 #endregion
 
@@ -52,7 +50,7 @@ internal class ObjectVisualizersWindow : BaseWindow
             theme: themeBinding,
             isIconButton: true
         );
-        
+
         ImpButton.Bind(
             "EntitiesHeader/Icons/Pathfinding",
             content,

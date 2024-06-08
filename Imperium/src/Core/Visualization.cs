@@ -450,7 +450,7 @@ internal class Visualization
             }
         }
 
-        rawMesh.SetIndices(indices, MeshTopology.Triangles, 0, true);
+        rawMesh.SetIndices(indices, MeshTopology.Triangles, 0);
 
         return rawMesh;
     }

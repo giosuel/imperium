@@ -1,6 +1,10 @@
+#region
+
 using System;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Visualizers.MonoBehaviours;
 

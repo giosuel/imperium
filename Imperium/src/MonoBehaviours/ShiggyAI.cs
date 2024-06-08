@@ -1,6 +1,10 @@
+#region
+
 using GameNetcodeStuff;
 using Imperium.Util;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.MonoBehaviours;
 
@@ -38,6 +42,7 @@ public class ShiggyAI : EnemyAI
         {
             frames[i] = ImpAssets.ImperiumAssets.LoadAsset<Texture2D>($"Assets/Special/{prefix}0{i + 1}.png");
         }
+
         texturesLoaded = true;
     }
 

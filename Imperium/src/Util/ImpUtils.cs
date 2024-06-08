@@ -2,18 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 using Random = System.Random;
 
 #endregion
@@ -27,8 +23,8 @@ public abstract class ImpUtils
         var random = Imperium.RoundManager.AnomalyRandom != null
             ? CloneRandom(Imperium.RoundManager.AnomalyRandom)
             : new Random();
-        var min = System.Math.Min(item.minValue, item.maxValue);
-        var max = System.Math.Max(item.minValue, item.maxValue);
+        var min = Math.Min(item.minValue, item.maxValue);
+        var max = Math.Max(item.minValue, item.maxValue);
         return (int)(random.Next(min, max) * Imperium.RoundManager.scrapValueMultiplier);
     }
 
@@ -112,7 +108,8 @@ public abstract class ImpUtils
 
     public static string GetPlayerLocationText(PlayerControllerB player, bool locationOnly)
     {
-        var isNearOtherPlayers = Reflection.Invoke<PlayerControllerB, bool>(player, "NearOtherPlayers", Imperium.Player, 17f);
+        var isNearOtherPlayers =
+            Reflection.Invoke<PlayerControllerB, bool>(player, "NearOtherPlayers", Imperium.Player, 17f);
         var isHearingOthers = Reflection.Invoke<PlayerControllerB, bool>(
             player, "PlayerIsHearingOthersThroughWalkieTalkie", Imperium.Player
         );

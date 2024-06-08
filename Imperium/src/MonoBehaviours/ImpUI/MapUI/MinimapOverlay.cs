@@ -13,7 +13,7 @@ namespace Imperium.MonoBehaviours.ImpUI.MapUI;
 internal class MinimapOverlay : SingleplexUI
 {
     internal Rect CameraRect { get; private set; }
-    internal Rect MinimapRect { get; private set; }
+    internal Rect MinimapRect { get; }
     private TMP_Text positionText;
     private TMP_Text timeText;
     private TMP_Text envText;
@@ -46,7 +46,7 @@ internal class MinimapOverlay : SingleplexUI
         locationText = locationPanel.transform.Find("Text").GetComponent<TMP_Text>();
 
         canvas = GetComponent<Canvas>();
-        
+
         var baseCanvasScale = canvas.scaleFactor;
         ImpSettings.Map.MinimapScale.onUpdate += value => InitMapScale(baseCanvasScale * value);
 

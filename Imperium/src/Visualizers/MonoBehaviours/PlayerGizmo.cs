@@ -29,7 +29,6 @@ public class PlayerGizmo : MonoBehaviour
 
     internal void NoiseUpdate(float range)
     {
-
     }
 
     private void Update()
@@ -48,7 +47,6 @@ public class PlayerGizmo : MonoBehaviour
         if (!isShown)
         {
             noiseRangeSphere.SetActive(false);
-            return;
         }
     }
 }

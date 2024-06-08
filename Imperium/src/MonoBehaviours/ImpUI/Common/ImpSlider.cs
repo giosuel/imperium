@@ -132,7 +132,7 @@ public class ImpSlider : MonoBehaviour
             else
             {
                 valueBinding.Set(bindingValue);
-                if(playClickSound) GameManager.PlayClip(clickAudio);
+                if (playClickSound) GameManager.PlayClip(clickAudio);
             }
         });
 

@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Imperium.Visualizers;
 
 /// <summary>
-/// Entity-specific gizmos like LoS indicators, target rays, noise rays, etc.
+///     Entity-specific gizmos like LoS indicators, target rays, noise rays, etc.
 /// </summary>
 internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
 {

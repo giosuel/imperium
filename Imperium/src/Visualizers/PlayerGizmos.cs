@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;

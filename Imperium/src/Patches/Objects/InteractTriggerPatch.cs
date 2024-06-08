@@ -1,7 +1,11 @@
+#region
+
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+
+#endregion
 
 namespace Imperium.Patches.Objects;
 

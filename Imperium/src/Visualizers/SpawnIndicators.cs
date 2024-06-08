@@ -1,6 +1,5 @@
 #region
 
-using Imperium.MonoBehaviours.VisualizerObjects;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;

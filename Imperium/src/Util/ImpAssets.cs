@@ -32,7 +32,7 @@ public abstract class ImpAssets
     internal static GameObject MinimapSettingsObject;
     internal static GameObject LayerSelectorObject;
     internal static GameObject MinimapOverlayObject;
-    
+
     /*
      * Other Prefabs
      */
@@ -49,7 +49,7 @@ public abstract class ImpAssets
      */
     internal static AudioClip GrassClick;
     internal static AudioClip ButtonClick;
-    
+
     /*
      * Materials
      */

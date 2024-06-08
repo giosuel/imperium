@@ -1,18 +1,20 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using Imperium.Util.Binding;
 using UnityEngine;
 
+#endregion
+
 namespace Imperium.API.Types;
 
 /// <summary>
-/// Definition of an object insight.
-///
-/// Holds insight generators for a specific type of object alongside a few more specifiers.
-///  - Name Generator -> Function to get the name of the object
-///  - IsDead Generator -> Function to get the alive status of the object
-///  - Position Override -> Function to transform the object's target's position to the desired insight panel position.
-///
+///     Definition of an object insight.
+///     Holds insight generators for a specific type of object alongside a few more specifiers.
+///     - Name Generator -> Function to get the name of the object
+///     - IsDead Generator -> Function to get the alive status of the object
+///     - Position Override -> Function to transform the object's target's position to the desired insight panel position.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface InsightDefinition<out T> where T : Component

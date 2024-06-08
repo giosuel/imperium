@@ -1,9 +1,13 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using Imperium.API.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Types;
 
@@ -88,10 +92,9 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     /// <summary>
-    /// Inherits the properties from a possible parent InsightDefinition. Insights are merged and the closest generators
-    /// and overrides are picked.
-    ///
-    /// Only inherits properties that aren't defined yet. Does not override insights.
+    ///     Inherits the properties from a possible parent InsightDefinition. Insights are merged and the closest generators
+    ///     and overrides are picked.
+    ///     Only inherits properties that aren't defined yet. Does not override insights.
     /// </summary>
     private void InheritPropertiesFromParents()
     {
@@ -116,7 +119,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     /// <summary>
-    /// Propagates the removal of an insight to child types.
+    ///     Propagates the removal of an insight to child types.
     /// </summary>
     private void PropagateInsightUnregister(string insightName)
     {
@@ -130,7 +133,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     /// <summary>
-    /// Propagates the addition of an insight to child types.
+    ///     Propagates the addition of an insight to child types.
     /// </summary>
     private void PropagateInsightRegister(string insightName, Func<Component, string> insightGenerator)
     {
@@ -144,7 +147,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     /// <summary>
-    /// Propagates the name generator to child types that don't have their own.
+    ///     Propagates the name generator to child types that don't have their own.
     /// </summary>
     private void PropagateNameGenerator(Func<Component, string> generator)
     {
@@ -158,7 +161,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     /// <summary>
-    /// Propagates the is dead generator to child types that don't have their own.
+    ///     Propagates the is dead generator to child types that don't have their own.
     /// </summary>
     private void PropagateIsDeadGenerator(Func<Component, bool> generator)
     {
@@ -172,7 +175,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     /// <summary>
-    /// Propagates the position override to child types that don't have their own.
+    ///     Propagates the position override to child types that don't have their own.
     /// </summary>
     private void PropagatePositionOverride(Func<Component, Vector3> @override)
     {

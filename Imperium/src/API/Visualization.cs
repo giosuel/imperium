@@ -1,5 +1,9 @@
+#region
+
 using Imperium.API.Types;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.API;
 
@@ -17,4 +21,3 @@ public static class Visualization
         return Imperium.Visualization.ObjectInsights.InsightsFor<T>();
     }
 }
-

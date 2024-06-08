@@ -1,8 +1,6 @@
 #region
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using HarmonyLib;
 using Imperium.Core;
@@ -10,7 +8,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers;
 using UnityEngine;
-using UnityEngine.AI;
 using Object = UnityEngine.Object;
 
 #endregion

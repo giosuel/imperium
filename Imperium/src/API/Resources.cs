@@ -1,20 +1,23 @@
+#region
+
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using Imperium.Util.Binding;
 using UnityEngine;
 
+#endregion
+
 namespace Imperium.API;
 
 /// <summary>
-/// Provides lists that are bound to game objects.
-///
-/// These lists are consistent with vanilla and Imperium modfications.
-/// Instantiation of new items by other mods are NOT detected. Lists may hold null items.
+///     Provides lists that are bound to game objects.
+///     These lists are consistent with vanilla and Imperium modfications.
+///     Instantiation of new items by other mods are NOT detected. Lists may hold null items.
 /// </summary>
 public static class Resources
 {
     /// <summary>
-    /// List of all the entities in the current level.
+    ///     List of all the entities in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<EnemyAI>> CurrentLevelEntities
@@ -27,7 +30,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the items and scrap in the current level.
+    ///     List of all the items and scrap in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<GrabbableObject>> CurrentLevelItems
@@ -40,7 +43,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the players in the current level.
+    ///     List of all the players in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<PlayerControllerB>> CurrentPlayers
@@ -53,7 +56,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the doors in the current scene.
+    ///     List of all the doors in the current scene.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<DoorLock>> CurrentLevelDoors
@@ -66,7 +69,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the security doors in the current scene.
+    ///     List of all the security doors in the current scene.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<TerminalAccessibleObject>> CurrentLevelSecurityDoors
@@ -79,7 +82,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the turrets in the current scene.
+    ///     List of all the turrets in the current scene.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<Turret>> CurrentLevelTurrets
@@ -92,7 +95,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the landmines in the current level.
+    ///     List of all the landmines in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<Landmine>> CurrentLevelLandmines
@@ -105,7 +108,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the spike traps in the current level.
+    ///     List of all the spike traps in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<SpikeRoofTrap>> CurrentLevelSpikeTraps
@@ -118,7 +121,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the breaker boxes in the current level.
+    ///     List of all the breaker boxes in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<BreakerBox>> CurrentLevelBreakerBoxes
@@ -131,7 +134,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the steamleaks in the current level.
+    ///     List of all the steamleaks in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<GameObject>> CurrentLevelSteamleaks
@@ -144,7 +147,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the vents in the current level.
+    ///     List of all the vents in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<EnemyVent>> CurrentLevelVents
@@ -157,7 +160,7 @@ public static class Resources
     }
 
     /// <summary>
-    /// List of all the spider webs in the current level.
+    ///     List of all the spider webs in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ImpBinding<HashSet<SandSpiderWebTrap>> CurrentLevelSpiderWebs
