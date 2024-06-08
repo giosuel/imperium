@@ -25,7 +25,8 @@ internal class ObjectEntryEntity : ObjectEntry
         ObjectManager.SpawnEntity(
             objectName,
             ((EnemyAI)component).enemyType.enemyPrefab.name,
-            spawnPosition
+            spawnPosition,
+            PlayerManager.LocalPlayerId
         );
     }
 

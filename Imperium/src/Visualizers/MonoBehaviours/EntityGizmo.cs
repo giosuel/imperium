@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -148,10 +149,10 @@ public class EntityGizmo : MonoBehaviour
     private void OnDestroy()
     {
         foreach (var (_, obj) in VisualizerObjects) Destroy(obj);
-        foreach (var obj in pathLines) Destroy(obj.gameObject);
-        Destroy(targetLookLine.gameObject);
-        Destroy(targetPlayerLine.gameObject);
-        Destroy(lastHeardNoise.gameObject);
+        foreach (var obj in pathLines.Where(obj => obj)) Destroy(obj.gameObject);
+        if (targetLookLine) Destroy(targetLookLine.gameObject);
+        if (targetPlayerLine) Destroy(targetPlayerLine.gameObject);
+        if (lastHeardNoise) Destroy(lastHeardNoise.gameObject);
     }
 
     private void Update()

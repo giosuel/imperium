@@ -164,7 +164,7 @@ internal class ObjectVisualizersWindow : BaseWindow
             playerEntries[player.GetInstanceID()] = playerEntry;
         }
 
-        foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
+        foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>().OrderBy(enemy => enemy.enemyName))
         {
             if (entityEntries.ContainsKey(entity.GetInstanceID())) continue;
 

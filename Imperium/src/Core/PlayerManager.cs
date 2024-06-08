@@ -38,6 +38,9 @@ internal class PlayerManager(ImpBinaryBinding sceneLoaded, ImpBinding<int> playe
 
     internal bool AllowPlayerDeathOverride;
 
+    internal bool FlyIsAscending;
+    internal bool FlyIsDescending;
+
     [ImpAttributes.LocalMethod]
     internal static void TeleportTo(Vector3 position)
     {

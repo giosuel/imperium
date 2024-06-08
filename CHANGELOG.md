@@ -1,6 +1,6 @@
 # Changelog
 
-## Imperium v0.1.9 [Beta] - The API
+## Imperium v0.1.9 [Beta] - The API Update
 
 As so many of you have requested more advanced debugging functionality that can be accessed by other mods, I have started to implement an API that can be used either in the UE console or by other mods.
 
@@ -17,8 +17,12 @@ I also started writing a wiki that should cover the basics on how to use Imperiu
 
 ### QOL Changes
 
-- I had to limit the possible quota deadline to 3 days as deadlines above 4 were actually breaking the game. Instead, I added an option to completely disable the quota deadline countdown for testing.
+- I had to limit the possible quota deadline to 3 days as deadlines above 4 were actually breaking the game. Instead, I added an option to completely disable the quota deadline for testing.
 - Turning on god mode now restores health to full and removes the damage overlay.
+
+### Internal Fixes
+
+- Fixed a bug where spawned entities would sometimes be placed below the ground.
 
 ### Known Issues
 
@@ -26,6 +30,8 @@ I also started writing a wiki that should cover the basics on how to use Imperiu
   - To fix, just open and close Unity Explorer once.
 
 - Scanner overlays are broken at higher texture resolutions.
+
+- There are currently some issues with multiplayer. Mostly, when someone without Imperium is trying to join an Imperium lobby.
 
 ### Compatibility
 

@@ -73,6 +73,7 @@ public class SpawningObjectEntry : MonoBehaviour
                     spawnObjectName,
                     spawnObjectPrefabName,
                     position,
+                    PlayerManager.LocalPlayerId,
                     amount,
                     value,
                     true

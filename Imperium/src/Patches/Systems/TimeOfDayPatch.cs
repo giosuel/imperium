@@ -37,6 +37,6 @@ public class TimeOfDayPatch
     [HarmonyPatch("UpdateProfitQuotaCurrentTime")]
     private static void UpdateProfitQuotaCurrentTimePatch(TimeOfDay __instance)
     {
-        if (Imperium.GameManager.DisableQuota.Value) __instance.timeUntilDeadline = __instance.totalTime * 4f;
+        if (Imperium.GameManager.DisableQuota.Value) __instance.timeUntilDeadline = __instance.totalTime * 3f;
     }
 }

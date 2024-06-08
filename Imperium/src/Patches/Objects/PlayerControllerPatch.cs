@@ -97,7 +97,7 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("SpawnPlayerAnimation")]
     private static bool SpawnPlayerAnimationPatch(PlayerControllerB __instance)
     {
-        return ImpSettings.Animations.PlayerSpawn.Value;
+        return !ImpSettings.AnimationSkipping.PlayerSpawn.Value;
     }
 
     #region Interact Triggers
@@ -110,7 +110,7 @@ internal static class PlayerControllerPatch
     {
         if (!__instance.hoveringOverTrigger) return;
 
-        if (!ImpSettings.Animations.InteractHold.Value)
+        if (ImpSettings.AnimationSkipping.InteractHold.Value)
         {
             // Backup original hold
             if (!OriginalTriggerHold.ContainsKey(__instance.hoveringOverTrigger.GetInstanceID()))
@@ -133,9 +133,6 @@ internal static class PlayerControllerPatch
 
     #endregion
 
-    internal static bool isAscending;
-    internal static bool isDescending;
-
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
     private static void UpdatePrefixPatch(PlayerControllerB __instance)
@@ -150,10 +147,10 @@ internal static class PlayerControllerPatch
                 && !Imperium.Player.jetpackControls)
             {
                 var moveVector = IngamePlayerSettings.Instance.playerInput.actions.FindAction("Move").ReadValue<Vector2>();
-                var upInput = isAscending
+                var upInput = Imperium.PlayerManager.FlyIsAscending
                     ? IngamePlayerSettings.Instance.playerInput.actions.FindAction("Jump").ReadValue<float>()
                     : 0;
-                var downInput = isDescending
+                var downInput = Imperium.PlayerManager.FlyIsDescending
                     ? IngamePlayerSettings.Instance.playerInput.actions.FindAction("Crouch").ReadValue<float>()
                     : 0;
 

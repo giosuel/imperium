@@ -1,9 +1,7 @@
 #region
 
-using Imperium.Patches.Objects;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Interactions;
 
 #endregion
 
@@ -17,7 +15,6 @@ public class ImpInputBindings
     internal static PlayerActions GameMap => Imperium.Player.playerActions;
 
     private static float SpaceDoubleClickTimer;
-    private static float SpaceDoubleClickTimerChanged;
 
     internal ImpInputBindings()
     {
@@ -31,9 +28,11 @@ public class ImpInputBindings
         BaseMap.AddAction("Reset", binding: "<Keyboard>/r");
         BaseMap.AddAction("Minimap", binding: "<Keyboard>/m");
         BaseMap.AddAction("Alt", binding: "<Keyboard>/alt");
-        BaseMap.AddAction("Flying", binding: "<Keyboard>/space", interactions: "multiTap(tapTime=2, tapCount=2, tapDelay=0.4)");
+        BaseMap.AddAction("Flying", binding: "<Keyboard>/space");
+        // BaseMap.AddAction("Flying", binding: "<Keyboard>/space", interactions: "multiTap(tapTime=0.1, tapCount=2, tapDelay=0.4)");
         BaseMap.AddAction("FlyAscend", binding: "<Keyboard>/space", interactions: "hold(duration=0.1)");
         BaseMap.AddAction("FlyDescend", binding: "<Keyboard>/ctrl", interactions: "hold(duration=0.1)");
+        BaseMap.AddAction("FlyNoClip", binding: "<Keyboard>/alt", interactions: "hold(duration=0.1)");
         BaseMap.Enable();
 
         SpawningMap.AddAction("ArrowUp", binding: "<Keyboard>/upArrow");
@@ -61,18 +60,31 @@ public class ImpInputBindings
                 && !Imperium.Player.quickMenuManager.isMenuOpen
                 && !Imperium.Player.inTerminalMenu
                 && !Imperium.Player.isTypingChat
-                && !PlayerControllerPatch.isAscending
-                && !PlayerControllerPatch.isDescending)
+                && !Imperium.PlayerManager.FlyIsAscending
+                && !Imperium.PlayerManager.FlyIsDescending)
             {
+                if (Time.realtimeSinceStartup - SpaceDoubleClickTimer < 0.63)
+                {
+                    Imperium.PlayerManager.IsFlying.Toggle();
+                    Imperium.PlayerManager.FlyIsAscending = true;
+                    Imperium.Map.SetCameraClipped(!Imperium.PlayerManager.IsFlying.Value);
+                    SpaceDoubleClickTimer = Time.realtimeSinceStartup - 2f;
+                }
+                else
+                {
+                    SpaceDoubleClickTimer = Time.realtimeSinceStartup;
+                }
+
+
                 // if (Time.realtimeSinceStartup - SpaceDoubleClickTimerChanged > 1f
                 //     && Time.realtimeSinceStartup - SpaceDoubleClickTimer < 7f / 11f)
                 // {
                 //     SpaceDoubleClickTimerChanged = Time.realtimeSinceStartup;
                 //     Imperium.PlayerManager.IsFlying.Toggle();
                 // }
-                Imperium.PlayerManager.IsFlying.Toggle();
-
-                Imperium.Map.SetCameraClipped(!Imperium.PlayerManager.IsFlying.Value);
+                // Imperium.PlayerManager.IsFlying.Toggle();
+                //
+                // Imperium.Map.SetCameraClipped(!Imperium.PlayerManager.IsFlying.Value);
 
                 // if (tap.tapCount == 2)
                 // {
@@ -83,9 +95,9 @@ public class ImpInputBindings
             }
         };
 
-        BaseMap["FlyAscend"].performed += _ => PlayerControllerPatch.isAscending = true;
-        BaseMap["FlyAscend"].canceled += _ => PlayerControllerPatch.isAscending = false;
-        BaseMap["FlyDescend"].performed += _ => PlayerControllerPatch.isDescending = true;
-        BaseMap["FlyDescend"].canceled += _ => PlayerControllerPatch.isDescending = false;
+        BaseMap["FlyAscend"].performed += _ => Imperium.PlayerManager.FlyIsAscending = true;
+        BaseMap["FlyAscend"].canceled += _ => Imperium.PlayerManager.FlyIsAscending = false;
+        BaseMap["FlyDescend"].performed += _ => Imperium.PlayerManager.FlyIsDescending = true;
+        BaseMap["FlyDescend"].canceled += _ => Imperium.PlayerManager.FlyIsDescending = false;
     }
 }

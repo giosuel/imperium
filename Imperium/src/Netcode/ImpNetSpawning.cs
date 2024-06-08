@@ -30,6 +30,7 @@ public class ImpNetSpawning : NetworkBehaviour
         string entityName,
         string prefabName,
         ImpVector position,
+        int spawningPlayerId,
         int amount,
         int health,
         bool sendNotification
@@ -38,7 +39,7 @@ public class ImpNetSpawning : NetworkBehaviour
         if (!ImpSettings.Preferences.AllowClients.Value && !NetworkManager.IsHost) return;
 
         Imperium.ObjectManager.SpawnEntityServer(
-            entityName, prefabName, position.Vector3(), amount, health, sendNotification
+            entityName, prefabName, position.Vector3(), spawningPlayerId, amount, health, sendNotification
         );
     }
 

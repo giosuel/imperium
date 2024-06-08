@@ -155,30 +155,30 @@ public abstract class ImpSettings
         );
     }
 
-    internal abstract class Animations
+    internal abstract class AnimationSkipping
     {
         internal static readonly ImpConfig<bool> Scoreboard = new(
-            "Animations",
+            "AnimationSkipping",
             "DisableAbandoned",
-            true
+            false
         );
 
         internal static readonly ImpConfig<bool> PlayerSpawn = new(
-            "Animations",
+            "AnimationSkipping",
             "PlayerSpawn",
-            true
+            false
         );
 
         internal static readonly ImpConfig<bool> InteractHold = new(
-            "Animations",
+            "AnimationSkipping",
             "InteractHold",
-            true
+            false
         );
 
         internal static readonly ImpConfig<bool> Interact = new(
-            "Animations",
+            "AnimationSkipping",
             "Interact",
-            true
+            false
         );
     }
 
@@ -946,7 +946,7 @@ public abstract class ImpSettings
         Load<Time>();
         Load<Game>();
         Load<Ship>();
-        Load<Animations>();
+        Load<AnimationSkipping>();
         Load<Visualizations>();
         Load<Rendering>();
         Load<Preferences>();
@@ -962,7 +962,7 @@ public abstract class ImpSettings
         Reset<Time>();
         Reset<Game>();
         Reset<Ship>();
-        Reset<Animations>();
+        Reset<AnimationSkipping>();
         Reset<Visualizations>();
         Reset<Rendering>();
         Reset<Preferences>();
@@ -980,7 +980,7 @@ public abstract class ImpSettings
         Reinstantiate<Time>();
         Reinstantiate<Game>();
         Reinstantiate<Ship>();
-        Reinstantiate<Animations>();
+        Reinstantiate<AnimationSkipping>();
         Reinstantiate<Map>();
         Reinstantiate<Visualizations>();
         Reinstantiate<Rendering>();

@@ -203,25 +203,25 @@ internal class ControlCenterWindow : BaseWindow
         ImpToggle.Bind(
             "Right/AnimationSettings/Scoreboard",
             content,
-            ImpSettings.Animations.Scoreboard,
+            ImpSettings.AnimationSkipping.Scoreboard,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/PlayerSpawn",
             content,
-            ImpSettings.Animations.PlayerSpawn,
+            ImpSettings.AnimationSkipping.PlayerSpawn,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/InteractHold",
             content,
-            ImpSettings.Animations.InteractHold,
+            ImpSettings.AnimationSkipping.InteractHold,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/Interact",
             content,
-            ImpSettings.Animations.Interact,
+            ImpSettings.AnimationSkipping.Interact,
             theme: themeBinding
         );
     }
