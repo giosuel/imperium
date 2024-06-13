@@ -1,5 +1,6 @@
 #region
 
+using BepInEx.Configuration;
 using GameNetcodeStuff;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -15,7 +16,6 @@ public class PlayerGizmo : MonoBehaviour
     private PlayerGizmoConfig playerGizmoConfig;
 
     private GameObject noiseRangeSphere;
-    private float timeSinceSpecialNoise;
 
     internal void Init(PlayerGizmoConfig config, PlayerControllerB player)
     {
@@ -23,7 +23,7 @@ public class PlayerGizmo : MonoBehaviour
         playerController = player;
 
         noiseRangeSphere = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Sphere, player.transform, ImpAssets.WireframeRedMaterial
+            PrimitiveType.Sphere, player.transform, API.Materials.WireframeRed
         );
     }
 
@@ -57,9 +57,9 @@ internal class PlayerGizmoConfig
 
     internal readonly ImpBinding<bool> NoiseRange;
 
-    internal PlayerGizmoConfig(string playerName)
+    internal PlayerGizmoConfig(string playerName, ConfigFile config)
     {
         this.playerName = playerName;
-        NoiseRange = new ImpConfig<bool>("Visualization.PlayerGizmos", "NoiseRange", false);
+        NoiseRange = new ImpConfig<bool>(config, "Visualization.PlayerGizmos", "NoiseRange", false);
     }
 }

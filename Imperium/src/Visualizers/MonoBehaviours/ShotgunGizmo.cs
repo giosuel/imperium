@@ -26,6 +26,8 @@ public class ShotgunGizmo : MonoBehaviour
     // Sphere cast to entity visualization for entities
     private readonly LineRenderer[] sphereRays = new LineRenderer[ImpConstants.ShotgunCollisionCount];
 
+    private GameObject capsule;
+
     // Forward ray of the gun
     private LineRenderer forwardRay;
 
@@ -33,12 +35,15 @@ public class ShotgunGizmo : MonoBehaviour
 
     private bool isActivelyHolding;
 
+    private const float CastLength = 25f;
+    private const float CastRadius = 5f;
+
     private void Awake()
     {
         for (var i = 0; i < ImpConstants.ShotgunCollisionCount; i++)
         {
             spheres[i] = ImpGeometry.CreatePrimitive(
-                PrimitiveType.Sphere, transform, ImpAssets.WireframePurpleMaterial, 10
+                PrimitiveType.Sphere, transform, API.Materials.WireframePurple, 10
             );
 
             collisionSpheres[i] = ImpGeometry.CreatePrimitive(
@@ -48,6 +53,16 @@ public class ShotgunGizmo : MonoBehaviour
             entityRays[i] = ImpGeometry.CreateLine(transform, useWorldSpace: true);
             sphereRays[i] = ImpGeometry.CreateLine(transform, useWorldSpace: true);
         }
+
+        // capsule = ImpGeometry.CreatePrimitive(
+        //     PrimitiveType.Capsule, null, API.Materials.WireframePurple
+        // );
+        //
+        // capsule.transform.position = Vector3.zero;
+        // var capsuleFilter = capsule.GetComponent<MeshFilter>();
+        // capsuleFilter.mesh = ScaleMiddlePart(capsuleFilter.mesh, 25f, 5f);
+
+        // capsule.transform.SetParent(transform);
 
         forwardRay = ImpGeometry.CreateLine(transform, useWorldSpace: true);
         ImpGeometry.SetLineColor(forwardRay, new Color(0.41f, 0.41f, 0.41f));
@@ -69,6 +84,65 @@ public class ShotgunGizmo : MonoBehaviour
         }
     }
 
+    private Mesh ScaleMiddlePart(Mesh mesh, float finalHeight, float capsuleRadius)
+    {
+        Vector3[] vertices = mesh.vertices;
+
+        // Calculate the height of the hemispheres
+        float hemisphereHeight = capsuleRadius;
+        float originalHeight = CalculateOriginalHeight(vertices);
+        float originalMiddleHeight = originalHeight - 2 * hemisphereHeight;
+
+        // Calculate the new middle height and scale factor
+        float newMiddleHeight = finalHeight - 2 * hemisphereHeight;
+        float scaleFactor = newMiddleHeight / originalMiddleHeight;
+
+        // Adjust vertices: stretch middle section and move top hemisphere
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if (vertices[i].y > -hemisphereHeight && vertices[i].y < hemisphereHeight)
+            {
+                // Scale middle section
+                vertices[i].y *= scaleFactor;
+            }
+            else if (vertices[i].y >= hemisphereHeight)
+            {
+                // Move top hemisphere up
+                vertices[i].y += (newMiddleHeight - originalMiddleHeight);
+            }
+        }
+
+        // Update the mesh with the new vertices
+        mesh.vertices = vertices;
+
+        // Recalculate bounds and normals to ensure proper rendering
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+
+    float CalculateOriginalHeight(Vector3[] vertices)
+    {
+        // Find the highest and lowest points in the mesh along the y-axis
+        var minY = float.MaxValue;
+        var maxY = float.MinValue;
+
+        foreach (var vertex in vertices)
+        {
+            if (vertex.y < minY)
+            {
+                minY = vertex.y;
+            }
+            if (vertex.y > maxY)
+            {
+                maxY = vertex.y;
+            }
+        }
+
+        return maxY - minY;
+    }
+
     private void Update()
     {
         if (!isActivelyHolding) return;
@@ -77,6 +151,9 @@ public class ShotgunGizmo : MonoBehaviour
 
         forwardRay.gameObject.SetActive(true);
 
+        /*
+         * Players
+         */
         foreach (var player in Imperium.ObjectManager.CurrentPlayers.Value)
         {
             if (!playerRays.TryGetValue(player.GetInstanceID(), out var lineRenderer))
@@ -110,6 +187,19 @@ public class ShotgunGizmo : MonoBehaviour
             ImpGeometry.SetLineColor(lineRenderer, playerRayColor);
             ImpGeometry.SetLinePositions(lineRenderer, shotgunPosition, closestPoint);
         }
+
+        /*
+         * Capsule
+         */
+        // var positionStart = shotgunPosition - shotgunForward * 10f;
+        // var positionEnd = shotgunPosition + shotgunForward * 15f;
+
+        // capsule.transform.position = positionStart + shotgunForward * (10f + 15f) / 2;
+        // capsule.transform.rotation = Quaternion.LookRotation(shotgun.transform.up, shotgunForward);
+
+        // var distance = Vector3.Distance(positionStart, positionEnd) + CastRadius * 2;
+        // capsule.transform.localScale = new Vector3(CastRadius * 2, distance / 2, CastRadius * 2);
+        // capsule.transform.localScale = new Vector3(1, 1, 1);
 
         var forwardRayColor = Color.red;
 

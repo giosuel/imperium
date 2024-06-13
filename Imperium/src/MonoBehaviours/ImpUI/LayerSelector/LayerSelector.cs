@@ -1,6 +1,7 @@
 #region
 
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Types;
@@ -124,7 +125,7 @@ internal class LayerSelector : SingleplexUI
 
     private void OnLayerSelect()
     {
-        GameManager.PlayClip(ImpAssets.GrassClick);
+        GameUtils.PlayClip(ImpAssets.GrassClick);
         var newMask = ImpUtils.ToggleLayerInMask(LayerMaskBinding.Value, selectedLayer);
         LayerMaskBinding.Set(newMask);
         layerToggles[selectedLayer].UpdateIsOn(newMask);

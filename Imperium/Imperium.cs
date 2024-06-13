@@ -7,6 +7,7 @@ using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.Integration;
 using Imperium.MonoBehaviours;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
@@ -30,7 +31,6 @@ using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -41,6 +41,7 @@ namespace Imperium;
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("LethalNetworkAPI")]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
 public class Imperium : BaseUnityPlugin
 {
@@ -48,10 +49,12 @@ public class Imperium : BaseUnityPlugin
     public const string PLUGIN_NAME = "Imperium";
     public const string PLUGIN_VERSION = "0.1.9";
 
-    internal static ManualLogSource Log;
-    internal static ConfigFile ConfigFile;
+    private static ConfigFile configFile;
+    private static Harmony Harmony;
 
-    // Global relays for game singletons to keep track of dependencies
+    /*
+     * Relays to vanilla singletons
+     */
     internal static Terminal Terminal;
     internal static HUDManager HUDManager;
     internal static PlayerControllerB Player;
@@ -61,14 +64,27 @@ public class Imperium : BaseUnityPlugin
     internal static RoundManager RoundManager => RoundManager.Instance;
     internal static ShipBuildModeManager ShipBuildModeManager => ShipBuildModeManager.Instance;
 
-    // Imperium game and lifecycle managers
+    /*
+     * Preload systems. Loaded when Imperium is loaded by BepInEx.
+     */
+    internal static ImpSettings Settings;
+    internal static ImpOutput IO;
+    internal static ImpNetworking Networking;
+
+    /*
+     * Lifecycle systems. Loaded when Imperium is launched.
+     */
     internal static GameManager GameManager;
     internal static ObjectManager ObjectManager;
     internal static PlayerManager PlayerManager;
+    internal static MoonManager MoonManager;
+    internal static ShipManager ShipManager;
     internal static Visualization Visualization;
     internal static Oracle Oracle;
 
-    // Other Imperium objects
+    /*
+     * GameObjects and world-space managers. Loaded when Imperium is launched.
+     */
     internal static ImpMap Map;
     internal static ImpFreecam Freecam;
     internal static ImpNightVision NightVision;
@@ -77,52 +93,62 @@ public class Imperium : BaseUnityPlugin
     internal static ImpPositionIndicator ImpPositionIndicator;
     internal static ImpInterfaceManager Interface;
 
-    internal static Harmony Harmony;
-
-    // Global variable indicating if Imperium is loaded
+    /// <summary>
+    /// Set to true, then Imperium is initally loaded by BepInEx.
+    /// </summary>
     internal static bool IsImperiumReady;
 
+    /// <summary>
+    /// Set to true, then Imperium is launched and ready be used and serve API calls.
+    /// </summary>
     internal static bool IsImperiumLaunched;
 
-    // Indicates if Imperium access was initially granted when the client joined the lobby
+    /// <summary>
+    /// Set to true, when Imperium access is first granted. Always set to true the host.
+    /// </summary>
     internal static bool WasImperiumAccessGranted;
 
-    // Global variable indicating if ship is currently landed on a moon
+    /// <summary>
+    /// Binding that updates whenever the scene ship lands and takes off.
+    /// </summary>
     internal static ImpBinaryBinding IsSceneLoaded;
 
     internal static ImpBinding<ImpTheme> Theme;
 
     private void Awake()
     {
-        Log = Logger;
-        ConfigFile = Config;
+        configFile = Config;
+
+        Settings = new ImpSettings(Config);
+        IO = new ImpOutput(Logger);
+        Networking = new ImpNetworking(Settings.Preferences.AllowClients);
 
         if (!ImpAssets.Load()) return;
 
         Harmony = new Harmony(PLUGIN_GUID);
         PreLaunchPatch();
-        RunNetcodePatcher();
+
+        IO.LogInfo("[OK] Imperium is ready!");
 
         IsImperiumReady = true;
-        Log.LogInfo("[OK] Imperium is ready!");
     }
 
-    private static void RunNetcodePatcher()
-    {
-        var types = Assembly.GetExecutingAssembly().GetTypes();
-        foreach (var type in types)
-        {
-            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-            foreach (var method in methods)
-            {
-                var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                if (attributes.Length > 0)
-                {
-                    method.Invoke(null, null);
-                }
-            }
-        }
-    }
+    // private static void RunNetcodePatcher()
+    // {
+    //     var types = Assembly.GetExecutingAssembly().GetTypes();
+    //     foreach (var type in types)
+    //     {
+    //         var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+    //         foreach (var method in methods)
+    //         {
+    //             var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+    //             if (attributes.Length > 0)
+    //             {
+    //                 method.Invoke(null, null);
+    //             }
+    //         }
+    //     }
+    // }
 
     internal static void DisableImperium()
     {
@@ -149,11 +175,9 @@ public class Imperium : BaseUnityPlugin
     {
         if (!IsImperiumReady)
         {
-            ImpOutput.Send("Imperium failed to launch \u2299︿\u2299");
+            IO.Send("Imperium failed to launch \u2299︿\u2299");
             return;
         }
-
-        IsImperiumLaunched = true;
 
         InputBindings = new ImpInputBindings();
         Terminal = GameObject.Find("TerminalScript").GetComponent<Terminal>();
@@ -164,29 +188,32 @@ public class Imperium : BaseUnityPlugin
 
         Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();
-        NightVision = ImpNightVision.Create();
         Interface = ImpInterfaceManager.Create(Theme);
+        NightVision = ImpNightVision.Create();
         NoiseListener = ImpNoiseListener.Create();
         ImpPositionIndicator = ImpPositionIndicator.Create();
 
-        PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers, Freecam);
-        GameManager = new GameManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers);
-        ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworkManager.ConnectedPlayers);
         Oracle = new Oracle();
-        Visualization = new Visualization(Oracle.State, ObjectManager);
 
-        MoonManager.Create(ObjectManager);
+        GameManager = new GameManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        MoonManager = new MoonManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        ShipManager = new ShipManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
 
-        GameManager.IndoorSpawningPaused.onTrigger += Oracle.Simulate;
-        GameManager.OutdoorSpawningPaused.onTrigger += Oracle.Simulate;
-        GameManager.DaytimeSpawningPaused.onTrigger += Oracle.Simulate;
-        GameManager.IndoorDeviation.onTrigger += Oracle.Simulate;
-        GameManager.DaytimeDeviation.onTrigger += Oracle.Simulate;
-        GameManager.MaxIndoorPower.onTrigger += Oracle.Simulate;
-        GameManager.MaxOutdoorPower.onTrigger += Oracle.Simulate;
-        GameManager.MaxDaytimePower.onTrigger += Oracle.Simulate;
-        GameManager.MinIndoorSpawns.onTrigger += Oracle.Simulate;
-        GameManager.MinOutdoorSpawns.onTrigger += Oracle.Simulate;
+        MoonContainer.Create(ObjectManager);
+
+        MoonManager.IndoorSpawningPaused.onTrigger += Oracle.Simulate;
+        MoonManager.OutdoorSpawningPaused.onTrigger += Oracle.Simulate;
+        MoonManager.DaytimeSpawningPaused.onTrigger += Oracle.Simulate;
+        MoonManager.IndoorDeviation.onTrigger += Oracle.Simulate;
+        MoonManager.DaytimeDeviation.onTrigger += Oracle.Simulate;
+        MoonManager.MaxIndoorPower.onTrigger += Oracle.Simulate;
+        MoonManager.MaxOutdoorPower.onTrigger += Oracle.Simulate;
+        MoonManager.MaxDaytimePower.onTrigger += Oracle.Simulate;
+        MoonManager.MinIndoorSpawns.onTrigger += Oracle.Simulate;
+        MoonManager.MinOutdoorSpawns.onTrigger += Oracle.Simulate;
 
         Interface.OpenInterface.onUpdate += openInterface =>
         {
@@ -203,20 +230,17 @@ public class Imperium : BaseUnityPlugin
 
         InputBindings.BaseMap["ToggleHUD"].performed += ToggleHUD;
 
-        ImpSettings.LoadAll();
+        Settings.LoadAll();
         PlayerManager.UpdateCameras();
-
-        // Network syncing
-        ImpNetTime.Instance.BindNetworkVariables();
 
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
         Harmony.PatchAll();
         UnityExplorerIntegration.PatchFunctions(Harmony);
 
-        SpawnUI();
+        IsImperiumLaunched = true;
 
-        if (!NetworkManager.Singleton.IsHost) ImpNetTime.Instance.RequestTimeServerRpc();
+        SpawnUI();
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
@@ -238,7 +262,7 @@ public class Imperium : BaseUnityPlugin
         WasImperiumAccessGranted = false;
         IsImperiumLaunched = false;
 
-        ImpSettings.Reinstantiate();
+        // Imperium.Settings.Reinstantiate();
 
         PreLaunchPatch();
     }
@@ -269,16 +293,15 @@ public class Imperium : BaseUnityPlugin
 
         Interface.StartListening();
 
-        ImpThemeManager.BindTheme(ImpSettings.Preferences.Theme, Theme);
+        ImpThemeManager.BindTheme(Imperium.Settings.Preferences.Theme, Theme);
 
-        Log.LogInfo("[OK] Imperium UIs have been registered! \\o/");
+        IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
     }
 
     private static void PreLaunchPatch()
     {
         Harmony.PatchAll(typeof(PlayerControllerPatch.PreloadPatches));
         Harmony.PatchAll(typeof(StartOfRoundPatch.PreloadPatches));
-        Harmony.PatchAll(typeof(GameNetworkManagerPatch.PreloadPatches));
         Harmony.PatchAll(typeof(TerminalPatch.PreloadPatches));
 
         Harmony.PatchAll(typeof(PreInitPatches.PreInitSceneScriptPatch));

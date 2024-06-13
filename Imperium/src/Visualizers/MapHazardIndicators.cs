@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.API.Types;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -12,8 +13,8 @@ namespace Imperium.Visualizers;
 
 internal class MapHazardIndicators(
     ImpBinding<HashSet<HazardIndicator>> objectsBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<HazardIndicator>, Transform>(objectsBinding, visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<HashSet<HazardIndicator>, Transform>(objectsBinding, visibilityBinding)
 {
     protected override void OnRefresh(HashSet<HazardIndicator> objects)
     {
@@ -26,7 +27,7 @@ internal class MapHazardIndicators(
                 visualizerObjects[spawn.GetHashCode()] = Visualization.VisualizePoint(
                     null,
                     spawn.spawnRange,
-                    material: ImpAssets.WireframeRedMaterial,
+                    material: API.Materials.WireframeRed,
                     name: "Imp_HazardSpawnIndicator"
                 ).transform;
                 visualizerObjects[spawn.GetHashCode()].position = spawn.position;

@@ -1,7 +1,6 @@
 #region
 
-using Imperium.Core;
-using Imperium.Netcode;
+using Imperium.Core.Lifecycle;
 using Imperium.Util;
 using Unity.Netcode;
 using UnityEngine;
@@ -24,8 +23,8 @@ internal class ObjectEntryItem : ObjectEntry
         var item = (GrabbableObject)component;
         if (!item.isHeld || item.playerHeldBy is null) return;
 
-        ImpNetPlayer.Instance.DiscardHotbarItemServerRpc(
-            PlayerManager.GetPlayerID(item.playerHeldBy),
+        Imperium.PlayerManager.DropItem(
+            item.playerHeldBy.playerClientId,
             PlayerManager.GetItemHolderSlot(item)
         );
     }
@@ -33,7 +32,7 @@ internal class ObjectEntryItem : ObjectEntry
     public override void Destroy()
     {
         base.Destroy();
-        ImpNetSpawning.Instance.DespawnItemServerRpc(containerObject.GetComponent<NetworkObject>().NetworkObjectId);
+        Imperium.ObjectManager.DespawnItem(objectNetId!.Value);
     }
 
     protected override void TeleportHere()

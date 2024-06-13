@@ -45,7 +45,7 @@ internal class ImpNoiseListener : MonoBehaviour, INoiseListener
 
     void INoiseListener.DetectNoise(Vector3 noisePosition, float noiseLoudness, int timesPlayedInOneSpot, int noiseID)
     {
-        if (!ImpSettings.Visualizations.NoiseIndicators.Value) return;
+        if (!Imperium.Settings.Visualization.NoiseIndicators.Value) return;
 
         noiseArrows[noiseArrowIndex].Activate(noisePosition, 10, noiseLoudness, noiseID);
         noiseArrowIndex = (noiseArrowIndex + 1) % noiseArrows.Length;

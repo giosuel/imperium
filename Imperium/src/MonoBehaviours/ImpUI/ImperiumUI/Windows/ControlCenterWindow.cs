@@ -32,7 +32,7 @@ internal class ControlCenterWindow : BaseWindow
         InitGeneration();
         InitPlayerSettings();
         InitGameSettings();
-        InitTimeSpeed();
+        // InitTimeSpeed();
     }
 
     protected override void OnThemeUpdate(ImpTheme theme)
@@ -52,7 +52,7 @@ internal class ControlCenterWindow : BaseWindow
         ImpButton.Bind(
             "Left/Seed/Reset",
             content,
-            Imperium.GameManager.CustomSeed.Reset,
+            () => Imperium.GameManager.CustomSeed.Reset(),
             theme: themeBinding,
             interactableInvert: true,
             interactableBindings: Imperium.IsSceneLoaded
@@ -89,19 +89,19 @@ internal class ControlCenterWindow : BaseWindow
     {
         ImpToggle.Bind(
             "Left/PauseIndoorSpawning", content,
-            Imperium.GameManager.IndoorSpawningPaused,
+            Imperium.MoonManager.IndoorSpawningPaused,
             themeBinding
         );
 
         ImpToggle.Bind(
             "Left/PauseOutdoorSpawning", content,
-            Imperium.GameManager.OutdoorSpawningPaused,
+            Imperium.MoonManager.OutdoorSpawningPaused,
             themeBinding
         );
 
         ImpToggle.Bind(
             "Left/PauseDaytimeSpawning", content,
-            Imperium.GameManager.DaytimeSpawningPaused,
+            Imperium.MoonManager.DaytimeSpawningPaused,
             themeBinding
         );
     }
@@ -135,13 +135,13 @@ internal class ControlCenterWindow : BaseWindow
         ImpButton.Bind(
             "Left/ProfitButtons/FulfillQuota",
             content,
-            Imperium.GameManager.FulfillQuota,
+            () => Imperium.GameManager.FulfillQuotaEvent.DispatchToServer(),
             theme: themeBinding
         );
         ImpButton.Bind(
             "Left/ProfitButtons/ResetQuota",
             content,
-            Imperium.GameManager.ResetQuota,
+            () => Imperium.GameManager.ProfitQuota.Reset(),
             theme: themeBinding
         );
 
@@ -153,122 +153,116 @@ internal class ControlCenterWindow : BaseWindow
         ImpToggle.Bind(
             "Right/GameSettings/UnlockShop",
             content,
-            ImpSettings.Game.UnlockShop,
+            Imperium.Settings.Game.UnlockShop,
             theme: themeBinding
         );
-        // ImpToggle.Bind(
-        //     "Right/GameSettings/AllPlayersDead",
-        //     content,
-        //     Imperium.GameManager.AllPlayersDead,
-        //     theme: themeBinding
-        // );
 
         ImpToggle.Bind(
             "Right/ShipSettings/InstantLanding",
             content,
-            ImpSettings.Ship.InstantLanding,
+            Imperium.Settings.Ship.InstantLanding,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/InstantTakeoff",
             content,
-            ImpSettings.Ship.InstantTakeoff,
+            Imperium.Settings.Ship.InstantTakeoff,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/OverwriteDoors",
             content,
-            ImpSettings.Ship.OverwriteDoors,
+            Imperium.Settings.Ship.OverwriteDoors,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/MuteSpeaker",
             content,
-            ImpSettings.Ship.MuteSpeaker,
+            Imperium.Settings.Ship.MuteSpeaker,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/PreventLeave",
             content,
-            ImpSettings.Ship.PreventLeave,
+            Imperium.Settings.Ship.PreventLeave,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/DisableAbandoned",
             content,
-            ImpSettings.Ship.DisableAbandoned,
+            Imperium.Settings.Ship.DisableAbandoned,
             theme: themeBinding
         );
 
         ImpToggle.Bind(
             "Right/AnimationSettings/Scoreboard",
             content,
-            ImpSettings.AnimationSkipping.Scoreboard,
+            Imperium.Settings.AnimationSkipping.Scoreboard,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/PlayerSpawn",
             content,
-            ImpSettings.AnimationSkipping.PlayerSpawn,
+            Imperium.Settings.AnimationSkipping.PlayerSpawn,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/InteractHold",
             content,
-            ImpSettings.AnimationSkipping.InteractHold,
+            Imperium.Settings.AnimationSkipping.InteractHold,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/Interact",
             content,
-            ImpSettings.AnimationSkipping.Interact,
+            Imperium.Settings.AnimationSkipping.Interact,
             theme: themeBinding
         );
     }
 
     private void InitPlayerSettings()
     {
-        ImpToggle.Bind("Right/PlayerSettings/GodMode", content, ImpSettings.Player.GodMode, themeBinding);
-        ImpToggle.Bind("Right/PlayerSettings/Muted", content, ImpSettings.Player.Muted, themeBinding);
-        ImpToggle.Bind("Right/PlayerSettings/InfiniteSprint", content, ImpSettings.Player.InfiniteSprint, themeBinding);
-        ImpToggle.Bind("Right/PlayerSettings/Invisibility", content, ImpSettings.Player.Invisibility, themeBinding);
-        ImpToggle.Bind("Right/PlayerSettings/DisableLocking", content, ImpSettings.Player.DisableLocking, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/GodMode", content, Imperium.Settings.Player.GodMode, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/Muted", content, Imperium.Settings.Player.Muted, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/InfiniteSprint", content, Imperium.Settings.Player.InfiniteSprint, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/Invisibility", content, Imperium.Settings.Player.Invisibility, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/DisableLocking", content, Imperium.Settings.Player.DisableLocking, themeBinding);
         ImpToggle.Bind(
             "Right/PlayerSettings/InfiniteBattery",
             content,
-            ImpSettings.Player.InfiniteBattery,
+            Imperium.Settings.Player.InfiniteBattery,
             themeBinding
         );
         ImpToggle.Bind(
             "Right/PlayerSettings/PickupOverwrite",
             content,
-            ImpSettings.Player.PickupOverwrite,
+            Imperium.Settings.Player.PickupOverwrite,
             themeBinding
         );
         ImpToggle.Bind(
             "Right/PlayerSettings/DisableOOB",
             content,
-            ImpSettings.Player.DisableOOB,
+            Imperium.Settings.Player.DisableOOB,
             themeBinding
         );
         ImpToggle.Bind(
             "Right/PlayerSettings/EnableFlying",
             content,
-            ImpSettings.Player.EnableFlying,
+            Imperium.Settings.Player.EnableFlying,
             themeBinding
         );
         ImpToggle.Bind(
             "Right/PlayerSettings/FlyingNoClip",
             content,
-            ImpSettings.Player.FlyingNoClip,
+            Imperium.Settings.Player.FlyingNoClip,
             themeBinding,
-            interactableBindings: ImpSettings.Player.EnableFlying
+            interactableBindings: Imperium.Settings.Player.EnableFlying
         );
 
         ImpSlider.Bind(
             path: "Right/FieldOfView",
             container: content,
-            valueBinding: ImpSettings.Player.CustomFieldOfView,
+            valueBinding: Imperium.Settings.Player.CustomFieldOfView,
             indicatorDefaultValue: ImpConstants.DefaultFOV,
             indicatorUnit: "°",
             theme: themeBinding
@@ -278,21 +272,21 @@ internal class ControlCenterWindow : BaseWindow
             path: "Right/MovementSpeed",
             container: content,
             theme: themeBinding,
-            valueBinding: ImpSettings.Player.MovementSpeed
+            valueBinding: Imperium.Settings.Player.MovementSpeed
         );
 
         ImpSlider.Bind(
             path: "Right/JumpForce",
             container: content,
             theme: themeBinding,
-            valueBinding: ImpSettings.Player.JumpForce
+            valueBinding: Imperium.Settings.Player.JumpForce
         );
 
         ImpSlider.Bind(
             path: "Right/NightVision",
             container: content,
             theme: themeBinding,
-            valueBinding: ImpSettings.Player.NightVision,
+            valueBinding: Imperium.Settings.Player.NightVision,
             indicatorUnit: "%"
         );
     }
@@ -300,19 +294,19 @@ internal class ControlCenterWindow : BaseWindow
     public void InitTimeSpeed()
     {
         var timeScaleInteractable = new ImpBinding<bool>(false);
-        Imperium.GameManager.TimeIsPaused.onUpdate += isPaused =>
+        Imperium.MoonManager.TimeIsPaused.onUpdate += isPaused =>
         {
             timeScaleInteractable.Set(!isPaused && Imperium.IsSceneLoaded.Value);
         };
         Imperium.IsSceneLoaded.onUpdate += isSceneLoaded =>
         {
-            timeScaleInteractable.Set(isSceneLoaded && !Imperium.GameManager.TimeIsPaused.Value);
+            timeScaleInteractable.Set(isSceneLoaded && !Imperium.MoonManager.TimeIsPaused.Value);
         };
 
         ImpSlider.Bind(
             path: "Right/TimeSpeed",
             container: content,
-            valueBinding: Imperium.GameManager.TimeSpeed,
+            valueBinding: Imperium.MoonManager.TimeSpeed,
             indicatorFormatter: Formatting.FormatFloatToThreeDigits,
             useLogarithmicScale: true,
             debounceTime: 0.05f,
@@ -322,13 +316,13 @@ internal class ControlCenterWindow : BaseWindow
         ImpToggle.Bind(
             "Right/TimeSettings/Pause",
             content,
-            Imperium.GameManager.TimeIsPaused,
+            Imperium.MoonManager.TimeIsPaused,
             themeBinding,
             interactableBindings: Imperium.IsSceneLoaded
         );
 
-        ImpToggle.Bind("Right/TimeSettings/RealtimeClock", content, ImpSettings.Time.RealtimeClock, themeBinding);
-        ImpToggle.Bind("Right/TimeSettings/PermanentClock", content, ImpSettings.Time.PermanentClock, themeBinding);
+        ImpToggle.Bind("Right/TimeSettings/RealtimeClock", content, Imperium.Settings.Time.RealtimeClock, themeBinding);
+        ImpToggle.Bind("Right/TimeSettings/PermanentClock", content, Imperium.Settings.Time.PermanentClock, themeBinding);
     }
 
     private static void OpenMoonUI() => Imperium.Interface.Open<MoonUI.MoonUI>();

@@ -2,6 +2,7 @@
 
 using System;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -72,7 +73,7 @@ internal abstract class BaseUI : MonoBehaviour
         OnThemeUpdate(themeBinding.Value);
 
         if (container) container.gameObject.SetActive(false);
-        Imperium.Log.LogInfo($"[OK] Successfully loaded {GetType()} !");
+        Imperium.IO.LogInfo($"[OK] Successfully loaded {GetType()} !");
     }
 
     /// <summary>
@@ -130,7 +131,7 @@ internal abstract class BaseUI : MonoBehaviour
         IsOpen = true;
 
         onOpen?.Invoke();
-        GameManager.PlayClip(ImpAssets.ButtonClick);
+        GameUtils.PlayClip(ImpAssets.ButtonClick);
 
         if (closeOnMove)
         {

@@ -2,6 +2,7 @@
 
 using System.Linq;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -31,23 +32,23 @@ public abstract class ImpButton
         string path,
         Transform container,
         UnityAction onClick,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<ImpTheme> theme = null,
         bool isIconButton = false,
         bool interactableInvert = false,
         bool playClickSound = true,
-        params ImpBinding<bool>[] interactableBindings
+        params IBinding<bool>[] interactableBindings
     )
     {
         var buttonObject = container.Find(path);
         if (!buttonObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogInfo($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
         var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(onClick);
-        if (playClickSound) button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
+        if (playClickSound) button.onClick.AddListener(() => GameUtils.PlayClip(ImpAssets.GrassClick));
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
 
@@ -91,9 +92,9 @@ public abstract class ImpButton
         string path,
         Transform container,
         Transform collapseArea,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<ImpTheme> theme = null,
         bool interactableInvert = false,
-        params ImpBinding<bool>[] interactableBindings
+        params IBinding<bool>[] interactableBindings
     )
     {
         var buttonObject = container.Find(path);
@@ -103,7 +104,7 @@ public abstract class ImpButton
             collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
             button.transform.Rotate(0, 0, 180);
         });
-        button.onClick.AddListener(() => GameManager.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() => GameUtils.PlayClip(ImpAssets.GrassClick));
 
         if (interactableBindings.Length > 0)
         {

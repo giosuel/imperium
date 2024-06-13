@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Util;
 
 #endregion
@@ -26,19 +28,19 @@ public static class ImpSpawnTracker
 
         if (output.Count < 1)
         {
-            ImpOutput.Send(
+            Imperium.IO.Send(
                 "Nothing spawned >.<", $"Spawn Report Cycle #{num * 9}",
                 type: NotificationType.SpawnReport
             );
-            ImpOutput.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
+            Imperium.IO.LogBlock(["Nothing Spawned"], title: "Spawn Tracker");
         }
         else
         {
-            ImpOutput.Send(
+            Imperium.IO.Send(
                 output.Aggregate((a, b) => $"{a}\n{b}"), $"Spawn Report Cycle #{num * 9}",
                 type: NotificationType.SpawnReport
             );
-            ImpOutput.LogBlock(output, title: "Spawn Tracker");
+            Imperium.IO.LogBlock(output, title: "Spawn Tracker");
         }
     }
 

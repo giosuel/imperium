@@ -1,5 +1,7 @@
 #region
 
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -17,31 +19,34 @@ internal class ObjectEntryEntity : ObjectEntry
 
     protected override void Respawn()
     {
-        base.Destroy();
-        var spawnPosition = containerObject.transform.position;
-        ImpNetSpawning.Instance.DespawnEntityServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId
-        );
-        ObjectManager.SpawnEntity(
-            objectName,
-            ((EnemyAI)component).enemyType.enemyPrefab.name,
-            spawnPosition,
-            PlayerManager.LocalPlayerId
-        );
+        Destroy();
+
+        Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
+        {
+            Name = objectName,
+            PrefabName = ((EnemyAI)component).enemyType.enemyPrefab.name,
+            SpawnPosition = containerObject.transform.position
+        });
     }
 
     public override void Destroy()
     {
         base.Destroy();
-        ImpNetSpawning.Instance.DespawnEntityServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId
-        );
+        Imperium.ObjectManager.DespawnEntity(objectNetId!.Value);
     }
 
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
         Imperium.ImpPositionIndicator.Activate(position => component.transform.position = position, origin);
+    }
+
+    protected override void ToggleObject(bool isActive)
+    {
+        var entity = (EnemyAI)component;
+        entity.enabled = isActive;
+        entity.agent.isStopped = !isActive;
+        if (entity.creatureAnimator) entity.creatureAnimator.enabled = isActive;
     }
 
     protected override string GetObjectName()

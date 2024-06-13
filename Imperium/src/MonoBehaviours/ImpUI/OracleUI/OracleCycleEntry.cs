@@ -89,7 +89,7 @@ public class OracleCycleEntry : MonoBehaviour
         var clickableText = reportObject.transform.Find("Position").gameObject.AddComponent<ImpClickableText>();
         clickableText.Init(
             Formatting.FormatVector(report.position, 2),
-            () => PlayerManager.TeleportTo(report.position)
+            () => Imperium.PlayerManager.TeleportLocalPlayer(report.position)
         );
 
         reports.Add(reportObject);

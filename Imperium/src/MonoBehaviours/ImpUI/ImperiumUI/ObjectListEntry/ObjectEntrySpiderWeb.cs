@@ -1,5 +1,7 @@
 #region
 
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Netcode;
 using Unity.Netcode;
@@ -17,15 +19,17 @@ internal class ObjectEntrySpiderWeb : ObjectEntry
     protected override void Respawn()
     {
         Destroy();
-        ObjectManager.SpawnMapHazard("SpiderWeb", containerObject.transform.position);
+        Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+        {
+            Name = "SpiderWeb",
+            SpawnPosition = containerObject.transform.position
+        });
     }
 
     public override void Destroy()
     {
         base.Destroy();
-        ImpNetSpawning.Instance.DespawnMapHazardServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId
-        );
+        Imperium.ObjectManager.DespawnObstacle(objectNetId!.Value);
     }
 
     protected override void TeleportHere()

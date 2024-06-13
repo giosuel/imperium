@@ -6,9 +6,9 @@ using Imperium.Util.Binding;
 
 namespace Imperium.Core;
 
-internal abstract class ImpLifecycleObject
+public abstract class ImpLifecycleObject
 {
-    internal ImpLifecycleObject(ImpBinaryBinding sceneLoaded, ImpBinding<int> playersConnected)
+    internal ImpLifecycleObject(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
     {
         sceneLoaded.onTrue += OnSceneLoad;
         sceneLoaded.onFalse += OnSceneUnload;
@@ -17,7 +17,7 @@ internal abstract class ImpLifecycleObject
     }
 
     /// <summary>
-    ///     Invoked after the the moon has been generated and the ship starts the landing animation.
+    ///     Invoked after the moon has been generated and the ship starts the landing animation.
     ///     Called after <see cref="RoundManager.FinishGeneratingNewLevelClientRpc" />.
     /// </summary>
     protected virtual void OnSceneLoad()

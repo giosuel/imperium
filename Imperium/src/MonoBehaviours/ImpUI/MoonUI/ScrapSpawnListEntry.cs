@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -33,14 +34,14 @@ public class ScrapSpawnListEntry : MonoBehaviour
 
         Rarity = new ImpBinding<int>(
             scrap.rarity,
-            MoonManager.Current.OriginalMoonData.ScrapRarities.GetValueOrDefault(scrap.spawnableItem),
-            OnUpdateRarity,
-            _ => ImpNetSpawning.Instance.OnSpawningChangedServerRpc()
+            MoonContainer.Current.OriginalMoonData.ScrapRarities.GetValueOrDefault(scrap.spawnableItem),
+            OnUpdateRarity
+            // _ => ImpNetSpawning.Instance.OnSpawningChangedServerRpc()
         );
         IsSpawning = new ImpBinding<bool>(
             scrap.rarity > 0,
-            OnUpdateIsSpawning,
-            _ => ImpNetSpawning.Instance.OnSpawningChangedServerRpc()
+            onUpdate: OnUpdateIsSpawning
+            // onUpdateSync: _ => ImpNetSpawning.Instance.OnSpawningChangedServerRpc()
         );
 
         var content = transform;
@@ -65,7 +66,7 @@ public class ScrapSpawnListEntry : MonoBehaviour
         onExclusive?.Invoke();
         Rarity.Set(100, true);
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     private void OnUpdateRarity(int value) => scrap.rarity = value;

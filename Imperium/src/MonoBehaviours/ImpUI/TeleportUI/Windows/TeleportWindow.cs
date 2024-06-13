@@ -52,9 +52,9 @@ internal class TeleportWindow : BaseWindow
         // We need to set the teleport function as sync callback as the game might teleport the player to different
         // coordinates due to OOB restrictions. That way, the input field would be out of sync with the actual position,
         // so we have to re-set the coords without invoking another teleport that would lead to a stack overflow.
-        coordinateX = new ImpBinding<float>(0, syncUpdate: _ => TeleportToCoords());
-        coordinateY = new ImpBinding<float>(0, syncUpdate: _ => TeleportToCoords());
-        coordinateZ = new ImpBinding<float>(0, syncUpdate: _ => TeleportToCoords());
+        coordinateX = new ImpBinding<float>(0, onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateY = new ImpBinding<float>(0, onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateZ = new ImpBinding<float>(0, onUpdateFromLocal: _ => TeleportToCoords());
 
         ImpInput.Bind("Coords/CoordsX", content, coordinateX, themeBinding, max: 10000f, min: -10000f);
         ImpInput.Bind("Coords/CoordsY", content, coordinateY, themeBinding, max: 999f, min: -999f);
@@ -83,19 +83,19 @@ internal class TeleportWindow : BaseWindow
     private static void OnInteractive()
     {
         Imperium.Freecam.IsFreecamEnabled.Set(false);
-        Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo);
+        Imperium.ImpPositionIndicator.Activate(Imperium.PlayerManager.TeleportLocalPlayer);
     }
 
     private void TeleportTo(Vector3? anchor)
     {
         if (anchor == null) return;
-        PlayerManager.TeleportTo(anchor.Value);
+        Imperium.PlayerManager.TeleportLocalPlayer(anchor.Value);
         CloseUI();
     }
 
     private void TeleportToCoords()
     {
-        PlayerManager.TeleportTo(new Vector3(
+        Imperium.PlayerManager.TeleportLocalPlayer(new Vector3(
             coordinateX.Value,
             coordinateY.Value,
             coordinateZ.Value

@@ -15,7 +15,7 @@ internal static class ElevatorAnimationEventsPatch
     private static void ElevatorFullyRunningPatch()
     {
         // Make the game think the player is in the elevator, so they get teleported no matter what
-        if (ImpSettings.Ship.DisableAbandoned.Value)
+        if (Imperium.Settings.Ship.DisableAbandoned.Value)
         {
             Imperium.Player.isInElevator = true;
         }

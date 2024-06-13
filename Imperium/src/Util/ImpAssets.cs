@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Imperium.API;
 using UnityEngine;
 
 #endregion
@@ -53,19 +54,6 @@ public abstract class ImpAssets
     /*
      * Materials
      */
-    public static Material XrayMaterial;
-    public static Material FresnelWhiteMaterial;
-    public static Material FresnelBlueMaterial;
-    public static Material FresnelYellowMaterial;
-    public static Material FresnelGreenMaterial;
-    public static Material FresnelRedMaterial;
-    public static Material WireframeNavMeshMaterial;
-    public static Material WireframePurpleMaterial;
-    public static Material WireframeCyanMaterial;
-    public static Material WireframeAmaranthMaterial;
-    public static Material WireframeYellowMaterial;
-    public static Material WireframeGreenMaterial;
-    public static Material WireframeRedMaterial;
     public static Material ShiggyMaterial;
 
     internal static AssetBundle ImperiumAssets;
@@ -79,7 +67,7 @@ public abstract class ImpAssets
         ImperiumAssets = AssetBundle.LoadFromFile(assetFile);
         if (ImperiumAssets == null)
         {
-            Imperium.Log.LogInfo($"[PRELOAD] Failed to load assets from {assetFile}, aborting!");
+            Imperium.IO.LogInfo($"[PRELOAD] Failed to load assets from {assetFile}, aborting!");
             return false;
         }
 
@@ -110,19 +98,19 @@ public abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/network_handler.prefab", out NetworkHandler),
-            LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XrayMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_white.mat", out FresnelWhiteMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_blue.mat", out FresnelBlueMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_red.mat", out FresnelRedMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_green.mat", out FresnelGreenMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_yellow.mat", out FresnelYellowMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_navmesh.mat", out WireframeNavMeshMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_purple.mat", out WireframePurpleMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_cyan.mat", out WireframeCyanMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_amaranth.mat", out WireframeAmaranthMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_yellow.mat", out WireframeYellowMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out WireframeGreenMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out WireframeRedMaterial),
+            LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out Materials.Xray),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_white.mat", out Materials.FresnelWhite),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_blue.mat", out Materials.FresnelBlue),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_red.mat", out Materials.FresnelRed),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_green.mat", out Materials.FresnelGreen),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_yellow.mat", out Materials.FresnelYellow),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_navmesh.mat", out Materials.WireframeNavMesh),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_purple.mat", out Materials.WireframePurple),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_cyan.mat", out Materials.WireframeCyan),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_amaranth.mat", out Materials.WireframeAmaranth),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_yellow.mat", out Materials.WireframeYellow),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out Materials.WireframeGreen),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out Materials.WireframeRed),
             LoadAsset(ImperiumAssets, "Assets/Materials/shig.mat", out ShiggyMaterial),
             LoadAsset(ImperiumAssets, "Assets/Audio/GrassClick.wav", out GrassClick),
             LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
@@ -131,11 +119,11 @@ public abstract class ImpAssets
 
         if (loadResults.Any(result => result == false))
         {
-            Imperium.Log.LogInfo($"[PRELOAD] Failed to load one or more assets from {assetFile}, aborting!");
+            Imperium.IO.LogInfo($"[PRELOAD] Failed to load one or more assets from {assetFile}, aborting!");
             return false;
         }
 
-        ImpOutput.LogBlock(logBuffer, "Imperium Resource Loader");
+        Imperium.IO.LogBlock(logBuffer, "Imperium Resource Loader");
 
         return true;
     }
@@ -147,7 +135,7 @@ public abstract class ImpAssets
         loadedObject = assets.LoadAsset<T>(path);
         if (!loadedObject)
         {
-            Imperium.Log.LogError($"[PRELOAD] Failed to load '{path}' from ./imperium_assets");
+            Imperium.IO.LogError($"[PRELOAD] Failed to load '{path}' from ./imperium_assets");
             return false;
         }
 

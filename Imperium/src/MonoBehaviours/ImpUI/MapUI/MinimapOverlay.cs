@@ -48,9 +48,9 @@ internal class MinimapOverlay : SingleplexUI
         canvas = GetComponent<Canvas>();
 
         var baseCanvasScale = canvas.scaleFactor;
-        ImpSettings.Map.MinimapScale.onUpdate += value => InitMapScale(baseCanvasScale * value);
+        Imperium.Settings.Map.MinimapScale.onUpdate += value => InitMapScale(baseCanvasScale * value);
 
-        InitMapScale(baseCanvasScale * ImpSettings.Map.MinimapScale.Value);
+        InitMapScale(baseCanvasScale * Imperium.Settings.Map.MinimapScale.Value);
         InitCompass();
     }
 
@@ -109,8 +109,8 @@ internal class MinimapOverlay : SingleplexUI
     private void InitCompass()
     {
         compass = container.Find("MapBorder/Compass").gameObject;
-        compass.SetActive(ImpSettings.Map.CompassEnabled.Value);
-        ImpSettings.Map.CompassEnabled.onUpdate += compass.SetActive;
+        compass.SetActive(Imperium.Settings.Map.CompassEnabled.Value);
+        Imperium.Settings.Map.CompassEnabled.onUpdate += compass.SetActive;
 
         compassNorth = compass.transform.Find("North");
         compassEast = compass.transform.Find("East");
@@ -120,13 +120,13 @@ internal class MinimapOverlay : SingleplexUI
 
     private void Update()
     {
-        infoPanel.SetActive(ImpSettings.Map.MinimapInfoPanel.Value);
-        locationPanel.SetActive(ImpSettings.Map.MinimapLocationPanel.Value);
+        infoPanel.SetActive(Imperium.Settings.Map.MinimapInfoPanel.Value);
+        locationPanel.SetActive(Imperium.Settings.Map.MinimapLocationPanel.Value);
 
         locationText.SetText(Imperium.RoundManager.currentLevel.PlanetName);
 
         // Only update the panel when it's activated
-        if (ImpSettings.Map.MinimapInfoPanel.Value)
+        if (Imperium.Settings.Map.MinimapInfoPanel.Value)
         {
             var playerPosition = Imperium.Player.transform.position;
             positionText.text = $"{Formatting.FormatVector(playerPosition, separator: "/", roundDigits: 0)}";
@@ -143,7 +143,7 @@ internal class MinimapOverlay : SingleplexUI
         }
 
         // Only update the compass when it's activated
-        if (ImpSettings.Map.CompassEnabled.Value)
+        if (Imperium.Settings.Map.CompassEnabled.Value)
         {
             var rotationY = Imperium.Map.Camera.transform.rotation.eulerAngles.y;
             compass.transform.rotation = Quaternion.Euler(new Vector3(0, 0, rotationY));
@@ -158,7 +158,7 @@ internal class MinimapOverlay : SingleplexUI
         // Automatically open this UI when nothing else is open
         if ((Imperium.Player.quickMenuManager.isMenuOpen &&
              !Imperium.Interface.Get<MinimapSettings.MinimapSettings>().IsOpen)
-            || !ImpSettings.Map.MinimapEnabled.Value
+            || !Imperium.Settings.Map.MinimapEnabled.Value
             || Imperium.Freecam.IsFreecamEnabled.Value)
         {
             if (IsOpen) CloseUI();

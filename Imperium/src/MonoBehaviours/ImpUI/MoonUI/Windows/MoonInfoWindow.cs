@@ -2,6 +2,7 @@
 
 using System.Linq;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using TMPro;
 
 #endregion
@@ -51,12 +52,12 @@ internal class MoonInfoWindow : BaseWindow
         mapObjects.text = "?";
         turrets.text = Imperium.ObjectManager.CurrentLevelTurrets.Value.Count.ToString();
         landmines.text = Imperium.ObjectManager.CurrentLevelLandmines.Value.Count.ToString();
-        steamleaks.text = Imperium.ObjectManager.CurrentLevelSteamleaks.Value.Count.ToString();
+        steamleaks.text = Imperium.ObjectManager.CurrentLevelSteamValves.Value.Count.ToString();
         doors.text = Imperium.ObjectManager.CurrentLevelDoors.Value.Count.ToString();
         securityDoors.text = Imperium.ObjectManager.CurrentLevelSecurityDoors.Value.Count.ToString();
 
-        maxIndoorPower.text = MoonManager.Current.OriginalMoonData.maxIndoorPower.ToString();
-        maxOutdoorPower.text = MoonManager.Current.OriginalMoonData.maxOutdoorPower.ToString();
-        maxDaytimePower.text = MoonManager.Current.OriginalMoonData.maxDaytimePower.ToString();
+        maxIndoorPower.text = MoonContainer.Current.OriginalMoonData.maxIndoorPower.ToString();
+        maxOutdoorPower.text = MoonContainer.Current.OriginalMoonData.maxOutdoorPower.ToString();
+        maxDaytimePower.text = MoonContainer.Current.OriginalMoonData.maxDaytimePower.ToString();
     }
 }

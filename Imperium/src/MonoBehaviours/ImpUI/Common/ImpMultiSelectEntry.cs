@@ -30,9 +30,9 @@ internal abstract class ImpMultiSelectEntry
     internal static void Bind<T>(
         T value,
         GameObject entryObj,
-        ImpBinding<T> selectionBinding,
-        ImpBinding<T> hoverBinding,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<T> selectionBinding,
+        IBinding<T> hoverBinding,
+        IBinding<ImpTheme> theme = null,
         string label = null
     )
     {

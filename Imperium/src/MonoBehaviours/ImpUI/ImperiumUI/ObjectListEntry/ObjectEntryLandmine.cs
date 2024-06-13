@@ -1,5 +1,7 @@
 #region
 
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Netcode;
 using Unity.Netcode;
@@ -19,16 +21,21 @@ internal class ObjectEntryLandmine : ObjectEntry
     protected override void Respawn()
     {
         Destroy();
-        ObjectManager.SpawnMapHazard("Landmine", containerObject.transform.position);
+
+        Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+        {
+            Name = "Landmine",
+            SpawnPosition = containerObject.transform.position
+        });
     }
 
     public override void Destroy()
     {
         base.Destroy();
-        ImpNetSpawning.Instance.DespawnMapHazardServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId
-        );
+        Imperium.ObjectManager.DespawnObstacle(objectNetId!.Value);
     }
+
+    protected override void ToggleObject(bool isActive) => ((Landmine)component).ToggleMine(isActive);
 
     protected override void TeleportHere()
     {

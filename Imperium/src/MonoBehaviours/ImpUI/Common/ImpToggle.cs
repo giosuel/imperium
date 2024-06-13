@@ -2,6 +2,7 @@
 
 using System.Linq;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -36,15 +37,15 @@ public abstract class ImpToggle
     internal static Toggle Bind(
         string path,
         Transform container,
-        ImpBinding<bool> valueBinding,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<bool> valueBinding,
+        IBinding<ImpTheme> theme = null,
         params ImpBinding<bool>[] interactableBindings
     )
     {
         var toggleObject = container.Find(path);
         if (!toggleObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to bind toggle '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogInfo($"[UI] Failed to bind toggle '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
@@ -54,11 +55,11 @@ public abstract class ImpToggle
         var text = (toggleObject.Find("Text") ?? toggleObject.Find("Text (TMP)"))?.GetComponent<TMP_Text>();
 
         toggle.isOn = valueBinding.Value;
-        toggle.onValueChanged.AddListener(valueBinding.Set);
+        toggle.onValueChanged.AddListener(value => valueBinding.Set(value));
         valueBinding.onUpdate += value => toggle.isOn = value;
 
-        // The click sound is in sync update, this way clients can choose to not play the sound when bulk updating
-        valueBinding.onUpdateSync += _ => GameManager.PlayClip(ImpAssets.GrassClick);
+        // Only play the click sound when the update was invoked by the local client
+        valueBinding.onUpdateFromLocal += _ => GameUtils.PlayClip(ImpAssets.GrassClick);
 
         if (interactableBindings.Length > 0)
         {

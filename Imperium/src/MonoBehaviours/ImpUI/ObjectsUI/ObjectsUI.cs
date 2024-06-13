@@ -19,13 +19,13 @@ internal class ObjectsUI : SingleplexUI
 
     private void InitShotgun()
     {
-        ImpToggle.Bind("Shotgun/InfiniteAmmo", content, ImpSettings.Shotgun.InfiniteAmmo, theme: theme);
-        ImpToggle.Bind("Shotgun/FullAuto", content, ImpSettings.Shotgun.FullAuto, theme: theme);
+        ImpToggle.Bind("Shotgun/InfiniteAmmo", content, Imperium.Settings.Shotgun.InfiniteAmmo, theme: theme);
+        ImpToggle.Bind("Shotgun/FullAuto", content, Imperium.Settings.Shotgun.FullAuto, theme: theme);
     }
 
     private void InitShovel()
     {
-        ImpToggle.Bind("Shovel/Speedy", content, ImpSettings.Shovel.Speedy, theme: theme);
+        ImpToggle.Bind("Shovel/Speedy", content, Imperium.Settings.Shovel.Speedy, theme: theme);
     }
 
     private void InitJester()

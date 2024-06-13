@@ -1,7 +1,10 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Discord;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Types;
@@ -62,7 +65,8 @@ internal class WeatherUI : SingleplexUI
     protected override void OnOpen()
     {
         var levels = Imperium.StartOfRound.levels;
-        var options = ImpConstants.MoonWeathers
+        var options = Enum.GetValues(typeof(LevelWeatherType)).Cast<LevelWeatherType>()
+            .Select(enumValue => Enum.GetName(typeof(LevelWeatherType), enumValue))
             .Select(weather => new TMP_Dropdown.OptionData(weather))
             .ToList();
 
@@ -73,7 +77,11 @@ internal class WeatherUI : SingleplexUI
 
             dropdown.onValueChanged.AddListener(_ =>
             {
-                ImpNetWeather.Instance.ChangeWeatherServerRpc(levelIndex, (LevelWeatherType)(dropdown.value - 1));
+                Imperium.MoonManager.ChangeWeather(new ChangeWeatherRequest
+                {
+                    LevelIndex = levelIndex,
+                    WeatherType = (LevelWeatherType)(dropdown.value - 1)
+                });
             });
         }
     }

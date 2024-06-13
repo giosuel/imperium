@@ -121,7 +121,7 @@ public class ObjectInsight : MonoBehaviour
         // Death overlay / disable on death
         if (InsightDefinition.IsDeadGenerator != null && InsightDefinition.IsDeadGenerator(targetObject))
         {
-            if (ImpSettings.Visualizations.SSHideInactive.Value) return;
+            if (Imperium.Settings.Visualization.SSHideInactive.Value) return;
             deathOverlay.gameObject.SetActive(true);
         }
         else
@@ -150,7 +150,7 @@ public class ObjectInsight : MonoBehaviour
             StartOfRound.Instance.collidersAndRoomMaskAndDefault
         );
 
-        if (!playerHasLOS && !ImpSettings.Visualizations.SSAlwaysOnTop.Value || screenPosition.z < 0)
+        if (!playerHasLOS && !Imperium.Settings.Visualization.SSAlwaysOnTop.Value || screenPosition.z < 0)
         {
             insightPanelObject.SetActive(false);
             return;
@@ -165,8 +165,8 @@ public class ObjectInsight : MonoBehaviour
         insightPanelRect.anchoredPosition = new Vector2(positionX, positionY);
 
         // Panel scaling by distance to player
-        var panelScaleFactor = ImpSettings.Visualizations.SSOverlayScale.Value;
-        if (ImpSettings.Visualizations.SSAutoScale.Value)
+        var panelScaleFactor = Imperium.Settings.Visualization.SSOverlayScale.Value;
+        if (Imperium.Settings.Visualization.SSAutoScale.Value)
         {
             panelScaleFactor *= Math.Clamp(
                 5 / Vector3.Distance(camera.transform.position, worldPosition),

@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Netcode;
+using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using UnityEngine.AI;
@@ -15,7 +15,7 @@ namespace Imperium.Core;
 ///     A moon manager for every moon is instantiated at the start of the game, it holds the spawn lists as well
 ///     as a copy of the original vanilla data used to reset values.
 /// </summary>
-public class MoonManager
+public class MoonContainer
 {
     // Original moon values for resetting functionality
     internal readonly MoonData OriginalMoonData;
@@ -23,8 +23,8 @@ public class MoonManager
     // Selectable level the moon manager is representing
     internal readonly SelectableLevel Level;
 
-    private static MoonManager[] MoonManagers;
-    public static MoonManager Current => MoonManagers[Imperium.StartOfRound.currentLevelID];
+    private static MoonContainer[] MoonManagers;
+    public static MoonContainer Current => MoonManagers[Imperium.StartOfRound.currentLevelID];
 
     // Stores the amount of scrap spawned and the amount of scrap spawned if the level is a challenge moon
     // Note: This is being simulated before the actual calculation in RoundManager.SpawnScrapInLevel() happens
@@ -33,14 +33,14 @@ public class MoonManager
 
     internal static void Create(ObjectManager objectManager)
     {
-        MoonManagers = new MoonManager[Imperium.StartOfRound.levels.Length];
+        MoonManagers = new MoonContainer[Imperium.StartOfRound.levels.Length];
         for (var i = 0; i < Imperium.StartOfRound.levels.Length; i++)
         {
-            MoonManagers[i] = new MoonManager(Imperium.StartOfRound.levels[i], objectManager);
+            MoonManagers[i] = new MoonContainer(Imperium.StartOfRound.levels[i], objectManager);
         }
     }
 
-    private MoonManager(SelectableLevel level, ObjectManager objectManager)
+    private MoonContainer(SelectableLevel level, ObjectManager objectManager)
     {
         Level = level;
         // Gets all the original spawn values, grouped by name to account for duplicates (e.g. Bottles on Assurance)
@@ -111,7 +111,7 @@ public class MoonManager
             entity.rarity = OriginalMoonData.IndoorEntityRarities.GetValueOrDefault(entity.enemyType, 0);
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void ResetOutdoorEntities()
@@ -121,7 +121,7 @@ public class MoonManager
             entity.rarity = OriginalMoonData.OutdoorEntityRarities.GetValueOrDefault(entity.enemyType, 0);
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void ResetDaytimeEntities()
@@ -131,7 +131,7 @@ public class MoonManager
             entity.rarity = OriginalMoonData.DaytimeEntityRarities.GetValueOrDefault(entity.enemyType, 0);
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void ResetScrap()
@@ -141,7 +141,7 @@ public class MoonManager
             scrap.rarity = OriginalMoonData.ScrapRarities.GetValueOrDefault(scrap.spawnableItem, 0);
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void EqualIndoorEntities()
@@ -151,7 +151,7 @@ public class MoonManager
             entity.rarity = 100;
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void EqualOutdoorEntities()
@@ -161,7 +161,7 @@ public class MoonManager
             entity.rarity = 100;
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void EqualDaytimeEntities()
@@ -171,7 +171,7 @@ public class MoonManager
             entity.rarity = 100;
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     internal void EqualScrap()
@@ -181,84 +181,6 @@ public class MoonManager
             scrap.rarity = 100;
         }
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
-    }
-
-    internal static void ToggleDoors(bool isOpen)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door =>
-            {
-                var animation = door.gameObject.GetComponent<AnimatedObjectTrigger>();
-                animation.TriggerAnimation(Imperium.Player);
-
-                Reflection.Set(door, "isDoorOpened", isOpen);
-                Reflection.Get<DoorLock, NavMeshObstacle>(door, "isDoorOpened").enabled = !isOpen;
-            });
-    }
-
-    internal static void ToggleDoorLocks(bool isLocked)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door =>
-            {
-                if (isLocked && !door.isLocked)
-                {
-                    door.LockDoor();
-                }
-                else if (door.isLocked)
-                {
-                    door.UnlockDoor();
-                }
-            });
-    }
-
-    internal static void ToggleSecurityDoors(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => door.OnPowerSwitch(!isOn));
-    }
-
-    internal static void ToggleTurrets(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelTurrets.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(turret => turret.ToggleTurretEnabled(isOn));
-    }
-
-    internal static void ToggleLandmines(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelLandmines.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(mine => mine.ToggleMine(isOn));
-    }
-
-    internal static void ToggleBreakers(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(box =>
-            {
-                foreach (var breakerSwitch in box.breakerSwitches)
-                {
-                    var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
-                    if (animation.boolValue != isOn)
-                    {
-                        animation.boolValue = isOn;
-                        animation.setInitialState = isOn;
-                        breakerSwitch.SetBool("turnedLeft", isOn);
-                        box.SwitchBreaker(isOn);
-                    }
-                }
-            });
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 }

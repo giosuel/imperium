@@ -32,7 +32,7 @@ internal abstract class SingleplexUI : BaseUI
         base.InitializeUI(themeBinding, closeOnMovement, ignoreTabInput);
     }
 
-    private void InitSingleplex(ImpBinding<ImpTheme> themeBinding, BaseUI parent = null)
+    private void InitSingleplex(IBinding<ImpTheme> themeBinding, BaseUI parent = null)
     {
         content = transform.Find("Container/Window/Content");
         if (!content) content = transform.Find("Container/Window/Main/Content");

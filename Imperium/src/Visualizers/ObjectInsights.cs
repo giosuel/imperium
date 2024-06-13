@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using BepInEx.Configuration;
 using GameNetcodeStuff;
 using Imperium.API.Types;
 using Imperium.Types;
@@ -22,19 +23,26 @@ namespace Imperium.Visualizers;
 /// </summary>
 internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight>
 {
+    private readonly ConfigFile config;
+
     internal readonly ImpBinding<Dictionary<Type, ImpBinding<bool>>> InsightVisibilityBindings = new([]);
 
-    internal readonly ImpConfig<bool> CustomInsights = new(
-        "Visualization.Insights", "Custom", false
-    );
+    internal readonly ImpConfig<bool> CustomInsights;
 
     // Holds all the logical insights, per-type
     private readonly ImpBinding<Dictionary<Type, InsightDefinition<Component>>> registeredInsights = new([]);
 
     private readonly HashSet<int> insightVisualizerObjects = [];
 
-    internal ObjectInsights()
+    internal ObjectInsights(ConfigFile config)
     {
+        this.config = config;
+
+        CustomInsights = new ImpConfig<bool>(
+            config,
+            "Visualization.Insights", "Custom", false
+        );
+
         RegisterDefaultInsights();
         Refresh();
 
@@ -96,7 +104,9 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             return insightsDefinition as InsightDefinition<T>;
         }
 
-        var newInsightDefinition = new InsightDefinitionImpl<T>(registeredInsights.Value, InsightVisibilityBindings);
+        var newInsightDefinition = new InsightDefinitionImpl<T>(
+            registeredInsights.Value, InsightVisibilityBindings, config
+        );
         registeredInsights.Value[typeof(T)] = newInsightDefinition;
         registeredInsights.Refresh();
 
@@ -137,7 +147,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetConfigKey("Entities");
 
         InsightsFor<Turret>()
-            .SetNameGenerator(turret => $"Turret (#{turret.GetInstanceID()})")
+            .SetNameGenerator(turret => $"Turret #{turret.GetInstanceID()}")
             .SetIsDeadGenerator(turret => !turret.turretActive)
             .RegisterInsight("Is Active", turret => turret.turretActive ? "Yes" : "No")
             .RegisterInsight("Turret Mode", turret => turret.turretMode.ToString())
@@ -146,14 +156,24 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetConfigKey("Turrets");
 
         InsightsFor<Landmine>()
-            .SetNameGenerator(landmine => $"Landmine (#{landmine.GetInstanceID()})")
+            .SetNameGenerator(landmine => $"Landmine #{landmine.GetInstanceID()}")
             .SetIsDeadGenerator(landmine => landmine.hasExploded)
             .RegisterInsight("Has Exploded", landmine => landmine.hasExploded ? "Yes" : "No")
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Landmines");
 
+        InsightsFor<SteamValveHazard>()
+            .SetNameGenerator(steamValve => $"Steam Valve #{steamValve.GetInstanceID()}")
+            .RegisterInsight("Cracked", steamValve => steamValve.valveHasCracked ? "Yes" : "No")
+            .RegisterInsight("Burst", steamValve => steamValve.valveHasBurst ? "Yes" : "No")
+            .RegisterInsight("Repaired", steamValve => steamValve.valveHasBeenRepaired ? "Yes" : "No")
+            .RegisterInsight("Crack Timer", steamValve => $"{steamValve.valveCrackTime:0.0}s")
+            .RegisterInsight("Burst Timer", steamValve => $"{steamValve.valveCrackTime:0.0}s")
+            .SetPositionOverride(DefaultPositionOverride)
+            .SetConfigKey("SteamValves");
+
         InsightsFor<BridgeTrigger>()
-            .SetNameGenerator(bridge => $"Bridge (#{bridge.GetInstanceID()})")
+            .SetNameGenerator(bridge => $"Bridge #{bridge.GetInstanceID()}")
             .SetIsDeadGenerator(bridge => bridge.hasBridgeFallen)
             .RegisterInsight("Durability", trigger => $"{trigger.bridgeDurability}")
             .RegisterInsight(

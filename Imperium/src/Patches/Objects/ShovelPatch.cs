@@ -27,7 +27,7 @@ internal static class ShovelPatch
     [HarmonyPatch("ItemActivate")]
     internal static bool ItemActivate(Shovel __instance, bool used, bool buttonDown = true)
     {
-        if (!ImpSettings.Shovel.Speedy.Value || !__instance.playerHeldBy)
+        if (!Imperium.Settings.Shovel.Speedy.Value || !__instance.playerHeldBy)
         {
             __instance.playerHeldBy.playerBodyAnimator.speed = 1;
             return true;
@@ -43,7 +43,7 @@ internal static class ShovelPatch
 
             var coroutine = Reflection.Get<Shovel, Coroutine>(__instance, "reelingUpCoroutine");
             if (coroutine != null) __instance.StopCoroutine(coroutine);
-            Reflection.Set(__instance, "reelingUpCoroutine", __instance.StartCoroutine(reelUpShovelPatch(__instance)));
+            Reflection.Set(__instance, "reelingUpCorpoutine", __instance.StartCoroutine(reelUpShovelPatch(__instance)));
         }
 
         return false;

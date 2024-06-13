@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Netcode;
 using Imperium.Util.Binding;
@@ -42,12 +43,12 @@ internal class SpawnListsWindow : BaseWindow
             theme: themeBinding
         );
         ImpButton.Bind(
-            "ScrapSpawnListTitle/Reset", content, MoonManager.Current.ResetScrap,
+            "ScrapSpawnListTitle/Reset", content, MoonContainer.Current.ResetScrap,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
-            "ScrapSpawnListTitle/Equal", content, MoonManager.Current.EqualScrap,
+            "ScrapSpawnListTitle/Equal", content, MoonContainer.Current.EqualScrap,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
@@ -58,14 +59,14 @@ internal class SpawnListsWindow : BaseWindow
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/IndoorTitle/Reset",
             content,
-            MoonManager.Current.ResetIndoorEntities,
+            MoonContainer.Current.ResetIndoorEntities,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/IndoorTitle/Equal",
             content,
-            MoonManager.Current.EqualIndoorEntities,
+            MoonContainer.Current.EqualIndoorEntities,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
@@ -75,14 +76,14 @@ internal class SpawnListsWindow : BaseWindow
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/OutdoorTitle/Reset",
             content,
-            MoonManager.Current.ResetOutdoorEntities,
+            MoonContainer.Current.ResetOutdoorEntities,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/OutdoorTitle/Equal",
             content,
-            MoonManager.Current.EqualOutdoorEntities,
+            MoonContainer.Current.EqualOutdoorEntities,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
@@ -92,14 +93,14 @@ internal class SpawnListsWindow : BaseWindow
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/DaytimeTitle/Reset",
             content,
-            MoonManager.Current.ResetDaytimeEntities,
+            MoonContainer.Current.ResetDaytimeEntities,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
         ImpButton.Bind(
             "EntitySpawnList/Viewport/Content/DaytimeTitle/Equal",
             content,
-            MoonManager.Current.EqualDaytimeEntities,
+            MoonContainer.Current.EqualDaytimeEntities,
             interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
             theme: themeBinding
         );
@@ -120,16 +121,16 @@ internal class SpawnListsWindow : BaseWindow
 
     private static void OnEntitySpawnsReset()
     {
-        MoonManager.Current.ResetIndoorEntities();
-        MoonManager.Current.ResetOutdoorEntities();
-        MoonManager.Current.ResetDaytimeEntities();
+        MoonContainer.Current.ResetIndoorEntities();
+        MoonContainer.Current.ResetOutdoorEntities();
+        MoonContainer.Current.ResetDaytimeEntities();
     }
 
     private static void OnEntitySpawnsEqual()
     {
-        MoonManager.Current.EqualIndoorEntities();
-        MoonManager.Current.EqualOutdoorEntities();
-        MoonManager.Current.EqualDaytimeEntities();
+        MoonContainer.Current.EqualIndoorEntities();
+        MoonContainer.Current.EqualOutdoorEntities();
+        MoonContainer.Current.EqualDaytimeEntities();
     }
 
     public void Refresh()
@@ -142,7 +143,7 @@ internal class SpawnListsWindow : BaseWindow
     private void RefreshEntitySpawnLists()
     {
         var objectList = Imperium.ObjectManager.AllEntities.Value
-            .OrderByDescending(entry => MoonManager.Current.IsEntityNative(entry));
+            .OrderByDescending(entry => MoonContainer.Current.IsEntityNative(entry));
 
         foreach (var entity in objectList)
         {
@@ -155,31 +156,31 @@ internal class SpawnListsWindow : BaseWindow
             if (Imperium.ObjectManager.AllIndoorEntities.Value.Contains(entity))
             {
                 listParent = indoorEntityList;
-                isNative = MoonManager.Current.IsEntityNative(entity);
-                entityWithRarity = MoonManager.Current.Level.Enemies.Find(entry => entry.enemyType == entity);
+                isNative = MoonContainer.Current.IsEntityNative(entity);
+                entityWithRarity = MoonContainer.Current.Level.Enemies.Find(entry => entry.enemyType == entity);
                 spawnMap = indoorEntitySpawnEntries;
                 entityListType = EntitySpawnListEntry.EntityListType.IndoorEntity;
             }
             else if (Imperium.ObjectManager.AllOutdoorEntities.Value.Contains(entity))
             {
                 listParent = outdoorEntityList;
-                isNative = MoonManager.Current.IsEntityNative(entity);
-                entityWithRarity = MoonManager.Current.Level.OutsideEnemies.Find(entry => entry.enemyType == entity);
+                isNative = MoonContainer.Current.IsEntityNative(entity);
+                entityWithRarity = MoonContainer.Current.Level.OutsideEnemies.Find(entry => entry.enemyType == entity);
                 spawnMap = outdoorEntitySpawnEntries;
                 entityListType = EntitySpawnListEntry.EntityListType.OutdoorEntity;
             }
             else if (Imperium.ObjectManager.AllDaytimeEntities.Value.Contains(entity))
             {
                 listParent = daytimeEntityList;
-                isNative = MoonManager.Current.IsEntityNative(entity);
-                entityWithRarity = MoonManager.Current.Level.DaytimeEnemies.Find(entry => entry.enemyType == entity);
+                isNative = MoonContainer.Current.IsEntityNative(entity);
+                entityWithRarity = MoonContainer.Current.Level.DaytimeEnemies.Find(entry => entry.enemyType == entity);
                 spawnMap = daytimeEntitySpawnEntries;
                 entityListType = EntitySpawnListEntry.EntityListType.DaytimeEntity;
             }
 
             if (spawnMap == null)
             {
-                Imperium.Log.LogError($"Failed to find entity {entity.enemyName} in any spawn list!");
+                Imperium.IO.LogError($"Failed to find entity {entity.enemyName} in any spawn list!");
                 return;
             }
 
@@ -200,11 +201,11 @@ internal class SpawnListsWindow : BaseWindow
                     var totalRarity = spawnMap.Values.Select(entry => entry.Rarity.Value).Sum();
                     spawnMap.Values.ToList().ForEach(entry => entry.UpdateSpawnChance(totalRarity));
 
-                    ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+                    // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
                 };
                 spawnListEntry.onExclusive += () =>
                 {
-                    foreach (var entry in spawnMap.Values) entry.Rarity.Set(0, skipSync: true);
+                    // foreach (var entry in spawnMap.Values) entry.Rarity.Set(0, skipSync: true);
                 };
                 spawnMap[entity] = spawnListEntry;
             }
@@ -225,12 +226,12 @@ internal class SpawnListsWindow : BaseWindow
     private void RefreshScrapSpawnList()
     {
         var objectList = Imperium.ObjectManager.AllScrap.Value
-            .OrderByDescending(scrap => MoonManager.Current.IsScrapNative(scrap));
+            .OrderByDescending(scrap => MoonContainer.Current.IsScrapNative(scrap));
 
         foreach (var scrap in objectList)
         {
-            var isNative = MoonManager.Current.IsScrapNative(scrap);
-            var scrapObject = MoonManager.Current.Level.spawnableScrap.Find(entry => entry.spawnableItem = scrap);
+            var isNative = MoonContainer.Current.IsScrapNative(scrap);
+            var scrapObject = MoonContainer.Current.Level.spawnableScrap.Find(entry => entry.spawnableItem = scrap);
             var isSpawning = scrapObject.rarity > 0;
 
             if (scrapSpawnEntries.TryGetValue(scrap, out var existingEntry))
@@ -250,11 +251,11 @@ internal class SpawnListsWindow : BaseWindow
                     var totalRarity = scrapSpawnEntries.Values.Select(entry => entry.Rarity.Value).Sum();
                     scrapSpawnEntries.Values.ToList().ForEach(entry => entry.UpdateSpawnChance(totalRarity));
 
-                    ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+                    // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
                 };
                 spawnListEntry.onExclusive += () =>
                 {
-                    foreach (var entry in scrapSpawnEntries.Values) entry.Rarity.Set(0, skipSync: true);
+                    // foreach (var entry in scrapSpawnEntries.Values) entry.Rarity.Set(0, skipSync: true);
                 };
                 scrapSpawnEntries[scrapObject.spawnableItem] = spawnListEntry;
             }

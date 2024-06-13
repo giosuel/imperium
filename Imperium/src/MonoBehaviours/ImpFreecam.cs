@@ -37,7 +37,7 @@ public class ImpFreecam : MonoBehaviour
 
         FreecamCamera = gameObject.AddComponent<Camera>();
         FreecamCamera.CopyFrom(gameplayCamera);
-        FreecamCamera.cullingMask = ImpSettings.Freecam.FreecamLayerMask.Value;
+        FreecamCamera.cullingMask = Imperium.Settings.Freecam.FreecamLayerMask.Value;
         FreecamCamera.farClipPlane = 2000f;
         FreecamCamera.enabled = false;
 
@@ -48,7 +48,7 @@ public class ImpFreecam : MonoBehaviour
         var layerSelectorObject = Instantiate(ImpAssets.LayerSelectorObject, transform);
         layerSelector = layerSelectorObject.AddComponent<LayerSelector>();
         layerSelector.InitializeUI(Imperium.Theme, false);
-        layerSelector.Bind(ImpSettings.Freecam.LayerSelector, ImpSettings.Freecam.FreecamLayerMask);
+        layerSelector.Bind(Imperium.Settings.Freecam.LayerSelector, Imperium.Settings.Freecam.FreecamLayerMask);
 
         IsFreecamEnabled.onTrue += OnFreecamEnable;
         IsFreecamEnabled.onFalse += OnFreecamDisable;
@@ -63,7 +63,7 @@ public class ImpFreecam : MonoBehaviour
         Imperium.InputBindings.BaseMap["Minicam"].performed += OnMinicamToggle;
         Imperium.InputBindings.BaseMap["Reset"].performed += OnFreecamReset;
         Imperium.InputBindings.FreecamMap["LayerSelector"].performed += OnToggleLayerSelector;
-        ImpSettings.Freecam.FreecamLayerMask.onUpdate += value => FreecamCamera.cullingMask = value;
+        Imperium.Settings.Freecam.FreecamLayerMask.onUpdate += value => FreecamCamera.cullingMask = value;
     }
 
     private void OnMinicamToggle(InputAction.CallbackContext callbackContext)
@@ -146,7 +146,7 @@ public class ImpFreecam : MonoBehaviour
 
         FreecamCamera.transform.position = Imperium.Player.gameplayCamera.transform.position + Vector3.up * 2;
 
-        ImpSettings.Freecam.FreecamFieldOfView.Set(ImpConstants.DefaultFOV);
+        Imperium.Settings.Freecam.FreecamFieldOfView.Set(ImpConstants.DefaultFOV);
     }
 
     private void OnToggleLayerSelector(InputAction.CallbackContext callbackContext)
@@ -155,7 +155,7 @@ public class ImpFreecam : MonoBehaviour
             Imperium.Player.inTerminalMenu ||
             Imperium.Player.isTypingChat) return;
 
-        ImpSettings.Freecam.LayerSelector.Set(!layerSelector.IsOpen);
+        Imperium.Settings.Freecam.LayerSelector.Set(!layerSelector.IsOpen);
         if (layerSelector.IsOpen)
         {
             layerSelector.CloseUI();
@@ -176,28 +176,28 @@ public class ImpFreecam : MonoBehaviour
             .FindAction("SwitchItem")
             .ReadValue<float>();
 
-        ImpSettings.Freecam.FreecamMovementSpeed.Set(scrollValue switch
+        Imperium.Settings.Freecam.FreecamMovementSpeed.Set(scrollValue switch
         {
-            > 0 => Mathf.Min(ImpSettings.Freecam.FreecamMovementSpeed.Value + 1f, 200),
-            < 0 => Mathf.Max(ImpSettings.Freecam.FreecamMovementSpeed.Value - 1f, 1f),
-            _ => ImpSettings.Freecam.FreecamMovementSpeed.Value
+            > 0 => Mathf.Min(Imperium.Settings.Freecam.FreecamMovementSpeed.Value + 1f, 200),
+            < 0 => Mathf.Max(Imperium.Settings.Freecam.FreecamMovementSpeed.Value - 1f, 1f),
+            _ => Imperium.Settings.Freecam.FreecamMovementSpeed.Value
         });
 
         if (Imperium.InputBindings.FreecamMap["ArrowLeft"].IsPressed())
         {
-            ImpSettings.Freecam.FreecamFieldOfView.Set(
-                Mathf.Max(-360, ImpSettings.Freecam.FreecamFieldOfView.Value - 1)
+            Imperium.Settings.Freecam.FreecamFieldOfView.Set(
+                Mathf.Max(-360, Imperium.Settings.Freecam.FreecamFieldOfView.Value - 1)
             );
         }
 
         if (Imperium.InputBindings.FreecamMap["ArrowRight"].IsPressed())
         {
-            ImpSettings.Freecam.FreecamFieldOfView.Set(
-                Mathf.Min(360, ImpSettings.Freecam.FreecamFieldOfView.Value + 1)
+            Imperium.Settings.Freecam.FreecamFieldOfView.Set(
+                Mathf.Min(360, Imperium.Settings.Freecam.FreecamFieldOfView.Value + 1)
             );
         }
 
-        FreecamCamera.fieldOfView = ImpSettings.Freecam.FreecamFieldOfView.Value;
+        FreecamCamera.fieldOfView = Imperium.Settings.Freecam.FreecamFieldOfView.Value;
 
         var cameraTransform = transform;
 
@@ -214,7 +214,7 @@ public class ImpFreecam : MonoBehaviour
         var movementY = Imperium.InputBindings.FreecamMap["Ascend"].IsPressed() ? 1 :
             Imperium.InputBindings.FreecamMap["Descend"].IsPressed() ? -1 : 0;
         var deltaMove = new Vector3(movement.x, movementY, movement.y)
-                        * (ImpSettings.Freecam.FreecamMovementSpeed.Value * Time.deltaTime);
+                        * (Imperium.Settings.Freecam.FreecamMovementSpeed.Value * Time.deltaTime);
         cameraTransform.Translate(deltaMove);
     }
 }

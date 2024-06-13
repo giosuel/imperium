@@ -1,6 +1,8 @@
 #region
 
 using HarmonyLib;
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Util;
 using UnityEngine;
 
@@ -29,11 +31,11 @@ internal class EnemyAICollisionDetectPatch
         if (!__result) return;
 
         var entityName = __instance.mainScript.enemyType.enemyName;
-        Imperium.Log.LogInfo(
+        Imperium.IO.LogInfo(
             $"Entity {entityName} ({__instance.GetInstanceID()}) was hit by {force} damage, ID: {hitID}");
         if (__state)
         {
-            ImpOutput.Send(
+            Imperium.IO.Send(
                 $"Entity {entityName} was hit by {force} damage.",
                 type: NotificationType.Entities
             );

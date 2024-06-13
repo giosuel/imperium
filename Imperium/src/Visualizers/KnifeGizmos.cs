@@ -1,5 +1,6 @@
 #region
 
+using Imperium.API.Types;
 using Imperium.Core;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
@@ -10,8 +11,8 @@ using UnityEngine;
 namespace Imperium.Visualizers;
 
 internal class KnifeGizmos(
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<Shovel, KnifeGizmo>(visibleBinding: visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<Shovel, KnifeGizmo>(visibilityBinding: visibilityBinding)
 {
     internal void Refresh(KnifeItem knife, bool isActivelyHolding)
     {
@@ -25,6 +26,6 @@ internal class KnifeGizmos(
         }
 
         knifeIndicator.Init(knife, isActivelyHolding);
-        knifeIndicator.gameObject.SetActive(ImpSettings.Visualizations.KnifeIndicators.Value);
+        knifeIndicator.gameObject.SetActive(Imperium.Settings.Visualization.KnifeIndicators.Value);
     }
 }

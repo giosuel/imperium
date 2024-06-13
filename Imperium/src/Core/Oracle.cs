@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -72,7 +74,7 @@ internal class Oracle
         {
             State.Value.cycles[i].cycleTime = currentTime;
 
-            if (!Imperium.GameManager.DaytimeSpawningPaused.Value)
+            if (!Imperium.MoonManager.DaytimeSpawningPaused.Value)
             {
                 State.Value.daytimeCycles[i] = SimulateDaytimeSpawnCycle(
                     AnomalySimulator, EntitySimulator,
@@ -83,7 +85,7 @@ internal class Oracle
                 );
             }
 
-            if (!Imperium.GameManager.OutdoorSpawningPaused.Value)
+            if (!Imperium.MoonManager.OutdoorSpawningPaused.Value)
             {
                 State.Value.outdoorCycles[i] = SimulateOutdoorSpawnCycle(
                     AnomalySimulator, OutsideEnemySpawnSimulator,
@@ -95,7 +97,7 @@ internal class Oracle
             }
 
             var spawnTimes = new List<int>();
-            if (!Imperium.GameManager.IndoorSpawningPaused.Value)
+            if (!Imperium.MoonManager.IndoorSpawningPaused.Value)
             {
                 State.Value.indoorCycles[i] = SimulateIndoorSpawnCycle(
                     AnomalySimulator, EntitySimulator,
@@ -128,7 +130,7 @@ internal class Oracle
 
         if (!string.IsNullOrEmpty(reason))
         {
-            ImpOutput.Send(
+            Imperium.IO.Send(
                 $"Spawn predictions updated due to {reason}!",
                 type: NotificationType.OracleUpdate
             );

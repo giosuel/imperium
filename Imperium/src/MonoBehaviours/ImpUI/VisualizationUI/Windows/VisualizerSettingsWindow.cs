@@ -15,32 +15,32 @@ internal class VisualizerSettingsWindows : BaseWindow
         ImpToggle.Bind(
             "General/SmoothAnimations",
             content,
-            ImpSettings.Visualizations.SmoothAnimations,
+            Imperium.Settings.Visualization.SmoothAnimations,
             themeBinding
         );
         ImpToggle.Bind(
             "SSOverlays/AlwaysOnTop",
             content,
-            ImpSettings.Visualizations.SSAlwaysOnTop,
+            Imperium.Settings.Visualization.SSAlwaysOnTop,
             themeBinding
         );
         ImpToggle.Bind(
             "SSOverlays/AutoScale",
             content,
-            ImpSettings.Visualizations.SSAutoScale,
+            Imperium.Settings.Visualization.SSAutoScale,
             themeBinding
         );
         ImpToggle.Bind(
             "SSOverlays/HideInactive",
             content,
-            ImpSettings.Visualizations.SSHideInactive,
+            Imperium.Settings.Visualization.SSHideInactive,
             themeBinding
         );
 
         ImpSlider.Bind(
             path: "OverlayScale",
             container: content,
-            valueBinding: ImpSettings.Visualizations.SSOverlayScale,
+            valueBinding: Imperium.Settings.Visualization.SSOverlayScale,
             indicatorFormatter: Formatting.FormatFloatToThreeDigits,
             theme: themeBinding
         );

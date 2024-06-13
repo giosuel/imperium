@@ -2,6 +2,8 @@
 
 using System;
 using System.Linq;
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
@@ -17,7 +19,7 @@ public class SpawningObjectEntry : MonoBehaviour
 {
     private GameObject selectedCover;
 
-    private SpawnObjectType spawnType;
+    internal SpawnObjectType SpawnType { get; private set; }
     private string displayName;
     private string spawnObjectName;
     private string spawnObjectPrefabName;
@@ -35,7 +37,7 @@ public class SpawningObjectEntry : MonoBehaviour
         ImpBinding<ImpTheme> themeBinding
     )
     {
-        spawnType = type;
+        SpawnType = type;
         displayName = Imperium.ObjectManager.GetDisplayName(objectName);
         spawnObjectName = objectName ?? "";
         spawnObjectPrefabName = prefabName ?? "";
@@ -64,33 +66,41 @@ public class SpawningObjectEntry : MonoBehaviour
         );
     }
 
-    internal void Spawn(Vector3 position, int amount, int value, bool spawnInInventory = true)
+    internal void Spawn(Vector3 position, int amount, int value, bool spawnInInventory)
     {
-        switch (spawnType)
+        switch (SpawnType)
         {
-            case SpawnObjectType.ENTITY:
-                ObjectManager.SpawnEntity(
-                    spawnObjectName,
-                    spawnObjectPrefabName,
-                    position,
-                    PlayerManager.LocalPlayerId,
-                    amount,
-                    value,
-                    true
-                );
+            case SpawnObjectType.Entty:
+                Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
+                {
+                    Name = spawnObjectName,
+                    PrefabName = spawnObjectPrefabName,
+                    SpawnPosition = position,
+                    Amount = amount,
+                    Health = value,
+                    SendNotification = true
+                });
                 break;
-            case SpawnObjectType.ITEM:
-                ObjectManager.SpawnItem(
-                    spawnObjectName,
-                    spawnObjectPrefabName,
-                    spawnInInventory ? PlayerManager.LocalPlayerId : -1,
-                    position,
-                    amount,
-                    value
-                );
+            case SpawnObjectType.Item:
+                Imperium.ObjectManager.SpawnItem(new ItemSpawnRequest
+                {
+                    Name = spawnObjectName,
+                    PrefabName = spawnObjectPrefabName,
+                    SpawnPosition = position,
+                    Amount = amount,
+                    Value = value,
+                    SpawnInInventory = spawnInInventory,
+                    SendNotification = true
+                });
                 break;
-            case SpawnObjectType.MAP_HAZARD:
-                ObjectManager.SpawnMapHazard(spawnObjectName, position, amount);
+            case SpawnObjectType.MapHazard:
+                Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                {
+                    Name = spawnObjectName,
+                    SpawnPosition = position,
+                    Amount = amount,
+                    SendNotification = true
+                });
                 break;
             default:
                 return;
@@ -123,8 +133,8 @@ public class SpawningObjectEntry : MonoBehaviour
 
     internal enum SpawnObjectType
     {
-        ENTITY,
-        ITEM,
-        MAP_HAZARD
+        Entty,
+        Item,
+        MapHazard
     }
 }

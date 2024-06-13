@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -13,8 +14,8 @@ namespace Imperium.Visualizers;
 
 internal class ScrapSpawnIndicators(
     ImpBinding<HashSet<RandomScrapSpawn>> objectsBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<RandomScrapSpawn>, Transform>(objectsBinding, visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<HashSet<RandomScrapSpawn>, Transform>(objectsBinding, visibilityBinding)
 {
     protected override void OnRefresh(HashSet<RandomScrapSpawn> objects)
     {
@@ -29,8 +30,8 @@ internal class ScrapSpawnIndicators(
                     : spawn.itemSpawnRange;
 
                 var material = spawn.spawnedItemsCopyPosition
-                    ? ImpAssets.WireframeCyanMaterial
-                    : ImpAssets.WireframeAmaranthMaterial;
+                    ? API.Materials.WireframeCyan
+                    : API.Materials.WireframeAmaranth;
 
                 visualizerObjects[spawn.GetInstanceID()] = Visualization.VisualizePoint(
                     spawn.gameObject,

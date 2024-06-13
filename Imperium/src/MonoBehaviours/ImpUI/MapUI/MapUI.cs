@@ -59,7 +59,7 @@ internal class MapUI : LayerSelector.LayerSelector
 
         // Init layer selector and bind the layer mask
         base.InitUI();
-        Bind(new ImpBinding<bool>(true), ImpSettings.Map.CameraLayerMask);
+        Bind(new ImpBinding<bool>(true), Imperium.Settings.Map.CameraLayerMask);
 
         selectedPlayer.Set(Imperium.Player);
     }
@@ -127,7 +127,7 @@ internal class MapUI : LayerSelector.LayerSelector
             Imperium.Player.isTypingChat ||
             Imperium.ShipBuildModeManager.InBuildMode) return;
 
-        ImpSettings.Map.MinimapEnabled.Set(!ImpSettings.Map.MinimapEnabled.Value);
+        Imperium.Settings.Map.MinimapEnabled.Set(!Imperium.Settings.Map.MinimapEnabled.Value);
     }
 
     private void OnMapReset(InputAction.CallbackContext _) => OnMapReset();
@@ -167,9 +167,9 @@ internal class MapUI : LayerSelector.LayerSelector
     private void InitCompass()
     {
         compass = container.Find("Compass").gameObject;
-        compass.SetActive(ImpSettings.Map.CompassEnabled.Value);
+        compass.SetActive(Imperium.Settings.Map.CompassEnabled.Value);
         compass.gameObject.AddComponent<ImpInteractable>().onClick += OnMapReset;
-        ImpSettings.Map.CompassEnabled.onUpdate += compass.SetActive;
+        Imperium.Settings.Map.CompassEnabled.onUpdate += compass.SetActive;
 
         compassNorth = compass.transform.Find("North");
         compassEast = compass.transform.Find("East");
@@ -188,7 +188,7 @@ internal class MapUI : LayerSelector.LayerSelector
         ImpSlider.Bind(
             path: "ZoomSlider",
             container: container,
-            valueBinding: ImpSettings.Map.CameraZoom,
+            valueBinding: Imperium.Settings.Map.CameraZoom,
             indicatorUnit: "x",
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
             theme: theme
@@ -202,8 +202,8 @@ internal class MapUI : LayerSelector.LayerSelector
             playClickSound: false,
             theme: theme
         );
-        farClipSlider.gameObject.SetActive(!ImpSettings.Map.AutoClipping.Value);
-        ImpSettings.Map.AutoClipping.onUpdate += value => farClipSlider.gameObject.SetActive(!value);
+        farClipSlider.gameObject.SetActive(!Imperium.Settings.Map.AutoClipping.Value);
+        Imperium.Settings.Map.AutoClipping.onUpdate += value => farClipSlider.gameObject.SetActive(!value);
 
         nearClipSlider = ImpSlider.Bind(
             path: "FarClip",
@@ -213,8 +213,8 @@ internal class MapUI : LayerSelector.LayerSelector
             playClickSound: false,
             theme: theme
         );
-        nearClipSlider.gameObject.SetActive(!ImpSettings.Map.AutoClipping.Value);
-        ImpSettings.Map.AutoClipping.onUpdate += value => nearClipSlider.gameObject.SetActive(!value);
+        nearClipSlider.gameObject.SetActive(!Imperium.Settings.Map.AutoClipping.Value);
+        Imperium.Settings.Map.AutoClipping.onUpdate += value => nearClipSlider.gameObject.SetActive(!value);
 
         // Currently unused
         var floorSlider = ImpSlider.Bind(
@@ -240,11 +240,11 @@ internal class MapUI : LayerSelector.LayerSelector
 
     private void InitMapSettings()
     {
-        ImpToggle.Bind("MapSettings/MinimapEnabled", container, ImpSettings.Map.MinimapEnabled, theme);
-        ImpToggle.Bind("MapSettings/CompassEnabled", container, ImpSettings.Map.CompassEnabled, theme);
-        ImpToggle.Bind("MapSettings/RotationLock", container, ImpSettings.Map.RotationLock, theme);
-        ImpToggle.Bind("MapSettings/UnlockView", container, ImpSettings.Map.UnlockView, theme);
-        ImpToggle.Bind("MapSettings/AutoClipping", container, ImpSettings.Map.AutoClipping, theme);
+        ImpToggle.Bind("MapSettings/MinimapEnabled", container, Imperium.Settings.Map.MinimapEnabled, theme);
+        ImpToggle.Bind("MapSettings/CompassEnabled", container, Imperium.Settings.Map.CompassEnabled, theme);
+        ImpToggle.Bind("MapSettings/RotationLock", container, Imperium.Settings.Map.RotationLock, theme);
+        ImpToggle.Bind("MapSettings/UnlockView", container, Imperium.Settings.Map.UnlockView, theme);
+        ImpToggle.Bind("MapSettings/AutoClipping", container, Imperium.Settings.Map.AutoClipping, theme);
         ImpButton.Bind(
             "MapSettings/MinimapSettings",
             container,
@@ -315,7 +315,7 @@ internal class MapUI : LayerSelector.LayerSelector
         );
 
         // "Apply" target rotation when enabling / disabling rotation lock
-        ImpSettings.Map.RotationLock.onUpdate += isOn =>
+        Imperium.Settings.Map.RotationLock.onUpdate += isOn =>
         {
             if (!target) return;
 
@@ -376,15 +376,15 @@ internal class MapUI : LayerSelector.LayerSelector
         target = newTarget;
 
         // Set target to default top-down rotation and start animation
-        var originX = ImpSettings.Map.RotationLock.Value ? target.rotation.eulerAngles.y : 0;
-        cameraTargetRotation = ImpSettings.Map.UnlockView.Value
+        var originX = Imperium.Settings.Map.RotationLock.Value ? target.rotation.eulerAngles.y : 0;
+        cameraTargetRotation = Imperium.Settings.Map.UnlockView.Value
             ? new Vector3(Random.Range(0, 366), 40, 0)
             : new Vector3(originX, 89.9f, 0);
         snapBackAnimationTimer = 1;
 
 
         // Use free-look clipping when camera is unlocked
-        if (ImpSettings.Map.UnlockView.Value) Imperium.Map.SetCameraClipped(false);
+        if (Imperium.Settings.Map.UnlockView.Value) Imperium.Map.SetCameraClipped(false);
     }
 
     protected override void OnOpen()
@@ -398,7 +398,7 @@ internal class MapUI : LayerSelector.LayerSelector
         if (!Imperium.Map.Minimap.IsOpen) Imperium.Map.Camera.enabled = false;
 
         // Reset camera rotation to match target when closing the UI and rotation lock is enabled
-        if (ImpSettings.Map.RotationLock.Value && target) mouseOffsetX = 0;
+        if (Imperium.Settings.Map.RotationLock.Value && target) mouseOffsetX = 0;
     }
 
     /// <summary>
@@ -407,7 +407,7 @@ internal class MapUI : LayerSelector.LayerSelector
     /// </summary>
     private void Update()
     {
-        if (ImpSettings.Map.CompassEnabled.Value)
+        if (Imperium.Settings.Map.CompassEnabled.Value)
         {
             var rotationY = Imperium.Map.Camera.transform.rotation.eulerAngles.y;
             compass.transform.rotation = Quaternion.Euler(new Vector3(0, 0, rotationY));
@@ -429,7 +429,7 @@ internal class MapUI : LayerSelector.LayerSelector
             mouseOffsetX = Mathf.Lerp(
                 mouseOffsetX,
                 // Compensate for target rotation if rotation lock is enabled
-                ImpSettings.Map.RotationLock.Value
+                Imperium.Settings.Map.RotationLock.Value
                     ? cameraTargetRotation.x - target.rotation.eulerAngles.y
                     : cameraTargetRotation.x,
                 1 - snapBackAnimationTimer
@@ -450,8 +450,8 @@ internal class MapUI : LayerSelector.LayerSelector
             snapBackAnimationTimer -= Time.deltaTime;
 
             // Reset clipping at the end of the animation if auto clipping is on
-            if (ImpSettings.Map.AutoClipping.Value
-                && !ImpSettings.Map.UnlockView.Value
+            if (Imperium.Settings.Map.AutoClipping.Value
+                && !Imperium.Settings.Map.UnlockView.Value
                 && snapBackAnimationTimer < 0.5f
                 && (Imperium.Player.isInsideFactory
                     || Imperium.Player.isInElevator
@@ -465,7 +465,7 @@ internal class MapUI : LayerSelector.LayerSelector
             cameraViewOrigin = target.position;
 
             // Make sure the camera rotation is always fixed when the minimap is open and rotation lock is enabled
-            if (ImpSettings.Map.RotationLock.Value && Imperium.Map.Minimap.IsOpen) mouseOffsetX = 0;
+            if (Imperium.Settings.Map.RotationLock.Value && Imperium.Map.Minimap.IsOpen) mouseOffsetX = 0;
         }
 
         // Mouse input processing
@@ -492,8 +492,8 @@ internal class MapUI : LayerSelector.LayerSelector
             else if (Imperium.InputBindings.BaseMap["RightClick"].IsPressed())
             {
                 var inputVector = new Vector3(
-                    -input.x * 0.0016f * ImpSettings.Map.CameraZoom.Value,
-                    -input.y * 0.0016f * ImpSettings.Map.CameraZoom.Value,
+                    -input.x * 0.0016f * Imperium.Settings.Map.CameraZoom.Value,
+                    -input.y * 0.0016f * Imperium.Settings.Map.CameraZoom.Value,
                     0
                 );
                 inputVector = Imperium.Map.Camera.transform.TransformDirection(inputVector);
@@ -507,7 +507,7 @@ internal class MapUI : LayerSelector.LayerSelector
                 if (target)
                 {
                     // "Apply" target rotation when enabling / disabling rotation lock
-                    if (ImpSettings.Map.RotationLock.Value)
+                    if (Imperium.Settings.Map.RotationLock.Value)
                     {
                         mouseOffsetX += target.rotation.eulerAngles.y;
                     }
@@ -524,7 +524,7 @@ internal class MapUI : LayerSelector.LayerSelector
         // Camera position update
         var direction = new Vector3(0, 0, -10.0f);
         // Add target rotation if rotation lock is activated
-        var dragX = target && ImpSettings.Map.RotationLock.Value
+        var dragX = target && Imperium.Settings.Map.RotationLock.Value
             ? mouseOffsetX + target.rotation.eulerAngles.y
             : mouseOffsetX;
         var rotation = Quaternion.Euler(mouseOffsetY, dragX, 0);

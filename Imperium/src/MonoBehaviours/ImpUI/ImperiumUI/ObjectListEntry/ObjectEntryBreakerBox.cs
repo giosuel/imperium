@@ -1,6 +1,8 @@
 #region
 
+using Imperium.Core.Lifecycle;
 using Imperium.Netcode;
+using Unity.Netcode;
 
 #endregion
 
@@ -16,7 +18,7 @@ internal class ObjectEntryBreakerBox : ObjectEntry
     public override void Destroy()
     {
         base.Destroy();
-        ImpNetSpawning.Instance.OnMapHazardsChangedClientRpc();
+        Imperium.ObjectManager.DespawnObstacle(objectNetId!.Value);
     }
 
     protected override void TeleportHere()
@@ -24,6 +26,8 @@ internal class ObjectEntryBreakerBox : ObjectEntry
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
         Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
     }
+
+    protected override void ToggleObject(bool isActive) => MoonManager.ToggleBreaker((BreakerBox)component, isActive);
 
     protected override string GetObjectName() => $"Breaker Box <i>{component.GetInstanceID()}</i>";
 }

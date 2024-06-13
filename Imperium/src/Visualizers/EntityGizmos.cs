@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
+using Imperium.API.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
@@ -18,11 +20,11 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
 {
     internal readonly Dictionary<EnemyType, EntityGizmoConfig> EntityInfoConfigs = [];
 
-    internal EntityGizmos(ImpBinding<HashSet<EnemyAI>> objectsBinding) : base(objectsBinding)
+    internal EntityGizmos(ImpBinding<HashSet<EnemyAI>> objectsBinding, ConfigFile config) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
-            EntityInfoConfigs[entity] = new EntityGizmoConfig(entity.enemyName);
+            EntityInfoConfigs[entity] = new EntityGizmoConfig(entity.enemyName, config);
         }
     }
 
@@ -60,6 +62,7 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.ConeVisualizerUpdate(
+                instance,
                 eye ?? instance.transform,
                 angle, size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
@@ -78,6 +81,7 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.SphereVisualizerUpdate(
+                instance,
                 eye ?? instance.transform,
                 size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,

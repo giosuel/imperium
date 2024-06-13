@@ -64,7 +64,7 @@ public static class UnityExplorerIntegration
     {
         if (ExplorerCore.GUID == id)
         {
-            if (ImpSettings.Preferences.UnityExplorerMouseFix.Value)
+            if (Imperium.Settings.Preferences.UnityExplorerMouseFix.Value)
             {
                 ImpUtils.Interface.ToggleCursorState(active);
             }

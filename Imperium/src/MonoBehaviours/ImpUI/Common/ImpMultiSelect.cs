@@ -34,8 +34,8 @@ public abstract class ImpMultiSelect
     public static void Bind<T>(
         string path,
         Transform container,
-        ImpBinding<T> selectionBinding,
-        ImpBinding<HashSet<T>> items,
+        IBinding<T> selectionBinding,
+        IBinding<HashSet<T>> items,
         Func<T, string> labelGenerator,
         ImpBinding<ImpTheme> theme,
         string emptyPlaceholder = null

@@ -24,8 +24,9 @@ public class ShovelGizmo : MonoBehaviour
 
     private void Awake()
     {
-        capsule = ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, transform,
-            ImpAssets.WireframePurpleMaterial);
+        capsule = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Capsule, transform, API.Materials.WireframePurple
+        );
     }
 
     public void Init(Shovel item, bool isHolding)

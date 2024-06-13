@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -55,24 +56,24 @@ public class ImpSlider : MonoBehaviour
     internal static ImpSlider Bind(
         string path,
         Transform container,
-        ImpBinding<float> valueBinding,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<float> valueBinding,
+        IBinding<ImpTheme> theme = null,
         bool useLogarithmicScale = false,
         string indicatorUnit = "",
         float? indicatorDefaultValue = null,
         Func<float, string> indicatorFormatter = null,
         float debounceTime = 0f,
         bool interactableInvert = false,
-        ImpBinding<List<string>> options = null,
+        IBinding<List<string>> options = null,
         AudioClip clickAudio = null,
         bool playClickSound = true,
-        params ImpBinding<bool>[] interactableBindings
+        params IBinding<bool>[] interactableBindings
     )
     {
         var sliderObject = container.Find(path);
         if (!sliderObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to bind slider '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogInfo($"[UI] Failed to bind slider '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
@@ -132,7 +133,7 @@ public class ImpSlider : MonoBehaviour
             else
             {
                 valueBinding.Set(bindingValue);
-                if (playClickSound) GameManager.PlayClip(clickAudio);
+                if (playClickSound) GameUtils.PlayClip(clickAudio);
             }
         });
 
@@ -198,11 +199,11 @@ public class ImpSlider : MonoBehaviour
         );
     }
 
-    private IEnumerator DebounceSlider(ImpBinding<float> binding, float value, AudioClip clickAudio)
+    private IEnumerator DebounceSlider(IBinding<float> binding, float value, AudioClip clickAudio)
     {
         yield return new WaitForSeconds(debounceTime);
         binding.Set(value);
-        GameManager.PlayClip(clickAudio);
+        GameUtils.PlayClip(clickAudio);
     }
 
     private void SetIndicatorText(float value)

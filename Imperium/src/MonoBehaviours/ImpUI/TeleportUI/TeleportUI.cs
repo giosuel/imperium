@@ -34,7 +34,7 @@ internal class TeleportUI : MultiplexUI
         }
         else
         {
-            Imperium.ImpPositionIndicator.Activate(PlayerManager.TeleportTo, origin);
+            Imperium.ImpPositionIndicator.Activate(Imperium.PlayerManager.TeleportLocalPlayer, origin);
         }
     }
 }

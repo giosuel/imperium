@@ -1,10 +1,12 @@
 #region
 
 using Imperium.Core;
+using Imperium.Extensions;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,31 +27,52 @@ internal class ObjectEntry : MonoBehaviour
     protected GameObject containerObject;
     protected Component component;
 
-    private ImpBinding<bool> IsObjectActive;
+    protected ulong? objectNetId;
+
+    protected ImpBinding<bool> IsObjectActive;
 
     internal void Init(Component objectComponent, ImpBinding<ImpTheme> theme)
     {
-        objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
-
         component = objectComponent;
 
+        objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
         objectName = GetObjectName();
         containerObject = GetContainerObject();
-
-        IsObjectActive = new ImpBinding<bool>(true, containerObject.SetActive);
-
         SetName(objectName);
+
+        objectNetId = containerObject.gameObject.GetComponent<NetworkObject>()?.NetworkObjectId;
+
+        if (objectNetId.HasValue)
+        {
+            Imperium.ObjectManager.DisabledObjects.onUpdate += disabledObjects =>
+            {
+                ToggleObject(!disabledObjects.Contains(objectNetId.Value));
+            };
+            IsObjectActive = new ImpBinding<bool>(
+                !Imperium.ObjectManager.DisabledObjects.Value.Contains(objectNetId.Value)
+            );
+        }
+        else
+        {
+            IsObjectActive = new ImpBinding<bool>(true);
+        }
 
         // Active toggle
         activeToggle = ImpToggle.Bind("Active", transform, IsObjectActive, theme);
-        activeToggle.gameObject.SetActive(CanToggle());
+        activeToggle.gameObject.SetActive(CanToggle() && objectNetId.HasValue);
+        IsObjectActive.onUpdate += ToggleObject;
+        IsObjectActive.onTrigger += ToggleDisabledObject;
 
         // Teleport to button
-        ImpButton.Bind("TeleportTo", transform, () =>
-        {
-            PlayerManager.TeleportTo(GetTeleportPosition());
-            Imperium.Interface.Close();
-        }, theme, isIconButton: true);
+        ImpButton.Bind("TeleportTo", transform,
+            () =>
+            {
+                Imperium.PlayerManager.TeleportLocalPlayer(GetTeleportPosition());
+                Imperium.Interface.Close();
+            },
+            theme,
+            isIconButton: true
+        );
 
         // Teleport here button
         var teleportHereButton = ImpButton.Bind("TeleportHere", transform, TeleportHere, theme, isIconButton: true);
@@ -75,13 +98,23 @@ internal class ObjectEntry : MonoBehaviour
         reviveButton = ImpButton.Bind("Revive", transform, Revive);
         reviveButton.gameObject.SetActive(CanRevive());
 
+        InitEntry();
         UpdateEntry();
+    }
+
+    protected virtual void InitEntry()
+    {
+    }
+
+    private void ToggleDisabledObject()
+    {
+        if (!objectNetId.HasValue) return;
+        Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value.Toggle(objectNetId.Value));
     }
 
     public virtual void UpdateEntry()
     {
         SetName(GetObjectName());
-        if (IsObjectActive.Value != containerObject.activeSelf) IsObjectActive.Set(containerObject.activeSelf, true);
     }
 
     public virtual void Destroy()
@@ -96,7 +129,9 @@ internal class ObjectEntry : MonoBehaviour
 
     protected virtual string GetObjectName() => component.name;
     protected virtual GameObject GetContainerObject() => component.gameObject;
-    protected virtual Vector3 GetTeleportPosition() => component.gameObject.transform.position;
+    protected virtual Vector3 GetTeleportPosition() => containerObject.transform.position;
+
+    protected virtual void ToggleObject(bool isActive) => containerObject.SetActive(isActive);
 
     protected virtual void Respawn()
     {

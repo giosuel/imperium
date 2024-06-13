@@ -1,5 +1,6 @@
 #region
 
+using Imperium.API.Types;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -12,8 +13,8 @@ namespace Imperium.Visualizers;
 
 internal class SpawnIndicators(
     ImpBinding<OracleState> oracleStateBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<OracleState, SpawnIndicator>(oracleStateBinding, visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<OracleState, SpawnIndicator>(oracleStateBinding, visibilityBinding)
 {
     protected override void OnRefresh(OracleState state)
     {

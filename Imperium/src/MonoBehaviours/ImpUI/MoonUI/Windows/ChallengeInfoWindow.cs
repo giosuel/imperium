@@ -2,6 +2,7 @@
 
 using System;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using TMPro;
 
 #endregion
@@ -53,7 +54,7 @@ internal class ChallengeInfoWindow : BaseWindow
             (Imperium.StartOfRound.currentLevel.maxEnemyPowerCount + powerIncreaseRandom.Next(0, 8)).ToString();
         outdoorPowerIncrease.text =
             (Imperium.StartOfRound.currentLevel.maxOutsideEnemyPowerCount + powerIncreaseRandom.Next(0, 8)).ToString();
-        scrapSpawnIncrease.text = $"+{MoonManager.Current.ChallengeScrapAmount - MoonManager.Current.ScrapAmount}";
+        scrapSpawnIncrease.text = $"+{MoonContainer.Current.ChallengeScrapAmount - MoonContainer.Current.ScrapAmount}";
 
         var weatherRandom = new Random(StartOfRound.Instance.randomMapSeed);
         weather1Multiplier.text = $"x{(weatherRandom.Next(0, 100) < 20 ? weatherRandom.Next(20, 80) * 0.02f : 1)}";

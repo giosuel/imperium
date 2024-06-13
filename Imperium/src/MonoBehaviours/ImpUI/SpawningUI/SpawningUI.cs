@@ -74,7 +74,7 @@ internal class SpawningUI : SingleplexUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.ENTITY,
+                SpawningObjectEntry.SpawnObjectType.Entty,
                 entity.enemyName,
                 entity.enemyPrefab?.name,
                 () => Spawn(spawningEntry, 1, -1),
@@ -90,7 +90,7 @@ internal class SpawningUI : SingleplexUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.ITEM,
+                SpawningObjectEntry.SpawnObjectType.Item,
                 item.itemName,
                 item.spawnPrefab?.name ?? Imperium.ObjectManager.GetStaticPrefabName(item.itemName),
                 () => Spawn(spawningEntry, 1, -1),
@@ -106,7 +106,7 @@ internal class SpawningUI : SingleplexUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.MAP_HAZARD,
+                SpawningObjectEntry.SpawnObjectType.MapHazard,
                 hazardName,
                 hazard.name,
                 () => Spawn(spawningEntry, 1, -1),
@@ -222,11 +222,13 @@ internal class SpawningUI : SingleplexUI
 
     private void Spawn(SpawningObjectEntry spawningObjectEntry, int amount, int value)
     {
-        if (Imperium.Freecam.IsFreecamEnabled.Value)
+        var isMapHazard = spawningObjectEntry.SpawnType == SpawningObjectEntry.SpawnObjectType.MapHazard;
+        if (Imperium.Freecam.IsFreecamEnabled.Value || isMapHazard)
         {
             Imperium.ImpPositionIndicator.Activate(
                 position => spawningObjectEntry.Spawn(position, amount, value, false),
-                Imperium.Freecam.transform
+                Imperium.Freecam.transform,
+                castGround: !isMapHazard
             );
         }
         else
@@ -245,7 +247,7 @@ internal class SpawningUI : SingleplexUI
             );
 
             if (hasFloorBeneath) spawnPosition = hitInfo.point;
-            spawningObjectEntry.Spawn(spawnPosition, amount, value);
+            spawningObjectEntry.Spawn(spawnPosition, amount, value, true);
         }
 
         CloseUI();

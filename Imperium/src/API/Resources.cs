@@ -134,15 +134,15 @@ public static class Resources
     }
 
     /// <summary>
-    ///     List of all the steamleaks in the current level.
+    ///     List of all the steam valves in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<GameObject>> CurrentLevelSteamleaks
+    public static ImpBinding<HashSet<SteamValveHazard>> CurrentLevelSteamValves
     {
         get
         {
             if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelSteamleaks;
+            return Imperium.ObjectManager.CurrentLevelSteamValves;
         }
     }
 

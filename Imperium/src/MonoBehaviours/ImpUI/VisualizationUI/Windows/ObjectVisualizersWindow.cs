@@ -119,7 +119,7 @@ internal class ObjectVisualizersWindow : BaseWindow
         var setActive = activated < total / 2;
         foreach (var playerInfoConfig in Imperium.Visualization.PlayerGizmos.PlayerInfoConfigs.Values)
         {
-            configGetter(playerInfoConfig).Set(setActive, skipSync: true);
+            configGetter(playerInfoConfig).Set(setActive);
         }
     }
 
@@ -134,7 +134,7 @@ internal class ObjectVisualizersWindow : BaseWindow
         var setActive = activated < total / 2;
         foreach (var entityInfoConfig in Imperium.Visualization.EntityGizmos.EntityInfoConfigs.Values)
         {
-            configGetter(entityInfoConfig).Set(setActive, skipSync: true);
+            configGetter(entityInfoConfig).Set(setActive);
         }
     }
 

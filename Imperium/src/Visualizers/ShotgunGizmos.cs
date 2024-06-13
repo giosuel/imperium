@@ -1,5 +1,6 @@
 #region
 
+using Imperium.API.Types;
 using Imperium.Core;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
@@ -10,8 +11,8 @@ using UnityEngine;
 namespace Imperium.Visualizers;
 
 internal class ShotgunGizmos(
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<ShotgunItem, ShotgunGizmo>(visibleBinding: visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<ShotgunItem, ShotgunGizmo>(visibilityBinding: visibilityBinding)
 {
     internal void Refresh(ShotgunItem shotgun, bool isActivelyHolding)
     {
@@ -25,6 +26,6 @@ internal class ShotgunGizmos(
         }
 
         shotgunGizmo.Init(shotgun, isActivelyHolding);
-        shotgunGizmo.gameObject.SetActive(ImpSettings.Visualizations.ShotgunIndicators.Value);
+        shotgunGizmo.gameObject.SetActive(Imperium.Settings.Visualization.ShotgunIndicators.Value);
     }
 }

@@ -1,6 +1,7 @@
 #region
 
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using TMPro;
 
@@ -30,37 +31,37 @@ internal class ControlCenterWindow : BaseWindow
         ImpInput.Bind(
             "EntitySpawning/MinIndoorSpawns/Input",
             content,
-            Imperium.GameManager.MinIndoorSpawns,
+            Imperium.MoonManager.MinIndoorSpawns,
             themeBinding
         );
         ImpInput.Bind(
             "EntitySpawning/MinOutdoorSpawns/Input",
             content,
-            Imperium.GameManager.MinOutdoorSpawns,
+            Imperium.MoonManager.MinOutdoorSpawns,
             themeBinding
         );
         ImpInput.Bind(
             "EntitySpawning/MaxIndoorPower/Input",
             content,
-            Imperium.GameManager.MaxIndoorPower,
+            Imperium.MoonManager.MaxIndoorPower,
             themeBinding
         );
         ImpInput.Bind(
             "EntitySpawning/MaxOutdoorPower/Input",
             content,
-            Imperium.GameManager.MaxOutdoorPower,
+            Imperium.MoonManager.MaxOutdoorPower,
             themeBinding
         );
         ImpInput.Bind(
             "EntitySpawning/MaxDaytimePower/Input",
             content,
-            Imperium.GameManager.MaxDaytimePower,
+            Imperium.MoonManager.MaxDaytimePower,
             themeBinding
         );
         ImpInput.Bind(
             "EntitySpawning/IndoorDeviation/Input",
             content,
-            Imperium.GameManager.IndoorDeviation,
+            Imperium.MoonManager.IndoorDeviation,
             themeBinding
         );
         ImpInput.CreateStatic(
@@ -72,12 +73,12 @@ internal class ControlCenterWindow : BaseWindow
         ImpInput.Bind(
             "EntitySpawning/DaytimeDeviation/Input",
             content,
-            Imperium.GameManager.DaytimeDeviation,
+            Imperium.MoonManager.DaytimeDeviation,
             themeBinding
         );
 
-        ImpInput.Bind("WeatherVariables/Variable1/Input", content, Imperium.GameManager.WeatherVariable1, themeBinding);
-        ImpInput.Bind("WeatherVariables/Variable2/Input", content, Imperium.GameManager.WeatherVariable2, themeBinding);
+        ImpInput.Bind("WeatherVariables/Variable1/Input", content, Imperium.MoonManager.WeatherVariable1, themeBinding);
+        ImpInput.Bind("WeatherVariables/Variable2/Input", content, Imperium.MoonManager.WeatherVariable2, themeBinding);
     }
 
     private void InitMapObstacleButtons()

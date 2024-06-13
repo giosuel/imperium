@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers;
@@ -24,9 +25,9 @@ internal static class RoundManagerPatch
     private static void SpawnScrapInLevelPrefixPatch(RoundManager __instance)
     {
         var random = ImpUtils.CloneRandom(__instance.AnomalyRandom);
-        MoonManager.Current.ScrapAmount = (int)(random.Next(
+        MoonContainer.Current.ScrapAmount = (int)(random.Next(
             __instance.currentLevel.minScrap, __instance.currentLevel.maxScrap) * __instance.scrapAmountMultiplier);
-        MoonManager.Current.ChallengeScrapAmount = MoonManager.Current.ScrapAmount + random.Next(10, 30);
+        MoonContainer.Current.ChallengeScrapAmount = MoonContainer.Current.ScrapAmount + random.Next(10, 30);
     }
 
     [HarmonyPrefix]
@@ -83,7 +84,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
+        Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
         Imperium.Oracle.Simulate();
     }
 
@@ -94,7 +95,7 @@ internal static class RoundManagerPatch
         if (!Imperium.IsImperiumReady) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
+        Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
         Imperium.Oracle.Simulate();
     }
 
@@ -143,21 +144,21 @@ internal static class RoundManagerPatch
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
     private static bool PlotOutEnemiesForNextHourPatch()
     {
-        return !Imperium.GameManager.IndoorSpawningPaused.Value;
+        return !Imperium.MoonManager.IndoorSpawningPaused.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnEnemiesOutside")]
     private static bool SpawnEnemiesOutsidePatch()
     {
-        return !Imperium.GameManager.OutdoorSpawningPaused.Value;
+        return !Imperium.MoonManager.OutdoorSpawningPaused.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnDaytimeEnemiesOutside")]
     private static bool SpawnDaytimeEnemiesOutsidePatch(RoundManager __instance)
     {
-        return !Imperium.GameManager.DaytimeSpawningPaused.Value;
+        return !Imperium.MoonManager.DaytimeSpawningPaused.Value;
     }
 
     /// <summary>

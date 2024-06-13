@@ -117,7 +117,7 @@ internal class WaypointWindow : BaseWindow
         ImpButton.Bind(
             "Teleport",
             newWaypoint.transform,
-            () => PlayerManager.TeleportTo(moonWaypointMap[waypointName]),
+            () => Imperium.PlayerManager.TeleportLocalPlayer(moonWaypointMap[waypointName]),
             theme: themeBinding,
             isIconButton: true
         );

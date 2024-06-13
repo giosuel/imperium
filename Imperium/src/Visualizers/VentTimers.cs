@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
@@ -13,8 +14,8 @@ namespace Imperium.Visualizers;
 
 internal class VentTimers(
     ImpBinding<HashSet<EnemyVent>> objectsBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<EnemyVent>, VentTimer>(objectsBinding, visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<HashSet<EnemyVent>, VentTimer>(objectsBinding, visibilityBinding)
 {
     protected override void OnRefresh(HashSet<EnemyVent> objects)
     {

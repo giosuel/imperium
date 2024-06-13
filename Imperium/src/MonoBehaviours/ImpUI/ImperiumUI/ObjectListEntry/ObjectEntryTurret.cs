@@ -1,5 +1,7 @@
 #region
 
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Netcode;
 using Unity.Netcode;
@@ -18,15 +20,19 @@ internal class ObjectEntryTurret : ObjectEntry
     protected override void Respawn()
     {
         Destroy();
-        ObjectManager.SpawnMapHazard("Turret", containerObject.transform.position);
+        Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+        {
+            Name = "Turret",
+            SpawnPosition = containerObject.transform.position
+        });
     }
+
+    protected override void ToggleObject(bool isActive) => ((Turret)component).ToggleTurretEnabled(isActive);
 
     public override void Destroy()
     {
         base.Destroy();
-        ImpNetSpawning.Instance.DespawnMapHazardServerRpc(
-            containerObject.GetComponent<NetworkObject>().NetworkObjectId
-        );
+        Imperium.ObjectManager.DespawnEntity(containerObject.GetComponent<NetworkObject>().NetworkObjectId);
     }
 
     protected override void TeleportHere()

@@ -35,7 +35,7 @@ internal class ObjectExplorerWindow : BaseWindow
     private Transform otherList;
     private TMP_Text otherCount;
 
-    private readonly ImpTimer refreshTimer = ImpTimer.ForInterval(0.2f);
+    private readonly ImpTimer refreshTimer = ImpTimer.ForInterval(0.08f);
 
     private Dictionary<int, ObjectEntry> objectEntries = [];
 
@@ -73,8 +73,8 @@ internal class ObjectExplorerWindow : BaseWindow
         Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelSpikeTraps.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelSteamleaks.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelVents.onTrigger += Refresh;
+        Imperium.ObjectManager.CurrentLevelSteamValves.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelEntities.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelItems.onTrigger += Refresh;
@@ -119,7 +119,7 @@ internal class ObjectExplorerWindow : BaseWindow
 
     private void Update()
     {
-        if (refreshTimer.Tick()) Refresh();
+        if (refreshTimer.Tick()) LayoutRebuilder.ForceRebuildLayoutImmediate(explorerContentRect);
     }
 
     private static IEnumerable<KeyValuePair<Type, Component>> Objects =>
@@ -135,6 +135,9 @@ internal class ObjectExplorerWindow : BaseWindow
             .Concat(Imperium.ObjectManager.CurrentLevelVents.Value
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryVent), entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelSteamValves.Value
+                .Where(obj => obj != null)
+                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntrySteamValve), entry)))
             .Concat(Imperium.ObjectManager.CurrentLevelLandmines.Value
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryLandmine), entry)))
@@ -167,7 +170,7 @@ internal class ObjectExplorerWindow : BaseWindow
                     GrabbableObject => itemList,
                     PlayerControllerB => playerList,
                     EnemyVent => ventList,
-                    Turret or Landmine or SpikeRoofTrap or SandSpiderWebTrap => hazardList,
+                    Turret or Landmine or SpikeRoofTrap or SandSpiderWebTrap or SteamValveHazard => hazardList,
                     _ => otherList
                 };
 
@@ -197,7 +200,6 @@ internal class ObjectExplorerWindow : BaseWindow
                     Destroy(entry.Value.gameObject);
                     return false;
                 }
-
                 return true;
             })
             .ToDictionary(entry => entry.Key, entry => entry.Value);
@@ -243,8 +245,6 @@ internal class ObjectExplorerWindow : BaseWindow
             other.Count(p => p.gameObject.activeInHierarchy),
             other.Count
         );
-
-        LayoutRebuilder.ForceRebuildLayoutImmediate(explorerContentRect);
     }
 
     private static void OpenObjectsUI() => Imperium.Interface.Open<ObjectsUI.ObjectsUI>();

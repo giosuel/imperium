@@ -12,13 +12,13 @@ internal class MinimapSettings : SingleplexUI
 {
     protected override void InitUI()
     {
-        ImpToggle.Bind("Gizmos/ShowInfoPanel", content, ImpSettings.Map.MinimapInfoPanel, theme);
-        ImpToggle.Bind("Gizmos/ShowLocationPanel", content, ImpSettings.Map.MinimapLocationPanel, theme);
+        ImpToggle.Bind("Gizmos/ShowInfoPanel", content, Imperium.Settings.Map.MinimapInfoPanel, theme);
+        ImpToggle.Bind("Gizmos/ShowLocationPanel", content, Imperium.Settings.Map.MinimapLocationPanel, theme);
 
         ImpSlider.Bind(
             path: "Scale",
             container: content,
-            valueBinding: ImpSettings.Map.MinimapScale,
+            valueBinding: Imperium.Settings.Map.MinimapScale,
             indicatorFormatter: value => $"{value:0.0}",
             theme: theme
         );

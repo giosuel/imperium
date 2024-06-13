@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
@@ -11,9 +12,9 @@ using UnityEngine;
 namespace Imperium.Visualizers;
 
 internal class LandmineGizmos(
-    ImpBinding<HashSet<Landmine>> objectsBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<Landmine>, LandmineGizmo>(objectsBinding, visibleBinding)
+    IBinding<HashSet<Landmine>> objectsBinding,
+    IBinding<bool> visibilityBinding
+) : BaseVisualizer<HashSet<Landmine>, LandmineGizmo>(objectsBinding, visibilityBinding)
 {
     protected override void OnRefresh(HashSet<Landmine> objects)
     {

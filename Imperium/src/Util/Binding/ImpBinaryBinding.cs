@@ -27,9 +27,9 @@ public class ImpBinaryBinding : ImpBinding<bool>
     public void SetTrue() => Set(true);
     public void SetFalse() => Set(false);
 
-    private void OnUpdate(bool value)
+    private void OnUpdate(bool updatedValue)
     {
-        if (value)
+        if (updatedValue)
         {
             onTrue?.Invoke();
         }

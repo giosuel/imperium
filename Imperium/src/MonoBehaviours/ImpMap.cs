@@ -45,11 +45,11 @@ public class ImpMap : MonoBehaviour
         Camera.enabled = false;
         Camera.orthographic = true;
 
-        Camera.cullingMask = ImpSettings.Map.CameraLayerMask.Value;
-        ImpSettings.Map.CameraLayerMask.onUpdate += value => Camera.cullingMask = value;
+        Camera.cullingMask = Imperium.Settings.Map.CameraLayerMask.Value;
+        Imperium.Settings.Map.CameraLayerMask.onUpdate += value => Camera.cullingMask = value;
 
-        Camera.orthographicSize = ImpSettings.Map.CameraZoom.Value;
-        ImpSettings.Map.CameraZoom.onUpdate += value => Camera.orthographicSize = value;
+        Camera.orthographicSize = Imperium.Settings.Map.CameraZoom.Value;
+        Imperium.Settings.Map.CameraZoom.onUpdate += value => Camera.orthographicSize = value;
 
         Camera.farClipPlane = CameraFarClip.Value;
         CameraFarClip.onUpdate += value => Camera.farClipPlane = value;
@@ -74,10 +74,10 @@ public class ImpMap : MonoBehaviour
     {
         if (!Imperium.Interface.Get<MapUI>().IsOpen && !Imperium.InputBindings.BaseMap["Alt"].IsPressed()) return;
 
-        var multiplier = ImpSettings.Map.CameraZoom.Value / 100 * 8;
-        ImpSettings.Map.CameraZoom.Set(
+        var multiplier = Imperium.Settings.Map.CameraZoom.Value / 100 * 8;
+        Imperium.Settings.Map.CameraZoom.Set(
             Mathf.Clamp(
-                ImpSettings.Map.CameraZoom.Value - context.ReadValue<float>() * multiplier,
+                Imperium.Settings.Map.CameraZoom.Value - context.ReadValue<float>() * multiplier,
                 1,
                 100
             )

@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -26,7 +28,7 @@ internal static class PlayerControllerPatch
             if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = GameNetworkManager.Instance.localPlayerController;
 
-            ImpNetCommunication.Instance.RequestImperiumAccess();
+            Imperium.Networking.RequestImperiumAccess();
         }
     }
 
@@ -34,14 +36,14 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("DamagePlayer")]
     private static void DamagePlayerPatch(PlayerControllerB __instance, int damageNumber, CauseOfDeath causeOfDeath)
     {
-        if (ImpSettings.Player.GodMode.Value)
+        if (Imperium.Settings.Player.GodMode.Value)
         {
             // Fixes that every following jump will cause the player to take fall damage
             __instance.takingFallDamage = false;
             __instance.criticallyInjured = false;
             __instance.health = 100;
 
-            ImpOutput.Send(
+            Imperium.IO.Send(
                 $"God mode negated {damageNumber} damage from '{(causeOfDeath).ToString()}'",
                 type: NotificationType.GodMode
             );
@@ -52,9 +54,9 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("KillPlayer")]
     private static void KillPlayerPatch(PlayerControllerB __instance, CauseOfDeath causeOfDeath)
     {
-        if (ImpSettings.Player.GodMode.Value)
+        if (Imperium.Settings.Player.GodMode.Value)
         {
-            ImpOutput.Send($"God mode saved you from death by '{(causeOfDeath).ToString()}'",
+            Imperium.IO.Send($"God mode saved you from death by '{(causeOfDeath).ToString()}'",
                 type: NotificationType.GodMode);
         }
     }
@@ -69,7 +71,7 @@ internal static class PlayerControllerPatch
             return false;
         }
 
-        if (ImpSettings.Player.GodMode.Value)
+        if (Imperium.Settings.Player.GodMode.Value)
         {
             __result = false;
             return false;
@@ -83,21 +85,21 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("KillPlayerClientRpc")]
     private static void KillPlayerClientRpc(PlayerControllerB __instance, int playerId)
     {
-        ImpOutput.Send($"Employee {__instance.playerUsername} has died!", type: NotificationType.Other);
+        Imperium.IO.Send($"Employee {__instance.playerUsername} has died!", type: NotificationType.Other);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("PlayFootstepLocal")]
     private static bool PlayFootstepLocalPatch(PlayerControllerB __instance)
     {
-        return !ImpSettings.Player.Muted.Value;
+        return !Imperium.Settings.Player.Muted.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnPlayerAnimation")]
     private static bool SpawnPlayerAnimationPatch(PlayerControllerB __instance)
     {
-        return !ImpSettings.AnimationSkipping.PlayerSpawn.Value;
+        return !Imperium.Settings.AnimationSkipping.PlayerSpawn.Value;
     }
 
     #region Interact Triggers
@@ -110,7 +112,7 @@ internal static class PlayerControllerPatch
     {
         if (!__instance.hoveringOverTrigger) return;
 
-        if (ImpSettings.AnimationSkipping.InteractHold.Value)
+        if (Imperium.Settings.AnimationSkipping.InteractHold.Value)
         {
             // Backup original hold
             if (!OriginalTriggerHold.ContainsKey(__instance.hoveringOverTrigger.GetInstanceID()))
@@ -179,17 +181,17 @@ internal static class PlayerControllerPatch
     private static void UpdatePostfixPatch(PlayerControllerB __instance)
     {
         // Make player invincible to animation locking
-        if (ImpSettings.Player.DisableLocking.Value)
+        if (Imperium.Settings.Player.DisableLocking.Value)
         {
             __instance.snapToServerPosition = false;
             __instance.inSpecialInteractAnimation = false;
         }
 
-        if (ImpSettings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
+        if (Imperium.Settings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
 
-        if (ImpSettings.Player.CustomFieldOfView.Value < 0) return;
+        if (Imperium.Settings.Player.CustomFieldOfView.Value < 0) return;
 
-        var targetFOV = ImpSettings.Player.CustomFieldOfView.Value;
+        var targetFOV = Imperium.Settings.Player.CustomFieldOfView.Value;
         if (__instance.inTerminalMenu) targetFOV -= 6;
         if (__instance.IsInspectingItem) targetFOV -= 14;
         if (__instance.isSprinting) targetFOV += 2f;
@@ -209,7 +211,7 @@ internal static class PlayerControllerPatch
     private static void BeginGrabObjectPrefixPatch(PlayerControllerB __instance)
     {
         gameHasStartedBridge = GameNetworkManager.Instance.gameHasStarted;
-        if (ImpSettings.Player.PickupOverwrite.Value) GameNetworkManager.Instance.gameHasStarted = true;
+        if (Imperium.Settings.Player.PickupOverwrite.Value) GameNetworkManager.Instance.gameHasStarted = true;
     }
 
     [HarmonyPostfix]

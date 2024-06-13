@@ -14,219 +14,219 @@ internal class VisualizersWindows : BaseWindow
         ImpToggle.Bind(
             "Colliders/Employees",
             content,
-            ImpSettings.Visualizations.Employees,
+            Imperium.Settings.Visualization.Employees,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Entities",
             content,
-            ImpSettings.Visualizations.Entities,
+            Imperium.Settings.Visualization.Entities,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/MapHazards",
             content,
-            ImpSettings.Visualizations.MapHazards,
+            Imperium.Settings.Visualization.MapHazards,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Props",
             content,
-            ImpSettings.Visualizations.Props,
+            Imperium.Settings.Visualization.Props,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Foliage",
             content,
-            ImpSettings.Visualizations.Foliage,
+            Imperium.Settings.Visualization.Foliage,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/TileBorders",
             content,
-            ImpSettings.Visualizations.TileBorders,
+            Imperium.Settings.Visualization.TileBorders,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Room",
             content,
-            ImpSettings.Visualizations.Room,
+            Imperium.Settings.Visualization.Room,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Colliders",
             content,
-            ImpSettings.Visualizations.Colliders,
+            Imperium.Settings.Visualization.Colliders,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Triggers",
             content,
-            ImpSettings.Visualizations.Triggers,
+            Imperium.Settings.Visualization.Triggers,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/PhysicsObject",
             content,
-            ImpSettings.Visualizations.PhysicsObject,
+            Imperium.Settings.Visualization.PhysicsObject,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/InteractTriggers",
             content,
-            ImpSettings.Visualizations.InteractTriggers,
+            Imperium.Settings.Visualization.InteractTriggers,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/RoomLight",
             content,
-            ImpSettings.Visualizations.RoomLight,
+            Imperium.Settings.Visualization.RoomLight,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Anomaly",
             content,
-            ImpSettings.Visualizations.Anomaly,
+            Imperium.Settings.Visualization.Anomaly,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Railing",
             content,
-            ImpSettings.Visualizations.Railing,
+            Imperium.Settings.Visualization.Railing,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/PlacementBlocker",
             content,
-            ImpSettings.Visualizations.PlacementBlocker,
+            Imperium.Settings.Visualization.PlacementBlocker,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/Terrain",
             content,
-            ImpSettings.Visualizations.Terrain,
+            Imperium.Settings.Visualization.Terrain,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/PlaceableShipObjects",
             content,
-            ImpSettings.Visualizations.PlaceableShipObjects,
+            Imperium.Settings.Visualization.PlaceableShipObjects,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/MiscLevelGeometry",
             content,
-            ImpSettings.Visualizations.MiscLevelGeometry,
+            Imperium.Settings.Visualization.MiscLevelGeometry,
             themeBinding
         );
         ImpToggle.Bind(
             "Colliders/ScanNodes",
             content,
-            ImpSettings.Visualizations.ScanNode,
+            Imperium.Settings.Visualization.ScanNode,
             themeBinding
         );
 
         ImpToggle.Bind(
             "Overlays/Vents",
             content,
-            ImpSettings.Visualizations.Vents,
+            Imperium.Settings.Visualization.Vents,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/ScrapSpawns",
             content,
-            ImpSettings.Visualizations.ScrapSpawns,
+            Imperium.Settings.Visualization.ScrapSpawns,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/HazardSpawns",
             content,
-            ImpSettings.Visualizations.HazardSpawns,
+            Imperium.Settings.Visualization.HazardSpawns,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/AINodesIndoor",
             content,
-            ImpSettings.Visualizations.AINodesIndoor,
+            Imperium.Settings.Visualization.AINodesIndoor,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/AINodesOutdoor",
             content,
-            ImpSettings.Visualizations.AINodesOutdoor,
+            Imperium.Settings.Visualization.AINodesOutdoor,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/SpawnDenialPoints",
             content,
-            ImpSettings.Visualizations.SpawnDenialPoints,
+            Imperium.Settings.Visualization.SpawnDenialPoints,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/BeeSpawns",
             content,
-            ImpSettings.Visualizations.BeeSpawns,
+            Imperium.Settings.Visualization.BeeSpawns,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/OutsideEntitySpawns",
             content,
-            ImpSettings.Visualizations.OutsideEntitySpawns,
+            Imperium.Settings.Visualization.OutsideEntitySpawns,
             themeBinding
         );
         ImpToggle.Bind(
             "Overlays/NavMeshSurfaces",
             content,
-            ImpSettings.Visualizations.NavMeshSurfaces,
+            Imperium.Settings.Visualization.NavMeshSurfaces,
             themeBinding
         );
 
         ImpToggle.Bind(
             "Gizmos/SpawnIndicators",
             content,
-            ImpSettings.Visualizations.SpawnIndicators,
+            Imperium.Settings.Visualization.SpawnIndicators,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/SpawnTimers",
             content,
-            ImpSettings.Visualizations.VentTimers,
+            Imperium.Settings.Visualization.VentTimers,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/NoiseIndicators",
             content,
-            ImpSettings.Visualizations.NoiseIndicators,
+            Imperium.Settings.Visualization.NoiseIndicators,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/Shotguns",
             content,
-            ImpSettings.Visualizations.ShotgunIndicators,
+            Imperium.Settings.Visualization.ShotgunIndicators,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/Shovels",
             content,
-            ImpSettings.Visualizations.ShovelIndicators,
+            Imperium.Settings.Visualization.ShovelIndicators,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/Knives",
             content,
-            ImpSettings.Visualizations.KnifeIndicators,
+            Imperium.Settings.Visualization.KnifeIndicators,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/Landmines",
             content,
-            ImpSettings.Visualizations.LandmineIndicators,
+            Imperium.Settings.Visualization.LandmineIndicators,
             themeBinding
         );
         ImpToggle.Bind(
             "Gizmos/SpikeTraps",
             content,
-            ImpSettings.Visualizations.SpikeTrapIndicators,
+            Imperium.Settings.Visualization.SpikeTrapIndicators,
             themeBinding
         );
     }

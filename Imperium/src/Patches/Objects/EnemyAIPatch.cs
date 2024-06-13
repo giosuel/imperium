@@ -25,7 +25,7 @@ internal static class EnemyAIPatch
     {
         if (!Imperium.IsImperiumReady) return true;
 
-        if (playerScript == Imperium.Player && ImpSettings.Player.Invisibility.Value)
+        if (playerScript == Imperium.Player && Imperium.Settings.Player.Invisibility.Value)
         {
             __result = false;
             return false;
@@ -64,7 +64,7 @@ internal static class EnemyAIPatch
             eyeObject ? eyeObject : __instance.eye,
             width,
             coneSize,
-            material: ImpAssets.WireframePurpleMaterial
+            material: API.Materials.WireframePurple
         );
 
         if (proximityCheck > 0)
@@ -73,7 +73,7 @@ internal static class EnemyAIPatch
                 __instance,
                 null,
                 proximityCheck * 2,
-                material: ImpAssets.WireframePurpleMaterial
+                material: API.Materials.WireframePurple
             );
         }
     }
@@ -88,7 +88,7 @@ internal static class EnemyAIPatch
             __instance.eye,
             width,
             range,
-            material: ImpAssets.WireframeRedMaterial
+            material: API.Materials.WireframeRed
         );
 
         if (proximityAwareness > 0)
@@ -97,7 +97,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.transform,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeRedMaterial
+                material: API.Materials.WireframeRed
             );
         }
     }
@@ -111,7 +111,7 @@ internal static class EnemyAIPatch
         EnemyAI __instance, float width, int range, int proximityAwareness
     )
     {
-        if (ImpSettings.Player.Invisibility.Value)
+        if (Imperium.Settings.Player.Invisibility.Value)
         {
             playerBackup = Imperium.StartOfRound.allPlayerScripts;
             Imperium.StartOfRound.allPlayerScripts = Imperium.StartOfRound.allPlayerScripts
@@ -132,7 +132,7 @@ internal static class EnemyAIPatch
             __instance.eye,
             width,
             coneSize,
-            material: ImpAssets.WireframeCyanMaterial
+            material: API.Materials.WireframeCyan
         );
 
         if (proximityAwareness > 0)
@@ -141,7 +141,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeCyanMaterial
+                material: API.Materials.WireframeCyan
             );
         }
     }
@@ -153,7 +153,7 @@ internal static class EnemyAIPatch
     [HarmonyPatch("CheckLineOfSightForPlayer")]
     private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance)
     {
-        if (ImpSettings.Player.Invisibility.Value)
+        if (Imperium.Settings.Player.Invisibility.Value)
         {
             Imperium.StartOfRound.allPlayerScripts = playerBackup;
         }
@@ -166,7 +166,7 @@ internal static class EnemyAIPatch
         float proximityAwareness, Transform overrideEye
     )
     {
-        if ((!__instance.isOutside && objectPosition.y > -80f) || objectPosition.y < -100f)
+        if (!__instance.isOutside && objectPosition.y > -80f || objectPosition.y < -100f)
         {
             return;
         }
@@ -176,7 +176,7 @@ internal static class EnemyAIPatch
             overrideEye ? overrideEye : __instance.eye,
             width,
             range,
-            material: ImpAssets.WireframeYellowMaterial
+            material: API.Materials.WireframeYellow
         );
 
         if (proximityAwareness > 0)
@@ -185,7 +185,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeYellowMaterial
+                material: API.Materials.WireframeYellow
             );
         }
     }
@@ -199,7 +199,7 @@ internal static class EnemyAIPatch
         EnemyAI __instance, float width, int range, int proximityAwareness
     )
     {
-        if (ImpSettings.Player.Invisibility.Value)
+        if (Imperium.Settings.Player.Invisibility.Value)
         {
             playerBackup = Imperium.StartOfRound.allPlayerScripts;
             Imperium.StartOfRound.allPlayerScripts = Imperium.StartOfRound.allPlayerScripts
@@ -220,7 +220,7 @@ internal static class EnemyAIPatch
             null,
             width,
             coneSize,
-            material: ImpAssets.WireframeAmaranthMaterial
+            material: API.Materials.WireframeAmaranth
         );
 
         if (proximityAwareness > 0)
@@ -229,7 +229,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeAmaranthMaterial
+                material: API.Materials.WireframeAmaranth
             );
         }
     }
@@ -241,7 +241,7 @@ internal static class EnemyAIPatch
     [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
     private static void CheckLineOfSightForClosestPlayerPostfixPatch(EnemyAI __instance)
     {
-        if (ImpSettings.Player.Invisibility.Value)
+        if (Imperium.Settings.Player.Invisibility.Value)
         {
             Imperium.StartOfRound.allPlayerScripts = playerBackup;
         }
@@ -251,27 +251,27 @@ internal static class EnemyAIPatch
     [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
     private static void MeetsStandardPlayerCollisionConditionsPrefix()
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
     private static void MeetsStandardPlayerCollisionConditionsPostfix()
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
-    private static void UpdatePrefixPatch()
+    private static void UpdatePrefixPatch(EnemyAI __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("Update")]
     private static void UpdatePostfixPatch()
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 }

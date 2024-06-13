@@ -24,7 +24,7 @@ public class VentTimer : MonoBehaviour
     private void Update()
     {
         var timeLeft = Math.Max(
-            (vent.spawnTime - Imperium.TimeOfDay.currentDayTime) / Imperium.GameManager.TimeSpeed.Value,
+            (vent.spawnTime - Imperium.TimeOfDay.currentDayTime) / Imperium.MoonManager.TimeSpeed.Value,
             0
         );
 

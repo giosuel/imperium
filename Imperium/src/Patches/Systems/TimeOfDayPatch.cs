@@ -15,16 +15,16 @@ public class TimeOfDayPatch
     [HarmonyPatch("MoveGlobalTime")]
     private static bool MoveGlobalTimePrefixPatch(TimeOfDay __instance)
     {
-        if (ImpSettings.Time.RealtimeClock.Value)
+        if (Imperium.Settings.Time.RealtimeClock.Value)
         {
             Imperium.HUDManager.SetClock(__instance.normalizedTimeOfDay, __instance.numberOfHours);
         }
 
-        if (Imperium.GameManager.TimeIsPaused.Value) return false;
+        if (Imperium.MoonManager.TimeIsPaused.Value) return false;
 
         var timeBefore = __instance.globalTime;
         __instance.globalTime = Mathf.Clamp(
-            timeBefore + Time.deltaTime * Imperium.GameManager.TimeSpeed.Value,
+            timeBefore + Time.deltaTime * Imperium.MoonManager.TimeSpeed.Value,
             0f, __instance.globalTimeAtEndOfDay
         );
         __instance.timeUntilDeadline -= __instance.globalTime - timeBefore;

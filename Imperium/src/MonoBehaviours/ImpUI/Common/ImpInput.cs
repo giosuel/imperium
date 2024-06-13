@@ -1,5 +1,9 @@
 #region
 
+
+
+#endregion
+
 using System.Globalization;
 using System.Linq;
 using Imperium.Types;
@@ -8,8 +12,6 @@ using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 
@@ -29,18 +31,18 @@ public abstract class ImpInput
     internal static TMP_InputField Bind(
         string path,
         Transform container,
-        ImpBinding<int> valueBinding = null,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<int> valueBinding = null,
+        IBinding<ImpTheme> theme = null,
         int min = int.MinValue,
         int max = int.MaxValue,
         bool interactableInvert = false,
-        params ImpBinding<bool>[] interactableBindings
+        params IBinding<bool>[] interactableBindings
     )
     {
         var inputObject = container.Find(path);
         if (!inputObject)
         {
-            Imperium.Log.LogInfo($"[UI] Failed to input '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogInfo($"[UI] Failed to input '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
@@ -92,12 +94,12 @@ public abstract class ImpInput
     internal static TMP_InputField Bind(
         string path,
         Transform container,
-        ImpBinding<float> valueBinding = null,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<float> valueBinding = null,
+        IBinding<ImpTheme> theme = null,
         float min = float.MinValue,
         float max = float.MaxValue,
         bool interactableInvert = false,
-        params ImpBinding<bool>[] interactableBindings
+        params IBinding<bool>[] interactableBindings
     )
     {
         var inputObject = container.Find(path);
@@ -144,10 +146,10 @@ public abstract class ImpInput
     internal static TMP_InputField Bind(
         string path,
         Transform container,
-        ImpBinding<string> valueBinding = null,
-        ImpBinding<ImpTheme> theme = null,
+        IBinding<string> valueBinding = null,
+        IBinding<ImpTheme> theme = null,
         bool interactableInvert = false,
-        params ImpBinding<bool>[] interactableBindings
+        params IBinding<bool>[] interactableBindings
     )
     {
         var inputObject = container.Find(path);
@@ -161,7 +163,7 @@ public abstract class ImpInput
             input.text = valueBinding.Value;
 
             // Set binding to default value if input value is empty
-            input.onSubmit.AddListener(valueBinding.Set);
+            input.onSubmit.AddListener(value => valueBinding.Set(value));
 
             valueBinding.onUpdate += value => input.text = value.ToString();
         }
@@ -195,7 +197,7 @@ public abstract class ImpInput
         string path,
         Transform container,
         string text,
-        ImpBinding<ImpTheme> theme = null
+        IBinding<ImpTheme> theme = null
     )
     {
         var inputObject = container.Find(path);

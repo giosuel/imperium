@@ -36,7 +36,7 @@ public class ImpNightVision : MonoBehaviour
         FarLight.enabled = Imperium.Player.nightVision.enabled;
         NearLight.enabled = Imperium.Player.nightVision.enabled;
 
-        NearLight.intensity = ImpSettings.Player.NightVision.Value * 100f;
-        FarLight.intensity = ImpSettings.Player.NightVision.Value * 1100f;
+        NearLight.intensity = Imperium.Settings.Player.NightVision.Value * 100f;
+        FarLight.intensity = Imperium.Settings.Player.NightVision.Value * 1100f;
     }
 }

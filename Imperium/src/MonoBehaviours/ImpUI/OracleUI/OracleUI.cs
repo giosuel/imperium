@@ -1,5 +1,7 @@
 #region
 
+using Imperium.API.Types;
+using Imperium.API.Types.Networking;
 using Imperium.Types;
 using Imperium.Util;
 
@@ -60,7 +62,7 @@ internal class OracleUI : SingleplexUI
     {
         if (!Imperium.IsSceneLoaded.Value)
         {
-            ImpOutput.Send(
+            Imperium.IO.Send(
                 "Nothing is spawning out here ._.",
                 title: "Oracle",
                 type: NotificationType.Required

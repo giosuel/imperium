@@ -33,9 +33,9 @@
         <MinVerTagPrefix>v</MinVerTagPrefix>
     </PropertyGroup>
 
-    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-        <Exec Command="~/.dotnet/tools/netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
-    </Target>
+<!--    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">-->
+<!--        <Exec Command="~/.dotnet/tools/netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>-->
+<!--    </Target>-->
 
     <!-- Include README and CHANGELOG in the package -->
     <ItemGroup>
@@ -58,6 +58,7 @@
 
         <PackageReference Include="ArmDot.Engine.MSBuildTasks" Version="2023.12.0"/>
         <PackageReference Include="rainbowblood.UniverseLib.Mono" Version="2.*"/>
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.*" PrivateAssets="all"/>
 
         <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false"/>
     </ItemGroup>
@@ -69,17 +70,17 @@
 
     <!-- IDE Assemblies - Easier to Find Source Code -->
     <ItemGroup Condition="$(CI) != 'true'">
-        <Reference Include="Assembly-CSharp" HintPath="..\ldeps\Assembly-CSharp.dll" Private="False" Publicize="true"/>
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="..\ldeps\Assembly-CSharp-firstpass.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.Netcode.Runtime" HintPath="..\ldeps\Unity.Netcode.Runtime.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.InputSystem" HintPath="..\ldeps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.TextMeshPro" HintPath="..\ldeps\Unity.TextMeshPro.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.Services.Core.Networking" HintPath="..\ldeps\Unity.Services.Core.Networking.dll" Private="False" Publicize="true"/>
-        <Reference Include="UnityEngine" HintPath="..\ldeps\UnityEngine.dll" Private="False" Publicize="true"/>
-        <Reference Include="UnityEngine.UI" HintPath="..\ldeps\UnityEngine.UI.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.InputSystem" HintPath="..\ldeps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="..\ldeps\Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="..\ldeps\Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Assembly-CSharp" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Assembly-CSharp.dll" Private="False" Publicize="true"/>
+        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Assembly-CSharp-firstpass.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.Netcode.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.Netcode.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.InputSystem" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.InputSystem.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.TextMeshPro" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.TextMeshPro.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.Services.Core.Networking" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.Services.Core.Networking.dll" Private="False" Publicize="true"/>
+        <Reference Include="UnityEngine" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/UnityEngine.dll" Private="False" Publicize="true"/>
+        <Reference Include="UnityEngine.UI" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/UnityEngine.UI.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.InputSystem" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.InputSystem.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true"/>
     </ItemGroup>
 
     <ItemGroup>

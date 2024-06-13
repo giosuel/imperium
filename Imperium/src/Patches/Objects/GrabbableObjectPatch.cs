@@ -15,7 +15,7 @@ internal static class GrabbableObjectPatch
     [HarmonyPatch("Update")]
     private static void UpdatePatch(GrabbableObject __instance)
     {
-        if (ImpSettings.Player.InfiniteBattery.Value) __instance.insertedBattery.charge = 1;
+        if (Imperium.Settings.Player.InfiniteBattery.Value) __instance.insertedBattery.charge = 1;
     }
 
     [HarmonyPostfix]

@@ -19,7 +19,7 @@ public static class BaboonHawkPatch
             __instance,
             __instance.eye,
             40f * 2,
-            material: ImpAssets.WireframePurpleMaterial,
+            material: API.Materials.WireframePurple,
             relativepositionOverride: () => Vector3.forward * 38f + Vector3.up * 8f,
             absolutePositionOverride: eye => eye.position + eye.forward * 38f + eye.up * 8f
         );
@@ -29,7 +29,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             180,
             10,
-            material: ImpAssets.WireframeCyanMaterial
+            material: API.Materials.WireframeCyan
         );
 
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
@@ -37,7 +37,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             160,
             16,
-            material: ImpAssets.WireframeAmaranthMaterial
+            material: API.Materials.WireframeAmaranth
         );
 
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
@@ -45,7 +45,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             60,
             20,
-            material: ImpAssets.WireframeYellowMaterial
+            material: API.Materials.WireframeYellow
         );
     }
 }

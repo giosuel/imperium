@@ -64,7 +64,7 @@ public record OracleState
             output.Add($"   Next Cycle: {nextCycle}");
         }
 
-        if (ImpSettings.Preferences.OracleLogging.Value) ImpOutput.LogBlock(output, title: "Oracle Prediction Report");
+        if (Imperium.Settings.Preferences.OracleLogging.Value) Imperium.IO.LogBlock(output, title: "Oracle Prediction Report");
     }
 
     private static IEnumerable<string> BuildReportLog(

@@ -1,5 +1,6 @@
 #region
 
+using Imperium.API.Types;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -11,8 +12,8 @@ namespace Imperium.Visualizers;
 
 internal class NavMeshVisualizer(
     ImpBinding<bool> isLoadedBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<bool, Component>(isLoadedBinding, visibleBinding: visibleBinding)
+    ImpBinding<bool> visibilityBinding
+) : BaseVisualizer<bool, Component>(isLoadedBinding, visibilityBinding: visibilityBinding)
 {
     protected override void OnRefresh(bool isSceneLoaded)
     {
@@ -23,7 +24,7 @@ internal class NavMeshVisualizer(
         {
             var navmeshVisualizer = new GameObject($"ImpVis_NavMeshSurface_{index}");
             var navmeshRenderer = navmeshVisualizer.AddComponent<MeshRenderer>();
-            navmeshRenderer.material = ImpAssets.WireframeNavMeshMaterial;
+            navmeshRenderer.material = API.Materials.WireframeNavMesh;
             var navmeshFilter = navmeshVisualizer.AddComponent<MeshFilter>();
             navmeshFilter.mesh = navmeshSurface;
 

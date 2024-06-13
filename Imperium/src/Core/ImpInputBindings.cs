@@ -54,12 +54,13 @@ public class ImpInputBindings
         FreecamMap.AddAction("ArrowLeft", binding: "<Keyboard>/leftArrow");
         FreecamMap.AddAction("ArrowRight", binding: "<Keyboard>/rightArrow");
 
-        BaseMap["Flying"].performed += interaction =>
+        BaseMap["Flying"].performed += _ =>
         {
-            if (ImpSettings.Player.EnableFlying.Value
+            if (Imperium.Settings.Player.EnableFlying.Value
                 && !Imperium.Player.quickMenuManager.isMenuOpen
                 && !Imperium.Player.inTerminalMenu
                 && !Imperium.Player.isTypingChat
+                && !Imperium.Freecam.IsFreecamEnabled.Value
                 && !Imperium.PlayerManager.FlyIsAscending
                 && !Imperium.PlayerManager.FlyIsDescending)
             {
@@ -74,24 +75,6 @@ public class ImpInputBindings
                 {
                     SpaceDoubleClickTimer = Time.realtimeSinceStartup;
                 }
-
-
-                // if (Time.realtimeSinceStartup - SpaceDoubleClickTimerChanged > 1f
-                //     && Time.realtimeSinceStartup - SpaceDoubleClickTimer < 7f / 11f)
-                // {
-                //     SpaceDoubleClickTimerChanged = Time.realtimeSinceStartup;
-                //     Imperium.PlayerManager.IsFlying.Toggle();
-                // }
-                // Imperium.PlayerManager.IsFlying.Toggle();
-                //
-                // Imperium.Map.SetCameraClipped(!Imperium.PlayerManager.IsFlying.Value);
-
-                // if (tap.tapCount == 2)
-                // {
-                //     SpaceDoubleClickTimerChanged = Time.realtimeSinceStartup;
-                //     Imperium.PlayerManager.IsFlying.Toggle();
-                //     //SpaceDoubleClickTimer = Time.realtimeSinceStartup;
-                // }
             }
         };
 

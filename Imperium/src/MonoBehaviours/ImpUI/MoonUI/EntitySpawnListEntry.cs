@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Imperium.Core;
+using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -36,13 +37,11 @@ public class EntitySpawnListEntry : MonoBehaviour
         Rarity = new ImpBinding<int>(
             entity.rarity,
             GetOriginalRarity(),
-            OnUpdateRarity,
-            _ => ImpNetSpawning.Instance.OnSpawningChangedServerRpc()
+            onUpdate: OnUpdateRarity
         );
         IsSpawning = new ImpBinding<bool>(
             entity.rarity > 0,
-            OnUpdateIsSpawning,
-            _ => ImpNetSpawning.Instance.OnSpawningChangedServerRpc()
+            onUpdate: OnUpdateIsSpawning
         );
 
         var content = transform;
@@ -67,7 +66,7 @@ public class EntitySpawnListEntry : MonoBehaviour
         onExclusive?.Invoke();
         Rarity.Set(100, true);
 
-        ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
+        // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
 
     private void OnUpdateRarity(int value) => entity.rarity = value;
@@ -88,11 +87,11 @@ public class EntitySpawnListEntry : MonoBehaviour
         entityListListType switch
         {
             EntityListType.IndoorEntity =>
-                MoonManager.Current.OriginalMoonData.IndoorEntityRarities.GetValueOrDefault(entity.enemyType),
+                MoonContainer.Current.OriginalMoonData.IndoorEntityRarities.GetValueOrDefault(entity.enemyType),
             EntityListType.OutdoorEntity =>
-                MoonManager.Current.OriginalMoonData.OutdoorEntityRarities.GetValueOrDefault(entity.enemyType),
+                MoonContainer.Current.OriginalMoonData.OutdoorEntityRarities.GetValueOrDefault(entity.enemyType),
             EntityListType.DaytimeEntity =>
-                MoonManager.Current.OriginalMoonData.DaytimeEntityRarities.GetValueOrDefault(entity.enemyType),
+                MoonContainer.Current.OriginalMoonData.DaytimeEntityRarities.GetValueOrDefault(entity.enemyType),
             _ => throw new ArgumentOutOfRangeException()
         };
 
