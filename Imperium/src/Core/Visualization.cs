@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using Imperium.API;
 using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
 using Imperium.Types;
@@ -48,7 +49,7 @@ internal class Visualization
 
     internal readonly ObjectInsights ObjectInsights;
 
-    private static Material DefaultMaterial => API.Materials.WireframeCyan;
+    private static Material DefaultMaterial => Materials.WireframeCyan;
 
     internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager, ConfigFile config)
     {

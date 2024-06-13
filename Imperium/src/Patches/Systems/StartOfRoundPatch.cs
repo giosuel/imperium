@@ -2,12 +2,8 @@
 
 using System.Collections.Generic;
 using HarmonyLib;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
-using Imperium.Core;
-using Imperium.Netcode;
 using Imperium.Util;
-using Unity.Netcode;
 using UnityEngine;
 
 #endregion

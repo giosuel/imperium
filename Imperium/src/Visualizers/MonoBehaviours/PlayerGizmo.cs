@@ -2,6 +2,7 @@
 
 using BepInEx.Configuration;
 using GameNetcodeStuff;
+using Imperium.API;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -23,7 +24,7 @@ public class PlayerGizmo : MonoBehaviour
         playerController = player;
 
         noiseRangeSphere = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Sphere, player.transform, API.Materials.WireframeRed
+            PrimitiveType.Sphere, player.transform, Materials.WireframeRed
         );
     }
 

@@ -1,7 +1,6 @@
 #region
 
 using Imperium.API.Types;
-using Imperium.Core;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;

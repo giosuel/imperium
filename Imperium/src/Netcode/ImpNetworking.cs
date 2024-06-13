@@ -1,14 +1,16 @@
+#region
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
-using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using LethalNetworkAPI;
 using Unity.Netcode;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Netcode;
 

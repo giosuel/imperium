@@ -2,7 +2,6 @@
 
 using System.Linq;
 using Imperium.Core;
-using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;

@@ -1,9 +1,7 @@
 ﻿#region
 
-using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
@@ -94,22 +92,22 @@ public class Imperium : BaseUnityPlugin
     internal static ImpInterfaceManager Interface;
 
     /// <summary>
-    /// Set to true, then Imperium is initally loaded by BepInEx.
+    ///     Set to true, then Imperium is initally loaded by BepInEx.
     /// </summary>
     internal static bool IsImperiumReady;
 
     /// <summary>
-    /// Set to true, then Imperium is launched and ready be used and serve API calls.
+    ///     Set to true, then Imperium is launched and ready be used and serve API calls.
     /// </summary>
     internal static bool IsImperiumLaunched;
 
     /// <summary>
-    /// Set to true, when Imperium access is first granted. Always set to true the host.
+    ///     Set to true, when Imperium access is first granted. Always set to true the host.
     /// </summary>
     internal static bool WasImperiumAccessGranted;
 
     /// <summary>
-    /// Binding that updates whenever the scene ship lands and takes off.
+    ///     Binding that updates whenever the scene ship lands and takes off.
     /// </summary>
     internal static ImpBinaryBinding IsSceneLoaded;
 
@@ -293,7 +291,7 @@ public class Imperium : BaseUnityPlugin
 
         Interface.StartListening();
 
-        ImpThemeManager.BindTheme(Imperium.Settings.Preferences.Theme, Theme);
+        ImpThemeManager.BindTheme(Settings.Preferences.Theme, Theme);
 
         IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
     }

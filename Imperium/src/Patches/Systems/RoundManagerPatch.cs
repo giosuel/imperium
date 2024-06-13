@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using Imperium.Core;
-using Imperium.Core.Lifecycle;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers;

@@ -2,9 +2,7 @@
 
 using System;
 using System.Linq;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
-using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;

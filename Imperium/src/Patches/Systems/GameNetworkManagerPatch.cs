@@ -2,7 +2,6 @@
 
 using HarmonyLib;
 using Imperium.Netcode;
-using Imperium.Util;
 using Unity.Netcode;
 
 #endregion

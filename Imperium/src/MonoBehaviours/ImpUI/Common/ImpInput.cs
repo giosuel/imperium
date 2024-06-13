@@ -1,8 +1,8 @@
 #region
 
-
-
 #endregion
+
+#region
 
 using System.Globalization;
 using System.Linq;
@@ -12,6 +12,8 @@ using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 

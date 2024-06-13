@@ -28,7 +28,7 @@ public abstract class BaseVisualizer<T, R> where R : Component
     }
 
     /// <summary>
-    /// Called when the visibility binding is updated.
+    ///     Called when the visibility binding is updated.
     /// </summary>
     private void OnVisibilityUpdate(bool isVisible)
     {
@@ -36,7 +36,7 @@ public abstract class BaseVisualizer<T, R> where R : Component
     }
 
     /// <summary>
-    /// Called when the objects binding is updated.
+    ///     Called when the objects binding is updated.
     /// </summary>
     /// <param name="objects"></param>
     protected virtual void OnRefresh(T objects)
@@ -44,7 +44,7 @@ public abstract class BaseVisualizer<T, R> where R : Component
     }
 
     /// <summary>
-    /// Internal function to clear all the current visualizer objects.
+    ///     Internal function to clear all the current visualizer objects.
     /// </summary>
     protected void ClearObjects()
     {

@@ -62,7 +62,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
 
     public InsightDefinition<T> SetConfigKey(string configKey)
     {
-        VisibilityBinding = new ImpConfig<bool>(config,"Visualization.Insights", configKey, false);
+        VisibilityBinding = new ImpConfig<bool>(config, "Visualization.Insights", configKey, false);
 
         // Register possibly new binding in visibility binding list
         insightVisibilityBindings.Value[typeof(T)] = VisibilityBinding;

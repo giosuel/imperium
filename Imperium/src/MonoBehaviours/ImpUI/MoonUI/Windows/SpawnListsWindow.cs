@@ -3,9 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Core;
-using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.Netcode;
 using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
@@ -237,8 +235,8 @@ internal class SpawnListsWindow : BaseWindow
             if (scrapSpawnEntries.TryGetValue(scrap, out var existingEntry))
             {
                 // Skip syncing for every entry, sync once at the end
-                existingEntry.Rarity.Set(scrapObject.rarity, true);
-                existingEntry.IsSpawning.Set(isSpawning, true);
+                existingEntry.Rarity.Set(scrapObject.rarity);
+                existingEntry.IsSpawning.Set(isSpawning);
             }
             else
             {

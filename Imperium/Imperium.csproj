@@ -33,10 +33,6 @@
         <MinVerTagPrefix>v</MinVerTagPrefix>
     </PropertyGroup>
 
-<!--    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">-->
-<!--        <Exec Command="~/.dotnet/tools/netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>-->
-<!--    </Target>-->
-
     <!-- Include README and CHANGELOG in the package -->
     <ItemGroup>
         <None Include="$(ProjectDir)../README.md" Pack="true" PackagePath="/"/>

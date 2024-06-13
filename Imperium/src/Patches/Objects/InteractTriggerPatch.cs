@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.Core;
 
 #endregion
 

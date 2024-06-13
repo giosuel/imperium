@@ -3,11 +3,7 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
-using Imperium.Core;
-using Imperium.Netcode;
-using Imperium.Util;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 

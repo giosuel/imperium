@@ -224,9 +224,11 @@ internal class ControlCenterWindow : BaseWindow
     {
         ImpToggle.Bind("Right/PlayerSettings/GodMode", content, Imperium.Settings.Player.GodMode, themeBinding);
         ImpToggle.Bind("Right/PlayerSettings/Muted", content, Imperium.Settings.Player.Muted, themeBinding);
-        ImpToggle.Bind("Right/PlayerSettings/InfiniteSprint", content, Imperium.Settings.Player.InfiniteSprint, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/InfiniteSprint", content, Imperium.Settings.Player.InfiniteSprint,
+            themeBinding);
         ImpToggle.Bind("Right/PlayerSettings/Invisibility", content, Imperium.Settings.Player.Invisibility, themeBinding);
-        ImpToggle.Bind("Right/PlayerSettings/DisableLocking", content, Imperium.Settings.Player.DisableLocking, themeBinding);
+        ImpToggle.Bind("Right/PlayerSettings/DisableLocking", content, Imperium.Settings.Player.DisableLocking,
+            themeBinding);
         ImpToggle.Bind(
             "Right/PlayerSettings/InfiniteBattery",
             content,

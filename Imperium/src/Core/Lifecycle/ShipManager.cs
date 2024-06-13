@@ -1,6 +1,10 @@
+#region
+
 using Imperium.Netcode;
 using Imperium.Patches.Systems;
 using Imperium.Util.Binding;
+
+#endregion
 
 namespace Imperium.Core;
 
@@ -53,6 +57,5 @@ public class ShipManager : ImpLifecycleObject
     public ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
     {
-
     }
 }

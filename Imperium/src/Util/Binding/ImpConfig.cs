@@ -2,16 +2,15 @@
 
 using System;
 using BepInEx.Configuration;
-using Imperium.Core;
 
 #endregion
 
 namespace Imperium.Util.Binding;
 
 /// <summary>
-/// Imperium configuration that is linked to a BepInEx config file.
-/// It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
-/// e.g. PlayerManager.UpdateCameras()
+///     Imperium configuration that is linked to a BepInEx config file.
+///     It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
+///     e.g. PlayerManager.UpdateCameras()
 /// </summary>
 public sealed class ImpConfig<T> : ImpBinding<T>
 {

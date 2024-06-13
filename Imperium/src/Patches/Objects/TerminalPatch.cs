@@ -2,7 +2,6 @@
 
 using System.Linq;
 using HarmonyLib;
-using Imperium.Core;
 using TMPro;
 using UnityEngine;
 

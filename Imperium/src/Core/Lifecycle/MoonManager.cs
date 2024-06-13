@@ -1,7 +1,6 @@
 #region
 
 using System.Linq;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -28,7 +27,6 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> IndoorSpawningPaused = new(
         "IndoorSpawningPaused",
-        false,
         onUpdateClient: value =>
         {
             Imperium.IO.Send(
@@ -40,7 +38,6 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> OutdoorSpawningPaused = new(
         "OutdoorSpawningPaused",
-        false,
         onUpdateClient: value =>
         {
             Imperium.IO.Send(
@@ -52,7 +49,6 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> DaytimeSpawningPaused = new(
         "DaytimeSpawningPaused",
-        false,
         onUpdateClient: value =>
         {
             Imperium.IO.Send(
@@ -63,8 +59,7 @@ internal class MoonManager : ImpLifecycleObject
     );
 
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
-        "TimeIsPaused",
-        false
+        "TimeIsPaused"
     );
 
     internal readonly ImpNetworkBinding<float> TimeSpeed = new(

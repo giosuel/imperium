@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.API;
 using Imperium.Core;
 using Imperium.Util;
 using UnityEngine;
@@ -43,7 +44,7 @@ public class ShotgunGizmo : MonoBehaviour
         for (var i = 0; i < ImpConstants.ShotgunCollisionCount; i++)
         {
             spheres[i] = ImpGeometry.CreatePrimitive(
-                PrimitiveType.Sphere, transform, API.Materials.WireframePurple, 10
+                PrimitiveType.Sphere, transform, Materials.WireframePurple, 10
             );
 
             collisionSpheres[i] = ImpGeometry.CreatePrimitive(
@@ -86,19 +87,19 @@ public class ShotgunGizmo : MonoBehaviour
 
     private Mesh ScaleMiddlePart(Mesh mesh, float finalHeight, float capsuleRadius)
     {
-        Vector3[] vertices = mesh.vertices;
+        var vertices = mesh.vertices;
 
         // Calculate the height of the hemispheres
-        float hemisphereHeight = capsuleRadius;
-        float originalHeight = CalculateOriginalHeight(vertices);
-        float originalMiddleHeight = originalHeight - 2 * hemisphereHeight;
+        var hemisphereHeight = capsuleRadius;
+        var originalHeight = CalculateOriginalHeight(vertices);
+        var originalMiddleHeight = originalHeight - 2 * hemisphereHeight;
 
         // Calculate the new middle height and scale factor
-        float newMiddleHeight = finalHeight - 2 * hemisphereHeight;
-        float scaleFactor = newMiddleHeight / originalMiddleHeight;
+        var newMiddleHeight = finalHeight - 2 * hemisphereHeight;
+        var scaleFactor = newMiddleHeight / originalMiddleHeight;
 
         // Adjust vertices: stretch middle section and move top hemisphere
-        for (int i = 0; i < vertices.Length; i++)
+        for (var i = 0; i < vertices.Length; i++)
         {
             if (vertices[i].y > -hemisphereHeight && vertices[i].y < hemisphereHeight)
             {
@@ -134,6 +135,7 @@ public class ShotgunGizmo : MonoBehaviour
             {
                 minY = vertex.y;
             }
+
             if (vertex.y > maxY)
             {
                 maxY = vertex.y;

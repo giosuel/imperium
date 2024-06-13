@@ -1,8 +1,10 @@
+#region
+
 using System;
 using LethalNetworkAPI;
 using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
+
+#endregion
 
 namespace Imperium.Netcode;
 
@@ -46,4 +48,3 @@ public class ImpNetMessage<T>
 
     internal void DispatchToClients(T data, params ulong[] clientIds) => serverMessage.SendClients(data, clientIds);
 }
-

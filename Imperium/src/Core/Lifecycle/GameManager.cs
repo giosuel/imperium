@@ -1,7 +1,5 @@
 #region
 
-using System.Collections.Generic;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -64,7 +62,6 @@ internal class GameManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> DisableQuota = new(
         "DisableQuota",
-        false,
         onUpdateClient: value =>
         {
             if (value) Imperium.TimeOfDay.timeUntilDeadline = Imperium.TimeOfDay.totalTime * 3f;

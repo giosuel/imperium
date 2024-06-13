@@ -1,4 +1,8 @@
+#region
+
 using Imperium.API.Types.Networking;
+
+#endregion
 
 namespace Imperium.API;
 

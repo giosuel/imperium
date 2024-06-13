@@ -1,4 +1,8 @@
+#region
+
 using BepInEx.Configuration;
+
+#endregion
 
 namespace Imperium.Core;
 

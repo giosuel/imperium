@@ -1,6 +1,10 @@
 // ReSharper disable Unity.RedundantAttributeOnTarget
-using System;
+
+#region
+
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.API.Types.Networking;
 

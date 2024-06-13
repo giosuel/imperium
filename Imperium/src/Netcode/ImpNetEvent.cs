@@ -1,6 +1,10 @@
+#region
+
 using System;
 using LethalNetworkAPI;
 using Unity.Netcode;
+
+#endregion
 
 namespace Imperium.Netcode;
 

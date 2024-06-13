@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using GameNetcodeStuff;
-using Imperium.API.Types;
 using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;

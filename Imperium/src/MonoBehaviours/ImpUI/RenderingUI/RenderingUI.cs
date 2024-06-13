@@ -1,6 +1,5 @@
 #region
 
-using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Util;
 
@@ -36,14 +35,16 @@ internal class RenderingUI : SingleplexUI
         ImpToggle.Bind("FrameSettings/SSS", content, Imperium.Settings.Rendering.SSS, theme);
         ImpToggle.Bind("FrameSettings/VolumeReprojection", content, Imperium.Settings.Rendering.VolumeReprojection, theme);
         ImpToggle.Bind("FrameSettings/TransparentPrepass", content, Imperium.Settings.Rendering.TransparentPrepass, theme);
-        ImpToggle.Bind("FrameSettings/TransparentPostpass", content, Imperium.Settings.Rendering.TransparentPostpass, theme);
+        ImpToggle.Bind("FrameSettings/TransparentPostpass", content, Imperium.Settings.Rendering.TransparentPostpass,
+            theme);
         ImpToggle.Bind("PostProcessing/CELToggle", content, Imperium.Settings.Rendering.CelShading, theme);
         ImpToggle.Bind("PlayerOverlays/StarsToggle", content, Imperium.Settings.Rendering.StarsOverlay, theme);
         ImpToggle.Bind("PlayerOverlays/HUDVisorToggle", content, Imperium.Settings.Rendering.HUDVisor, theme);
         ImpToggle.Bind("PlayerOverlays/HUDToggle", content, Imperium.Settings.Rendering.PlayerHUD, theme);
         ImpToggle.Bind("PlayerFilters/FearFilterToggle", content, Imperium.Settings.Rendering.FearFilter, theme);
         ImpToggle.Bind("PlayerFilters/FlashbangFilterToggle", content, Imperium.Settings.Rendering.FlashbangFilter, theme);
-        ImpToggle.Bind("PlayerFilters/UnderwaterFilterToggle", content, Imperium.Settings.Rendering.UnderwaterFilter, theme);
+        ImpToggle.Bind("PlayerFilters/UnderwaterFilterToggle", content, Imperium.Settings.Rendering.UnderwaterFilter,
+            theme);
         ImpToggle.Bind("PlayerFilters/DrunknessFilterToggle", content, Imperium.Settings.Rendering.DrunknessFilter, theme);
         ImpToggle.Bind("PlayerFilters/ScanSphereToggle", content, Imperium.Settings.Rendering.ScanSphere, theme);
     }

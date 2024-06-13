@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.Core.Lifecycle;
 using Imperium.Types;
-using Imperium.Util;
-using UnityEngine.AI;
 
 #endregion
 

@@ -200,6 +200,7 @@ internal class ObjectExplorerWindow : BaseWindow
                     Destroy(entry.Value.gameObject);
                     return false;
                 }
+
                 return true;
             })
             .ToDictionary(entry => entry.Key, entry => entry.Value);

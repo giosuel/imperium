@@ -1,9 +1,13 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using Imperium.API.Types.Networking;
 using Imperium.Util.Binding;
 using LethalNetworkAPI;
 using Unity.Netcode;
+
+#endregion
 
 namespace Imperium.Netcode;
 
@@ -58,7 +62,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
         if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
         {
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
-            if(request.InvokeServerUpdate) onUpdateServer?.Invoke(request.Payload);
+            if (request.InvokeServerUpdate) onUpdateServer?.Invoke(request.Payload);
 
             serverMessage.SendAllClients(request);
         }

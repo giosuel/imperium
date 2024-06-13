@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
+using Imperium.API;
 using Imperium.Util;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class LandmineGizmo : MonoBehaviour
     private void Awake()
     {
         sphere = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Sphere, transform, API.Materials.WireframeRed, 12f
+            PrimitiveType.Sphere, transform, Materials.WireframeRed, 12f
         );
     }
 
@@ -65,7 +66,7 @@ public class LandmineGizmo : MonoBehaviour
 
                     var snapshotHitbox =
                         ImpGeometry.CreatePrimitive(
-                            PrimitiveType.Cube, transform, API.Materials.WireframeYellow
+                            PrimitiveType.Cube, transform, Materials.WireframeYellow
                         );
 
                     var player = collider.GetComponent<PlayerControllerB>();
@@ -94,7 +95,7 @@ public class LandmineGizmo : MonoBehaviour
                     {
                         var snapshotHitbox =
                             ImpGeometry.CreatePrimitive(
-                                PrimitiveType.Cube, entityColliderScript.transform, API.Materials.WireframeYellow
+                                PrimitiveType.Cube, entityColliderScript.transform, Materials.WireframeYellow
                             );
 
                         snapshotHitbox.transform.position = entityTransform.position;
@@ -109,7 +110,7 @@ public class LandmineGizmo : MonoBehaviour
                     {
                         var snapshotHitbox =
                             ImpGeometry.CreatePrimitive(
-                                PrimitiveType.Capsule, entityColliderScript.transform, API.Materials.WireframeYellow
+                                PrimitiveType.Capsule, entityColliderScript.transform, Materials.WireframeYellow
                             );
 
                         snapshotHitbox.transform.position = entityTransform.position;

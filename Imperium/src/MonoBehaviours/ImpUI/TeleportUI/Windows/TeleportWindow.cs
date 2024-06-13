@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Util.Binding;
 using TMPro;
@@ -101,9 +100,9 @@ internal class TeleportWindow : BaseWindow
             coordinateZ.Value
         ));
         var playerPosition = Imperium.Player.transform.position;
-        coordinateX.Set(playerPosition.x, true);
-        coordinateY.Set(playerPosition.y, true);
-        coordinateZ.Set(playerPosition.z, true);
+        coordinateX.Set(playerPosition.x);
+        coordinateY.Set(playerPosition.y);
+        coordinateZ.Set(playerPosition.z);
     }
 
     private void FillFireExitDropdown()

@@ -1,7 +1,6 @@
 #region
 
 using BepInEx.Bootstrap;
-using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;

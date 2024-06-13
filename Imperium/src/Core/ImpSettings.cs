@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
+using Imperium.API;
 using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
@@ -131,24 +132,21 @@ public class ImpSettings(ConfigFile config)
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> PreventLeave = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> PreventLeave = new(
             config,
             "Ship",
             "PreventLeave",
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> InstantLanding = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantLanding = new(
             config,
             "Ship",
             "InstantLanding",
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> InstantTakeoff = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantTakeoff = new(
             config,
             "Ship",
             "InstantTakeoff",
@@ -205,7 +203,7 @@ public class ImpSettings(ConfigFile config)
     internal class VisualizationSettings(ConfigFile config) : SettingBase(config)
     {
         /// <summary>
-        /// Visualization preferences
+        ///     Visualization preferences
         /// </summary>
         internal readonly ImpConfig<bool> SmoothAnimations = new(
             config,
@@ -243,7 +241,7 @@ public class ImpSettings(ConfigFile config)
         );
 
         /// <summary>
-        /// Colliders
+        ///     Colliders
         /// </summary>
         internal readonly ImpConfig<bool> Employees = new(
             config,
@@ -398,7 +396,7 @@ public class ImpSettings(ConfigFile config)
         );
 
         /// <summary>
-        /// Overlays
+        ///     Overlays
         /// </summary>
         internal readonly ImpConfig<bool> Vents = new(
             config,
@@ -408,7 +406,7 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.Visualization.Point(
                 "EnemySpawn",
                 IdentifierType.TAG,
-                material: API.Materials.Xray
+                material: Materials.Xray
             )(value)
         );
 
@@ -421,7 +419,7 @@ public class ImpSettings(ConfigFile config)
                 "AINode",
                 IdentifierType.TAG,
                 size: 0.5f,
-                material: API.Materials.FresnelWhite
+                material: Materials.FresnelWhite
             )(value)
         );
 
@@ -434,7 +432,7 @@ public class ImpSettings(ConfigFile config)
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 0.8f,
-                material: API.Materials.FresnelWhite
+                material: Materials.FresnelWhite
             )(value)
         );
 
@@ -447,7 +445,7 @@ public class ImpSettings(ConfigFile config)
                 "SpawnDenialPoint",
                 IdentifierType.TAG,
                 size: 16,
-                material: API.Materials.FresnelRed
+                material: Materials.FresnelRed
             )(value)
         );
 
@@ -460,7 +458,7 @@ public class ImpSettings(ConfigFile config)
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 20f,
-                material: API.Materials.FresnelYellow
+                material: Materials.FresnelYellow
             )(value)
         );
 
@@ -473,7 +471,7 @@ public class ImpSettings(ConfigFile config)
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 10f,
-                material: API.Materials.FresnelGreen
+                material: Materials.FresnelGreen
             )(value)
         );
 

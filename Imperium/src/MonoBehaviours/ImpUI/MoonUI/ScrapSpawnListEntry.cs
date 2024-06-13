@@ -3,9 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Imperium.Core;
-using Imperium.Core.Lifecycle;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
@@ -64,7 +62,7 @@ public class ScrapSpawnListEntry : MonoBehaviour
     private void OnExclusive()
     {
         onExclusive?.Invoke();
-        Rarity.Set(100, true);
+        Rarity.Set(100);
 
         // ImpNetSpawning.Instance.OnSpawningChangedServerRpc();
     }
@@ -75,11 +73,11 @@ public class ScrapSpawnListEntry : MonoBehaviour
     {
         if (isSpawning)
         {
-            Rarity.Reset(true);
+            Rarity.Reset();
         }
         else
         {
-            Rarity.Set(0, true);
+            Rarity.Set(0);
         }
     }
 }
