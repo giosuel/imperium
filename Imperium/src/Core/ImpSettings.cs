@@ -124,40 +124,35 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.StartOfRound.speakerAudioSource.mute = value
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> DisableAbandoned = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> DisableAbandoned = new(
             config,
             "Ship",
             "DisableAbandoned",
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> PreventLeave = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> PreventLeave = new(
             config,
             "Ship",
             "PreventLeave",
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> InstantLanding = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantLanding = new(
             config,
             "Ship",
             "InstantLanding",
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> InstantTakeoff = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantTakeoff = new(
             config,
             "Ship",
             "InstantTakeoff",
             false
         );
 
-        [ImpAttributes.HostMasterBinding]
-        internal readonly ImpConfig<bool> UnlockShop = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> UnlockShop = new(
             config,
             "Game.Terminal",
             "UnlockShop",

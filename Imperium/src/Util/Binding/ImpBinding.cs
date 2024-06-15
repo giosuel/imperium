@@ -73,7 +73,6 @@ public class ImpBinding<T> : IBinding<T>
 
     public void Clear()
     {
-
     }
 
     // public void Clear()

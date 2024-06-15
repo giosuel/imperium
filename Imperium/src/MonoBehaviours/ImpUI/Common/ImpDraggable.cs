@@ -1,5 +1,9 @@
+#region
+
 using UnityEngine;
 using UnityEngine.EventSystems;
+
+#endregion
 
 namespace Imperium.MonoBehaviours.ImpUI.Common;
 

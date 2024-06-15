@@ -30,7 +30,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
     // This optional binding provides the initial value and is changed only when the local client updates the state.
     private readonly IBinding<T> masterBinding;
 
-    private string identifier;
+    private readonly string identifier;
 
     public ImpNetworkBinding(
         string identifier,

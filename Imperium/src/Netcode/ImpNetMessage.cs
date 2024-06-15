@@ -62,6 +62,7 @@ public class ImpNetMessage<T> : IClearable
     }
 
     internal void DispatchToClients(T data, params ulong[] clientIds) => serverMessage.SendClients(data, clientIds);
+
     public void Clear()
     {
         clientMessage.ClearSubscriptions();

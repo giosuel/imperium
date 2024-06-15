@@ -41,7 +41,7 @@ public interface IBinding<T> : IResettable, IRefreshable, IClearable
     public void Set(T updatedValue, bool invokeUpdate = true);
 
     /// <summary>
-    /// Removes all the subscribers from all the events.
+    ///     Removes all the subscribers from all the events.
     /// </summary>
     public new void Clear();
 

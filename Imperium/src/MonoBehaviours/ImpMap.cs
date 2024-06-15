@@ -1,6 +1,5 @@
 #region
 
-using System.Collections.Generic;
 using Imperium.Core;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Util;

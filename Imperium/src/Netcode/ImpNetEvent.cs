@@ -18,7 +18,7 @@ public class ImpNetEvent : IClearable
     internal event Action OnClientRecive;
     internal event Action<ulong> OnClientReciveFromClient;
 
-    private string identifier;
+    private readonly string identifier;
 
     public ImpNetEvent(string identifier, ImpNetworking networking)
     {
@@ -61,6 +61,7 @@ public class ImpNetEvent : IClearable
     }
 
     internal void DispatchToClients(params ulong[] clientIds) => serverEvent.InvokeClients(clientIds);
+
     public void Clear()
     {
         clientEvent.ClearSubscriptions();
