@@ -228,7 +228,12 @@ public abstract class ImpInput
             return;
         }
 
-        var value = long.Parse(text);
+        if (!int.TryParse(text, out var value))
+        {
+            field.text = min.ToString();
+            return;
+        }
+
         if (value > max)
         {
             field.text = max.ToString();

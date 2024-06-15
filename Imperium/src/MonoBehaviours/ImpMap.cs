@@ -17,7 +17,6 @@ public class ImpMap : MonoBehaviour
 {
     internal Camera Camera { get; private set; }
     internal MinimapOverlay Minimap { get; private set; }
-    internal ImpBinding<HashSet<int>> FloorLevels { get; } = new([]);
 
     internal readonly ImpBinding<float> CameraNearClip = new(ImpConstants.DefaultMapCameraNearClip);
     internal readonly ImpBinding<float> CameraFarClip = new(ImpConstants.DefaultMapCameraFarClip);

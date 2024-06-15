@@ -16,6 +16,7 @@ public abstract class ImpAssets
     /*
      * UI Prefabs
      */
+    internal static GameObject ImperiumDockObject;
     internal static GameObject ImperiumUIObject;
     internal static GameObject TeleportUIObject;
     internal static GameObject WeatherUIObject;
@@ -74,6 +75,7 @@ public abstract class ImpAssets
         logBuffer = [];
         List<bool> loadResults =
         [
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/imperium_dock.prefab", out ImperiumDockObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/imperium_ui.prefab", out ImperiumUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/teleport_ui.prefab", out TeleportUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/weather_ui.prefab", out WeatherUIObject),

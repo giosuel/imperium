@@ -30,8 +30,11 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
     // This optional binding provides the initial value and is changed only when the local client updates the state.
     private readonly IBinding<T> masterBinding;
 
+    private string identifier;
+
     public ImpNetworkBinding(
         string identifier,
+        ImpNetworking networking,
         T currentValue = default,
         T defaultValue = default,
         Action<T> onUpdateClient = null,
@@ -39,6 +42,8 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
         IBinding<T> masterBinding = null
     )
     {
+        this.identifier = identifier;
+
         Value = currentValue;
         DefaultValue = EqualityComparer<T>.Default.Equals(defaultValue, default)
             ? defaultValue
@@ -48,17 +53,20 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
         this.onUpdateServer = onUpdateServer;
         this.masterBinding = masterBinding;
 
-        serverMessage = new LethalServerMessage<BindingUpdateRequest<T>>(identifier);
-        clientMessage = new LethalClientMessage<BindingUpdateRequest<T>>(identifier);
+        serverMessage = new LethalServerMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
+        clientMessage = new LethalClientMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
 
         serverMessage.OnReceived += OnServerReceived;
         clientMessage.OnReceived += OnClientReceived;
 
         if (masterBinding != null) Set(masterBinding.Value);
+
+        networking.RegisterSubscriber(this);
     }
 
     private void OnServerReceived(BindingUpdateRequest<T> request, ulong clientId)
     {
+        Imperium.IO.LogInfo($"Server received binding update for {identifier}");
         if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
         {
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
@@ -70,6 +78,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
 
     private void OnClientReceived(BindingUpdateRequest<T> updatedValue)
     {
+        Imperium.IO.LogInfo($"Client received binding update for {identifier}");
         Value = updatedValue.Payload;
 
         if (updatedValue.InvokeUpdate)
@@ -107,4 +116,15 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
     }
 
     public void Reset(bool invokeUpdate = true) => Set(DefaultValue, invokeUpdate);
+
+    public void Clear()
+    {
+        // onUpdate = null;
+        // onTrigger = null;
+        // onTriggerFromLocal = null;
+        // onUpdateFromLocal = null;
+
+        serverMessage.ClearSubscriptions();
+        clientMessage.ClearSubscriptions();
+    }
 }

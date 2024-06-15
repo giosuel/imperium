@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.API.Types.Networking;
+using Imperium.Netcode;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 
@@ -24,6 +25,7 @@ internal static class PlayerControllerPatch
             if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = GameNetworkManager.Instance.localPlayerController;
 
+            Imperium.Networking = new ImpNetworking(Imperium.Settings.Preferences.AllowClients);
             Imperium.Networking.RequestImperiumAccess();
         }
     }

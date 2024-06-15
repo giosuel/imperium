@@ -16,7 +16,7 @@ namespace Imperium.MonoBehaviours.ImpUI;
 /// <summary>
 ///     Basic Imperium UI. Can be used as part of an <see cref="ImpInterfaceManager" /> or as standalone UI.
 /// </summary>
-internal abstract class BaseUI : MonoBehaviour
+public abstract class BaseUI : MonoBehaviour
 {
     internal bool IsOpen { get; private set; }
 

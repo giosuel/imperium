@@ -45,6 +45,8 @@ internal abstract class BaseWindow : MonoBehaviour
         titleBox = transform.Find("TitleBox");
         if (titleBox)
         {
+            var draggable = titleBox.gameObject.AddComponent<ImpDraggable>();
+            draggable.Init(transform);
             ImpButton.Bind("Close", titleBox, CloseUI, theme: themeBinding, isIconButton: true);
             if (titleBox.Find("Arrow"))
             {

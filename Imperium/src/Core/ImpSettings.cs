@@ -28,7 +28,6 @@ public class ImpSettings(ConfigFile config)
     internal readonly TimeSettings Time = new(config);
     internal readonly ShipSettings Ship = new(config);
     internal readonly AnimationSkippingSettings AnimationSkipping = new(config);
-    internal readonly GameSettings Game = new(config);
     internal readonly VisualizationSettings Visualization = new(config);
     internal readonly RenderSettings Rendering = new(config);
     internal readonly MapSettings Map = new(config);
@@ -125,6 +124,7 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.StartOfRound.speakerAudioSource.mute = value
         );
 
+        [ImpAttributes.HostMasterBinding]
         internal readonly ImpConfig<bool> DisableAbandoned = new(
             config,
             "Ship",
@@ -132,24 +132,35 @@ public class ImpSettings(ConfigFile config)
             false
         );
 
-        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> PreventLeave = new(
+        [ImpAttributes.HostMasterBinding]
+        internal readonly ImpConfig<bool> PreventLeave = new(
             config,
             "Ship",
             "PreventLeave",
             false
         );
 
-        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantLanding = new(
+        [ImpAttributes.HostMasterBinding]
+        internal readonly ImpConfig<bool> InstantLanding = new(
             config,
             "Ship",
             "InstantLanding",
             false
         );
 
-        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantTakeoff = new(
+        [ImpAttributes.HostMasterBinding]
+        internal readonly ImpConfig<bool> InstantTakeoff = new(
             config,
             "Ship",
             "InstantTakeoff",
+            false
+        );
+
+        [ImpAttributes.HostMasterBinding]
+        internal readonly ImpConfig<bool> UnlockShop = new(
+            config,
+            "Game.Terminal",
+            "UnlockShop",
             false
         );
     }
@@ -182,21 +193,6 @@ public class ImpSettings(ConfigFile config)
             "AnimationSkipping",
             "Interact",
             false
-        );
-    }
-
-    internal class GameSettings(ConfigFile config) : SettingBase(config)
-    {
-        internal readonly ImpConfig<bool> UnlockShop = new(
-            config,
-            "Game.Terminal",
-            "UnlockShop",
-            false,
-            onUpdate: value =>
-            {
-                // Reset selection when locking shop
-                if (!value) Imperium.Terminal.RotateShipDecorSelection();
-            }
         );
     }
 
@@ -1033,7 +1029,6 @@ public class ImpSettings(ConfigFile config)
         Load(Shotgun);
         Load(Shovel);
         Load(Time);
-        Load(Game);
         Load(Ship);
         Load(AnimationSkipping);
         Load(Visualization);
@@ -1049,7 +1044,6 @@ public class ImpSettings(ConfigFile config)
         Reset(Shotgun);
         Reset(Shovel);
         Reset(Time);
-        Reset(Game);
         Reset(Ship);
         Reset(AnimationSkipping);
         Reset(Visualization);

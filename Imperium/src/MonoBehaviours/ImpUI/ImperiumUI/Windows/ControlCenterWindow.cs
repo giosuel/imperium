@@ -153,20 +153,20 @@ internal class ControlCenterWindow : BaseWindow
         ImpToggle.Bind(
             "Right/GameSettings/UnlockShop",
             content,
-            Imperium.Settings.Game.UnlockShop,
+            Imperium.ShipManager.UnlockShop,
             theme: themeBinding
         );
 
         ImpToggle.Bind(
             "Right/ShipSettings/InstantLanding",
             content,
-            Imperium.Settings.Ship.InstantLanding,
+            Imperium.ShipManager.InstantLanding,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/InstantTakeoff",
             content,
-            Imperium.Settings.Ship.InstantTakeoff,
+            Imperium.ShipManager.InstantTakeoff,
             theme: themeBinding
         );
         ImpToggle.Bind(
@@ -176,21 +176,21 @@ internal class ControlCenterWindow : BaseWindow
             theme: themeBinding
         );
         ImpToggle.Bind(
-            "Right/ShipSettings/MuteSpeaker",
-            content,
-            Imperium.Settings.Ship.MuteSpeaker,
-            theme: themeBinding
-        );
-        ImpToggle.Bind(
             "Right/ShipSettings/PreventLeave",
             content,
-            Imperium.Settings.Ship.PreventLeave,
+            Imperium.ShipManager.PreventShipLeave,
             theme: themeBinding
         );
         ImpToggle.Bind(
             "Right/ShipSettings/DisableAbandoned",
             content,
-            Imperium.Settings.Ship.DisableAbandoned,
+            Imperium.ShipManager.DisableAbandoned,
+            theme: themeBinding
+        );
+        ImpToggle.Bind(
+            "Right/ShipSettings/MuteSpeaker",
+            content,
+            Imperium.Settings.Ship.MuteSpeaker,
             theme: themeBinding
         );
 

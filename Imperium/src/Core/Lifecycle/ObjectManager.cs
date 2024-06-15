@@ -73,26 +73,29 @@ internal class ObjectManager : ImpLifecycleObject
      */
     internal readonly ImpBinding<HashSet<RandomScrapSpawn>> CurrentScrapSpawnPoints = new([]);
 
-    internal readonly ImpNetworkBinding<HashSet<ulong>> DisabledObjects = new("DisabledObjects", []);
+    internal readonly ImpNetworkBinding<HashSet<ulong>> DisabledObjects = new("DisabledObjects", Imperium.Networking, []);
 
     // Used by the server to execute a despawn request from a client via network ID
     private readonly Dictionary<ulong, GameObject> CurrentLevelObjects = [];
 
     private readonly Dictionary<string, string> displayNameMap = [];
 
-    private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity");
-    private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem");
-    private readonly ImpNetMessage<MapHazardSpawnRequest> mapHazardSpawnMessage = new("MapHazardSpawn");
-    private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve");
+    private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
+    private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem", Imperium.Networking);
+
+    private readonly ImpNetMessage<MapHazardSpawnRequest>
+        mapHazardSpawnMessage = new("MapHazardSpawn", Imperium.Networking);
+
+    private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
 
 
-    private readonly ImpNetMessage<ulong> entityDespawnMessage = new("DespawnEntity");
-    private readonly ImpNetMessage<ulong> itemDespawnMessage = new("DespawnItem");
-    private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new("DespawnObstacle");
+    private readonly ImpNetMessage<ulong> entityDespawnMessage = new("DespawnEntity", Imperium.Networking);
+    private readonly ImpNetMessage<ulong> itemDespawnMessage = new("DespawnItem", Imperium.Networking);
+    private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new("DespawnObstacle", Imperium.Networking);
 
-    private readonly ImpNetEvent entitiesChanged = new("EntitiesChanged");
-    private readonly ImpNetEvent itemsChanged = new("ItemsChanged");
-    private readonly ImpNetEvent obstaclesChanged = new("ObstaclesChanged");
+    private readonly ImpNetEvent entitiesChanged = new("EntitiesChanged", Imperium.Networking);
+    private readonly ImpNetEvent itemsChanged = new("ItemsChanged", Imperium.Networking);
+    private readonly ImpNetEvent obstaclesChanged = new("ObstaclesChanged", Imperium.Networking);
 
     internal ObjectManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)

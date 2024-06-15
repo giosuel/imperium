@@ -54,7 +54,7 @@
 
         <PackageReference Include="ArmDot.Engine.MSBuildTasks" Version="2023.12.0"/>
         <PackageReference Include="rainbowblood.UniverseLib.Mono" Version="2.*"/>
-        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="2.*" PrivateAssets="all"/>
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="3.0.0-beta.3" />
 
         <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false"/>
     </ItemGroup>

@@ -6,7 +6,7 @@ using System;
 
 namespace Imperium.Util.Binding;
 
-public interface IBinding<T> : IResettable, IRefreshable
+public interface IBinding<T> : IResettable, IRefreshable, IClearable
 {
     /// <summary>
     ///     Action that is invoked every time the binding state is updated. Provides the updated state.
@@ -41,6 +41,11 @@ public interface IBinding<T> : IResettable, IRefreshable
     public void Set(T updatedValue, bool invokeUpdate = true);
 
     /// <summary>
+    /// Removes all the subscribers from all the events.
+    /// </summary>
+    public new void Clear();
+
+    /// <summary>
     ///     Invokes the callbacks with the current state.
     /// </summary>
     public new void Refresh();
@@ -55,6 +60,11 @@ public interface IBinding<T> : IResettable, IRefreshable
 public interface IRefreshable
 {
     public void Refresh();
+}
+
+public interface IClearable
+{
+    public void Clear();
 }
 
 public interface IResettable

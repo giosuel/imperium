@@ -47,8 +47,6 @@ internal class ImpOutput(ManualLogSource logger)
         // Disable notifications if turned off or during loading of settings
         if (!NotificationSettings[type].Value || Imperium.Settings.IsLoading) return;
 
-        if (type == NotificationType.OracleUpdate) title = "Oracle";
-
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
 

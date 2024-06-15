@@ -15,7 +15,7 @@ namespace Imperium.Core.Lifecycle;
 
 internal class MoonManager : ImpLifecycleObject
 {
-    private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather");
+    private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
     internal MoonManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
@@ -27,6 +27,7 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> IndoorSpawningPaused = new(
         "IndoorSpawningPaused",
+        Imperium.Networking,
         onUpdateClient: value =>
         {
             Imperium.IO.Send(
@@ -38,6 +39,7 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> OutdoorSpawningPaused = new(
         "OutdoorSpawningPaused",
+        Imperium.Networking,
         onUpdateClient: value =>
         {
             Imperium.IO.Send(
@@ -49,6 +51,7 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> DaytimeSpawningPaused = new(
         "DaytimeSpawningPaused",
+        Imperium.Networking,
         onUpdateClient: value =>
         {
             Imperium.IO.Send(
@@ -59,58 +62,74 @@ internal class MoonManager : ImpLifecycleObject
     );
 
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
-        "TimeIsPaused"
+        "TimeIsPaused",
+        Imperium.Networking
     );
 
     internal readonly ImpNetworkBinding<float> TimeSpeed = new(
         "TimeSpeed",
+        Imperium.Networking,
         ImpConstants.DefaultTimeSpeed
     );
 
     internal readonly ImpNetworkBinding<float> MaxIndoorPower = new(
         "MaxIndoorPower",
-        Imperium.RoundManager.currentMaxInsidePower,
-        onUpdateClient: value => Imperium.RoundManager.currentMaxInsidePower = value
-    );
+        Imperium.Networking,
+        Imperium.RoundManager.currentLevel.maxEnemyPowerCount,
+        onUpdateClient: value =>
+        {
+            if (Imperium.IsSceneLoaded.Value) Imperium.RoundManager.currentLevel.maxEnemyPowerCount = (int)value;
+            Imperium.RoundManager.currentMaxInsidePower = value;
+        });
 
     internal readonly ImpNetworkBinding<float> MaxOutdoorPower = new(
         "MaxOutdoorPower",
-        Imperium.RoundManager.currentMaxOutsidePower,
-        onUpdateClient: value => Imperium.RoundManager.currentMaxOutsidePower = value
-    );
+        Imperium.Networking,
+        Imperium.RoundManager.currentLevel.maxOutsideEnemyPowerCount,
+        onUpdateClient: value =>
+        {
+            if (Imperium.IsSceneLoaded.Value) Imperium.RoundManager.currentLevel.maxOutsideEnemyPowerCount = (int)value;
+            Imperium.RoundManager.currentMaxOutsidePower = value;
+        });
 
     internal readonly ImpNetworkBinding<int> MaxDaytimePower = new(
         "MaxDaytimePower",
+        Imperium.Networking,
         Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount,
         onUpdateClient: value => Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount = value
     );
 
     internal readonly ImpNetworkBinding<float> IndoorDeviation = new(
         "IndoorDeviation",
+        Imperium.Networking,
         Imperium.RoundManager.currentLevel.spawnProbabilityRange,
         onUpdateClient: value => Imperium.RoundManager.currentLevel.spawnProbabilityRange = value
     );
 
     internal readonly ImpNetworkBinding<float> DaytimeDeviation = new(
         "DaytimeDeviation",
+        Imperium.Networking,
         Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange,
         onUpdateClient: value => Imperium.RoundManager.currentLevel.daytimeEnemiesProbabilityRange = value
     );
 
     internal readonly ImpNetworkBinding<int> MinIndoorSpawns = new(
         "MinIndoorSpawns",
+        Imperium.Networking,
         Imperium.RoundManager.minEnemiesToSpawn,
         onUpdateClient: value => Imperium.RoundManager.minEnemiesToSpawn = value
     );
 
     internal readonly ImpNetworkBinding<int> MinOutdoorSpawns = new(
         "MinOutdoorSpawns",
+        Imperium.Networking,
         Imperium.RoundManager.minOutsideEnemiesToSpawn,
         onUpdateClient: value => Imperium.RoundManager.minOutsideEnemiesToSpawn = value
     );
 
     internal readonly ImpNetworkBinding<float> WeatherVariable1 = new(
         "WeatherVariable1",
+        Imperium.Networking,
         Imperium.TimeOfDay.currentWeatherVariable,
         onUpdateClient: value =>
         {
@@ -126,6 +145,7 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<float> WeatherVariable2 = new(
         "WeatherVariable2",
+        Imperium.Networking,
         Imperium.TimeOfDay.currentWeatherVariable,
         onUpdateClient: value => Imperium.TimeOfDay.currentWeatherVariable = value
     );

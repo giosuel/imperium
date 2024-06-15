@@ -6,6 +6,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using Imperium.Integration;
 using Imperium.MonoBehaviours.ImpUI;
+using Imperium.MonoBehaviours.ImpUI.ImperiumDock;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -22,6 +23,8 @@ internal class ImpInterfaceManager : MonoBehaviour
     private readonly Dictionary<int, Type> interfaceParents = [];
     internal readonly ImpBinding<BaseUI> OpenInterface = new();
 
+    private ImperiumDock imperiumDock;
+
     private readonly InputActionMap interfaceMap = new();
     private ImpBinding<ImpTheme> theme;
 
@@ -35,8 +38,15 @@ internal class ImpInterfaceManager : MonoBehaviour
     {
         var interfaceManager = new GameObject("ImpInterface").AddComponent<ImpInterfaceManager>();
         interfaceManager.theme = theme;
+        interfaceManager.InitDock();
 
         return interfaceManager;
+    }
+
+    private void InitDock()
+    {
+        imperiumDock = Instantiate(ImpAssets.ImperiumDockObject, transform).AddComponent<ImperiumDock>();
+        imperiumDock.OnUIClose();
     }
 
     private void Update()
@@ -61,6 +71,7 @@ internal class ImpInterfaceManager : MonoBehaviour
 
         var interfaceObj = Instantiate(obj, transform).AddComponent<T>();
         interfaceObj.InitializeUI(theme, closeOnMovement, ignoreTab);
+        interfaceObj.transform.Find("Container").localScale = new Vector3(0.9f, 0.9f, 0.9f);
 
         if (parent != null) interfaceParents[interfaceObj.GetInstanceID()] = parent;
         interfaceObj.interfaceManager = this;
@@ -105,6 +116,8 @@ internal class ImpInterfaceManager : MonoBehaviour
     {
         if (!OpenInterface.Value) return;
 
+        imperiumDock.OnUIClose();
+
         OpenInterface.Value.OnUIClose();
 
         if (toggleCursorState)
@@ -133,6 +146,8 @@ internal class ImpInterfaceManager : MonoBehaviour
     {
         var controller = interfaceControllers[type];
         if (controller.IsOpen || !controller.CanOpen() || Imperium.Player.isTypingChat) return;
+
+        imperiumDock.OnUIOpen();
 
         controller.OnUIOpen();
         OpenInterface.Set(controller);

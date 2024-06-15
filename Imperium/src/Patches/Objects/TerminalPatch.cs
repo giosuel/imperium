@@ -52,7 +52,7 @@ internal static class TerminalPatch
     [HarmonyPatch("Update")]
     private static void UpdatePatch(Terminal __instance)
     {
-        if (!Imperium.Settings.Game.UnlockShop.Value) return;
+        if (!Imperium.ShipManager.UnlockShop.Value) return;
         if (__instance.ShipDecorSelection.Count == Imperium.StartOfRound.unlockablesList.unlockables.Count) return;
 
         __instance.ShipDecorSelection = Imperium.StartOfRound.unlockablesList.unlockables

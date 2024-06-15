@@ -13,42 +13,25 @@ namespace Imperium.Patches.Systems;
 [HarmonyPatch(typeof(StartOfRound))]
 public class StartOfRoundPatch
 {
-    [HarmonyPatch(typeof(StartOfRound))]
-    internal static class PreloadPatches
-    {
-        // /// <summary>
-        // ///     This is used as the entry function for Imperium
-        // /// </summary>
-        // [HarmonyPrefix]
-        // [HarmonyPatch(typeof(StartOfRound), "Awake")]
-        // private static void ConnectClientToPlayerObjectPatch(StartOfRound __instance)
-        // {
-        //     if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-        //     {
-        //         Object.Instantiate(ImpNetworkManager.NetworkPrefab).GetComponent<NetworkObject>().Spawn();
-        //     }
-        // }
-    }
-
     [HarmonyPrefix]
     [HarmonyPatch("StartGame")]
     private static void StartGamePrefixPatch(StartOfRound __instance)
     {
-        if (Imperium.Settings.Ship.InstantLanding.Value) __instance.shipAnimator.enabled = false;
+        if (Imperium.ShipManager.InstantLanding.Value) __instance.shipAnimator.enabled = false;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("ShipLeave")]
     private static void ShipLeavePrefixPatch(StartOfRound __instance)
     {
-        if (Imperium.Settings.Ship.InstantTakeoff.Value) __instance.shipAnimator.enabled = false;
+        if (Imperium.ShipManager.InstantTakeoff.Value) __instance.shipAnimator.enabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("ShipLeave")]
     private static void ShipLeavePostfixPatch(StartOfRound __instance)
     {
-        if (Imperium.Settings.Ship.InstantTakeoff.Value)
+        if (Imperium.ShipManager.InstantTakeoff.Value)
         {
             Object.FindObjectOfType<ElevatorAnimationEvents>().ElevatorFullyRunning();
         }
@@ -72,7 +55,7 @@ public class StartOfRoundPatch
     [HarmonyPatch("ShipLeaveAutomatically")]
     private static bool ShipLeaveAutomaticallyPatch(StartOfRound __instance)
     {
-        if (Imperium.Settings.Ship.PreventLeave.Value)
+        if (Imperium.ShipManager.PreventShipLeave.Value)
         {
             // We have to revert this
             __instance.allPlayersDead = false;

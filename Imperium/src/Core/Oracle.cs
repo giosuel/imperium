@@ -131,6 +131,7 @@ internal class Oracle
         {
             Imperium.IO.Send(
                 $"Spawn predictions updated due to {reason}!",
+                title: "Oracle",
                 type: NotificationType.OracleUpdate
             );
         }

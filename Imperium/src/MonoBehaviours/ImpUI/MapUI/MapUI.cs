@@ -86,12 +86,7 @@ internal class MapUI : LayerSelector.LayerSelector
             new StyleOverride("NearClip/Border", Variant.DARKER),
             // Zoom Slider
             new StyleOverride("ZoomSlider", Variant.BACKGROUND),
-            new StyleOverride("ZoomSlider/Border", Variant.DARKER),
-            // Floor Slider
-            new StyleOverride("FloorSlider", Variant.BACKGROUND),
-            new StyleOverride("FloorSlider/Border", Variant.DARKER),
-            new StyleOverride("FloorSlider/MinIcon", Variant.DARKER),
-            new StyleOverride("FloorSlider/MaxIcon", Variant.DARKER)
+            new StyleOverride("ZoomSlider/Border", Variant.DARKER)
         );
         ImpThemeManager.StyleText(
             themeUpdate,
@@ -177,12 +172,6 @@ internal class MapUI : LayerSelector.LayerSelector
         compassWest = compass.transform.Find("South");
     }
 
-    private static void OnFloorChange(int floorId)
-    {
-        if (Imperium.Map.FloorLevels.Value.Count == 0) return;
-        var floors = Imperium.Map.FloorLevels.Value.OrderBy(value => value).ToArray();
-    }
-
     private void InitSliders()
     {
         ImpSlider.Bind(
@@ -215,27 +204,6 @@ internal class MapUI : LayerSelector.LayerSelector
         );
         nearClipSlider.gameObject.SetActive(!Imperium.Settings.Map.AutoClipping.Value);
         Imperium.Settings.Map.AutoClipping.onUpdate += value => nearClipSlider.gameObject.SetActive(!value);
-
-        // Currently unused
-        var floorSlider = ImpSlider.Bind(
-            path: "FloorSlider",
-            container: container,
-            valueBinding: TargetFloor,
-            options: FloorOptions,
-            indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
-            theme: theme,
-            interactableBindings: Imperium.IsSceneLoaded
-        );
-        floorSlider.gameObject.SetActive(false);
-    }
-
-    private void GenerateFloorOptions(HashSet<int> hashSet)
-    {
-        FloorOptions.Set(
-            Imperium.Map.FloorLevels.Value
-                .Select(value => value == 0 ? "GF" : (value / 6).ToString())
-                .ToList()
-        );
     }
 
     private void InitMapSettings()

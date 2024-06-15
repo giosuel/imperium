@@ -155,8 +155,8 @@ internal class MinimapOverlay : SingleplexUI
         }
 
         // Automatically open this UI when nothing else is open
-        if ((Imperium.Player.quickMenuManager.isMenuOpen &&
-             !Imperium.Interface.Get<MinimapSettings.MinimapSettings>().IsOpen)
+        if (Imperium.Player.quickMenuManager.isMenuOpen &&
+            !Imperium.Interface.Get<MinimapSettings.MinimapSettings>().IsOpen
             || !Imperium.Settings.Map.MinimapEnabled.Value
             || Imperium.Freecam.IsFreecamEnabled.Value)
         {

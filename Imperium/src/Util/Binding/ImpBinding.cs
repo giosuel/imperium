@@ -70,4 +70,33 @@ public class ImpBinding<T> : IBinding<T>
             }
         }
     }
+
+    public void Clear()
+    {
+
+    }
+
+    // public void Clear()
+    // {
+    //     var onUpdateList = onUpdate?.GetInvocationList();
+    //     if (onUpdateList != null)
+    //     {
+    //         foreach (var callback in onUpdateList)
+    //         {
+    //             onUpdate -= (Action<T>)callback;
+    //         }
+    //     }
+    //
+    //     var onTriggerList = onUpdate?.GetInvocationList();
+    //     if (onTriggerList != null)
+    //     {
+    //         foreach (var callback in onTriggerList)
+    //         {
+    //             onUpdate -= (Action<T>)callback;
+    //         }
+    //     }
+    //     onTrigger = null;
+    //     onTriggerFromLocal = null;
+    //     onUpdateFromLocal = null;
+    // }
 }

@@ -4,7 +4,9 @@ using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UI;
+using Debugging = Imperium.Util.Debugging;
 
 #endregion
 

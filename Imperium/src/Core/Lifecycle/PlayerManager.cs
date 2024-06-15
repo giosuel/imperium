@@ -20,10 +20,13 @@ internal class PlayerManager : ImpLifecycleObject
 {
     internal readonly ImpBinaryBinding IsFlying = new(false);
 
-    private readonly ImpNetMessage<ulong> killPlayerMessage = new("KillPlayer");
-    private readonly ImpNetMessage<ulong> revivePlayerMessage = new("RevivePlayer");
-    private readonly ImpNetMessage<TeleportPlayerRequest> teleportPlayerMessage = new("TeleportPlayer");
-    private readonly ImpNetMessage<DropItemRequest> dropItemMessage = new("Dropitem");
+    private readonly ImpNetMessage<ulong> killPlayerMessage = new("KillPlayer", Imperium.Networking);
+    private readonly ImpNetMessage<ulong> revivePlayerMessage = new("RevivePlayer", Imperium.Networking);
+    private readonly ImpNetMessage<DropItemRequest> dropItemMessage = new("Dropitem", Imperium.Networking);
+
+    private readonly ImpNetMessage<TeleportPlayerRequest> teleportPlayerMessage = new(
+        "TeleportPlayer", Imperium.Networking
+    );
 
     private static readonly Dictionary<int, Vector2> CameraOriginalResolutions = [];
 

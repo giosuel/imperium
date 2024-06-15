@@ -13,7 +13,7 @@ namespace Imperium.Core.Lifecycle;
 
 internal class GameManager : ImpLifecycleObject
 {
-    internal readonly ImpNetEvent FulfillQuotaEvent = new("FulfillQuota");
+    internal readonly ImpNetEvent FulfillQuotaEvent = new("FulfillQuota", Imperium.Networking);
 
     internal GameManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
@@ -25,12 +25,14 @@ internal class GameManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<int> GroupCredits = new(
         "GroupCredits",
+        Imperium.Networking,
         Imperium.Terminal.groupCredits,
         onUpdateClient: value => Imperium.Terminal.groupCredits = value
     );
 
     internal readonly ImpNetworkBinding<int> ProfitQuota = new(
         "ProfitQuota",
+        Imperium.Networking,
         Imperium.TimeOfDay.profitQuota,
         Imperium.TimeOfDay.quotaVariables.startingQuota,
         onUpdateClient: value => Imperium.TimeOfDay.profitQuota = value,
@@ -44,6 +46,7 @@ internal class GameManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<int> QuotaDeadline = new(
         "QuotaDeadline",
+        Imperium.Networking,
         Imperium.TimeOfDay.daysUntilDeadline,
         onUpdateClient: value =>
         {
@@ -62,6 +65,7 @@ internal class GameManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> DisableQuota = new(
         "DisableQuota",
+        Imperium.Networking,
         onUpdateClient: value =>
         {
             if (value) Imperium.TimeOfDay.timeUntilDeadline = Imperium.TimeOfDay.totalTime * 3f;
