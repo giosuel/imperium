@@ -1,6 +1,7 @@
 #region
 
 using Imperium.Core;
+using Imperium.Interface.MapUI;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -20,7 +21,7 @@ public class ImpMap : MonoBehaviour
     internal readonly ImpBinding<float> CameraNearClip = new(ImpConstants.DefaultMapCameraNearClip);
     internal readonly ImpBinding<float> CameraFarClip = new(ImpConstants.DefaultMapCameraFarClip);
 
-    internal static ImpMap Create() => new GameObject("ImpMap").AddComponent<ImpMap>();
+    internal static ImpMap Create() => new GameObject("Imp_MapManager").AddComponent<ImpMap>();
 
     private void Awake()
     {
@@ -63,7 +64,7 @@ public class ImpMap : MonoBehaviour
         Imperium.IngamePlayerSettings.playerInput.actions.FindAction("SwitchItem").performed += OnMouseScroll;
 
         Minimap = Instantiate(ImpAssets.MinimapOverlayObject).AddComponent<MinimapOverlay>();
-        Minimap.InitializeUI(Imperium.Theme, false);
+        Minimap.InitUI(Imperium.Theme);
         Minimap.onOpen += OnMinimapOpen;
         Minimap.onClose += OnMinimapClose;
     }

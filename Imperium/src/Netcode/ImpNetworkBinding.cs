@@ -11,7 +11,7 @@ using Unity.Netcode;
 
 namespace Imperium.Netcode;
 
-public sealed class ImpNetworkBinding<T> : IBinding<T>
+public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
 {
     public event Action<T> onUpdate;
     public event Action<T> onUpdateFromLocal;
@@ -119,12 +119,12 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>
 
     public void Clear()
     {
-        // onUpdate = null;
-        // onTrigger = null;
-        // onTriggerFromLocal = null;
-        // onUpdateFromLocal = null;
-
         serverMessage.ClearSubscriptions();
         clientMessage.ClearSubscriptions();
     }
+}
+
+public interface IClearable
+{
+    public void Clear();
 }

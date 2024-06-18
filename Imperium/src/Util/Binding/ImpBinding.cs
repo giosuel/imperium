@@ -36,7 +36,7 @@ public class ImpBinding<T> : IBinding<T>
     )
     {
         Value = currentValue;
-        DefaultValue = EqualityComparer<T>.Default.Equals(defaultValue, default)
+        DefaultValue = !EqualityComparer<T>.Default.Equals(defaultValue, default)
             ? defaultValue
             : currentValue;
 
@@ -55,7 +55,7 @@ public class ImpBinding<T> : IBinding<T>
 
     public virtual void Set(T updatedValue, bool invokeUpdate = true)
     {
-        var isSame = EqualityComparer<T>.Default.Equals(Value, Value);
+        var isSame = EqualityComparer<T>.Default.Equals(updatedValue, Value);
         Value = updatedValue;
 
         if (invokeUpdate)
@@ -70,32 +70,4 @@ public class ImpBinding<T> : IBinding<T>
             }
         }
     }
-
-    public void Clear()
-    {
-    }
-
-    // public void Clear()
-    // {
-    //     var onUpdateList = onUpdate?.GetInvocationList();
-    //     if (onUpdateList != null)
-    //     {
-    //         foreach (var callback in onUpdateList)
-    //         {
-    //             onUpdate -= (Action<T>)callback;
-    //         }
-    //     }
-    //
-    //     var onTriggerList = onUpdate?.GetInvocationList();
-    //     if (onTriggerList != null)
-    //     {
-    //         foreach (var callback in onTriggerList)
-    //         {
-    //             onUpdate -= (Action<T>)callback;
-    //         }
-    //     }
-    //     onTrigger = null;
-    //     onTriggerFromLocal = null;
-    //     onUpdateFromLocal = null;
-    // }
 }

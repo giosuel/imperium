@@ -1,6 +1,7 @@
 #region
 
 using Imperium.Core;
+using Imperium.Interface.LayerSelector;
 using Imperium.MonoBehaviours.ImpUI.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -47,7 +48,7 @@ public class ImpFreecam : MonoBehaviour
 
         var layerSelectorObject = Instantiate(ImpAssets.LayerSelectorObject, transform);
         layerSelector = layerSelectorObject.AddComponent<LayerSelector>();
-        layerSelector.InitializeUI(Imperium.Theme, false);
+        layerSelector.InitUI(Imperium.Theme, false);
         layerSelector.Bind(Imperium.Settings.Freecam.LayerSelector, Imperium.Settings.Freecam.FreecamLayerMask);
 
         IsFreecamEnabled.onTrue += OnFreecamEnable;
@@ -158,11 +159,11 @@ public class ImpFreecam : MonoBehaviour
         Imperium.Settings.Freecam.LayerSelector.Set(!layerSelector.IsOpen);
         if (layerSelector.IsOpen)
         {
-            layerSelector.CloseUI();
+            layerSelector.Close();
         }
         else
         {
-            layerSelector.OpenUI();
+            layerSelector.Open();
         }
     }
 

@@ -7,21 +7,11 @@ using HarmonyLib;
 using Imperium.Core;
 using Imperium.Core.Lifecycle;
 using Imperium.Integration;
+using Imperium.Interface.ImperiumUI;
+using Imperium.Interface.MapUI;
+using Imperium.Interface.OracleUI;
+using Imperium.Interface.SpawningUI;
 using Imperium.MonoBehaviours;
-using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
-using Imperium.MonoBehaviours.ImpUI.MinimapSettings;
-using Imperium.MonoBehaviours.ImpUI.MoonUI;
-using Imperium.MonoBehaviours.ImpUI.NavigatorUI;
-using Imperium.MonoBehaviours.ImpUI.ObjectsUI;
-using Imperium.MonoBehaviours.ImpUI.OracleUI;
-using Imperium.MonoBehaviours.ImpUI.RenderingUI;
-using Imperium.MonoBehaviours.ImpUI.SaveUI;
-using Imperium.MonoBehaviours.ImpUI.SettingsUI;
-using Imperium.MonoBehaviours.ImpUI.SpawningUI;
-using Imperium.MonoBehaviours.ImpUI.TeleportUI;
-using Imperium.MonoBehaviours.ImpUI.VisualizationUI;
-using Imperium.MonoBehaviours.ImpUI.WeatherUI;
 using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
@@ -259,21 +249,11 @@ public class Imperium : BaseUnityPlugin
 
     private static void SpawnUI()
     {
-        Interface.Register<SettingsUI, ImperiumUI>(ImpAssets.SettingsUIObject);
-        Interface.Register<ConfirmationUI, ImperiumUI>(ImpAssets.ConfirmationUIObject);
-        Interface.Register<SaveUI, ImperiumUI>(ImpAssets.SaveUIObject);
-        Interface.Register<ObjectsUI, ImperiumUI>(ImpAssets.ObjectsUIObject);
-        Interface.Register<MoonUI, ImperiumUI>(ImpAssets.MoonUIObject);
-        Interface.Register<RenderingUI, ImperiumUI>(ImpAssets.RenderingUIObject);
-        Interface.Register<VisualizationUI>(ImpAssets.VisualizerUIObject);
-        Interface.Register<MinimapSettings>(ImpAssets.MinimapSettingsObject);
-        Interface.Register<ImperiumUI>(ImpAssets.ImperiumUIObject, "<Keyboard>/F1");
-        Interface.Register<SpawningUI>(ImpAssets.SpawningUIObject, "<Keyboard>/F2", closeOnMovement: false);
-        Interface.Register<TeleportUI>(ImpAssets.TeleportUIObject, "<Keyboard>/F3", closeOnMovement: false);
-        Interface.Register<WeatherUI>(ImpAssets.WeatherUIObject, "<Keyboard>/F4");
-        Interface.Register<OracleUI>(ImpAssets.OracleUIObject, "<Keyboard>/F5");
-        Interface.Register<NavigatorUI>(ImpAssets.NavigatorUIObject, "<Keyboard>/F6");
-        Interface.Register<MapUI>(ImpAssets.MapUIObject, "<Keyboard>/F8");
+        Interface.RegisterInterface<ImperiumUI>(ImpAssets.ImperiumUIObject, "ImperiumUI", "<Keyboard>/F1");
+        Interface.RegisterInterface<SpawningUI>(ImpAssets.SpawningUIObject, "SpawningUI", "<Keyboard>/F2");
+        Interface.RegisterInterface<OracleUI>(ImpAssets.OracleUIObject, "OracleUI", "<Keyboard>/F6");
+        Interface.RegisterInterface<MapUI>(ImpAssets.MapUIObject, "MapUI", "<Keyboard>/F8");
+        Interface.RegisterInterface<MapUI>(ImpAssets.MinimapSettingsObject);
 
         Interface.StartListening();
 

@@ -1,8 +1,10 @@
 # Changelog
 
-## Imperium v0.2.0 [Beta] - The Network Update
+## Imperium v0.2.0 [Beta] - The UI Update
 
-This is mainly aimed at internal re-writes and changes to the Imperium API. I switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium.
+This update is mainly aimed at the UI rework. I switched from static views with frozen windows to a more dynamic approach with floating windows! 
+
+Besides that, I also re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
 
 ### Added Stuff
 

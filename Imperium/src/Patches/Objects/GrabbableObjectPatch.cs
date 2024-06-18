@@ -1,7 +1,9 @@
 #region
 
 using HarmonyLib;
+using Imperium.Interface.ImperiumUI;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
+using Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
 
 #endregion
 
@@ -33,7 +35,7 @@ internal static class GrabbableObjectPatch
         }
 
         // Refresh object explorer for drop button
-        Imperium.Interface.Get<ImperiumUI>().ObjectExplorerWindow.Refresh();
+        Imperium.Interface.Get<ImperiumUI>().Get<ObjectExplorerWindow>().Refresh();
     }
 
     [HarmonyPostfix]
@@ -57,6 +59,6 @@ internal static class GrabbableObjectPatch
     internal static void DiscardItemPatch(GrabbableObject __instance)
     {
         // Refresh object explorer for drop button
-        Imperium.Interface.Get<ImperiumUI>().ObjectExplorerWindow.Refresh();
+        Imperium.Interface.Get<ImperiumUI>().Get<ObjectExplorerWindow>().Refresh();
     }
 }

@@ -29,7 +29,6 @@ public class ImpInputBindings
         BaseMap.AddAction("Minimap", binding: "<Keyboard>/m");
         BaseMap.AddAction("Alt", binding: "<Keyboard>/alt");
         BaseMap.AddAction("Flying", binding: "<Keyboard>/space");
-        // BaseMap.AddAction("Flying", binding: "<Keyboard>/space", interactions: "multiTap(tapTime=0.1, tapCount=2, tapDelay=0.4)");
         BaseMap.AddAction("FlyAscend", binding: "<Keyboard>/space", interactions: "hold(duration=0.1)");
         BaseMap.AddAction("FlyDescend", binding: "<Keyboard>/ctrl", interactions: "hold(duration=0.1)");
         BaseMap.AddAction("FlyNoClip", binding: "<Keyboard>/alt", interactions: "hold(duration=0.1)");

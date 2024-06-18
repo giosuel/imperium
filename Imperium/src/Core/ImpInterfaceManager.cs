@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using Imperium.Integration;
+using Imperium.Interface;
 using Imperium.MonoBehaviours.ImpUI;
-using Imperium.MonoBehaviours.ImpUI.ImperiumDock;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -20,7 +20,7 @@ namespace Imperium.Core;
 internal class ImpInterfaceManager : MonoBehaviour
 {
     private readonly Dictionary<Type, BaseUI> interfaceControllers = [];
-    private readonly Dictionary<int, Type> interfaceParents = [];
+
     internal readonly ImpBinding<BaseUI> OpenInterface = new();
 
     private ImperiumDock imperiumDock;
@@ -38,44 +38,42 @@ internal class ImpInterfaceManager : MonoBehaviour
     {
         var interfaceManager = new GameObject("ImpInterface").AddComponent<ImpInterfaceManager>();
         interfaceManager.theme = theme;
-        interfaceManager.InitDock();
+
+        interfaceManager.imperiumDock = Instantiate(
+            ImpAssets.ImperiumDockObject,
+            interfaceManager.transform
+        ).AddComponent<ImperiumDock>();
+        interfaceManager.imperiumDock.InitUI(theme);
 
         return interfaceManager;
-    }
-
-    private void InitDock()
-    {
-        imperiumDock = Instantiate(ImpAssets.ImperiumDockObject, transform).AddComponent<ImperiumDock>();
-        imperiumDock.OnUIClose();
     }
 
     private void Update()
     {
         if (!OpenInterface.Value) return;
 
-        if (escShortcut.IsDown() || (!OpenInterface.Value.IgnoreTab && tabShortcut.IsDown()))
-        {
-            Close();
-        }
+        if (escShortcut.IsDown() || !OpenInterface.Value.IgnoreTab && tabShortcut.IsDown()) Close();
     }
 
-    internal void Register<T>(
+    internal void RegisterInterface<T>(
         GameObject obj,
+        string interfaceName = null,
         string keybind = null,
-        Type parent = null,
-        bool closeOnMovement = true,
-        bool ignoreTab = false
+        bool closeOnMovement = false
     ) where T : BaseUI
     {
         if (interfaceControllers.ContainsKey(typeof(T))) return;
 
         var interfaceObj = Instantiate(obj, transform).AddComponent<T>();
-        interfaceObj.InitializeUI(theme, closeOnMovement, ignoreTab);
-        interfaceObj.transform.Find("Container").localScale = new Vector3(0.9f, 0.9f, 0.9f);
+        interfaceObj.InitUI(theme, closeOnMovement);
 
-        if (parent != null) interfaceParents[interfaceObj.GetInstanceID()] = parent;
         interfaceObj.interfaceManager = this;
         interfaceControllers[typeof(T)] = interfaceObj;
+
+        if (imperiumDock && !string.IsNullOrEmpty(interfaceName))
+        {
+            imperiumDock.RegisterDockButton<T>(interfaceName, this);
+        }
 
         if (!string.IsNullOrEmpty(keybind))
         {
@@ -88,11 +86,6 @@ internal class ImpInterfaceManager : MonoBehaviour
     public void StartListening() => interfaceMap.Enable();
 
     public void StopListening() => interfaceMap.Disable();
-
-    public void Register<T, P>(GameObject obj, string keybind = null) where T : BaseUI
-    {
-        Register<T>(obj, keybind, typeof(P));
-    }
 
     public void Unregister<T>()
     {
@@ -117,15 +110,10 @@ internal class ImpInterfaceManager : MonoBehaviour
         if (!OpenInterface.Value) return;
 
         imperiumDock.OnUIClose();
-
         OpenInterface.Value.OnUIClose();
-
-        if (toggleCursorState)
-        {
-            ImpUtils.Interface.ToggleCursorState(false);
-        }
-
         OpenInterface.Set(null);
+
+        if (toggleCursorState) ImpUtils.Interface.ToggleCursorState(false);
     }
 
     public void Toggle<T>(bool toggleCursorState = true, bool closeOthers = true)
@@ -144,19 +132,23 @@ internal class ImpInterfaceManager : MonoBehaviour
 
     public void Open(Type type, bool toggleCursorState = true, bool closeOthers = true)
     {
-        var controller = interfaceControllers[type];
+        if (!interfaceControllers.TryGetValue(type, out var controller))
+        {
+            Imperium.IO.LogError($"[Interface] Failed to open interface {type}");
+            return;
+        }
         if (controller.IsOpen || !controller.CanOpen() || Imperium.Player.isTypingChat) return;
-
-        imperiumDock.OnUIOpen();
+        if (Imperium.Player.inTerminalMenu) Imperium.Terminal.QuitTerminal();
 
         controller.OnUIOpen();
+        imperiumDock.OnUIOpen();
+
         OpenInterface.Set(controller);
 
         // Close Unity Explorer menus
         UnityExplorerIntegration.CloseUI();
 
         // Disable opening UIs when user is currently using terminal due to input selection overwrite
-        if (Imperium.Player.inTerminalMenu) Imperium.Terminal.QuitTerminal();
         Imperium.Player.quickMenuManager.CloseQuickMenu();
 
         if (closeOthers)
