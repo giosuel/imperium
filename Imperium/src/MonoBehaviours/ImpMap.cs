@@ -1,7 +1,7 @@
 #region
 
-using System.Collections.Generic;
 using Imperium.Core;
+using Imperium.Interface.MapUI;
 using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -17,12 +17,11 @@ public class ImpMap : MonoBehaviour
 {
     internal Camera Camera { get; private set; }
     internal MinimapOverlay Minimap { get; private set; }
-    internal ImpBinding<HashSet<int>> FloorLevels { get; } = new([]);
 
     internal readonly ImpBinding<float> CameraNearClip = new(ImpConstants.DefaultMapCameraNearClip);
     internal readonly ImpBinding<float> CameraFarClip = new(ImpConstants.DefaultMapCameraFarClip);
 
-    internal static ImpMap Create() => new GameObject("ImpMap").AddComponent<ImpMap>();
+    internal static ImpMap Create() => new GameObject("Imp_MapManager").AddComponent<ImpMap>();
 
     private void Awake()
     {
@@ -45,11 +44,11 @@ public class ImpMap : MonoBehaviour
         Camera.enabled = false;
         Camera.orthographic = true;
 
-        Camera.cullingMask = ImpSettings.Map.CameraLayerMask.Value;
-        ImpSettings.Map.CameraLayerMask.onUpdate += value => Camera.cullingMask = value;
+        Camera.cullingMask = Imperium.Settings.Map.CameraLayerMask.Value;
+        Imperium.Settings.Map.CameraLayerMask.onUpdate += value => Camera.cullingMask = value;
 
-        Camera.orthographicSize = ImpSettings.Map.CameraZoom.Value;
-        ImpSettings.Map.CameraZoom.onUpdate += value => Camera.orthographicSize = value;
+        Camera.orthographicSize = Imperium.Settings.Map.CameraZoom.Value;
+        Imperium.Settings.Map.CameraZoom.onUpdate += value => Camera.orthographicSize = value;
 
         Camera.farClipPlane = CameraFarClip.Value;
         CameraFarClip.onUpdate += value => Camera.farClipPlane = value;
@@ -65,7 +64,7 @@ public class ImpMap : MonoBehaviour
         Imperium.IngamePlayerSettings.playerInput.actions.FindAction("SwitchItem").performed += OnMouseScroll;
 
         Minimap = Instantiate(ImpAssets.MinimapOverlayObject).AddComponent<MinimapOverlay>();
-        Minimap.InitializeUI(Imperium.Theme, false);
+        Minimap.InitUI(Imperium.Theme);
         Minimap.onOpen += OnMinimapOpen;
         Minimap.onClose += OnMinimapClose;
     }
@@ -74,10 +73,10 @@ public class ImpMap : MonoBehaviour
     {
         if (!Imperium.Interface.Get<MapUI>().IsOpen && !Imperium.InputBindings.BaseMap["Alt"].IsPressed()) return;
 
-        var multiplier = ImpSettings.Map.CameraZoom.Value / 100 * 8;
-        ImpSettings.Map.CameraZoom.Set(
+        var multiplier = Imperium.Settings.Map.CameraZoom.Value / 100 * 8;
+        Imperium.Settings.Map.CameraZoom.Set(
             Mathf.Clamp(
-                ImpSettings.Map.CameraZoom.Value - context.ReadValue<float>() * multiplier,
+                Imperium.Settings.Map.CameraZoom.Value - context.ReadValue<float>() * multiplier,
                 1,
                 100
             )

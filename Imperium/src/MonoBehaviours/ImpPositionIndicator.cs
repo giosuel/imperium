@@ -20,14 +20,15 @@ public class ImpPositionIndicator : MonoBehaviour
 
     private Action<Vector3> registeredCallback;
 
-    private bool _isActive;
+    private bool isActive;
+    private bool castToGround;
 
     internal bool IsActive
     {
-        get => _isActive;
+        get => isActive;
         set
         {
-            _isActive = value;
+            isActive = value;
             indicatorObject.SetActive(value);
         }
     }
@@ -48,8 +49,9 @@ public class ImpPositionIndicator : MonoBehaviour
         if (IsActive) SubmitIndicator();
     }
 
-    public void Activate(Action<Vector3> callback, Transform originTransform = null)
+    public void Activate(Action<Vector3> callback, Transform originTransform = null, bool castGround = true)
     {
+        castToGround = castGround;
         registeredCallback = callback;
         origin = originTransform ? originTransform : Imperium.Player.gameplayCamera.transform;
         ShowIndicator();
@@ -85,25 +87,32 @@ public class ImpPositionIndicator : MonoBehaviour
         if (!IsActive || !origin) return;
 
         var forward = origin.forward;
-        var rotateDegrees = ImpSettings.Preferences.LeftHandedMode.Value ? -90 : 90;
+        var rotateDegrees = Imperium.Settings.Preferences.LeftHandedMode.Value ? -90 : 90;
         var startPosition = origin.position + Quaternion.AngleAxis(rotateDegrees, Vector3.up) * forward;
         var ray = new Ray(startPosition, forward);
 
         // Raycast to player look position
         Physics.Raycast(ray, out var hitInfo, 1000, ImpConstants.IndicatorMask);
 
-        // Raycast from look position to the ground below
-        Physics.Raycast(
-            new Ray(hitInfo.point, Vector3.down),
-            out var groundInfo, 100, ImpConstants.IndicatorMask
-        );
+        var endPosition = hitInfo.point;
+        var endNormal = Vector3.zero;
 
-        var endPosition = hitInfo.normal.y > 0 ? hitInfo.point : groundInfo.point;
+        if (castToGround)
+        {
+            // Raycast from look position to the ground below
+            Physics.Raycast(
+                new Ray(hitInfo.point, Vector3.down),
+                out var groundInfo, 100, ImpConstants.IndicatorMask
+            );
+
+            endPosition = hitInfo.normal.y > 0 ? hitInfo.point : groundInfo.point;
+            endNormal = hitInfo.normal;
+        }
 
         indicatorObject.transform.position = endPosition;
-        if (groundInfo.normal != Vector3.zero)
+        if (endNormal != Vector3.zero)
         {
-            indicatorObject.transform.rotation = Quaternion.LookRotation(-groundInfo.normal, Vector3.up);
+            indicatorObject.transform.rotation = Quaternion.LookRotation(-endNormal, Vector3.up);
         }
 
         indicatorLineRenderer.positionCount = 100;

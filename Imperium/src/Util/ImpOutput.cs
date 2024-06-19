@@ -2,10 +2,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Core;
-using Imperium.Netcode;
+using BepInEx.Logging;
+using Imperium.API.Types.Networking;
 using Imperium.Util.Binding;
-using Unity.Netcode;
 using UnityEngine;
 using LogLevel = BepInEx.Logging.LogLevel;
 
@@ -13,37 +12,26 @@ using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace Imperium.Util;
 
-internal abstract class ImpOutput
+internal class ImpOutput(ManualLogSource logger)
 {
-    private static readonly Dictionary<NotificationType, ImpBinding<bool>> NotificationSettings = new()
+    private readonly Dictionary<NotificationType, ImpBinding<bool>> NotificationSettings = new()
     {
-        { NotificationType.GodMode, ImpSettings.Preferences.NotificationsGodMode },
-        { NotificationType.OracleUpdate, ImpSettings.Preferences.NotificationsOracle },
-        { NotificationType.Confirmation, ImpSettings.Preferences.NotificationsConfirmation },
-        { NotificationType.SpawnReport, ImpSettings.Preferences.NotificationsSpawnReports },
-        { NotificationType.Entities, ImpSettings.Preferences.NotificationsEntities },
-        { NotificationType.Server, ImpSettings.Preferences.NotificationsServer },
-        { NotificationType.AccessControl, ImpSettings.Preferences.NotificationsAccessControl },
-        { NotificationType.Spawning, ImpSettings.Preferences.NotificationsSpawning },
+        { NotificationType.GodMode, Imperium.Settings.Preferences.NotificationsGodMode },
+        { NotificationType.OracleUpdate, Imperium.Settings.Preferences.NotificationsOracle },
+        { NotificationType.Confirmation, Imperium.Settings.Preferences.NotificationsConfirmation },
+        { NotificationType.SpawnReport, Imperium.Settings.Preferences.NotificationsSpawnReports },
+        { NotificationType.Entities, Imperium.Settings.Preferences.NotificationsEntities },
+        { NotificationType.Server, Imperium.Settings.Preferences.NotificationsServer },
+        { NotificationType.AccessControl, Imperium.Settings.Preferences.NotificationsAccessControl },
+        { NotificationType.Spawning, Imperium.Settings.Preferences.NotificationsSpawning },
         { NotificationType.Required, new ImpBinding<bool>(true) },
-        { NotificationType.Other, ImpSettings.Preferences.NotificationsOther }
+        { NotificationType.Other, Imperium.Settings.Preferences.NotificationsOther }
     };
 
-    internal static void SendToClients(
-        string text,
-        string title = "Imperium",
-        bool isWarning = false,
-        NotificationType type = NotificationType.Server
-    )
-    {
-        if (!NetworkManager.Singleton.IsHost || !ImpSettings.Preferences.AllowClients.Value) return;
-        ImpNetCommunication.Instance.SendClientRpc(text, title, isWarning, type: type);
-    }
+    internal void Status(string text) => HUDManager.Instance.DisplayStatusEffect(text);
+    internal void Debug(string text) => HUDManager.Instance.SetDebugText(text);
 
-    internal static void Status(string text) => HUDManager.Instance.DisplayStatusEffect(text);
-    internal static void Debug(string text) => HUDManager.Instance.SetDebugText(text);
-
-    internal static void Send(
+    internal void Send(
         string text,
         string title = "Imperium",
         bool isWarning = false,
@@ -52,21 +40,19 @@ internal abstract class ImpOutput
     {
         if (!HUDManager.Instance)
         {
-            Imperium.Log.LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
+            LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
             return;
         }
 
         // Disable notifications if turned off or during loading of settings
-        if (!NotificationSettings[type].Value || ImpSettings.IsLoading) return;
-
-        if (type == NotificationType.OracleUpdate) title = "Oracle";
+        if (!NotificationSettings[type].Value || Imperium.Settings.IsLoading) return;
 
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
 
-    internal static void LogBlock(List<string> lines, string title = "Imperium Monitoring")
+    internal void LogBlock(List<string> lines, string title = "Imperium Monitoring")
     {
-        if (!ImpSettings.Preferences.GeneralLogging.Value) return;
+        if (!Imperium.Settings.Preferences.GeneralLogging.Value) return;
 
         var output = "[MON] Imperium message block :)\n";
         title = "< " + title + " >";
@@ -85,38 +71,11 @@ internal abstract class ImpOutput
             (current, line) => current + $"\u2502 {line}".PadRight(width - 2) + " \u2502\n");
         output += "\u2558" + fullWidth + "\u255b";
 
-        Imperium.Log.Log(LogLevel.Message, output);
+        Log(LogLevel.Message, output);
     }
-}
 
-internal enum NotificationType
-{
-    // God mode notifications on taking damage and dying.
-    GodMode,
-
-    // Oracle spawn prediction updates.
-    OracleUpdate,
-
-    // Confirmation dialogs following user interaction.
-    Confirmation,
-
-    // Spawn report every cycle.
-    SpawnReport,
-
-    // Entity related notifications (e.g. Entity took damage).
-    Entities,
-
-    // Imperium item / entity spawning.
-    Spawning,
-
-    // Access control / lobby control related things.
-    AccessControl,
-
-    // Any notifications coming from the host.
-    Server,
-
-    // Required notifications for important user-triggered events (can't be turned off).
-    Required,
-
-    Other
+    internal void Log(LogLevel level, string text) => logger.Log(level, text);
+    internal void LogInfo(string text) => logger.LogInfo(text);
+    internal void LogWarning(string text) => logger.LogWarning(text);
+    internal void LogError(string text) => logger.LogError(text);
 }

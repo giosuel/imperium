@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.API;
 using Imperium.Util;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
@@ -24,8 +25,9 @@ public class ShovelGizmo : MonoBehaviour
 
     private void Awake()
     {
-        capsule = ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, transform,
-            ImpAssets.WireframePurpleMaterial);
+        capsule = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Capsule, transform, Materials.WireframePurple
+        );
     }
 
     public void Init(Shovel item, bool isHolding)

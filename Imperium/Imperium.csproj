@@ -33,57 +33,54 @@
         <MinVerTagPrefix>v</MinVerTagPrefix>
     </PropertyGroup>
 
-    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-        <Exec Command="~/.dotnet/tools/netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
-    </Target>
-
     <!-- Include README and CHANGELOG in the package -->
     <ItemGroup>
-        <None Include="$(ProjectDir)../README.md" Pack="true" PackagePath="/"/>
-        <None Include="$(ProjectDir)../CHANGELOG.md" Pack="true" PackagePath="/"/>
-        <None Include="$(ProjectDir)../assets/imperium_logo_alpha.png" Pack="true" PackagePath="/"/>
+        <None Include="$(ProjectDir)../README.md" Pack="true" PackagePath="/" />
+        <None Include="$(ProjectDir)../CHANGELOG.md" Pack="true" PackagePath="/" />
+        <None Include="$(ProjectDir)../assets/imperium_logo_alpha.png" Pack="true" PackagePath="/" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
     </ItemGroup>
 
     <!-- BepInEx Package References -->
     <ItemGroup>
-        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
-        <PackageReference Include="BepInEx.Core" Version="5.*"/>
-        <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*"/>
-        <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile"/>
-        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" ExcludeAssets="runtime"/>
+        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.Core" Version="5.*" />
+        <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+        <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" ExcludeAssets="runtime" />
 
-        <PackageReference Include="ArmDot.Engine.MSBuildTasks" Version="2023.12.0"/>
-        <PackageReference Include="rainbowblood.UniverseLib.Mono" Version="2.*"/>
+        <PackageReference Include="ArmDot.Engine.MSBuildTasks" Version="2023.12.0" />
+        <PackageReference Include="rainbowblood.UniverseLib.Mono" Version="2.*" />
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="3.0.0-beta.3" />
 
-        <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false"/>
+        <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false" />
     </ItemGroup>
 
     <!-- CLI Package Reference for Game Libs -->
     <ItemGroup Condition="$(CI) == 'true'">
-        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="50.0.0-*" Publicize="true" PrivateAssets="all" Private="false"/>
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="50.0.0-*" Publicize="true" PrivateAssets="all" Private="false" />
     </ItemGroup>
 
     <!-- IDE Assemblies - Easier to Find Source Code -->
     <ItemGroup Condition="$(CI) != 'true'">
-        <Reference Include="Assembly-CSharp" HintPath="..\ldeps\Assembly-CSharp.dll" Private="False" Publicize="true"/>
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="..\ldeps\Assembly-CSharp-firstpass.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.Netcode.Runtime" HintPath="..\ldeps\Unity.Netcode.Runtime.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.InputSystem" HintPath="..\ldeps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.TextMeshPro" HintPath="..\ldeps\Unity.TextMeshPro.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.Services.Core.Networking" HintPath="..\ldeps\Unity.Services.Core.Networking.dll" Private="False" Publicize="true"/>
-        <Reference Include="UnityEngine" HintPath="..\ldeps\UnityEngine.dll" Private="False" Publicize="true"/>
-        <Reference Include="UnityEngine.UI" HintPath="..\ldeps\UnityEngine.UI.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.InputSystem" HintPath="..\ldeps\Unity.InputSystem.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="..\ldeps\Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true"/>
-        <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="..\ldeps\Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true"/>
+        <Reference Include="Assembly-CSharp" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Assembly-CSharp.dll" Private="False" Publicize="true" />
+        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Assembly-CSharp-firstpass.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.Netcode.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.Netcode.Runtime.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.InputSystem" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.InputSystem.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.TextMeshPro" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.TextMeshPro.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.Services.Core.Networking" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.Services.Core.Networking.dll" Private="False" Publicize="true" />
+        <Reference Include="UnityEngine" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/UnityEngine.dll" Private="False" Publicize="true" />
+        <Reference Include="UnityEngine.UI" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/UnityEngine.UI.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.InputSystem" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.InputSystem.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true" />
+        <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true" />
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="UnityExplorer.BIE5.Mono" HintPath="..\deps\UnityExplorer.BIE5.Mono.dll"/>
+        <Reference Include="UnityExplorer.BIE5.Mono" HintPath="..\deps\UnityExplorer.BIE5.Mono.dll" />
     </ItemGroup>
 
     <!--  Ignore this - Unity is a great software that always works, especially on Linux :]  -->
@@ -100,15 +97,11 @@
     </Target>
 
     <!-- Pack for Thunderstore -->
-    <Target
-            Name="ThunderstorePack"
-            AfterTargets="PostBuildEvent"
-            Condition="$(TargetFramework) == 'netstandard2.1' and $(Configuration) == 'Release' and $(CI) == 'true'"
-            DependsOnTargets="SetPluginVersion">
-        <Exec Command="dotnet tcli build --config-path $(ProjectDir)../assets/thunderstore.toml --package-version $(PlainVersion)"/>
+    <Target Name="ThunderstorePack" AfterTargets="PostBuildEvent" Condition="$(TargetFramework) == 'netstandard2.1' and $(Configuration) == 'Release' and $(CI) == 'true'" DependsOnTargets="SetPluginVersion">
+        <Exec Command="dotnet tcli build --config-path $(ProjectDir)../assets/thunderstore.toml --package-version $(PlainVersion)" />
         <ItemGroup>
-            <FilesToRename Include="$(ProjectDir)../dist/*-$(PlainVersion).zip"/>
+            <FilesToRename Include="$(ProjectDir)../dist/*-$(PlainVersion).zip" />
         </ItemGroup>
-        <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))"/>
+        <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))" />
     </Target>
 </Project>

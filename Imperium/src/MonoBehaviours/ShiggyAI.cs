@@ -32,6 +32,9 @@ public class ShiggyAI : EnemyAI
         renderer = transform.Find("Texture").GetComponent<MeshRenderer>();
         renderer.material = Instantiate(ImpAssets.ShiggyMaterial);
 
+        Imperium.IO.LogInfo("WOWIES STARTED VIDEO");
+
+
         if (!texturesLoaded) LoadTextures();
     }
 

@@ -14,7 +14,7 @@ internal static class ShotgunItemPatch
     [HarmonyPatch("ShootGun")]
     private static void ShootGunPatch(ShotgunItem __instance)
     {
-        if (ImpSettings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
+        if (Imperium.Settings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
     }
 
     [HarmonyPrefix]
@@ -23,11 +23,11 @@ internal static class ShotgunItemPatch
     {
         if (__instance.isHeld)
         {
-            __instance.useCooldown = ImpSettings.Shotgun.FullAuto.Value
+            __instance.useCooldown = Imperium.Settings.Shotgun.FullAuto.Value
                 ? 0
                 // Get default use cooldown from the shotgun spawn prefab
                 : __instance.itemProperties.spawnPrefab.GetComponent<ShotgunItem>().useCooldown;
-            if (ImpSettings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
+            if (Imperium.Settings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
         }
     }
 

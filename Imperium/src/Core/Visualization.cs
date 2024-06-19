@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
+using Imperium.API;
+using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
@@ -46,50 +49,50 @@ internal class Visualization
 
     internal readonly ObjectInsights ObjectInsights;
 
-    private static Material DefaultMaterial => ImpAssets.WireframeCyanMaterial;
+    private static Material DefaultMaterial => Materials.WireframeCyan;
 
-    internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager)
+    internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager, ConfigFile config)
     {
         // Static visualizers are updated by object lists
         LandmineGizmos = new LandmineGizmos(
             objectManager.CurrentLevelLandmines,
-            ImpSettings.Visualizations.LandmineIndicators
+            Imperium.Settings.Visualization.LandmineIndicators
         );
         SpikeTrapGizmos = new SpikeTrapGizmos(
             objectManager.CurrentLevelSpikeTraps,
-            ImpSettings.Visualizations.SpikeTrapIndicators
+            Imperium.Settings.Visualization.SpikeTrapIndicators
         );
         VentTimers = new VentTimers(
             objectManager.CurrentLevelVents,
-            ImpSettings.Visualizations.VentTimers
+            Imperium.Settings.Visualization.VentTimers
         );
         SpawnIndicators = new SpawnIndicators(
             oracleStateBinding,
-            ImpSettings.Visualizations.SpawnIndicators
+            Imperium.Settings.Visualization.SpawnIndicators
         );
         ScrapSpawns = new ScrapSpawnIndicators(
             objectManager.CurrentScrapSpawnPoints,
-            ImpSettings.Visualizations.ScrapSpawns
+            Imperium.Settings.Visualization.ScrapSpawns
         );
         HazardSpawns = new MapHazardIndicators(
             RoundManagerPatch.MapHazardPositions,
-            ImpSettings.Visualizations.HazardSpawns
+            Imperium.Settings.Visualization.HazardSpawns
         );
         NavMeshVisualizer = new NavMeshVisualizer(
             Imperium.IsSceneLoaded,
-            ImpSettings.Visualizations.NavMeshSurfaces
+            Imperium.Settings.Visualization.NavMeshSurfaces
         );
 
         // Weapon indicators are different as they are only updated via patches
-        ShotgunGizmos = new ShotgunGizmos(ImpSettings.Visualizations.ShotgunIndicators);
-        ShovelGizmos = new ShovelGizmos(ImpSettings.Visualizations.ShovelIndicators);
-        KnifeGizmos = new KnifeGizmos(ImpSettings.Visualizations.KnifeIndicators);
+        ShotgunGizmos = new ShotgunGizmos(Imperium.Settings.Visualization.ShotgunIndicators);
+        ShovelGizmos = new ShovelGizmos(Imperium.Settings.Visualization.ShovelIndicators);
+        KnifeGizmos = new KnifeGizmos(Imperium.Settings.Visualization.KnifeIndicators);
 
         // Player and entity infos are separate as they have their own configs
-        PlayerGizmos = new PlayerGizmos(objectManager.CurrentPlayers);
-        EntityGizmos = new EntityGizmos(objectManager.CurrentLevelEntities);
+        PlayerGizmos = new PlayerGizmos(objectManager.CurrentPlayers, config);
+        EntityGizmos = new EntityGizmos(objectManager.CurrentLevelEntities, config);
 
-        ObjectInsights = new ObjectInsights();
+        ObjectInsights = new ObjectInsights(config);
         Imperium.IsSceneLoaded.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelEntities.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentPlayers.onTrigger += ObjectInsights.Refresh;

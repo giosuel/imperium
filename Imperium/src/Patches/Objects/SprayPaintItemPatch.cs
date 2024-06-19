@@ -1,7 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
 using Imperium.Util;
 
 #endregion
@@ -15,7 +14,7 @@ internal static class SprayPaintItemPatch
     [HarmonyPatch("LateUpdate")]
     private static void LateUpdatePatch(SprayPaintItem __instance)
     {
-        if (ImpSettings.Player.InfiniteBattery.Value)
+        if (Imperium.Settings.Player.InfiniteBattery.Value)
         {
             Reflection.Set(__instance, "sprayCanTank", 1);
             Reflection.Set(__instance, "sprayCanShakeMeter", 1);

@@ -1,7 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
 
 #endregion
 
@@ -14,7 +13,7 @@ internal static class HangarShipDoorPatch
     [HarmonyPatch("PlayDoorAnimation")]
     private static bool PlayDoorAnimationPatch(HangarShipDoor __instance, bool closed)
     {
-        if (ImpSettings.Ship.OverwriteDoors.Value)
+        if (Imperium.Settings.Ship.OverwriteDoors.Value)
         {
             __instance.shipDoorsAnimator.SetBool("Closed", closed);
             return false;

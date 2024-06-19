@@ -1,10 +1,10 @@
 #region
 
-using System;
 using System.Linq;
 using System.Reflection;
-using Imperium.Netcode;
-using Imperium.Patches.Systems;
+using BepInEx.Configuration;
+using Imperium.API;
+using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -17,30 +17,44 @@ namespace Imperium.Core;
 /// <summary>
 ///     Contains all the bindings of the persistent settings of Imperium.
 /// </summary>
-public abstract class ImpSettings
+public class ImpSettings(ConfigFile config)
 {
     // Indication if settings are currently being loaded (to skip notifications and other things during loading)
-    internal static bool IsLoading { get; private set; }
+    internal bool IsLoading { get; private set; }
 
-    internal abstract class Player
+    internal readonly PlayerSettings Player = new(config);
+    internal readonly ShotgunSettings Shotgun = new(config);
+    internal readonly ShovelSettings Shovel = new(config);
+    internal readonly TimeSettings Time = new(config);
+    internal readonly ShipSettings Ship = new(config);
+    internal readonly AnimationSkippingSettings AnimationSkipping = new(config);
+    internal readonly VisualizationSettings Visualization = new(config);
+    internal readonly RenderSettings Rendering = new(config);
+    internal readonly MapSettings Map = new(config);
+    internal readonly PreferenceSettings Preferences = new(config);
+    internal readonly FreecamSettings Freecam = new(config);
+
+    internal class PlayerSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> InfiniteSprint = new("Player", "InfiniteSprint", false);
-        internal static readonly ImpConfig<bool> DisableLocking = new("Player", "DisableLocking", false);
-        internal static readonly ImpConfig<bool> InfiniteBattery = new("Player", "InfiniteBattery", false);
-        internal static readonly ImpConfig<bool> Invisibility = new("Player", "Invisibility", false);
-        internal static readonly ImpConfig<bool> Muted = new("Player", "Muted", false);
-        internal static readonly ImpConfig<bool> PickupOverwrite = new("Player", "PickupOverwrite", false);
-        internal static readonly ImpConfig<bool> DisableOOB = new("Player", "DisableOOB", false);
-        internal static readonly ImpConfig<bool> EnableFlying = new("Player", "EnableFlying", false);
-        internal static readonly ImpConfig<bool> FlyingNoClip = new("Player", "FlyingNoClip", false);
+        internal readonly ImpConfig<bool> InfiniteSprint = new(config, "Player", "InfiniteSprint", false);
+        internal readonly ImpConfig<bool> DisableLocking = new(config, "Player", "DisableLocking", false);
+        internal readonly ImpConfig<bool> InfiniteBattery = new(config, "Player", "InfiniteBattery", false);
+        internal readonly ImpConfig<bool> Invisibility = new(config, "Player", "Invisibility", false);
+        internal readonly ImpConfig<bool> Muted = new(config, "Player", "Muted", false);
+        internal readonly ImpConfig<bool> PickupOverwrite = new(config, "Player", "PickupOverwrite", false);
+        internal readonly ImpConfig<bool> DisableOOB = new(config, "Player", "DisableOOB", false);
+        internal readonly ImpConfig<bool> EnableFlying = new(config, "Player", "EnableFlying", false);
+        internal readonly ImpConfig<bool> FlyingNoClip = new(config, "Player", "FlyingNoClip", false);
 
-        internal static readonly ImpConfig<float> CustomFieldOfView = new(
+        internal readonly ImpConfig<float> CustomFieldOfView = new(
+            config,
             "Player",
             "FieldOfView",
             ImpConstants.DefaultFOV
         );
 
-        internal static readonly ImpConfig<bool> GodMode = new(
+        internal readonly ImpConfig<bool> GodMode = new(
+            config,
             "Player",
             "GodMode",
             false,
@@ -49,183 +63,169 @@ public abstract class ImpSettings
                 Imperium.StartOfRound.allowLocalPlayerDeath = value;
 
                 // Restore health to full when turning on god mode
-                if (value) PlayerManager.RestoreHealth(Imperium.Player);
+                if (value) PlayerManager.RestoreLocalPlayerHealth(Imperium.Player);
             });
 
-        internal static readonly ImpConfig<float> MovementSpeed = new(
+        internal readonly ImpConfig<float> MovementSpeed = new(
+            config,
             "Player",
             "MovementSpeed",
             ImpConstants.DefaultMovementSpeed,
             value => Imperium.Player.movementSpeed = value
         );
 
-        internal static readonly ImpConfig<float> JumpForce = new(
+        internal readonly ImpConfig<float> JumpForce = new(
+            config,
             "Player",
             "JumpForce",
             ImpConstants.DefaultJumpForce,
             value => Imperium.Player.jumpForce = value
         );
 
-        internal static readonly ImpConfig<float> NightVision = new(
+        internal readonly ImpConfig<float> NightVision = new(
+            config,
             "Player",
             "NightVision",
             0
         );
     }
 
-    internal abstract class Shotgun
+    internal class ShotgunSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> InfiniteAmmo = new("Items.Shotgun", "InfiniteAmmo", false);
-        internal static readonly ImpConfig<bool> FullAuto = new("Items.Shotgun", "FullAuto", false);
+        internal readonly ImpConfig<bool> InfiniteAmmo = new(config, "Items.Shotgun", "InfiniteAmmo", false);
+        internal readonly ImpConfig<bool> FullAuto = new(config, "Items.Shotgun", "FullAuto", false);
     }
 
-    internal abstract class Shovel
+    internal class ShovelSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> Speedy = new("Items.Shovel", "Speedy", false);
+        internal readonly ImpConfig<bool> Speedy = new(config, "Items.Shovel", "Speedy", false);
     }
 
-    internal abstract class Time
+    internal class TimeSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> RealtimeClock = new("Time", "RealtimeClock", true);
-        internal static readonly ImpConfig<bool> PermanentClock = new("Time", "PermanentClock", true);
+        internal readonly ImpConfig<bool> RealtimeClock = new(config, "Time", "RealtimeClock", true);
+        internal readonly ImpConfig<bool> PermanentClock = new(config, "Time", "PermanentClock", true);
     }
 
-    internal abstract class Ship
+    internal class ShipSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> OverwriteDoors = new(
+        internal readonly ImpConfig<bool> OverwriteDoors = new(
+            config,
             "Ship",
             "OverwriteDoors",
             false
         );
 
-        internal static readonly ImpConfig<bool> MuteSpeaker = new(
+        internal readonly ImpConfig<bool> MuteSpeaker = new(
+            config,
             "Ship",
             "MuteSpeaker",
             true,
             value => Imperium.StartOfRound.speakerAudioSource.mute = value
         );
 
-        internal static readonly ImpConfig<bool> PreventLeave = new(
-            "Ship",
-            "PreventLeave",
-            false,
-            syncUpdate: value => ImpNetTime.Instance.SetShipLeaveAutomaticallyServerRpc(value)
-        );
-
-        internal static readonly ImpConfig<bool> InstantLanding = new(
-            "Ship",
-            "InstantLanding",
-            false,
-            onUpdate: value =>
-            {
-                if (value)
-                {
-                    StartOfRoundPatch.InstantLandingHarmony.PatchAll(typeof(StartOfRoundPatch.InstantLandingPatches));
-                }
-                else
-                {
-                    StartOfRoundPatch.InstantLandingHarmony.UnpatchSelf();
-                    Imperium.StartOfRound.shipAnimator.enabled = true;
-                }
-            }
-        );
-
-        internal static readonly ImpConfig<bool> InstantTakeoff = new(
-            "Ship",
-            "InstantTakeoff",
-            false,
-            onUpdate: value =>
-            {
-                if (value)
-                {
-                    StartOfRoundPatch.InstantTakeoffHarmony.PatchAll(typeof(StartOfRoundPatch.InstantTakeoffPatches));
-                }
-                else
-                {
-                    StartOfRoundPatch.InstantTakeoffHarmony.UnpatchSelf();
-                    Imperium.StartOfRound.shipAnimator.enabled = true;
-                }
-            }
-        );
-
-        internal static readonly ImpConfig<bool> DisableAbandoned = new(
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> DisableAbandoned = new(
+            config,
             "Ship",
             "DisableAbandoned",
             false
         );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> PreventLeave = new(
+            config,
+            "Ship",
+            "PreventLeave",
+            false
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantLanding = new(
+            config,
+            "Ship",
+            "InstantLanding",
+            false
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantTakeoff = new(
+            config,
+            "Ship",
+            "InstantTakeoff",
+            false
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> UnlockShop = new(
+            config,
+            "Game.Terminal",
+            "UnlockShop",
+            false
+        );
     }
 
-    internal abstract class AnimationSkipping
+    internal class AnimationSkippingSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> Scoreboard = new(
+        internal readonly ImpConfig<bool> Scoreboard = new(
+            config,
             "AnimationSkipping",
             "DisableAbandoned",
             false
         );
 
-        internal static readonly ImpConfig<bool> PlayerSpawn = new(
+        internal readonly ImpConfig<bool> PlayerSpawn = new(
+            config,
             "AnimationSkipping",
             "PlayerSpawn",
             false
         );
 
-        internal static readonly ImpConfig<bool> InteractHold = new(
+        internal readonly ImpConfig<bool> InteractHold = new(
+            config,
             "AnimationSkipping",
             "InteractHold",
             false
         );
 
-        internal static readonly ImpConfig<bool> Interact = new(
+        internal readonly ImpConfig<bool> Interact = new(
+            config,
             "AnimationSkipping",
             "Interact",
             false
         );
     }
 
-    internal abstract class Game
-    {
-        internal static readonly ImpConfig<bool> UnlockShop = new(
-            "Game.Terminal",
-            "UnlockShop",
-            false,
-            onUpdate: value =>
-            {
-                // Reset selection when locking shop
-                if (!value) Imperium.Terminal.RotateShipDecorSelection();
-            }
-        );
-    }
-
-    internal abstract class Visualizations
+    internal class VisualizationSettings(ConfigFile config) : SettingBase(config)
     {
         /// <summary>
-        ///     Visualizer preferences
+        ///     Visualization preferences
         /// </summary>
-        internal static readonly ImpConfig<bool> SmoothAnimations = new(
+        internal readonly ImpConfig<bool> SmoothAnimations = new(
+            config,
             "Preferences.Visualizers",
             "SmoothAnimations",
             true
         );
 
-        internal static readonly ImpConfig<bool> SSAlwaysOnTop = new(
+        internal readonly ImpConfig<bool> SSAlwaysOnTop = new(
+            config,
             "Preferences.Visualizers.ScreenSpace",
             "AlwaysOnTop",
             true
         );
 
-        internal static readonly ImpConfig<bool> SSAutoScale = new(
+        internal readonly ImpConfig<bool> SSAutoScale = new(
+            config,
             "Preferences.Visualizers.ScreenSpace",
             "AutoScale",
             true
         );
 
-        internal static readonly ImpConfig<bool> SSHideInactive = new(
+        internal readonly ImpConfig<bool> SSHideInactive = new(
+            config,
             "Preferences.Visualizers.ScreenSpace",
             "HideInactive",
             false
         );
 
-        internal static readonly ImpConfig<float> SSOverlayScale = new(
+        internal readonly ImpConfig<float> SSOverlayScale = new(
+            config,
             "Preferences.Visualizers.ScreenSpace",
             "OverlayScale",
             1
@@ -234,133 +234,152 @@ public abstract class ImpSettings
         /// <summary>
         ///     Colliders
         /// </summary>
-        internal static readonly ImpConfig<bool> Employees = new(
+        internal readonly ImpConfig<bool> Employees = new(
+            config,
             "Visualization.Colliders",
             "Employees",
             false,
             value => Imperium.Visualization.Collider("Player", IdentifierType.TAG)(value)
         );
 
-        internal static readonly ImpConfig<bool> Entities = new(
+        internal readonly ImpConfig<bool> Entities = new(
+            config,
             "Visualization.Colliders",
             "Entities",
             true,
             value => Imperium.Visualization.Collider("Enemies", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> MapHazards = new(
+        internal readonly ImpConfig<bool> MapHazards = new(
+            config,
             "Visualization.Colliders",
             "MapHazards",
             false,
             value => Imperium.Visualization.Collider("MapHazards", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Props = new(
+        internal readonly ImpConfig<bool> Props = new(
+            config,
             "Visualization.Colliders",
             "Props",
             false,
             value => Imperium.Visualization.Collider("PhysicsProp", IdentifierType.TAG)(value)
         );
 
-        internal static readonly ImpConfig<bool> Foliage = new(
+        internal readonly ImpConfig<bool> Foliage = new(
+            config,
             "Visualization.Colliders",
             "Foliage",
             false,
             value => Imperium.Visualization.Collider("EnemySpawn", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> InteractTriggers = new(
+        internal readonly ImpConfig<bool> InteractTriggers = new(
+            config,
             "Visualization.Colliders",
             "InteractTriggers",
             false,
             value => Imperium.Visualization.Collider("InteractTrigger", IdentifierType.TAG)(value)
         );
 
-        internal static readonly ImpConfig<bool> TileBorders = new(
+        internal readonly ImpConfig<bool> TileBorders = new(
+            config,
             "Visualization.Colliders",
             "TileBorders",
             false,
             value => Imperium.Visualization.Collider("Ignore Raycast", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Room = new(
+        internal readonly ImpConfig<bool> Room = new(
+            config,
             "Visualization.Colliders",
             "Room",
             false,
             value => Imperium.Visualization.Collider("Room", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Colliders = new(
+        internal readonly ImpConfig<bool> Colliders = new(
+            config,
             "Visualization.Colliders",
             "Visualization.Colliders",
             false,
             value => Imperium.Visualization.Collider("Visualization.Colliders", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Triggers = new(
+        internal readonly ImpConfig<bool> Triggers = new(
+            config,
             "Visualization.Colliders",
             "Triggers",
             false,
             value => Imperium.Visualization.Collider("Triggers", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> PhysicsObject = new(
+        internal readonly ImpConfig<bool> PhysicsObject = new(
+            config,
             "Visualization.Colliders",
             "PhysicsObject",
             false,
             value => Imperium.Visualization.Collider("PhysicsObject", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> RoomLight = new(
+        internal readonly ImpConfig<bool> RoomLight = new(
+            config,
             "Visualization.Colliders",
             "RoomLight",
             false,
             value => Imperium.Visualization.Collider("RoomLight", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Anomaly = new(
+        internal readonly ImpConfig<bool> Anomaly = new(
+            config,
             "Visualization.Colliders",
             "Anomaly",
             false,
             value => Imperium.Visualization.Collider("Anomaly", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Railing = new(
+        internal readonly ImpConfig<bool> Railing = new(
+            config,
             "Visualization.Colliders",
             "Railing",
             false,
             value => Imperium.Visualization.Collider("Railing", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> PlacementBlocker = new(
+        internal readonly ImpConfig<bool> PlacementBlocker = new(
+            config,
             "Visualization.Colliders",
             "PlacementBlocker",
             false,
             value => Imperium.Visualization.Collider("PlacementBlocker", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> Terrain = new(
+        internal readonly ImpConfig<bool> Terrain = new(
+            config,
             "Visualization.Colliders",
             "Terrain",
             false,
             value => Imperium.Visualization.Collider("Terrain", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> PlaceableShipObjects = new(
+        internal readonly ImpConfig<bool> PlaceableShipObjects = new(
+            config,
             "Visualization.Colliders",
             "PlaceableShipObjects",
             false,
             value => Imperium.Visualization.Collider("PlaceableShipObjects", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> MiscLevelGeometry = new(
+        internal readonly ImpConfig<bool> MiscLevelGeometry = new(
+            config,
             "Visualization.Colliders",
             "MiscLevelGeometry",
             false,
             value => Imperium.Visualization.Collider("MiscLevelGeometry", IdentifierType.LAYER)(value)
         );
 
-        internal static readonly ImpConfig<bool> ScanNode = new(
+        internal readonly ImpConfig<bool> ScanNode = new(
+            config,
             "Visualization.Colliders",
             "ScanNode",
             false,
@@ -370,18 +389,20 @@ public abstract class ImpSettings
         /// <summary>
         ///     Overlays
         /// </summary>
-        internal static readonly ImpConfig<bool> Vents = new(
+        internal readonly ImpConfig<bool> Vents = new(
+            config,
             "Visualization.Overlays",
             "Vents",
             false,
             value => Imperium.Visualization.Point(
                 "EnemySpawn",
                 IdentifierType.TAG,
-                material: ImpAssets.XrayMaterial
+                material: Materials.Xray
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> AINodesIndoor = new(
+        internal readonly ImpConfig<bool> AINodesIndoor = new(
+            config,
             "Visualization.Overlays",
             "AINodesIndoor",
             false,
@@ -389,11 +410,12 @@ public abstract class ImpSettings
                 "AINode",
                 IdentifierType.TAG,
                 size: 0.5f,
-                material: ImpAssets.FresnelWhiteMaterial
+                material: Materials.FresnelWhite
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> AINodesOutdoor = new(
+        internal readonly ImpConfig<bool> AINodesOutdoor = new(
+            config,
             "Visualization.Overlays",
             "AINodesOutdoor",
             false,
@@ -401,11 +423,12 @@ public abstract class ImpSettings
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 0.8f,
-                material: ImpAssets.FresnelWhiteMaterial
+                material: Materials.FresnelWhite
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> SpawnDenialPoints = new(
+        internal readonly ImpConfig<bool> SpawnDenialPoints = new(
+            config,
             "Visualization.Overlays",
             "SpawnDenialPoints",
             false,
@@ -413,11 +436,12 @@ public abstract class ImpSettings
                 "SpawnDenialPoint",
                 IdentifierType.TAG,
                 size: 16,
-                material: ImpAssets.FresnelRedMaterial
+                material: Materials.FresnelRed
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> BeeSpawns = new(
+        internal readonly ImpConfig<bool> BeeSpawns = new(
+            config,
             "Visualization.Overlays",
             "BeeSpawns",
             false,
@@ -425,11 +449,12 @@ public abstract class ImpSettings
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 20f,
-                material: ImpAssets.FresnelYellowMaterial
+                material: Materials.FresnelYellow
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> OutsideEntitySpawns = new(
+        internal readonly ImpConfig<bool> OutsideEntitySpawns = new(
+            config,
             "Visualization.Overlays",
             "OutsideEntitySpawns",
             false,
@@ -437,11 +462,12 @@ public abstract class ImpSettings
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 10f,
-                material: ImpAssets.FresnelGreenMaterial
+                material: Materials.FresnelGreen
             )(value)
         );
 
-        internal static readonly ImpConfig<bool> NavMeshSurfaces = new(
+        internal readonly ImpConfig<bool> NavMeshSurfaces = new(
+            config,
             "Visualization.Overlays",
             "NavMeshSurfaces",
             false
@@ -450,70 +476,81 @@ public abstract class ImpSettings
         /// <summary>
         ///     Gizmos
         /// </summary>
-        internal static readonly ImpConfig<bool> SpawnIndicators = new(
+        internal readonly ImpConfig<bool> SpawnIndicators = new(
+            config,
             "Visualization.Gizmos",
             "SpawnIndicators",
             false
         );
 
-        internal static readonly ImpConfig<bool> VentTimers = new(
+        internal readonly ImpConfig<bool> VentTimers = new(
+            config,
             "Visualization.Gizmos",
             "VentTimers",
             false
         );
 
-        internal static readonly ImpConfig<bool> NoiseIndicators = new(
+        internal readonly ImpConfig<bool> NoiseIndicators = new(
+            config,
             "Visualization.Gizmos",
             "NoiseIndicators",
             false
         );
 
-        internal static readonly ImpConfig<bool> ScrapSpawns = new(
+        internal readonly ImpConfig<bool> ScrapSpawns = new(
+            config,
             "Visualization.Gizmos",
             "ScrapSpawns",
             false
         );
 
-        internal static readonly ImpConfig<bool> HazardSpawns = new(
+        internal readonly ImpConfig<bool> HazardSpawns = new(
+            config,
             "Visualization.Gizmos",
             "HazardSpawns",
             false
         );
 
-        internal static readonly ImpConfig<bool> ShotgunIndicators = new(
+        internal readonly ImpConfig<bool> ShotgunIndicators = new(
+            config,
             "Visualization.Gizmos",
             "ShotgunIndicators",
             false
         );
 
-        internal static readonly ImpConfig<bool> ShovelIndicators = new(
+        internal readonly ImpConfig<bool> ShovelIndicators = new(
+            config,
             "Visualization.Gizmos",
             "ShovelIndicators",
             false
         );
 
-        internal static readonly ImpConfig<bool> KnifeIndicators = new(
+        internal readonly ImpConfig<bool> KnifeIndicators = new(
+            config,
             "Visualization.Gizmos",
             "KnifeIndicators",
             false
         );
 
-        internal static readonly ImpConfig<bool> LandmineIndicators = new(
+        internal readonly ImpConfig<bool> LandmineIndicators = new(
+            config,
             "Visualization.Gizmos",
             "LandmineIndicators",
             false
         );
 
-        internal static readonly ImpConfig<bool> SpikeTrapIndicators = new(
+        internal readonly ImpConfig<bool> SpikeTrapIndicators = new(
+            config,
             "Visualization.Gizmos",
             "SpikeTrapIndicators",
             false
         );
     }
 
-    internal abstract class Rendering
+    internal class RenderSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<float> ResolutionMultiplier = new(
+        internal readonly ImpConfig<float> ResolutionMultiplier = new(
+            config,
             "Rendering.General",
             "ResolutionMultiplier",
             1,
@@ -521,50 +558,48 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> GlobalVolume = new(
+        internal readonly ImpConfig<bool> GlobalVolume = new(
+            config,
             "Rendering.Volumes",
             "GlobalVolume",
             true,
             value => Imperium.ObjectManager.ToggleObject("VolumeMain", value)
         );
 
-        internal static readonly ImpConfig<bool> VolumetricFog = new(
+        internal readonly ImpConfig<bool> VolumetricFog = new(
+            config,
             "Rendering.Volumes",
             "VolumetricFog",
             true,
             value => Imperium.ObjectManager.ToggleObject("Local Volumetric Fog", value)
         );
 
-        internal static readonly ImpConfig<bool> GroundFog = new(
+        internal readonly ImpConfig<bool> GroundFog = new(
+            config,
             "Rendering.Volumes",
             "GroundFog",
             true,
             value => Imperium.ObjectManager.ToggleObject("GroundFog", value)
         );
 
-        internal static readonly ImpConfig<bool> StormyVolume = new(
+        internal readonly ImpConfig<bool> StormyVolume = new(
+            config,
             "Rendering.Volumes",
             "StormyVolume",
             true,
             value => Imperium.ObjectManager.ToggleObject("StormVolume", value)
         );
 
-        internal static readonly ImpConfig<bool> SkyboxVolume = new(
+        internal readonly ImpConfig<bool> SkyboxVolume = new(
+            config,
             "Rendering.Volumes",
             "SkyboxVolume",
             true,
             value => Imperium.ObjectManager.ToggleObject("Sky and Fog Global Volume", value)
         );
 
-        internal static readonly ImpConfig<bool> Steamleaks = new(
-            "Rendering.Volumes",
-            "Steamleaks",
-            true,
-            value => Imperium.ObjectManager?.CurrentLevelSteamleaks.Value?.ToList()
-                .ForEach(leak => leak.SetActive(value))
-        );
-
-        internal static readonly ImpConfig<bool> SpaceSun = new(
+        internal readonly ImpConfig<bool> SpaceSun = new(
+            config,
             "Rendering.Lighting",
             "SpaceSun",
             true,
@@ -579,7 +614,8 @@ public abstract class ImpSettings
             }
         );
 
-        internal static readonly ImpConfig<bool> Sunlight = new(
+        internal readonly ImpConfig<bool> Sunlight = new(
+            config,
             "Rendering.Lighting",
             "Sunlight",
             true,
@@ -590,14 +626,16 @@ public abstract class ImpSettings
             }
         );
 
-        internal static readonly ImpConfig<bool> IndirectLighting = new(
+        internal readonly ImpConfig<bool> IndirectLighting = new(
+            config,
             "Rendering.Lighting",
             "IndirectLighting",
             true,
             value => Imperium.ObjectManager.ToggleObject("Indirect", value)
         );
 
-        internal static readonly ImpConfig<bool> DecalLayers = new(
+        internal readonly ImpConfig<bool> DecalLayers = new(
+            config,
             "Rendering.FrameSettings",
             "DecalLayers",
             true,
@@ -605,7 +643,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> SSGI = new(
+        internal readonly ImpConfig<bool> SSGI = new(
+            config,
             "Rendering.FrameSettings",
             "SSGI",
             true,
@@ -613,7 +652,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> RayTracing = new(
+        internal readonly ImpConfig<bool> RayTracing = new(
+            config,
             "Rendering.FrameSettings",
             "RayTracing",
             true,
@@ -621,7 +661,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> VolumetricClouds = new(
+        internal readonly ImpConfig<bool> VolumetricClouds = new(
+            config,
             "Rendering.FrameSettings",
             "VolumetricClouds",
             true,
@@ -629,7 +670,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> SSS = new(
+        internal readonly ImpConfig<bool> SSS = new(
+            config,
             "Rendering.FrameSettings",
             "SubsurfaceScattering",
             true,
@@ -637,7 +679,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> VolumeReprojection = new(
+        internal readonly ImpConfig<bool> VolumeReprojection = new(
+            config,
             "Rendering.FrameSettings",
             "VolumeReprojection",
             true,
@@ -645,7 +688,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> TransparentPrepass = new(
+        internal readonly ImpConfig<bool> TransparentPrepass = new(
+            config,
             "Rendering.FrameSettings",
             "TransparentPrepass",
             true,
@@ -653,7 +697,8 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> TransparentPostpass = new(
+        internal readonly ImpConfig<bool> TransparentPostpass = new(
+            config,
             "Rendering.FrameSettings",
             "TransparentPostpass",
             true,
@@ -661,14 +706,16 @@ public abstract class ImpSettings
             ignoreRefresh: true
         );
 
-        internal static readonly ImpConfig<bool> CelShading = new(
+        internal readonly ImpConfig<bool> CelShading = new(
+            config,
             "Rendering.PostProcessing",
             "CelShading",
             true,
             value => Imperium.ObjectManager.ToggleObject("CustomPass", value)
         );
 
-        internal static readonly ImpConfig<bool> StarsOverlay = new(
+        internal readonly ImpConfig<bool> StarsOverlay = new(
+            config,
             "Rendering.Overlays",
             "StarsOverlay",
             false,
@@ -681,49 +728,56 @@ public abstract class ImpSettings
             }
         );
 
-        internal static readonly ImpConfig<bool> HUDVisor = new(
+        internal readonly ImpConfig<bool> HUDVisor = new(
+            config,
             "Rendering.Overlays",
             "HUDVisor",
             true,
             value => Imperium.ObjectManager.ToggleObject("PlayerHUDHelmetModel", value)
         );
 
-        internal static readonly ImpConfig<bool> PlayerHUD = new(
+        internal readonly ImpConfig<bool> PlayerHUD = new(
+            config,
             "Rendering.Overlays",
             "PlayerHUD",
             true,
             value => Imperium.HUDManager.HideHUD(!value)
         );
 
-        internal static readonly ImpConfig<bool> FearFilter = new(
+        internal readonly ImpConfig<bool> FearFilter = new(
+            config,
             "Rendering.Filters",
             "Fear",
             true,
             value => Imperium.ObjectManager.ToggleObject("InsanityFilter", value)
         );
 
-        internal static readonly ImpConfig<bool> FlashbangFilter = new(
+        internal readonly ImpConfig<bool> FlashbangFilter = new(
+            config,
             "Rendering.Filters",
             "Flashbang",
             true,
             value => Imperium.ObjectManager.ToggleObject("FlashbangFilter", value)
         );
 
-        internal static readonly ImpConfig<bool> UnderwaterFilter = new(
+        internal readonly ImpConfig<bool> UnderwaterFilter = new(
+            config,
             "Rendering.Filters",
             "Underwater",
             true,
             value => Imperium.ObjectManager.ToggleObject("UnderwaterFilter", value)
         );
 
-        internal static readonly ImpConfig<bool> DrunknessFilter = new(
+        internal readonly ImpConfig<bool> DrunknessFilter = new(
+            config,
             "Rendering.Filters",
             "Drunkness",
             true,
             value => Imperium.ObjectManager.ToggleObject("DrunknessFilter", value)
         );
 
-        internal static readonly ImpConfig<bool> ScanSphere = new(
+        internal readonly ImpConfig<bool> ScanSphere = new(
+            config,
             "Rendering.Filters",
             "ScanSphere",
             true,
@@ -731,198 +785,232 @@ public abstract class ImpSettings
         );
     }
 
-    internal abstract class Preferences
+    internal class PreferenceSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> GeneralLogging = new("Preferences.General", "GeneralLogging", true);
-        internal static readonly ImpConfig<bool> OracleLogging = new("Preferences.General", "OracleLogging", false);
-        internal static readonly ImpConfig<bool> LeftHandedMode = new("Preferences.General", "LeftHandedMode", false);
-        internal static readonly ImpConfig<bool> OptimizeLogs = new("Preferences.General", "OptimizeLogsToggle", true);
-        internal static readonly ImpConfig<bool> CustomWelcome = new("Preferences.General", "CustomWelcome", true);
+        internal readonly ImpConfig<bool> GeneralLogging = new(config, "Preferences.General", "GeneralLogging", true);
+        internal readonly ImpConfig<bool> OracleLogging = new(config, "Preferences.General", "OracleLogging", false);
+        internal readonly ImpConfig<bool> LeftHandedMode = new(config, "Preferences.General", "LeftHandedMode", false);
+        internal readonly ImpConfig<bool> OptimizeLogs = new(config, "Preferences.General", "OptimizeLogsToggle", true);
+        internal readonly ImpConfig<bool> CustomWelcome = new(config, "Preferences.General", "CustomWelcome", true);
+        internal readonly ImpConfig<bool> ShowTooltips = new(config, "Preferences.Tooltips", "CustomWelcome", true);
 
-        internal static readonly ImpConfig<string> Theme = new(
+        internal readonly ImpConfig<string> ImperiumWindowLayout = new(
+            config,
+            "Preferences.WindowLayout",
+            "CustomWelcome",
+            ""
+        );
+
+        internal readonly ImpConfig<string> Theme = new(
+            config,
             "Preferences.Appearance",
             "Theme",
             "Imperium"
         );
 
-        internal static readonly ImpConfig<bool> AllowClients = new(
+        internal readonly ImpConfig<bool> AllowClients = new(
+            config,
             "Preferences.Host",
             "AllowClients",
             true
         );
 
-        internal static readonly ImpConfig<bool> UnityExplorerMouseFix = new(
+        internal readonly ImpConfig<bool> UnityExplorerMouseFix = new(
+            config,
             "Preferences.General",
             "UnityExplorerMouseFix",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsGodMode = new(
+        internal readonly ImpConfig<bool> NotificationsGodMode = new(
+            config,
             "Preferences.Notifications",
             "GodMode",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsOracle = new(
+        internal readonly ImpConfig<bool> NotificationsOracle = new(
+            config,
             "Preferences.Notifications",
             "Oracle",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsSpawnReports = new(
+        internal readonly ImpConfig<bool> NotificationsSpawnReports = new(
+            config,
             "Preferences.Notifications",
             "SpawnReports",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsConfirmation = new(
+        internal readonly ImpConfig<bool> NotificationsConfirmation = new(
+            config,
             "Preferences.Notifications",
             "Confirmation",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsEntities = new(
+        internal readonly ImpConfig<bool> NotificationsEntities = new(
+            config,
             "Preferences.Notifications",
             "Entities",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsSpawning = new(
+        internal readonly ImpConfig<bool> NotificationsSpawning = new(
+            config,
             "Preferences.Notifications",
             "Spawning",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsAccessControl = new(
+        internal readonly ImpConfig<bool> NotificationsAccessControl = new(
+            config,
             "Preferences.Notifications",
             "AccessControl",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsServer = new(
+        internal readonly ImpConfig<bool> NotificationsServer = new(
+            config,
             "Preferences.Notifications",
             "Server",
             true
         );
 
-        internal static readonly ImpConfig<bool> NotificationsOther = new(
+        internal readonly ImpConfig<bool> NotificationsOther = new(
+            config,
             "Preferences.Notifications",
             "Other",
             true
         );
 
-        internal static readonly ImpConfig<bool> QuickloadSkipStart = new("Preferences.Quickload", "SkipStart", false);
-        internal static readonly ImpConfig<bool> QuickloadSkipMenu = new("Preferences.Quickload", "SkipMenu", false);
-        internal static readonly ImpConfig<bool> QuickloadOnQuit = new("Preferences.Quickload", "OnQuit", false);
-        internal static readonly ImpConfig<bool> QuickloadCleanFile = new("Preferences.Quickload", "CleanFile", false);
-        internal static readonly ImpConfig<int> QuickloadSaveNumber = new("Preferences.Quickload", "SaveFileNumber", 4);
+        internal readonly ImpConfig<bool> QuickloadSkipStart = new(config, "Preferences.Quickload", "SkipStart", false);
+        internal readonly ImpConfig<bool> QuickloadSkipMenu = new(config, "Preferences.Quickload", "SkipMenu", false);
+        internal readonly ImpConfig<bool> QuickloadOnQuit = new(config, "Preferences.Quickload", "OnQuit", false);
+        internal readonly ImpConfig<bool> QuickloadCleanFile = new(config, "Preferences.Quickload", "CleanFile", false);
+        internal readonly ImpConfig<int> QuickloadSaveNumber = new(config, "Preferences.Quickload", "SaveFileNumber", 4);
     }
 
-    internal abstract class Map
+    internal class MapSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> MinimapEnabled = new(
+        internal readonly ImpConfig<bool> MinimapEnabled = new(
+            config,
             "Preferences.Map",
             "Minimap",
             true
         );
 
-        internal static readonly ImpConfig<bool> CompassEnabled = new(
+        internal readonly ImpConfig<bool> CompassEnabled = new(
+            config,
             "Preferences.Map",
             "Compass",
             true
         );
 
-        internal static readonly ImpConfig<bool> RotationLock = new(
+        internal readonly ImpConfig<bool> RotationLock = new(
+            config,
             "Preferences.Map",
             "RotationLock",
             true
         );
 
-        internal static readonly ImpConfig<bool> UnlockView = new(
+        internal readonly ImpConfig<bool> UnlockView = new(
+            config,
             "Preferences.Map",
             "UnlockView",
             false
         );
 
-        internal static readonly ImpConfig<int> CameraLayerMask = new(
+        internal readonly ImpConfig<int> CameraLayerMask = new(
+            config,
             "Preferences.Map",
             "LayerMask",
             -272672930
         );
 
-        internal static readonly ImpConfig<float> CameraZoom = new(
+        internal readonly ImpConfig<float> CameraZoom = new(
+            config,
             "Preferences.Map",
             "Zoom",
             ImpConstants.DefaultMapCameraScale
         );
 
-        internal static readonly ImpConfig<bool> AutoClipping = new(
+        internal readonly ImpConfig<bool> AutoClipping = new(
+            config,
             "Preferences.Map",
             "AutoClipping",
             true
         );
 
-        internal static readonly ImpConfig<float> MinimapScale = new(
+        internal readonly ImpConfig<float> MinimapScale = new(
+            config,
             "Preferences.Minimap",
             "Scale",
             1
         );
 
-        internal static readonly ImpConfig<bool> MinimapInfoPanel = new(
+        internal readonly ImpConfig<bool> MinimapInfoPanel = new(
+            config,
             "Preferences.Minimap",
             "InfoPanel",
             true
         );
 
-        internal static readonly ImpConfig<bool> MinimapLocationPanel = new(
+        internal readonly ImpConfig<bool> MinimapLocationPanel = new(
+            config,
             "Preferences.Minimap",
             "LocationPanel",
             true
         );
     }
 
-    internal abstract class Freecam
+    internal class FreecamSettings(ConfigFile config) : SettingBase(config)
     {
-        internal static readonly ImpConfig<bool> LayerSelector = new(
+        internal readonly ImpConfig<bool> LayerSelector = new(
+            config,
             "Preferences.Freecam",
             "LayerSelector",
             true
         );
 
-        internal static readonly ImpConfig<int> FreecamLayerMask = new(
+        internal readonly ImpConfig<int> FreecamLayerMask = new(
+            config,
             "Preferences.Freecam",
             "LayerMask",
             ~LayerMask.GetMask("HelmetVisor")
         );
 
-        internal static readonly ImpConfig<float> FreecamMovementSpeed = new(
+        internal readonly ImpConfig<float> FreecamMovementSpeed = new(
+            config,
             "Preferences.Freecam",
             "MovementSpeed",
             20
         );
 
-        internal static readonly ImpConfig<float> FreecamFieldOfView = new(
+        internal readonly ImpConfig<float> FreecamFieldOfView = new(
+            config,
             "Preferences.Freecam",
             "FieldOfView",
             ImpConstants.DefaultFOV
         );
     }
 
-    internal static void Load<T>()
+    private void Load<T>(T settings)
     {
         IsLoading = true;
-        typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
+        typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
             .ToList()
-            .ForEach(field => ((IRefreshable)field.GetValue(null)).Refresh());
+            .ForEach(field => (field.GetValue(settings) as IRefreshable)?.Refresh());
         IsLoading = false;
     }
 
-    private static void Reset<T>()
+    private void Reset<T>(T settings)
     {
         IsLoading = true;
-        typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
+        typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
             .ToList()
-            .ForEach(field => ((IResettable)field.GetValue(null)).Reset());
+            .ForEach(field => (field.GetValue(settings) as IResettable)?.Reset());
         IsLoading = false;
     }
 
@@ -930,61 +1018,59 @@ public abstract class ImpSettings
     // an object life-cycle, we have to re-initialize the static fields when re-launching Imperium.
     // We need to reload because ImpSetting holds ImpBindings that have registered callbacks that might end up
     // throwing a NullReferenceException if their host objects have been destroyed.
-    private static void Reinstantiate<T>()
+    // private static void Reinstantiate<T>()
+    // {
+    //     typeof(T).GetConstructor(
+    //         BindingFlags.Static | BindingFlags.NonPublic,
+    //         null, Type.EmptyTypes, null
+    //     )!.Invoke(null, null);
+    // }
+
+    internal void LoadAll()
     {
-        typeof(T).GetConstructor(
-            BindingFlags.Static | BindingFlags.NonPublic,
-            null, Type.EmptyTypes, null
-        )!.Invoke(null, null);
+        Load(Player);
+        Load(Shotgun);
+        Load(Shovel);
+        Load(Time);
+        Load(Ship);
+        Load(AnimationSkipping);
+        Load(Visualization);
+        Load(Rendering);
+        Load(Preferences);
+        Load(Map);
+        Load(Freecam);
     }
 
-    internal static void LoadAll()
+    internal void FactoryReset()
     {
-        Load<Player>();
-        Load<Shotgun>();
-        Load<Shovel>();
-        Load<Time>();
-        Load<Game>();
-        Load<Ship>();
-        Load<AnimationSkipping>();
-        Load<Visualizations>();
-        Load<Rendering>();
-        Load<Preferences>();
-        Load<Map>();
-        Load<Freecam>();
-    }
-
-    internal static void FactoryReset()
-    {
-        Reset<Player>();
-        Reset<Shotgun>();
-        Reset<Shovel>();
-        Reset<Time>();
-        Reset<Game>();
-        Reset<Ship>();
-        Reset<AnimationSkipping>();
-        Reset<Visualizations>();
-        Reset<Rendering>();
-        Reset<Preferences>();
-        Reset<Map>();
-        Reset<Freecam>();
+        Reset(Player);
+        Reset(Shotgun);
+        Reset(Shovel);
+        Reset(Time);
+        Reset(Ship);
+        Reset(AnimationSkipping);
+        Reset(Visualization);
+        Reset(Rendering);
+        Reset(Preferences);
+        Reset(Map);
+        Reset(Freecam);
 
         Imperium.Reload();
     }
 
-    internal static void Reinstantiate()
-    {
-        Reinstantiate<Player>();
-        Reinstantiate<Shotgun>();
-        Reinstantiate<Shovel>();
-        Reinstantiate<Time>();
-        Reinstantiate<Game>();
-        Reinstantiate<Ship>();
-        Reinstantiate<AnimationSkipping>();
-        Reinstantiate<Map>();
-        Reinstantiate<Visualizations>();
-        Reinstantiate<Rendering>();
-        Reinstantiate<Preferences>();
-        Reinstantiate<Freecam>();
-    }
+    // internal static void Reinstantiate()
+    // {
+    //     Reinstantiate<Player>();
+    //     Reinstantiate<Shotgun>();
+    //     Reinstantiate<Shovel>();
+    //     Reinstantiate<Time>();
+    //     Reinstantiate<Game>();
+    //     Reinstantiate<Ship>();
+    //     Reinstantiate<AnimationSkipping>();
+    //     Reinstantiate<Map>();
+    //     Reinstantiate<Visualizations>();
+    //     Reinstantiate<Rendering>();
+    //     Reinstantiate<Preferences>();
+    //     Reinstantiate<Freecam>();
+    // }
 }

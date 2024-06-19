@@ -1,7 +1,9 @@
 #region
 
 using System.Collections.Generic;
+using BepInEx.Configuration;
 using GameNetcodeStuff;
+using Imperium.API.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
@@ -14,11 +16,11 @@ internal class PlayerGizmos : BaseVisualizer<HashSet<PlayerControllerB>, PlayerG
 {
     internal readonly Dictionary<PlayerControllerB, PlayerGizmoConfig> PlayerInfoConfigs = [];
 
-    internal PlayerGizmos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding) : base(objectsBinding)
+    internal PlayerGizmos(IBinding<HashSet<PlayerControllerB>> objectsBinding, ConfigFile config) : base(objectsBinding)
     {
         foreach (var player in Imperium.StartOfRound.allPlayerScripts)
         {
-            PlayerInfoConfigs[player] = new PlayerGizmoConfig(player.playerUsername);
+            PlayerInfoConfigs[player] = new PlayerGizmoConfig(player.playerUsername, config);
         }
     }
 

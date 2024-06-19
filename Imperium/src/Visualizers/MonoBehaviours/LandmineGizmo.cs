@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
+using Imperium.API;
 using Imperium.Util;
 using UnityEngine;
 
@@ -18,8 +19,9 @@ public class LandmineGizmo : MonoBehaviour
 
     private void Awake()
     {
-        sphere = ImpGeometry.CreatePrimitive(PrimitiveType.Sphere, transform, ImpAssets.WireframeRedMaterial,
-            12f);
+        sphere = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Sphere, transform, Materials.WireframeRed, 12f
+        );
     }
 
     public void SnapshotHitboxes()
@@ -63,8 +65,9 @@ public class LandmineGizmo : MonoBehaviour
                     };
 
                     var snapshotHitbox =
-                        ImpGeometry.CreatePrimitive(PrimitiveType.Cube, transform,
-                            ImpAssets.WireframeYellowMaterial);
+                        ImpGeometry.CreatePrimitive(
+                            PrimitiveType.Cube, transform, Materials.WireframeYellow
+                        );
 
                     var player = collider.GetComponent<PlayerControllerB>();
                     if (!player) continue;
@@ -91,8 +94,9 @@ public class LandmineGizmo : MonoBehaviour
                     if (entityColliderScript.TryGetComponent<BoxCollider>(out var boxCollider))
                     {
                         var snapshotHitbox =
-                            ImpGeometry.CreatePrimitive(PrimitiveType.Cube, entityColliderScript.transform,
-                                ImpAssets.WireframeYellowMaterial);
+                            ImpGeometry.CreatePrimitive(
+                                PrimitiveType.Cube, entityColliderScript.transform, Materials.WireframeYellow
+                            );
 
                         snapshotHitbox.transform.position = entityTransform.position;
                         snapshotHitbox.transform.localPosition = boxCollider.center;
@@ -105,8 +109,9 @@ public class LandmineGizmo : MonoBehaviour
                     if (entityColliderScript.TryGetComponent<CapsuleCollider>(out var capsuleCollider))
                     {
                         var snapshotHitbox =
-                            ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, entityColliderScript.transform,
-                                ImpAssets.WireframeYellowMaterial);
+                            ImpGeometry.CreatePrimitive(
+                                PrimitiveType.Capsule, entityColliderScript.transform, Materials.WireframeYellow
+                            );
 
                         snapshotHitbox.transform.position = entityTransform.position;
                         snapshotHitbox.transform.localPosition = capsuleCollider.center;

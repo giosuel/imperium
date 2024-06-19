@@ -4,12 +4,12 @@
 
 Imperium is a powerful and highly performant all-in-one debugging tool to test and explore game mechanics and functionality in Lethal Company.
 
-It is a client-side and server-side mod, meaning it works in singleplayer and multiplayer, as long as Imperium is also installed on the host.
+Imperium works on the client-side and server-side, meaning it works in singleplayer as well as multiplayer, as long as Imperium is installed on the host.
 
 > [!IMPORTANT]
-> Imperium was made with the intent to be a tool to test game functionality and provide more insight into the weird and wonderful mechanics of Lethal Company.
+> Imperium was made with the intent to be a tool to debug game functionalities and provide more insight into the weird and wonderful mechanics of Lethal Company.
 >
-> The Imperium team strongly stands against cheating and trolling in public lobbies. If you really want to cheat, at least put some effort into making your own hacked client!
+> I strongly stand against cheating and trolling in public lobbies. If you really want to cheat, at least put some effort into making your own hacked client!
 
 ![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-control-center.png?raw=true)
 
@@ -116,7 +116,7 @@ Entities spawned with Imperium do not count towards current level power or their
 
 ## Bug Reports and Feature Requests
 
-Feel free to submit bug reports or feature requests asissues on Imperium's [Github](https://github.com/giosuel/imperium) page. Please include your BepInEx log file or an excerpt to make our life easier.
+Feel free to submit bug reports or feature requests asissues on Imperium's [Github](https://github.com/giosuel/imperium) page. Please include your BepInEx log file or an excerpt to make my life easier.
 
 ## Credits
 
@@ -129,6 +129,8 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 - [Nebby](https://thunderstore.io/c/lethal-company/p/Nebulaetrix/) for helping with the documentation and the testing!
 
 - [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for her amazing [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
+
+- [Xilo](https://github.com/Xilophor) for helping me with the networking and writing the [LethalNetworkingAPI](https://github.com/Xilophor/LethalNetworkAPI)!
 
 - [Swaggies](https://thunderstore.io/c/lethal-company/p/Swaggies), [aminoob](https://thunderstore.io/c/lethal-company/p/aminoob/) and star0138 for the help with the testing of Imperium!
 

@@ -1,5 +1,33 @@
 # Changelog
 
+## Imperium v0.2.0 [Beta] - The UI Update
+
+This update is mainly aimed at the UI rework. I switched from static views with frozen windows to a more dynamic approach with floating windows! 
+
+Besides that, I also re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
+
+### Added Stuff
+
+- Added scrap, entity and map hazard spawning functions to the Imperium API.
+- Added steam valves as new map hazard in the object explorer and spawn UI.
+- Added a slider to change the current time of the day.
+
+### QOL Changes
+
+- Toggling objects in the object explorer is now synced with other clients.
+- Disabling entities now results in them being frozen instead of deactivated.
+- Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
+- Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
+- Toggling steam valves will burst / repair them.
+- Freecam flight controls were changed to match with the creative flying controls
+  - `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Enable / Disable the selected layer
+
+### Internal Fixes
+
+- Fixed a bug where it was not possible to join an Imperium lobby without having Imperium installed.
+- Fixed the animation skipping options `Interact` and `InteractHold`.
+- Fixed a typo in a function signature in the Imperium API.
+
 ## Imperium v0.1.9 [Beta] - The API Update
 
 As so many of you have requested more advanced debugging functionality that can be accessed by other mods, I have started to implement an API that can be used either in the UE console or by other mods.

@@ -2,7 +2,6 @@
 
 using System.Linq;
 using HarmonyLib;
-using Imperium.Core;
 using TMPro;
 using UnityEngine;
 
@@ -20,7 +19,7 @@ internal static class TerminalPatch
         [HarmonyPatch("Start")]
         private static void StartPatch()
         {
-            if (!ImpSettings.Preferences.CustomWelcome.Value) return;
+            if (!Imperium.Settings.Preferences.CustomWelcome.Value) return;
 
             var ingamePlayerHud = GameObject.Find("IngamePlayerHUD");
             if (ingamePlayerHud)
@@ -53,7 +52,7 @@ internal static class TerminalPatch
     [HarmonyPatch("Update")]
     private static void UpdatePatch(Terminal __instance)
     {
-        if (!ImpSettings.Game.UnlockShop.Value) return;
+        if (!Imperium.ShipManager.UnlockShop.Value) return;
         if (__instance.ShipDecorSelection.Count == Imperium.StartOfRound.unlockablesList.unlockables.Count) return;
 
         __instance.ShipDecorSelection = Imperium.StartOfRound.unlockablesList.unlockables

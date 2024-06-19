@@ -21,7 +21,7 @@ public class ShotgunGizmo : MonoBehaviour
 
     // Ray origin point, moved to the location where shots originate
     private GameObject rayHolder;
-
+	
     // Spherecast origin renderer - this area does not shoot entities within
     private LineRenderer spherecastOriginArea;
 
@@ -29,32 +29,32 @@ public class ShotgunGizmo : MonoBehaviour
 
     private bool isActivelyHolding;
 
-    const float SPHERECAST_RADIUS = 5f;
-    const float SPHERECAST_START_OFFSET = -10f;
-    const float SPHERECAST_RANGE = 15f;
-    const float ENTITY_DMG_HIGH_RANGE = 3.7f;
-    const float ENTITY_DMG_MID_RANGE = 6f;
+    private const float SpherecastRadius = 5f;
+    private const float SpherecastStartOffset = -10f;
+    private const float SpherecastRange = 15f;
+    private const float EntityMaxDmgRange = 3.7f;
+    private const float EntityMidDmgRange = 6f;
 
-    const float PLAYER_DAMAGE_ANGLE = 30f;
-    const float PLAYER_KILL_RANGE = 15f;
-    const float PLAYER_DMG_MID_RANGE = 23f;
-    const float PLAYER_DMG_LOW_RANGE = 30f;
+    private const float PlayerDmgAngle = 30f;
+    private const float PlayerKillRange = 15f;
+    private const float PlayerMidDmgRange = 23f;
+    private const float PlayerLowDmgRange = 30f;
 
-    const float CIRCLE_POINT_COUNT = 64;
+    private const float CirclePointCount = 64;
 
-    static Color minEntityDamageColor = new Color(0.6f, 1.0f, 0.6f);
-    static Color midEntityDamageColor = new Color(0.25f, 1.0f, 0.25f);
-    static Color maxEntityDamageColor = new Color(0.0f, 0.6f, 0.0f);
-    static Color minPlayerDamageColor = Color.yellow;
-    static Color midPlayerDamageColor = new Color(1f, 0.5f, 0f);
-    static Color maxPlayerDamageColor = Color.red;
-    static Color spherecastOriginColor = new Color(0.5f, 0f, 0.5f);
+    private static Color MinEntityDamageColor = new Color(0.6f, 1.0f, 0.6f);
+    private static Color MidEntityDamageColor = new Color(0.25f, 1.0f, 0.25f);
+    private static Color MaxEntityDamageColor = new Color(0.0f, 0.6f, 0.0f);
+    private static Color MinPlayerDamageColor = Color.yellow;
+    private static Color MidPlayerDamageColor = new Color(1f, 0.5f, 0f);
+    private static Color MaxPlayerDamageColor = Color.red;
+    private static Color SpherecastOriginColor = new Color(0.5f, 0f, 0.5f);
 
-    static Color invalidTargetColor = new Color(0.3f, 0.3f, 0.3f);
-    static Color targetObstructedColor = Color.white;
+    private static Color InvalidTargetColor = new Color(0.3f, 0.3f, 0.3f);
+    private static Color TargetObstructedColor = Color.white;
 
     // Multipler applied to visualization of the shotgun hitbox
-    static Color hitboxColorMultiplier = new Color(1f, 1f, 1f, 0.35f);
+    private static Color HitboxColorMultiplier = new Color(1f, 1f, 1f, 0.35f);
 
     private void Awake()
     {
@@ -92,7 +92,7 @@ public class ShotgunGizmo : MonoBehaviour
         float radDif = ((radArcEnd - radArcStart) % pi2 + pi2) % pi2;
         radArcEnd = radArcStart + radDif;
 
-        const float increment = pi2 / CIRCLE_POINT_COUNT;
+        const float increment = pi2 / CirclePointCount;
 
         List<Vector3> points = new();
 
@@ -115,7 +115,7 @@ public class ShotgunGizmo : MonoBehaviour
     {
         const float pi2 = Mathf.PI * 2f;
 
-        const float increment = pi2 / CIRCLE_POINT_COUNT;
+        const float increment = pi2 / CirclePointCount;
 
         List<Vector3> points = new();
 
@@ -152,53 +152,53 @@ public class ShotgunGizmo : MonoBehaviour
         rayHolder.transform.parent = transform;
 
         // The circle where the shotgun's SphereCast originates. This area does not damage entities but does count toward the 10 target limit
-        spherecastOriginArea = AddLineToRayHolder(spherecastOriginColor * hitboxColorMultiplier, Circle(SPHERECAST_START_OFFSET, SPHERECAST_RADIUS));
+        spherecastOriginArea = AddLineToRayHolder(SpherecastOriginColor * HitboxColorMultiplier, Circle(SpherecastStartOffset, SpherecastRadius));
 
         // Generate the cross section of the minimum entity damage area. This area has a capsule shape with the SphereCast origin sphere chopped out
-        List<Vector3> backSemicircle = GenerateArcPoints(SPHERECAST_START_OFFSET, SPHERECAST_RADIUS, 270, 90);
-        List<Vector3> frontSemicircle = GenerateArcPoints(SPHERECAST_START_OFFSET + SPHERECAST_RANGE, SPHERECAST_RADIUS, 270, 90);
+        List<Vector3> backSemicircle = GenerateArcPoints(SpherecastStartOffset, SpherecastRadius, 270, 90);
+        List<Vector3> frontSemicircle = GenerateArcPoints(SpherecastStartOffset + SpherecastRange, SpherecastRadius, 270, 90);
         frontSemicircle.Reverse();
         frontSemicircle.Add(backSemicircle[0]);
         List<Vector3> spherecastRangeShape = backSemicircle.Concat(frontSemicircle).ToList();
-        AddLineToRayHolder(minEntityDamageColor * hitboxColorMultiplier, spherecastRangeShape);
+        AddLineToRayHolder(MinEntityDamageColor * HitboxColorMultiplier, spherecastRangeShape);
 
         // Generate the cross section of the medium entity damage area. This area is a sphere contained within the minimum damage area
         // This math is to calculate the angle to the intersection point of the SphereCast origin circle and the medium damage circle
-        float radius0 = ENTITY_DMG_MID_RANGE;
-        float radius1 = SPHERECAST_RADIUS;
-        float dist = Mathf.Abs(SPHERECAST_START_OFFSET);
+        float radius0 = EntityMidDmgRange;
+        float radius1 = SpherecastRadius;
+        float dist = Mathf.Abs(SpherecastStartOffset);
         float b = (Mathf.Pow(radius1, 2) - Mathf.Pow(radius0, 2) + Mathf.Pow(dist, 2)) / (2 * dist);
         float a = dist - b;
         float angle = Mathf.Acos(a / radius0);
         float oppAngle = Mathf.Acos(b / radius1);
 
-        List<Vector3> midDmgCircleArc = GenerateArcPoints(0, radius0, -180 + angle * Mathf.Rad2Deg, 180 - angle * Mathf.Rad2Deg, SPHERECAST_RADIUS);
-        List<Vector3> midDmgOffsetArc = GenerateArcPoints(SPHERECAST_START_OFFSET, radius1, -oppAngle * Mathf.Rad2Deg, oppAngle * Mathf.Rad2Deg, SPHERECAST_RADIUS);
+        List<Vector3> midDmgCircleArc = GenerateArcPoints(0, radius0, -180 + angle * Mathf.Rad2Deg, 180 - angle * Mathf.Rad2Deg, SpherecastRadius);
+        List<Vector3> midDmgOffsetArc = GenerateArcPoints(SpherecastStartOffset, radius1, -oppAngle * Mathf.Rad2Deg, oppAngle * Mathf.Rad2Deg, SpherecastRadius);
         midDmgOffsetArc.Reverse();
         midDmgOffsetArc.Add(midDmgCircleArc[0]);
         List<Vector3> midDmgArea = midDmgCircleArc.Concat(midDmgOffsetArc).ToList();
-        AddLineToRayHolder(midEntityDamageColor * hitboxColorMultiplier, midDmgArea);
+        AddLineToRayHolder(MidEntityDamageColor * HitboxColorMultiplier, midDmgArea);
 
         // Generate the circle cross section of the max entity damage sphere
-        AddLineToRayHolder(maxEntityDamageColor * hitboxColorMultiplier, Circle(0, ENTITY_DMG_HIGH_RANGE, SPHERECAST_RADIUS));
+        AddLineToRayHolder(MaxEntityDamageColor * HitboxColorMultiplier, Circle(0, EntityMaxDmgRange, SpherecastRadius));
 
         // Generate the triangle cross section of the player kill range. This is a cone
-        List<Vector3> killCone = GenerateArcPoints(0, PLAYER_KILL_RANGE, -30, 30);
+        List<Vector3> killCone = GenerateArcPoints(0, PlayerKillRange, -30, 30);
         killCone.Insert(0, Vector3.zero);
         killCone.Add(Vector3.zero);
-        AddLineToRayHolder(maxPlayerDamageColor * hitboxColorMultiplier, killCone);
+        AddLineToRayHolder(MaxPlayerDamageColor * HitboxColorMultiplier, killCone);
 
         // Generate the cross section of the 40dmg range
-        List<Vector3> midDmgCone = GenerateArcPoints(0, PLAYER_DMG_MID_RANGE, -30, 30);
+        List<Vector3> midDmgCone = GenerateArcPoints(0, PlayerMidDmgRange, -30, 30);
         midDmgCone.Insert(0, killCone[1]);
         midDmgCone.Add(killCone[killCone.Count-2]);
-        AddLineToRayHolder(midPlayerDamageColor * hitboxColorMultiplier, midDmgCone);
+        AddLineToRayHolder(MidPlayerDamageColor * HitboxColorMultiplier, midDmgCone);
 
         // Generate the cross section of the 20dmg range
-        List<Vector3> lowDmgCone = GenerateArcPoints(0, PLAYER_DMG_LOW_RANGE, -30, 30);
+        List<Vector3> lowDmgCone = GenerateArcPoints(0, PlayerLowDmgRange, -30, 30);
         lowDmgCone.Insert(0, midDmgCone[1]);
         lowDmgCone.Add(midDmgCone[killCone.Count - 2]);
-        AddLineToRayHolder(minPlayerDamageColor * hitboxColorMultiplier, lowDmgCone);
+        AddLineToRayHolder(MinPlayerDamageColor * HitboxColorMultiplier, lowDmgCone);
     }
 
     public void Init(ShotgunItem shotgunItem, bool isHolding)
@@ -233,6 +233,9 @@ public class ShotgunGizmo : MonoBehaviour
         rayHolder.transform.position = shotgunPosition;
         rayHolder.transform.forward = shotgunForward;
 
+        /*
+         * Players
+         */
         foreach (var player in Imperium.ObjectManager.CurrentPlayers.Value)
         {
             if (!playerRays.TryGetValue(player.GetInstanceID(), out var lineRenderer))
@@ -252,31 +255,35 @@ public class ShotgunGizmo : MonoBehaviour
 
             var closestPoint = collider.ClosestPoint(shotgunPosition);
             // Don't draw ray to players outside the cone
-            if (Vector3.Angle(shotgunForward, closestPoint - shotgunPosition) >= PLAYER_DAMAGE_ANGLE) continue;
+            if (Vector3.Angle(shotgunForward, closestPoint - shotgunPosition) >= PlayerDmgAngle) continue;
 
             var distance = Vector3.Distance(player.transform.position, shotgun.shotgunRayPoint.position);
             // Don't draw ray to players beyond damage range
-            if (distance >= PLAYER_DMG_LOW_RANGE) continue;
+            if (distance >= PlayerLowDmgRange) continue;
 
             lineRenderer.gameObject.SetActive(true);
 
             var playerRayColor = distance switch
             {
-                < PLAYER_KILL_RANGE => maxPlayerDamageColor,
-                < PLAYER_DMG_MID_RANGE => midPlayerDamageColor,
-                _ => minPlayerDamageColor
+                < PlayerKillRange => MaxPlayerDamageColor,
+                < PlayerMidDmgRange => MidPlayerDamageColor,
+                _ => MinPlayerDamageColor
             };
 
             if (Physics.Linecast(shotgunPosition, closestPoint,
                     StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
             {
-                playerRayColor = targetObstructedColor;
+                playerRayColor = TargetObstructedColor;
             }
 
             ImpGeometry.SetLineColor(lineRenderer, playerRayColor, playerRayColor);
             ImpGeometry.SetLinePositions(lineRenderer, shotgunPosition, closestPoint);
         }
 
+
+        /*
+         * Entities
+         */
         var colliders = new RaycastHit[10];
         var ray = new Ray(shotgunPosition - shotgunForward * 10f, shotgunForward);
         var hits = Physics.SphereCastNonAlloc(ray, 5f, colliders, 15f, 524288, QueryTriggerInteraction.Collide);
@@ -302,7 +309,7 @@ public class ShotgunGizmo : MonoBehaviour
                 // The target is inside the SpherecastOrigin area and will take no damage
                 startPoint = colliders[i].transform.position;
                 endPoint = startPoint + Vector3.up * 5f;
-                entityRayColor = spherecastOriginColor;
+                entityRayColor = SpherecastOriginColor;
                 spherecastOriginArea.gameObject.SetActive(true);
             }
             else if (!colliders[i].transform.TryGetComponent<EnemyAICollisionDetect>(out var collisionDetect) || collisionDetect.onlyCollideWhenGrounded)
@@ -310,22 +317,22 @@ public class ShotgunGizmo : MonoBehaviour
                 // The target is either not an enemy, or is an enemy hitbox that does not receive damage
                 startPoint = colliders[i].point;
                 endPoint = startPoint + Vector3.up * 5f;
-                entityRayColor = invalidTargetColor;
+                entityRayColor = InvalidTargetColor;
             }
             else if (Physics.Linecast(shotgunPosition, colliders[i].point, out _,
              Imperium.StartOfRound.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
             {
                 // Line of sight to target is obstructed and will take no damage
-                entityRayColor = targetObstructedColor;
+                entityRayColor = TargetObstructedColor;
             }
             else
             {
                 float distance = Vector3.Distance(shotgunPosition, colliders[i].point);
                 entityRayColor = distance switch
                 {
-                    < 3.7f => maxEntityDamageColor,
-                    < 6f => midEntityDamageColor,
-                    _ => minEntityDamageColor,
+                    < 3.7f => MaxEntityDamageColor,
+                    < 6f => MidEntityDamageColor,
+                    _ => MinEntityDamageColor,
                 };
             }
 

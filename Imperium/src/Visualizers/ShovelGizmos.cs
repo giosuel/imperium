@@ -1,6 +1,6 @@
 #region
 
-using Imperium.Core;
+using Imperium.API.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.MonoBehaviours;
 using UnityEngine;
@@ -9,8 +9,8 @@ using UnityEngine;
 
 namespace Imperium.Visualizers;
 
-internal class ShovelGizmos(ImpBinding<bool> visibleBinding)
-    : BaseVisualizer<Shovel, ShovelGizmo>(visibleBinding: visibleBinding)
+internal class ShovelGizmos(ImpBinding<bool> visibilityBinding)
+    : BaseVisualizer<Shovel, ShovelGizmo>(visibilityBinding: visibilityBinding)
 {
     internal void Refresh(Shovel shovel, bool isActivelyHolding)
     {
@@ -24,6 +24,6 @@ internal class ShovelGizmos(ImpBinding<bool> visibleBinding)
         }
 
         shotgunGizmo.Init(shovel, isActivelyHolding);
-        shotgunGizmo.gameObject.SetActive(ImpSettings.Visualizations.ShovelIndicators.Value);
+        shotgunGizmo.gameObject.SetActive(Imperium.Settings.Visualization.ShovelIndicators.Value);
     }
 }

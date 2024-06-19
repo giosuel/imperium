@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <PropertyGroup>
+        <LethalCompanyDir>/path/to/decomp</LethalCompanyDir>
+        <TestProfileDir>/path/to/plugins</TestProfileDir>
+        <ShouldCopyToTestProfile>false</ShouldCopyToTestProfile>
+    </PropertyGroup>
+</Project>

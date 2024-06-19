@@ -33,7 +33,7 @@ public class SpawnIndicator : MonoBehaviour
     private void Update()
     {
         var timeLeft = Math.Max(
-            (spawnTime - Imperium.TimeOfDay.currentDayTime) / Imperium.GameManager.TimeSpeed.Value,
+            (spawnTime - Imperium.TimeOfDay.currentDayTime) / Imperium.MoonManager.TimeSpeed.Value,
             0
         );
 

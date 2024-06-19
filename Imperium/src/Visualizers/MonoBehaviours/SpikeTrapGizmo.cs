@@ -1,10 +1,11 @@
 #region
 
 using System.Collections.Generic;
-using Imperium.Core;
+using Imperium.API;
 using Imperium.Util;
 using TMPro;
 using UnityEngine;
+using Visualization = Imperium.Core.Visualization;
 
 #endregion
 
@@ -35,8 +36,8 @@ public class SpikeTrapGizmo : MonoBehaviour
         {
             sphere.GetComponent<MeshRenderer>().material =
                 !Physics.CheckSphere(spikeTrap.laserEye.position, 8f, 524288, QueryTriggerInteraction.Collide)
-                    ? ImpAssets.WireframeRedMaterial
-                    : ImpAssets.WireframeGreenMaterial;
+                    ? Materials.WireframeRed
+                    : Materials.WireframeGreen;
             isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp > slamInterval;
         }
         else
@@ -76,7 +77,7 @@ public class SpikeTrapGizmo : MonoBehaviour
         }
 
         // Set collider visualizer colors based on if the trap does damage.
-        var material = isSlamming ? ImpAssets.WireframeRedMaterial : ImpAssets.WireframeGreenMaterial;
+        var material = isSlamming ? Materials.WireframeRed : Materials.WireframeGreen;
         foreach (var collider in colliders)
         {
             collider.SetActive(true);
@@ -105,7 +106,7 @@ public class SpikeTrapGizmo : MonoBehaviour
 
         sphere = ImpGeometry.CreatePrimitive(
             PrimitiveType.Sphere, spikeTrap.transform,
-            ImpAssets.WireframeRedMaterial, 8
+            Materials.WireframeRed, 8
         );
         sphere.SetActive(false);
 
@@ -118,7 +119,7 @@ public class SpikeTrapGizmo : MonoBehaviour
         foreach (var collider in trap.GetComponentsInChildren<BoxCollider>())
         {
             var visualizer = Visualization.VisualizeBoxCollider(
-                collider, ImpAssets.WireframeGreenMaterial, "SpikeTrap"
+                collider, Materials.WireframeGreen, "SpikeTrap"
             );
             visualizer.SetActive(false);
             colliders.Add(visualizer);

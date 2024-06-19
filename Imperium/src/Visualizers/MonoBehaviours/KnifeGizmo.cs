@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.API;
 using Imperium.Util;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
@@ -24,8 +25,9 @@ public class KnifeGizmo : MonoBehaviour
 
     private void Awake()
     {
-        capsule = ImpGeometry.CreatePrimitive(PrimitiveType.Capsule, transform,
-            ImpAssets.WireframePurpleMaterial);
+        capsule = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Capsule, transform, Materials.WireframePurple
+        );
     }
 
     public void Init(KnifeItem item, bool isHolding)
@@ -75,9 +77,9 @@ public class KnifeGizmo : MonoBehaviour
             {
                 color = Color.white;
             }
-            else if ((hit.point != Vector3.zero
-                      && Physics.Linecast(position, hit.point, out _,
-                          Imperium.StartOfRound.collidersAndRoomMaskAndDefault))
+            else if (hit.point != Vector3.zero
+                     && Physics.Linecast(position, hit.point, out _,
+                         Imperium.StartOfRound.collidersAndRoomMaskAndDefault)
                      || !hit.transform.TryGetComponent<IHittable>(out _)
                      || hit.transform == playerTransform.transform)
             {
