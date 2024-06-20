@@ -17,6 +17,7 @@ public abstract class ImpAssets
      * UI Prefabs
      */
     internal static GameObject ImperiumDockObject;
+    internal static GameObject ImperiumTooltipObject;
 
     internal static GameObject ImperiumUIObject;
     internal static GameObject MapUIObject;
@@ -97,6 +98,7 @@ public abstract class ImpAssets
         List<bool> loadResults =
         [
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/imperium_dock.prefab", out ImperiumDockObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/tooltip.prefab", out ImperiumTooltipObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/imperium_ui.prefab", out ImperiumUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/layer_selector.prefab", out LayerSelectorObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/map_ui.prefab", out MapUIObject),

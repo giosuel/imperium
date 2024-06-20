@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
@@ -48,7 +49,7 @@ internal abstract class ImpMultiSelectEntry
 
         entryInteractable.onEnter += () => hoverBinding.Set(value);
         entryInteractable.onExit += () => hoverBinding.Set(default);
-        entryInteractable.onClick += () => selectionBinding.Set(value);
+        entryInteractable.onDown += () => selectionBinding.Set(value);
 
         selectionBinding.onUpdate += selectedValue =>
         {

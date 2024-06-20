@@ -21,7 +21,7 @@ internal class GameManager : ImpLifecycleObject
         if (NetworkManager.Singleton.IsHost) FulfillQuotaEvent.OnServerReceive += FulfillQuota;
     }
 
-    internal readonly ImpBinding<int> CustomSeed = new(-1);
+    internal readonly ImpBinding<int> CustomSeed = new(-1, -1);
 
     internal readonly ImpNetworkBinding<int> GroupCredits = new(
         "GroupCredits",

@@ -1,5 +1,6 @@
 #region
 
+using Imperium.Interface;
 using Imperium.Interface.MapUI;
 using Imperium.Types;
 using Imperium.Util;
@@ -34,8 +35,6 @@ internal class MinimapOverlay : BaseUI
 
     protected override void InitUI()
     {
-        Imperium.IO.LogInfo("INIT MINIMAP");
-
         mapBorder = container.Find("MapBorder");
         timeText = container.Find("MapBorder/Clock/Text").GetComponent<TMP_Text>();
         envText = container.Find("MapBorder/Clock/Day/Text").GetComponent<TMP_Text>();
@@ -122,8 +121,6 @@ internal class MinimapOverlay : BaseUI
 
     private void Update()
     {
-        Imperium.IO.LogInfo("UDPATEE");
-
         infoPanel.SetActive(Imperium.Settings.Map.MinimapInfoPanel.Value);
         locationPanel.SetActive(Imperium.Settings.Map.MinimapLocationPanel.Value);
 
@@ -159,20 +156,13 @@ internal class MinimapOverlay : BaseUI
             compassWest.localRotation = Quaternion.Euler(new Vector3(0, 0, -rotationY));
         }
 
-        Imperium.IO.LogInfo("UDPATEE");
-
         // Automatically open this UI when nothing else is open
         if (Imperium.Player.quickMenuManager.isMenuOpen &&
             (!Imperium.Interface.Get<MinimapSettings>()?.IsOpen ?? true)
             || !Imperium.Settings.Map.MinimapEnabled.Value
             || Imperium.Freecam.IsFreecamEnabled.Value)
         {
-            Imperium.IO.LogInfo("ISOPEN");
-            if (IsOpen)
-            {
-                Imperium.IO.LogInfo("CLOSING RN");
-                Close();
-            }
+            if (IsOpen) Close();
         }
         else
         {

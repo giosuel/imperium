@@ -45,7 +45,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
         this.identifier = identifier;
 
         Value = currentValue;
-        DefaultValue = EqualityComparer<T>.Default.Equals(defaultValue, default)
+        DefaultValue = !EqualityComparer<T>.Default.Equals(defaultValue, default)
             ? defaultValue
             : currentValue;
 
@@ -66,7 +66,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
 
     private void OnServerReceived(BindingUpdateRequest<T> request, ulong clientId)
     {
-        Imperium.IO.LogInfo($"Server received binding update for {identifier}");
+        Imperium.IO.LogInfo($"[NET] Server received binding update for {identifier}");
         if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
         {
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
@@ -78,7 +78,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
 
     private void OnClientReceived(BindingUpdateRequest<T> updatedValue)
     {
-        Imperium.IO.LogInfo($"Client received binding update for {identifier}");
+        Imperium.IO.LogInfo($"[NET] Client received binding update for {identifier}");
         Value = updatedValue.Payload;
 
         if (updatedValue.InvokeUpdate)

@@ -60,10 +60,13 @@ internal class PlayerManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void KillPlayer(ulong playerId) => killPlayerMessage.DispatchToServer(playerId);
+    internal void KillPlayer(ulong playerId) => killPlayerMessage.DispatchToClients(playerId);
 
     [ImpAttributes.RemoteMethod]
-    internal void RevivePlayer(ulong playerId) => revivePlayerMessage.DispatchToServer(playerId);
+    internal void RevivePlayer(ulong playerId) => revivePlayerMessage.DispatchToClients(playerId);
+
+    [ImpAttributes.RemoteMethod]
+    internal void TeleportPlayer(TeleportPlayerRequest request) => teleportPlayerMessage.DispatchToClients(request);
 
     [ImpAttributes.RemoteMethod]
     internal void TeleportLocalPlayer(Vector3 position) => TeleportPlayer(new TeleportPlayerRequest
@@ -71,9 +74,6 @@ internal class PlayerManager : ImpLifecycleObject
         PlayerId = NetworkManager.Singleton.LocalClientId,
         Destination = position
     });
-
-    [ImpAttributes.RemoteMethod]
-    internal void TeleportPlayer(TeleportPlayerRequest request) => teleportPlayerMessage.DispatchToClients(request);
 
     [ImpAttributes.RemoteMethod]
     internal void DropItem(ulong playerId, int itemIndex)

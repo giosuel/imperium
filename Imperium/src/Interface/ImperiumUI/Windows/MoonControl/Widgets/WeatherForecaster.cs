@@ -83,7 +83,7 @@ public class WeatherForecaster : ImpWidget
                 Imperium.MoonManager.ChangeWeather(new ChangeWeatherRequest
                 {
                     LevelIndex = levelIndex,
-                    WeatherType = (LevelWeatherType)(dropdown.value - 1)
+                    WeatherType = (LevelWeatherType)dropdown.value
                 });
             });
         }

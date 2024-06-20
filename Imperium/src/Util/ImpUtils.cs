@@ -7,6 +7,7 @@ using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -130,6 +131,28 @@ public abstract class ImpUtils
                 : item.isInFactory
                     ? "Indoors"
                     : "Outdoors";
+    }
+
+    /// <summary>
+    /// Attempts to deserialize a JSON string into a given object. If <see cref="JsonSerializationException"/> is thrown
+    /// or the resulting object is null, false is returned and default is assigned to the out argument.
+    /// </summary>
+    /// <param name="jsonString"></param>
+    /// <param name="deserializedObj"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static bool DeserializeJsonSafe<T>(string jsonString, out T deserializedObj)
+    {
+        try
+        {
+            deserializedObj = JsonConvert.DeserializeObject<T>(jsonString);
+            return deserializedObj != null;
+        }
+        catch (JsonSerializationException)
+        {
+            deserializedObj = default;
+            return false;
+        }
     }
 
     public static string GetItemHeldByText(GrabbableObject item)

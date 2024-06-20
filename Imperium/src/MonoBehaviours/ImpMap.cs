@@ -64,7 +64,7 @@ public class ImpMap : MonoBehaviour
         Imperium.IngamePlayerSettings.playerInput.actions.FindAction("SwitchItem").performed += OnMouseScroll;
 
         Minimap = Instantiate(ImpAssets.MinimapOverlayObject).AddComponent<MinimapOverlay>();
-        Minimap.InitUI(Imperium.Theme);
+        Minimap.InitUI(Imperium.Interface.Theme);
         Minimap.onOpen += OnMinimapOpen;
         Minimap.onClose += OnMinimapClose;
     }

@@ -24,9 +24,9 @@ internal static class RoundManagerPatch
     private static void SpawnScrapInLevelPrefixPatch(RoundManager __instance)
     {
         var random = ImpUtils.CloneRandom(__instance.AnomalyRandom);
-        MoonContainer.Current.ScrapAmount = (int)(random.Next(
+        Imperium.MoonManager.ScrapAmount = (int)(random.Next(
             __instance.currentLevel.minScrap, __instance.currentLevel.maxScrap) * __instance.scrapAmountMultiplier);
-        MoonContainer.Current.ChallengeScrapAmount = MoonContainer.Current.ScrapAmount + random.Next(10, 30);
+        Imperium.MoonManager.ChallengeScrapAmount = Imperium.MoonManager.ScrapAmount + random.Next(10, 30);
     }
 
     [HarmonyPrefix]

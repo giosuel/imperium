@@ -46,7 +46,7 @@ public class Destinations : ImpWidget
         var navigationButtonObj = Instantiate(templateButton, buttonContainer);
         navigationButtonObj.SetActive(true);
 
-        var navigationButton = navigationButtonObj.AddComponent<NavigatorButton>();
+        var navigationButton = navigationButtonObj.AddComponent<DestinationButton>();
         navigationButton.Init(levelIndex, () => GameManager.NavigateTo(levelIndex));
         onOpen += navigationButton.OnOpen;
 

@@ -35,6 +35,7 @@ internal static class GrabbableObjectPatch
         }
 
         // Refresh object explorer for drop button
+        Imperium.IO.LogInfo("REFRESH EQUIPD");
         Imperium.Interface.Get<ImperiumUI>().Get<ObjectExplorerWindow>().Refresh();
     }
 

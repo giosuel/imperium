@@ -48,7 +48,7 @@ public class ImpFreecam : MonoBehaviour
 
         var layerSelectorObject = Instantiate(ImpAssets.LayerSelectorObject, transform);
         layerSelector = layerSelectorObject.AddComponent<LayerSelector>();
-        layerSelector.InitUI(Imperium.Theme, false);
+        layerSelector.InitUI(Imperium.Interface.Theme);
         layerSelector.Bind(Imperium.Settings.Freecam.LayerSelector, Imperium.Settings.Freecam.FreecamLayerMask);
 
         IsFreecamEnabled.onTrue += OnFreecamEnable;

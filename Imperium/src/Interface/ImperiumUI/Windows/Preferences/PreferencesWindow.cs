@@ -34,6 +34,7 @@ internal class PreferencesWindow : ImperiumWindow
             theme,
             new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer"))
         );
+        ImpToggle.Bind("TooltipsToggle", general, Imperium.Settings.Preferences.ShowTooltips, theme);
 
         var hosting = content.Find("Grid/Hosting/Hosting");
         ImpToggle.Bind(
@@ -77,7 +78,6 @@ internal class PreferencesWindow : ImperiumWindow
         ImpThemeManager.Style(
             updatedTheme,
             content,
-            new StyleOverride("Appearance", Variant.DARKER),
             new StyleOverride("Appearance", Variant.DARKER)
         );
 

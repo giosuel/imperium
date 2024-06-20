@@ -75,6 +75,11 @@ internal class InfoWindow : ImperiumWindow
         Imperium.IsSceneLoaded.onUpdate += _ => OnSceneChange();
     }
 
+    protected override void OnOpen()
+    {
+        OnSceneChange();
+    }
+
     public void OnSceneChange()
     {
         seed.text = Imperium.StartOfRound.randomMapSeed.ToString();
@@ -85,7 +90,7 @@ internal class InfoWindow : ImperiumWindow
             (Imperium.StartOfRound.currentLevel.maxEnemyPowerCount + powerIncreaseRandom.Next(0, 8)).ToString();
         outdoorPowerIncrease.text =
             (Imperium.StartOfRound.currentLevel.maxOutsideEnemyPowerCount + powerIncreaseRandom.Next(0, 8)).ToString();
-        scrapSpawnIncrease.text = $"+{MoonContainer.Current.ChallengeScrapAmount - MoonContainer.Current.ScrapAmount}";
+        scrapSpawnIncrease.text = $"+{Imperium.MoonManager.ChallengeScrapAmount - Imperium.MoonManager.ScrapAmount}";
 
         var weatherRandom = new Random(StartOfRound.Instance.randomMapSeed);
         weather1Multiplier.text = $"x{(weatherRandom.Next(0, 100) < 20 ? weatherRandom.Next(20, 80) * 0.02f : 1)}";
@@ -128,8 +133,8 @@ internal class InfoWindow : ImperiumWindow
         doors.text = Imperium.ObjectManager.CurrentLevelDoors.Value.Count.ToString();
         securityDoors.text = Imperium.ObjectManager.CurrentLevelSecurityDoors.Value.Count.ToString();
 
-        maxIndoorPower.text = MoonContainer.Current.OriginalMoonData.maxIndoorPower.ToString();
-        maxOutdoorPower.text = MoonContainer.Current.OriginalMoonData.maxOutdoorPower.ToString();
-        maxDaytimePower.text = MoonContainer.Current.OriginalMoonData.maxDaytimePower.ToString();
+        maxIndoorPower.text = Imperium.RoundManager.currentLevel.maxEnemyPowerCount.ToString();
+        maxOutdoorPower.text = Imperium.RoundManager.currentLevel.maxOutsideEnemyPowerCount.ToString();
+        maxDaytimePower.text = Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount.ToString();
     }
 }

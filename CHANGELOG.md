@@ -2,23 +2,33 @@
 
 ## Imperium v0.2.0 [Beta] - The UI Update
 
-This update is mainly aimed at the UI rework. I switched from static views with frozen windows to a more dynamic approach with floating windows! 
+This update is a large one and aimed at the complete rework of the UI system. I decided to switch from static views with frozen windows to a more dynamic approach with floating windows!
 
 Besides that, I also re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
 
 ### Added Stuff
 
+- Merged most of the smaller windows into a large Imperium UI that supports floating windows.
+- Added tooltips to serve as in-game help with the interface.
+- Merged the navigator window and ship settings into a new Ship Control UI.
+- Moon settings were merged with the moon control center into a new Moon Control UI.
+- The teleport UI and the waypoint manager were merged into a new Teleportation UI.
+- Added support for modded weathers in the Moon Control UI.
 - Added scrap, entity and map hazard spawning functions to the Imperium API.
 - Added steam valves as new map hazard in the object explorer and spawn UI.
-- Added a slider to change the current time of the day.
 
 ### QOL Changes
 
-- Toggling objects in the object explorer is now synced with other clients.
-- Disabling entities now results in them being frozen instead of deactivated.
-- Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
-- Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
-- Toggling steam valves will burst / repair them.
+- Small rework of the Object Explorer.
+  - Toggling objects in the object explorer is now synced with other clients.
+  - Disabling entities now results in them being frozen instead of deactivated.
+  - Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
+  - Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
+  - Toggling steam valves will burst / repair them.
+
+- Adjusted all themes to better match the new overlapping window style.
+- Pausing time is now possible from space.
+- Modded weather and moons now show up correctly in the respective UIs.
 - Freecam flight controls were changed to match with the creative flying controls
   - `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Enable / Disable the selected layer
 

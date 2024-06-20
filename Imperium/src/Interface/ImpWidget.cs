@@ -8,29 +8,33 @@ namespace Imperium.Interface;
 public abstract class ImpWidget : MonoBehaviour
 {
     protected IBinding<ImpTheme> theme;
-    protected Action onOpen;
-    protected Action onClose;
+    protected event Action onOpen;
+    protected event Action onClose;
+    protected ImpTooltip tooltip { get; private set; }
 
-    protected ICloseable parent;
+    internal void Init(IBinding<ImpTheme> themeBinding, ImpTooltip tooltipReference)
+    {
+        theme = themeBinding;
+        tooltip = tooltipReference;
+        theme.onUpdate += OnThemeUpdate;
+
+        InitWidget();
+    }
 
     internal void Init(
-        ICloseable parentInterface,
         IBinding<ImpTheme> themeBinding,
+        ImpTooltip tooltipReference,
         ref Action onOpenAction,
         ref Action onCloseAction
     )
     {
-        parent = parentInterface;
-        theme = themeBinding;
-        theme.onUpdate += OnThemeUpdate;
-
-        onOpen = onOpenAction;
-        onClose = onCloseAction;
+        onOpenAction += () => onOpen?.Invoke();
+        onCloseAction += () => onClose?.Invoke();
 
         onOpenAction += OnOpen;
         onCloseAction += OnClose;
 
-        InitWidget();
+        Init(themeBinding, tooltipReference);
     }
 
     protected virtual void OnOpen()
@@ -41,7 +45,9 @@ public abstract class ImpWidget : MonoBehaviour
     {
     }
 
-    protected abstract void InitWidget();
+    protected virtual void InitWidget()
+    {
+    }
 
     protected virtual void OnThemeUpdate(ImpTheme themeUpdate)
     {

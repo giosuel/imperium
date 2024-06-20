@@ -158,7 +158,7 @@ public static class ImpThemeManager
         {
             "Imperium", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#4F0505F6"),
+                backgroundColor = HEXToRGB("#4F0505FA"),
                 primaryColor = HEXToRGB("#D63300"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -166,7 +166,7 @@ public static class ImpThemeManager
         {
             "Prismarine", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#061C14F6"),
+                backgroundColor = HEXToRGB("#061C14FB"),
                 primaryColor = HEXToRGB("#24C69E"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -174,7 +174,7 @@ public static class ImpThemeManager
         {
             "Forest", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#0D170CF6"),
+                backgroundColor = HEXToRGB("#0D170CFB"),
                 primaryColor = HEXToRGB("#2A9130"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -182,7 +182,7 @@ public static class ImpThemeManager
         {
             "Dunes", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#2A241EF6"),
+                backgroundColor = HEXToRGB("#2A241EFB"),
                 primaryColor = HEXToRGB("#DE8735"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -190,7 +190,7 @@ public static class ImpThemeManager
         {
             "Nordic", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#12131CF6"),
+                backgroundColor = HEXToRGB("#12131CFB"),
                 primaryColor = HEXToRGB("#84A7BC"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -198,7 +198,7 @@ public static class ImpThemeManager
         {
             "Breeze", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#090B1CF6"),
+                backgroundColor = HEXToRGB("#090B1CFB"),
                 primaryColor = HEXToRGB("#3088BE"),
                 textColor = HEXToRGB("#FFFFFF")
             }
@@ -214,7 +214,7 @@ public static class ImpThemeManager
         {
             "Vertex", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#23020AF9"),
+                backgroundColor = HEXToRGB("#23020AFB"),
                 primaryColor = HEXToRGB("#B21845"),
                 textColor = HEXToRGB("#FFFFFF")
             }

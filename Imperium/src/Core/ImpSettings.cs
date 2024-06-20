@@ -103,22 +103,22 @@ public class ImpSettings(ConfigFile config)
 
     internal class TimeSettings(ConfigFile config) : SettingBase(config)
     {
-        internal readonly ImpConfig<bool> RealtimeClock = new(config, "Time", "RealtimeClock", true);
-        internal readonly ImpConfig<bool> PermanentClock = new(config, "Time", "PermanentClock", true);
+        internal readonly ImpConfig<bool> RealtimeClock = new(config, "Game.Time", "RealtimeClock", true);
+        internal readonly ImpConfig<bool> PermanentClock = new(config, "Game.Time", "PermanentClock", true);
     }
 
     internal class ShipSettings(ConfigFile config) : SettingBase(config)
     {
         internal readonly ImpConfig<bool> OverwriteDoors = new(
             config,
-            "Ship",
+            "Game.Ship",
             "OverwriteDoors",
             false
         );
 
         internal readonly ImpConfig<bool> MuteSpeaker = new(
             config,
-            "Ship",
+            "Game.Ship",
             "MuteSpeaker",
             true,
             value => Imperium.StartOfRound.speakerAudioSource.mute = value
@@ -126,28 +126,28 @@ public class ImpSettings(ConfigFile config)
 
         [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> DisableAbandoned = new(
             config,
-            "Ship",
+            "Game.Ship",
             "DisableAbandoned",
             false
         );
 
         [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> PreventLeave = new(
             config,
-            "Ship",
+            "Game.Ship",
             "PreventLeave",
             false
         );
 
         [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantLanding = new(
             config,
-            "Ship",
+            "Game.Ship",
             "InstantLanding",
             false
         );
 
         [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InstantTakeoff = new(
             config,
-            "Ship",
+            "Game.Ship",
             "InstantTakeoff",
             false
         );
@@ -198,35 +198,35 @@ public class ImpSettings(ConfigFile config)
         /// </summary>
         internal readonly ImpConfig<bool> SmoothAnimations = new(
             config,
-            "Preferences.Visualizers",
+            "Visualization.Visualizers",
             "SmoothAnimations",
             true
         );
 
         internal readonly ImpConfig<bool> SSAlwaysOnTop = new(
             config,
-            "Preferences.Visualizers.ScreenSpace",
+            "Visualization.Insights",
             "AlwaysOnTop",
             true
         );
 
         internal readonly ImpConfig<bool> SSAutoScale = new(
             config,
-            "Preferences.Visualizers.ScreenSpace",
+            "Visualization.Insights",
             "AutoScale",
             true
         );
 
         internal readonly ImpConfig<bool> SSHideInactive = new(
             config,
-            "Preferences.Visualizers.ScreenSpace",
+            "Visualization.Insights",
             "HideInactive",
             false
         );
 
         internal readonly ImpConfig<float> SSOverlayScale = new(
             config,
-            "Preferences.Visualizers.ScreenSpace",
+            "Visualization.Insights",
             "OverlayScale",
             1
         );
@@ -796,8 +796,8 @@ public class ImpSettings(ConfigFile config)
 
         internal readonly ImpConfig<string> ImperiumWindowLayout = new(
             config,
-            "Preferences.WindowLayout",
-            "CustomWelcome",
+            "Preferences.Appearance",
+            "WindowLayout",
             ""
         );
 

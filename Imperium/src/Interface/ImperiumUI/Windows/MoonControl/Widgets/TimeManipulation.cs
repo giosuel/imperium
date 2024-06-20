@@ -1,4 +1,3 @@
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util;
@@ -10,16 +9,6 @@ public class TimeManipulation : ImpWidget
 {
     protected override void InitWidget()
     {
-        var timeScaleInteractable = new ImpBinding<bool>(false);
-        Imperium.MoonManager.TimeIsPaused.onUpdate += isPaused =>
-        {
-            timeScaleInteractable.Set(!isPaused && Imperium.IsSceneLoaded.Value);
-        };
-        Imperium.IsSceneLoaded.onUpdate += isSceneLoaded =>
-        {
-            timeScaleInteractable.Set(isSceneLoaded && !Imperium.MoonManager.TimeIsPaused.Value);
-        };
-
         ImpSlider.Bind(
             path: "TimeSpeed",
             container: transform,
@@ -28,14 +17,15 @@ public class TimeManipulation : ImpWidget
             useLogarithmicScale: true,
             debounceTime: 0.05f,
             theme: theme,
-            interactableBindings: timeScaleInteractable
+            interactableBindings: Imperium.MoonManager.TimeIsPaused,
+            interactableInvert: true
         );
+
         ImpToggle.Bind(
             "TimeSettings/Pause",
             transform,
             Imperium.MoonManager.TimeIsPaused,
-            theme,
-            interactableBindings: Imperium.IsSceneLoaded
+            theme
         );
 
         ImpToggle.Bind("TimeSettings/RealtimeClock", transform, Imperium.Settings.Time.RealtimeClock, theme);

@@ -16,7 +16,6 @@ using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
-using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -92,7 +91,7 @@ public class Imperium : BaseUnityPlugin
     internal static bool IsImperiumLaunched { get; private set; }
 
     /// <summary>
-    ///     Set to true, when Imperium access is first granted. Always set to true the host.
+    ///     Set to true, when Imperium access is first granted. Always set to true on the host.
     /// </summary>
     internal static bool WasImperiumAccessGranted { get; private set; }
 
@@ -100,8 +99,6 @@ public class Imperium : BaseUnityPlugin
     ///     Binding that updates whenever the scene ship lands and takes off.
     /// </summary>
     internal static ImpBinaryBinding IsSceneLoaded { get; private set; }
-
-    internal static ImpBinding<ImpTheme> Theme { get; private set; }
 
     private void Awake()
     {
@@ -157,11 +154,11 @@ public class Imperium : BaseUnityPlugin
         HUDManager = FindObjectOfType<HUDManager>();
 
         IsSceneLoaded = new ImpBinaryBinding(false);
-        Theme = new ImpBinding<ImpTheme>(ImpThemeManager.DefaultTheme);
+
+        Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 
         Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();
-        Interface = ImpInterfaceManager.Create(Theme);
         NightVision = ImpNightVision.Create();
         NoiseListener = ImpNoiseListener.Create();
         ImpPositionIndicator = ImpPositionIndicator.Create();
@@ -175,7 +172,7 @@ public class Imperium : BaseUnityPlugin
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
 
-        MoonContainer.Create(ObjectManager);
+        // MoonContainer.Create(ObjectManager);
 
         MoonManager.IndoorSpawningPaused.onTrigger += Oracle.Simulate;
         MoonManager.OutdoorSpawningPaused.onTrigger += Oracle.Simulate;
@@ -249,15 +246,38 @@ public class Imperium : BaseUnityPlugin
 
     private static void SpawnUI()
     {
-        Interface.RegisterInterface<ImperiumUI>(ImpAssets.ImperiumUIObject, "ImperiumUI", "<Keyboard>/F1");
-        Interface.RegisterInterface<SpawningUI>(ImpAssets.SpawningUIObject, "SpawningUI", "<Keyboard>/F2");
-        Interface.RegisterInterface<OracleUI>(ImpAssets.OracleUIObject, "OracleUI", "<Keyboard>/F6");
-        Interface.RegisterInterface<MapUI>(ImpAssets.MapUIObject, "MapUI", "<Keyboard>/F8");
-        Interface.RegisterInterface<MapUI>(ImpAssets.MinimapSettingsObject);
+        Interface.RegisterInterface<ImperiumUI>(
+            ImpAssets.ImperiumUIObject,
+            "ImperiumUI",
+            "Imperium UI",
+            "Imperium's main interface.",
+            "<Keyboard>/F1"
+        );
+        Interface.RegisterInterface<SpawningUI>(
+            ImpAssets.SpawningUIObject,
+            "SpawningUI",
+            "Spawning",
+            "Allows you to spawn objects\nsuch as Scrap or Entities.",
+            "<Keyboard>/F2"
+        );
+        Interface.RegisterInterface<OracleUI>(
+            ImpAssets.OracleUIObject,
+            "OracleUI",
+            "Oracle",
+            "Entity spawning predictions.",
+            "<Keyboard>/F6"
+        );
+        Interface.RegisterInterface<MapUI>(
+            ImpAssets.MapUIObject,
+            "MapUI",
+            "Map",
+            "Imperium's built-in map.",
+            "<Keyboard>/F8"
+        );
+        Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
 
         Interface.StartListening();
-
-        ImpThemeManager.BindTheme(Settings.Preferences.Theme, Theme);
+        Interface.RefreshTheme();
 
         IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
     }

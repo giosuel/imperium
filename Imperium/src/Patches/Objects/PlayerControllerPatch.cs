@@ -133,6 +133,12 @@ internal static class PlayerControllerPatch
 
     #endregion
 
+    private static readonly int Walking = Animator.StringToHash("Walking");
+    private static readonly int Sprinting = Animator.StringToHash("Sprinting");
+    private static readonly int Sideways = Animator.StringToHash("Sideways");
+    private static readonly int Crouching = Animator.StringToHash("crouching");
+    private static readonly int Jumping = Animator.StringToHash("Jumping");
+
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
     private static void UpdatePrefixPatch(PlayerControllerB __instance)
@@ -165,11 +171,11 @@ internal static class PlayerControllerPatch
             __instance.fallValue = 0;
             __instance.fallValueUncapped = 0;
 
-            __instance.playerBodyAnimator.SetBool("Walking", value: false);
-            __instance.playerBodyAnimator.SetBool("Sprinting", value: false);
-            __instance.playerBodyAnimator.SetBool("Sideways", value: false);
-            __instance.playerBodyAnimator.SetBool("crouching", value: false);
-            __instance.playerBodyAnimator.SetBool("Jumping", value: true);
+            __instance.playerBodyAnimator.SetBool(Walking, value: false);
+            __instance.playerBodyAnimator.SetBool(Sprinting, value: false);
+            __instance.playerBodyAnimator.SetBool(Sideways, value: false);
+            __instance.playerBodyAnimator.SetBool(Crouching, value: false);
+            __instance.playerBodyAnimator.SetBool(Jumping, value: true);
             __instance.isCrouching = false;
         }
     }

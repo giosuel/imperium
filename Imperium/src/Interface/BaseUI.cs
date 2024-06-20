@@ -2,7 +2,6 @@
 
 using System;
 using Imperium.Core;
-using Imperium.Interface;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -12,7 +11,7 @@ using UnityEngine.InputSystem;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI;
+namespace Imperium.Interface;
 
 /// <summary>
 ///     Basic Imperium UI. Can be used as part of an <see cref="ImpInterfaceManager" /> or as standalone UI.
@@ -43,6 +42,8 @@ public abstract class BaseUI : MonoBehaviour, ICloseable
     /// </summary>
     protected ImpBinding<ImpTheme> theme;
 
+    protected ImpTooltip tooltip;
+
     internal event Action onOpen;
     internal event Action onClose;
 
@@ -53,11 +54,13 @@ public abstract class BaseUI : MonoBehaviour, ICloseable
 
     public virtual void InitUI(
         ImpBinding<ImpTheme> themeBinding,
+        ImpTooltip impTooltip = null,
         bool closeOnMovement = false,
         bool ignoreTab = false
     )
     {
         container = transform.Find("Container");
+        tooltip = impTooltip;
         closeOnMove = closeOnMovement;
         IgnoreTab = ignoreTab;
 
@@ -79,7 +82,9 @@ public abstract class BaseUI : MonoBehaviour, ICloseable
     /// <summary>
     ///     This function will be overriden by the implementing UIs to initialize their UI parts at spawn time
     /// </summary>
-    protected abstract void InitUI();
+    protected virtual void InitUI()
+    {
+    }
 
     private void CloseEvent(InputAction.CallbackContext _) => Close();
 

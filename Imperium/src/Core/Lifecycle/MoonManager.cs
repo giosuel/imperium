@@ -17,11 +17,15 @@ internal class MoonManager : ImpLifecycleObject
 {
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
+    public int ScrapAmount;
+    public int ChallengeScrapAmount;
+
     internal MoonManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
     {
         changeWeatherMessage.OnClientRecive += OnWeatherChange;
     }
+
 
     internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToClients(request);
 
