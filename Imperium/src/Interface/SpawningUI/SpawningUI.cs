@@ -44,12 +44,9 @@ internal class SpawningUI : BaseUI
         input.onValueChanged.AddListener(_ => OnInput(input.text));
         input.onSubmit.AddListener(_ => OnSubmit());
 
-        Imperium.InputBindings.SpawningMap["ArrowUp"].performed += OnSelectPrevious;
-        Imperium.InputBindings.SpawningMap["ArrowDown"].performed += OnSelectNext;
-        Imperium.InputBindings.SpawningMap["Submit"].performed += OnSelectNext;
-
-        onOpen += Imperium.InputBindings.SpawningMap.Enable;
-        onClose += Imperium.InputBindings.SpawningMap.Disable;
+        Imperium.InputBindings.BaseMap.PreviousItem.performed += OnSelectPrevious;
+        Imperium.InputBindings.BaseMap.NextItem.performed += OnSelectNext;
+        Imperium.InputBindings.BaseMap.SelectItem.performed += OnSelectNext;
 
         GenerateItems();
     }
@@ -149,6 +146,8 @@ internal class SpawningUI : BaseUI
 
     private void OnSelectNext(InputAction.CallbackContext callbackContext)
     {
+        if (!IsOpen) return;
+
         var traverseCounter = 0;
         do
         {
@@ -180,6 +179,8 @@ internal class SpawningUI : BaseUI
 
     private void OnSelectPrevious(InputAction.CallbackContext callbackContext)
     {
+        if (!IsOpen) return;
+
         var traverseCounter = 0;
         do
         {

@@ -138,7 +138,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
     {
     }
 
-    private void FocusWindow()
+    internal void FocusWindow()
     {
         transform.SetAsLastSibling();
         onFocus?.Invoke();
@@ -154,7 +154,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (Imperium.InputBindings.BaseMap["Alt"].IsPressed())
+        if (Imperium.InputBindings.StaticMap["Alt"].IsPressed())
         {
             var delta = eventData.delta.magnitude * 0.002f;
             var windowOrigin = new Vector2(transform.position.x, transform.position.y);

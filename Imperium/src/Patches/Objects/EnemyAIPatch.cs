@@ -22,7 +22,7 @@ internal static class EnemyAIPatch
         EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
     )
     {
-        if (!Imperium.IsImperiumReady) return true;
+        if (!Imperium.IsImperiumLoaded) return true;
 
         if (playerScript == Imperium.Player && Imperium.Settings.Player.Invisibility.Value)
         {
@@ -79,8 +79,9 @@ internal static class EnemyAIPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("CheckLineOfSight")]
-    private static void CheckLineOfSightPrefixPatch(EnemyAI __instance, List<GameObject> objectsToLookFor, float width,
-        int range, float proximityAwareness)
+    private static void CheckLineOfSightPrefixPatch(
+        EnemyAI __instance, List<GameObject> objectsToLookFor, float width, int range, float proximityAwareness
+    )
     {
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,

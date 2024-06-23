@@ -17,8 +17,10 @@ using Imperium.MonoBehaviours.ImpUI.SaveUI;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Imperium.Interface.ImperiumUI;
@@ -40,7 +42,8 @@ public class ImperiumUI : BaseUI
         RegisterImperiumWindow<TeleportationWindow>(
             ImpAssets.TeleportationWindowObject,
             "Left/Teleportation",
-            "Teleportation"
+            "Teleportation",
+            keybind: Imperium.InputBindings.InterfaceMap.TeleportWindow
         );
         RegisterImperiumWindow<RenderingWindow>(
             ImpAssets.RenderingWindowObject,
@@ -114,7 +117,8 @@ public class ImperiumUI : BaseUI
         GameObject obj,
         string dockButtonPath,
         string windowName,
-        string windowDescription = null
+        string windowDescription = null,
+        InputAction keybind = null
     ) where T : ImperiumWindow
     {
         if (windowControllers.ContainsKey(typeof(T))) return;
@@ -139,13 +143,17 @@ public class ImperiumUI : BaseUI
             container.Find("Dock"),
             () =>
             {
-                if (windowDefinition.IsOpen)
+                switch (windowDefinition.IsOpen)
                 {
-                    windowDefinition.Controller.Close();
-                }
-                else
-                {
-                    windowDefinition.Controller.Open();
+                    case true when GetFocusedWindow() == floatingWindow:
+                        windowDefinition.Controller.Close();
+                        break;
+                    case true:
+                        windowDefinition.Controller.FocusWindow();
+                        break;
+                    default:
+                        windowDefinition.Controller.Open();
+                        break;
                 }
             },
             theme,
@@ -167,6 +175,23 @@ public class ImperiumUI : BaseUI
         var buttonImage = button.GetComponent<Image>();
         buttonImage.enabled = buttonBinding.Value;
         buttonBinding.onUpdate += isOn => buttonImage.enabled = isOn;
+
+        if (keybind != null)
+        {
+            keybind.performed += _ =>
+            {
+                if (!IsOpen) Open();
+
+                if (windowDefinition.IsOpen)
+                {
+                    windowDefinition.Controller.FocusWindow();
+                }
+                else
+                {
+                    windowDefinition.Controller.Open();
+                }
+            };
+        }
     }
 
     protected override void OnClose() => SaveLayout();
@@ -174,6 +199,8 @@ public class ImperiumUI : BaseUI
     private void OnFocusWindow<T>() => controllerStack.MoveToBackOrAdd(windowControllers[typeof(T)]);
     private void OnOpenWindow<T>() => dockButtonBindings[typeof(T)].Set(true);
     private void OnCloseWindow<T>() => dockButtonBindings[typeof(T)].Set(false);
+
+    private ImperiumWindow GetFocusedWindow() => controllerStack.Last().Controller;
 
     private void SaveLayout()
     {

@@ -63,6 +63,7 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("AllowPlayerDeath")]
     private static bool AllowPlayerDeathPatch(PlayerControllerB __instance, ref bool __result)
     {
+        // Internal override for Object Explorer kill functionality that ignores god mode
         if (Imperium.PlayerManager.AllowPlayerDeathOverride)
         {
             __result = true;
@@ -75,8 +76,7 @@ internal static class PlayerControllerPatch
             return false;
         }
 
-        __result = true;
-        return false;
+        return true;
     }
 
     [HarmonyPostfix]

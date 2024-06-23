@@ -80,7 +80,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("YRotationThatFacesTheNearestFromPosition")]
     private static void YRotationThatFacesTheNearestFromPositionPatch(RoundManager __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
+        if (!Imperium.IsImperiumLoaded) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
         Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
@@ -91,7 +91,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("YRotationThatFacesTheFarthestFromPosition")]
     private static void YRotationThatFacesTheFarthestFromPosition(RoundManager __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
+        if (!Imperium.IsImperiumLoaded) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
         Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");

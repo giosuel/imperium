@@ -13,7 +13,7 @@ public static class BaboonHawkPatch
 {
     [HarmonyPostfix]
     [HarmonyPatch("DoLOSCheck")]
-    private static void DoLOSCheckPostfixPatch(RadMechAI __instance)
+    private static void DoLOSCheckPostfixPatch(BaboonBirdAI __instance)
     {
         Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
             __instance,

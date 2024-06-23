@@ -9,6 +9,7 @@ using Imperium.MonoBehaviours.ImpUI;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.LayerSelector;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -48,8 +49,8 @@ internal class MapUI : BaseUI
     {
         mapUICameraRect = GetCameraRect();
 
-        Imperium.InputBindings.BaseMap["Reset"].performed += OnMapReset;
-        Imperium.InputBindings.BaseMap["Minimap"].performed += OnMinimapToggle;
+        Imperium.InputBindings.BaseMap.Reset.performed += OnMapReset;
+        Imperium.InputBindings.BaseMap.Minimap.performed += OnMinimapToggle;
 
         InitCompass();
         InitSliders();
@@ -106,17 +107,9 @@ internal class MapUI : BaseUI
     {
         var mapBorder = container.Find("MapBorder");
         var canvasScale = GetComponent<Canvas>().scaleFactor;
-        var mapBorderRect = mapBorder.gameObject.GetComponent<RectTransform>().rect;
-        var layerSelectorWidth = container.Find("LayerSelector").GetComponent<RectTransform>().rect.width * canvasScale - 5;
-        var mapContainerWidth = mapBorderRect.width * canvasScale - 5;
-        var mapContainerHeight = mapBorderRect.height * canvasScale - 5;
+        var borderTransform = mapBorder.gameObject.GetComponent<RectTransform>();
 
-        return new Rect(
-            (1 - mapContainerWidth / Screen.width) / 2,
-            (1 - mapContainerHeight / Screen.height) / 2,
-            mapContainerWidth / Screen.width - layerSelectorWidth / Screen.width,
-            mapContainerHeight / Screen.height
-        );
+        return ImpGeometry.NormalizeRectTransform(borderTransform, canvasScale);
     }
 
     private static void OnMinimapToggle(InputAction.CallbackContext _)
@@ -443,8 +436,8 @@ internal class MapUI : BaseUI
         // Mouse input processing
         if (IsOpen && !mouseDragBlocked)
         {
-            var input = Imperium.InputBindings.BaseMap["Look"].ReadValue<Vector2>();
-            if (Imperium.InputBindings.BaseMap["LeftClick"].IsPressed())
+            var input = Imperium.Player.playerActions.Movement.Look.ReadValue<Vector2>();
+            if (Imperium.InputBindings.BaseMap.MapRotate.IsPressed())
             {
                 mouseOffsetX += input.x * 0.25f;
                 mouseOffsetY -= input.y * 0.25f;
@@ -461,7 +454,7 @@ internal class MapUI : BaseUI
                 snapBackAnimationTimer = 0;
                 cameraTargetRotation = new Vector3(mouseOffsetX, mouseOffsetY, 0);
             }
-            else if (Imperium.InputBindings.BaseMap["RightClick"].IsPressed())
+            else if (Imperium.InputBindings.BaseMap.MapPan.IsPressed())
             {
                 var inputVector = new Vector3(
                     -input.x * 0.0016f * Imperium.Settings.Map.CameraZoom.Value,

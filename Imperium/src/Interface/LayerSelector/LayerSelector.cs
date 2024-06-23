@@ -58,9 +58,9 @@ internal class LayerSelector : BaseUI
 
         layerToggles[0].SetSelected(true);
 
-        Imperium.InputBindings.FreecamMap["ArrowDown"].performed += OnLayerDown;
-        Imperium.InputBindings.FreecamMap["ArrowUp"].performed += OnLayerUp;
-        Imperium.InputBindings.FreecamMap["Select"].performed += OnLayerSelect;
+        Imperium.InputBindings.FreecamMap.NextLayer.performed += OnLayerDown;
+        Imperium.InputBindings.FreecamMap.PreviousLayer.performed += OnLayerUp;
+        Imperium.InputBindings.FreecamMap.ToggleLayer.performed += OnLayerToggleLayer;
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -129,7 +129,7 @@ internal class LayerSelector : BaseUI
         layerToggles[selectedLayer].SetSelected(true);
     }
 
-    private void OnLayerSelect(InputAction.CallbackContext callbackContext)
+    private void OnLayerToggleLayer(InputAction.CallbackContext callbackContext)
     {
         if (!IsOpen) return;
 

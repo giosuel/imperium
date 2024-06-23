@@ -2,20 +2,24 @@
 
 ## Imperium v0.2.0 [Beta] - The UI Update
 
-This update is a large one and aimed at the complete rework of the UI system. I decided to switch from static views with frozen windows to a more dynamic approach with floating windows!
+This update is a large one and mainly aimed at the rework of the UI system. As the current solution is quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows.
 
-Besides that, I also re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
+Alongside the new UI, I also decided to finally integrate [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
+
+Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
 
 ### Added Stuff
 
 - Merged most of the smaller windows into a large Imperium UI that supports floating windows.
 - Added tooltips to serve as in-game help with the interface.
+- Added [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/) integration to make keybinds changeable in the settings.
 - Merged the navigator window and ship settings into a new Ship Control UI.
 - Moon settings were merged with the moon control center into a new Moon Control UI.
 - The teleport UI and the waypoint manager were merged into a new Teleportation UI.
 - Added support for modded weathers in the Moon Control UI.
 - Added scrap, entity and map hazard spawning functions to the Imperium API.
 - Added steam valves as new map hazard in the object explorer and spawn UI.
+- Added new custom visualizer for Nutcrackers.
 
 ### QOL Changes
 
@@ -37,6 +41,7 @@ Besides that, I also re-wrote the whole internal networking and switched form ma
 - Fixed a bug where it was not possible to join an Imperium lobby without having Imperium installed.
 - Fixed the animation skipping options `Interact` and `InteractHold`.
 - Fixed a typo in a function signature in the Imperium API.
+- Fixed a bug where players could die in orbit when god mode was off.
 
 ## Imperium v0.1.9 [Beta] - The API Update
 

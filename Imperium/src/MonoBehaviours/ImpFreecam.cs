@@ -60,10 +60,10 @@ public class ImpFreecam : MonoBehaviour
         var lightObject = Instantiate(Imperium.Player.nightVision.gameObject, transform, false);
         lightObject.transform.position = Vector3.up;
 
-        Imperium.InputBindings.BaseMap["Freecam"].performed += OnFreecamToggle;
-        Imperium.InputBindings.BaseMap["Minicam"].performed += OnMinicamToggle;
-        Imperium.InputBindings.BaseMap["Reset"].performed += OnFreecamReset;
-        Imperium.InputBindings.FreecamMap["LayerSelector"].performed += OnToggleLayerSelector;
+        Imperium.InputBindings.BaseMap.Freecam.performed += OnFreecamToggle;
+        Imperium.InputBindings.BaseMap.Minicam.performed += OnMinicamToggle;
+        Imperium.InputBindings.BaseMap.Reset.performed += OnFreecamReset;
+        Imperium.InputBindings.FreecamMap.LayerSelector.performed += OnToggleLayerSelector;
         Imperium.Settings.Freecam.FreecamLayerMask.onUpdate += value => FreecamCamera.cullingMask = value;
     }
 
@@ -184,14 +184,14 @@ public class ImpFreecam : MonoBehaviour
             _ => Imperium.Settings.Freecam.FreecamMovementSpeed.Value
         });
 
-        if (Imperium.InputBindings.FreecamMap["ArrowLeft"].IsPressed())
+        if (Imperium.InputBindings.FreecamMap.IncreaseFOV.IsPressed())
         {
             Imperium.Settings.Freecam.FreecamFieldOfView.Set(
                 Mathf.Max(-360, Imperium.Settings.Freecam.FreecamFieldOfView.Value - 1)
             );
         }
 
-        if (Imperium.InputBindings.FreecamMap["ArrowRight"].IsPressed())
+        if (Imperium.InputBindings.FreecamMap.DecreaseFOV.IsPressed())
         {
             Imperium.Settings.Freecam.FreecamFieldOfView.Set(
                 Mathf.Min(360, Imperium.Settings.Freecam.FreecamFieldOfView.Value + 1)
@@ -202,7 +202,7 @@ public class ImpFreecam : MonoBehaviour
 
         var cameraTransform = transform;
 
-        var rotation = Imperium.InputBindings.BaseMap["Look"].ReadValue<Vector2>();
+        var rotation = Imperium.Player.playerActions.Movement.Look.ReadValue<Vector2>();
         lookInput.x += rotation.x * 0.008f * Imperium.IngamePlayerSettings.settings.lookSensitivity;
         lookInput.y += rotation.y * 0.008f * Imperium.IngamePlayerSettings.settings.lookSensitivity;
 
@@ -211,9 +211,9 @@ public class ImpFreecam : MonoBehaviour
 
         cameraTransform.rotation = Quaternion.Euler(-lookInput.y, lookInput.x, 0);
 
-        var movement = Imperium.InputBindings.FreecamMap["Move"].ReadValue<Vector2>();
-        var movementY = Imperium.InputBindings.FreecamMap["Ascend"].IsPressed() ? 1 :
-            Imperium.InputBindings.FreecamMap["Descend"].IsPressed() ? -1 : 0;
+        var movement = Imperium.IngamePlayerSettings.playerInput.actions.FindAction("Move").ReadValue<Vector2>();
+        var movementY = Imperium.InputBindings.BaseMap.FlyAscend.IsPressed() ? 1 :
+            Imperium.InputBindings.BaseMap.FlyDescend.IsPressed() ? -1 : 0;
         var deltaMove = new Vector3(movement.x, movementY, movement.y)
                         * (Imperium.Settings.Freecam.FreecamMovementSpeed.Value * Time.deltaTime);
         cameraTransform.Translate(deltaMove);

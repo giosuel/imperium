@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
-using Imperium.Integration;
 using Imperium.Interface;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -26,8 +24,6 @@ internal class ImpInterfaceManager : MonoBehaviour
     internal readonly ImpBinding<BaseUI> OpenInterface = new();
 
     private ImperiumDock imperiumDock;
-
-    private readonly InputActionMap interfaceMap = new();
     internal ImpBinding<ImpTheme> Theme { get; private set; }
 
     // We implement the exiting from UIs with bepinex controls as we have to differentiate
@@ -83,7 +79,7 @@ internal class ImpInterfaceManager : MonoBehaviour
         string dockButtonPath,
         string interfaceName,
         string interfaceDescription,
-        string keybind
+        InputAction keybind
     ) where T : BaseUI
     {
         RegisterInterface<T>(obj);
@@ -98,17 +94,10 @@ internal class ImpInterfaceManager : MonoBehaviour
             );
         }
 
-        if (!string.IsNullOrEmpty(keybind))
-        {
-            var bindingName = typeof(T).ToString();
-            interfaceMap.AddAction(bindingName, binding: keybind);
-            interfaceMap[bindingName].performed += _ => Toggle<T>();
-        }
+        keybind.performed += _ => Toggle<T>();
     }
 
     public void RefreshTheme() => Theme.Refresh();
-    public void StartListening() => interfaceMap.Enable();
-    public void StopListening() => interfaceMap.Disable();
 
     public void Unregister<T>()
     {

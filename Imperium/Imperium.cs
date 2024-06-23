@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Core.Input;
 using Imperium.Core.Lifecycle;
 using Imperium.Integration;
 using Imperium.Interface.ImperiumUI;
@@ -28,6 +29,7 @@ namespace Imperium;
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
 public class Imperium : BaseUnityPlugin
@@ -52,14 +54,14 @@ public class Imperium : BaseUnityPlugin
     internal static ShipBuildModeManager ShipBuildModeManager => ShipBuildModeManager.Instance;
 
     /*
-     * Preload systems. Loaded when Imperium is loaded by BepInEx.
+     * Preload systems. Instantiated when Imperium is loaded by BepInEx.
      */
     internal static ImpSettings Settings { get; private set; }
     internal static ImpOutput IO { get; private set; }
     internal static ImpNetworking Networking { get; set; }
 
     /*
-     * Lifecycle systems. Loaded when Imperium is launched.
+     * Lifecycle systems. Instantiated when Imperium is launched.
      */
     internal static GameManager GameManager { get; private set; }
     internal static ObjectManager ObjectManager { get; private set; }
@@ -70,7 +72,7 @@ public class Imperium : BaseUnityPlugin
     internal static Oracle Oracle { get; private set; }
 
     /*
-     * GameObjects and world-space managers. Loaded when Imperium is launched.
+     * GameObjects and world-space managers. Instantiated when Imperium is launched.
      */
     internal static ImpMap Map { get; private set; }
     internal static ImpFreecam Freecam { get; private set; }
@@ -83,7 +85,7 @@ public class Imperium : BaseUnityPlugin
     /// <summary>
     ///     Set to true, then Imperium is initally loaded by BepInEx.
     /// </summary>
-    internal static bool IsImperiumReady { get; private set; }
+    internal static bool IsImperiumLoaded { get; private set; }
 
     /// <summary>
     ///     Set to true, then Imperium is launched and ready be used and serve API calls.
@@ -94,6 +96,11 @@ public class Imperium : BaseUnityPlugin
     ///     Set to true, when Imperium access is first granted. Always set to true on the host.
     /// </summary>
     internal static bool WasImperiumAccessGranted { get; private set; }
+
+    /// <summary>
+    /// Set to true, when Imperium is loaded and imperium access is currently granted.
+    /// </summary>
+    internal static bool IsImperiumEnabled { get; private set; }
 
     /// <summary>
     ///     Binding that updates whenever the scene ship lands and takes off.
@@ -114,18 +121,22 @@ public class Imperium : BaseUnityPlugin
 
         IO.LogInfo("[OK] Imperium is ready!");
 
-        IsImperiumReady = true;
+        IsImperiumLoaded = true;
     }
 
     internal static void DisableImperium()
     {
         if (!IsImperiumLaunched) return;
 
+        IsImperiumEnabled = false;
+
         Interface.Close();
+        PlayerManager.IsFlying.SetFalse();
+
         InputBindings.BaseMap.Disable();
+        InputBindings.StaticMap.Disable();
         InputBindings.FreecamMap.Disable();
-        InputBindings.SpawningMap.Disable();
-        Interface.StopListening();
+        InputBindings.InterfaceMap.Disable();
     }
 
     internal static void EnableImperium()
@@ -133,14 +144,16 @@ public class Imperium : BaseUnityPlugin
         if (!IsImperiumLaunched) return;
 
         InputBindings.BaseMap.Enable();
+        InputBindings.StaticMap.Enable();
         InputBindings.FreecamMap.Enable();
-        InputBindings.SpawningMap.Enable();
-        Interface.StartListening();
+        InputBindings.InterfaceMap.Enable();
+
+        IsImperiumEnabled = true;
     }
 
     internal static void Launch()
     {
-        if (!IsImperiumReady)
+        if (!IsImperiumLoaded)
         {
             IO.Send("Imperium failed to launch \u2299︿\u2299");
             return;
@@ -198,7 +211,7 @@ public class Imperium : BaseUnityPlugin
         ObjectManager.CurrentLevelSpiderWebs.onTrigger += Visualization.RefreshOverlays;
         ObjectManager.CurrentLevelBreakerBoxes.onTrigger += Visualization.RefreshOverlays;
 
-        InputBindings.BaseMap["ToggleHUD"].performed += ToggleHUD;
+        InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
 
         Settings.LoadAll();
         PlayerManager.UpdateCameras();
@@ -210,6 +223,7 @@ public class Imperium : BaseUnityPlugin
 
         WasImperiumAccessGranted = true;
         IsImperiumLaunched = true;
+        IsImperiumEnabled = true;
 
         SpawnUI();
     }
@@ -251,32 +265,31 @@ public class Imperium : BaseUnityPlugin
             "ImperiumUI",
             "Imperium UI",
             "Imperium's main interface.",
-            "<Keyboard>/F1"
+            InputBindings.InterfaceMap.ImperiumUI
         );
         Interface.RegisterInterface<SpawningUI>(
             ImpAssets.SpawningUIObject,
             "SpawningUI",
             "Spawning",
             "Allows you to spawn objects\nsuch as Scrap or Entities.",
-            "<Keyboard>/F2"
+            InputBindings.InterfaceMap.SpawningUI
         );
         Interface.RegisterInterface<OracleUI>(
             ImpAssets.OracleUIObject,
             "OracleUI",
             "Oracle",
             "Entity spawning predictions.",
-            "<Keyboard>/F6"
+            InputBindings.InterfaceMap.OracleUI
         );
         Interface.RegisterInterface<MapUI>(
             ImpAssets.MapUIObject,
             "MapUI",
             "Map",
             "Imperium's built-in map.",
-            "<Keyboard>/F8"
+            InputBindings.InterfaceMap.MapUI
         );
         Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
 
-        Interface.StartListening();
         Interface.RefreshTheme();
 
         IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
