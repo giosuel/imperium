@@ -1,6 +1,5 @@
 #region
 
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 

@@ -1,7 +1,6 @@
 #region
 
 using Imperium.Interface.ImperiumUI.Windows.Visualization.Widgets;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.Types;
 
 #endregion

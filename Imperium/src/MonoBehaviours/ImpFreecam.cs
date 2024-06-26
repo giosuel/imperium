@@ -2,7 +2,6 @@
 
 using Imperium.Core;
 using Imperium.Interface.LayerSelector;
-using Imperium.MonoBehaviours.ImpUI.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;

@@ -198,7 +198,7 @@ public static class ImpGeometry
     }
 
     /// <summary>
-    /// Normalizes the bounds of a rect transform into a rect that has its coordinates between 0 and 1.
+    ///     Normalizes the bounds of a rect transform into a rect that has its coordinates between 0 and 1.
     /// </summary>
     public static Rect NormalizeRectTransform(RectTransform input, float canvasScale)
     {

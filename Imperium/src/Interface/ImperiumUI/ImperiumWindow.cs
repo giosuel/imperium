@@ -8,6 +8,7 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
@@ -74,9 +75,9 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         transform.gameObject.SetActive(false);
     }
 
-    internal void PlaceWindow(System.Numerics.Vector2 position, float scale, bool isOpen)
+    internal void PlaceWindow(Vector2 position, float scale, bool isOpen)
     {
-        transform.position = new Vector2(position.X, position.Y);
+        transform.position = new UnityEngine.Vector2(position.X, position.Y);
         transform.localScale = new Vector3(scale * 1, scale * 1, 1);
         scaleFactor = scale;
 
@@ -120,7 +121,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         FocusWindow();
 
         // Set position if is opened the first time
-        windowDefinition.Position = new System.Numerics.Vector2(transform.position.x, transform.position.y);
+        windowDefinition.Position = new Vector2(transform.position.x, transform.position.y);
         windowDefinition.IsOpen = true;
 
         onOpen?.Invoke();
@@ -151,14 +152,14 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
     }
 
     private float scaleFactor = 1f;
-    private Vector2 dragOrigin;
+    private UnityEngine.Vector2 dragOrigin;
 
     public void OnDrag(PointerEventData eventData)
     {
         if (Imperium.InputBindings.StaticMap["Alt"].IsPressed())
         {
             var delta = eventData.delta.magnitude * 0.002f;
-            var windowOrigin = new Vector2(transform.position.x, transform.position.y);
+            var windowOrigin = new UnityEngine.Vector2(transform.position.x, transform.position.y);
             if ((windowOrigin - eventData.position).magnitude <
                 (windowOrigin - eventData.position + eventData.delta).magnitude) delta *= -1;
             scaleFactor = Math.Clamp(scaleFactor + delta, 0.5f, 1f);
@@ -170,8 +171,8 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         }
         else
         {
-            transform.position = (Vector2)transform.position + eventData.delta;
-            windowDefinition.Position = new System.Numerics.Vector2(transform.position.x, transform.position.y);
+            transform.position = (UnityEngine.Vector2)transform.position + eventData.delta;
+            windowDefinition.Position = new Vector2(transform.position.x, transform.position.y);
         }
     }
 

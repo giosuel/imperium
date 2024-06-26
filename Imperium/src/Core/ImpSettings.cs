@@ -3,7 +3,6 @@
 using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
-using Imperium.API;
 using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using Imperium.Util;

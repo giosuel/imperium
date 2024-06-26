@@ -1,7 +1,8 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HarmonyLib;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ControlCenter;
 using Imperium.Interface.ImperiumUI.Windows.Info;
@@ -17,11 +18,13 @@ using Imperium.MonoBehaviours.ImpUI.SaveUI;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Vector2 = System.Numerics.Vector2;
+
+#endregion
 
 namespace Imperium.Interface.ImperiumUI;
 
@@ -249,7 +252,7 @@ public record WindowDefinition
 {
     internal ImperiumWindow Controller { get; init; }
     public Type WindowType { get; init; }
-    public System.Numerics.Vector2 Position { get; set; }
+    public Vector2 Position { get; set; }
     public float ScaleFactor { get; set; } = 1;
     public bool IsOpen { get; set; }
 }

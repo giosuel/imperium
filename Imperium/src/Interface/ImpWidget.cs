@@ -1,7 +1,11 @@
+#region
+
 using System;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Interface;
 

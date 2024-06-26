@@ -2,7 +2,6 @@
 
 using BepInEx.Configuration;
 using GameNetcodeStuff;
-using Imperium.API;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;

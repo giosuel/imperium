@@ -98,7 +98,7 @@ public class Imperium : BaseUnityPlugin
     internal static bool WasImperiumAccessGranted { get; private set; }
 
     /// <summary>
-    /// Set to true, when Imperium is loaded and imperium access is currently granted.
+    ///     Set to true, when Imperium is loaded and imperium access is currently granted.
     /// </summary>
     internal static bool IsImperiumEnabled { get; private set; }
 

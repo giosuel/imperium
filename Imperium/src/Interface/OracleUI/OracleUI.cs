@@ -1,7 +1,6 @@
 #region
 
 using Imperium.API.Types.Networking;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.Types;
 
 #endregion

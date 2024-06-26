@@ -4,8 +4,6 @@ using Imperium.Core;
 using Imperium.Interface.Common;
 using Imperium.Interface.MapUI;
 using Imperium.MonoBehaviours;
-using Imperium.MonoBehaviours.ImpUI;
-using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.LayerSelector;
 using Imperium.Types;
 using Imperium.Util;

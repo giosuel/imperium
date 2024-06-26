@@ -2,7 +2,6 @@
 
 using Imperium.Interface.ImperiumUI.Windows.ShipControl.Widgets;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.Types;
 using UnityEngine;
 
 #endregion

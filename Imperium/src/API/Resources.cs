@@ -1,7 +1,6 @@
 #region
 
 using System.Collections.Generic;
-using System.Security.Policy;
 using GameNetcodeStuff;
 using Imperium.Util.Binding;
 
@@ -19,7 +18,7 @@ public static class Resources
     #region Static Resources
 
     /// <summary>
-    ///     List of all loaded objects of the <see cref="EnemyType"/> type.
+    ///     List of all loaded objects of the <see cref="EnemyType" /> type.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ReadOnlyBinding<IReadOnlyCollection<EnemyType>> LoadedEntities
@@ -33,9 +32,8 @@ public static class Resources
     }
 
     /// <summary>
-    ///     List of all loaded objects of the <see cref="Item"/> type.
-    ///
-    ///     Excludes all items which names are listed in <see cref="ImpConstants.ItemBlacklist"/>.
+    ///     List of all loaded objects of the <see cref="Item" /> type.
+    ///     Excludes all items which names are listed in <see cref="ImpConstants.ItemBlacklist" />.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ReadOnlyBinding<IReadOnlyCollection<Item>> LoadedItems
@@ -49,9 +47,8 @@ public static class Resources
     }
 
     /// <summary>
-    ///     List of all loaded objects of the <see cref="Item"/> type, that also have the <see cref="Item.isScrap"/> flag.
-    ///
-    ///     Excludes all items which names are listed in <see cref="ImpConstants.ItemBlacklist"/>.
+    ///     List of all loaded objects of the <see cref="Item" /> type, that also have the <see cref="Item.isScrap" /> flag.
+    ///     Excludes all items which names are listed in <see cref="ImpConstants.ItemBlacklist" />.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
     public static ReadOnlyBinding<IReadOnlyCollection<Item>> LoadedScrap
@@ -70,7 +67,6 @@ public static class Resources
 
     /// <summary>
     ///     List of all the entities in the current level.
-    ///
     ///     This is updated whenever
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
@@ -238,7 +234,8 @@ public static class Resources
         {
             APIHelpers.AssertImperiumReady();
 
-            return ReadOnlyBinding<IReadOnlyCollection<SandSpiderWebTrap>>.Wrap(Imperium.ObjectManager.CurrentLevelSpiderWebs);
+            return ReadOnlyBinding<IReadOnlyCollection<SandSpiderWebTrap>>.Wrap(Imperium.ObjectManager
+                .CurrentLevelSpiderWebs);
         }
     }
 

@@ -134,8 +134,8 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Attempts to deserialize a JSON string into a given object. If <see cref="JsonSerializationException"/> is thrown
-    /// or the resulting object is null, false is returned and default is assigned to the out argument.
+    ///     Attempts to deserialize a JSON string into a given object. If <see cref="JsonSerializationException" /> is thrown
+    ///     or the resulting object is null, false is returned and default is assigned to the out argument.
     /// </summary>
     /// <param name="jsonString"></param>
     /// <param name="deserializedObj"></param>

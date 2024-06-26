@@ -13,7 +13,7 @@ internal class RenderingWindow : ImperiumWindow
     protected override void InitWindow()
     {
         var content = transform.Find("Content");
-        
+
         ImpSlider.Bind(
             path: "Resolution",
             container: content,

@@ -1,7 +1,11 @@
+#region
+
 using System.Collections.Generic;
 using Imperium.Core.Lifecycle;
 using Imperium.Types;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Interface.ImperiumUI.Windows.ShipControl.Widgets;
 

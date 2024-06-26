@@ -1,7 +1,6 @@
 #region
 
 using System;
-using Imperium.Util.Binding;
 using LethalNetworkAPI;
 using Unity.Netcode;
 

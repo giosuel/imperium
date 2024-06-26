@@ -1,5 +1,9 @@
+#region
+
 using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
+
+#endregion
 
 namespace Imperium.Core.Input;
 
