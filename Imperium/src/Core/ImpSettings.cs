@@ -239,7 +239,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Employees",
             false,
-            value => Imperium.Visualization.Collider("Player", IdentifierType.TAG)(value)
+            value => Imperium.Visualization.Collider(value, "Player", IdentifierType.TAG)
         );
 
         internal readonly ImpConfig<bool> Entities = new(
@@ -247,7 +247,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Entities",
             true,
-            value => Imperium.Visualization.Collider("Enemies", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Enemies", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> MapHazards = new(
@@ -255,7 +255,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "MapHazards",
             false,
-            value => Imperium.Visualization.Collider("MapHazards", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "MapHazards", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Props = new(
@@ -263,7 +263,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Props",
             false,
-            value => Imperium.Visualization.Collider("PhysicsProp", IdentifierType.TAG)(value)
+            value => Imperium.Visualization.Collider(value, "PhysicsProp", IdentifierType.TAG)
         );
 
         internal readonly ImpConfig<bool> Foliage = new(
@@ -271,7 +271,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Foliage",
             false,
-            value => Imperium.Visualization.Collider("EnemySpawn", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "EnemySpawn", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> InteractTriggers = new(
@@ -279,7 +279,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "InteractTriggers",
             false,
-            value => Imperium.Visualization.Collider("InteractTrigger", IdentifierType.TAG)(value)
+            value => Imperium.Visualization.Collider(value, "InteractTrigger", IdentifierType.TAG)
         );
 
         internal readonly ImpConfig<bool> TileBorders = new(
@@ -287,7 +287,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "TileBorders",
             false,
-            value => Imperium.Visualization.Collider("Ignore Raycast", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Ignore Raycast", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Room = new(
@@ -295,7 +295,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Room",
             false,
-            value => Imperium.Visualization.Collider("Room", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Room", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Colliders = new(
@@ -303,7 +303,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Visualization.Colliders",
             false,
-            value => Imperium.Visualization.Collider("Visualization.Colliders", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Visualization.Colliders", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Triggers = new(
@@ -311,7 +311,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Triggers",
             false,
-            value => Imperium.Visualization.Collider("Triggers", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Triggers", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> PhysicsObject = new(
@@ -319,7 +319,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "PhysicsObject",
             false,
-            value => Imperium.Visualization.Collider("PhysicsObject", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "PhysicsObject", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> RoomLight = new(
@@ -327,7 +327,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "RoomLight",
             false,
-            value => Imperium.Visualization.Collider("RoomLight", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "RoomLight", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Anomaly = new(
@@ -335,7 +335,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Anomaly",
             false,
-            value => Imperium.Visualization.Collider("Anomaly", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Anomaly", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Railing = new(
@@ -343,7 +343,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Railing",
             false,
-            value => Imperium.Visualization.Collider("Railing", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Railing", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> PlacementBlocker = new(
@@ -351,7 +351,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "PlacementBlocker",
             false,
-            value => Imperium.Visualization.Collider("PlacementBlocker", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "PlacementBlocker", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> Terrain = new(
@@ -359,7 +359,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Terrain",
             false,
-            value => Imperium.Visualization.Collider("Terrain", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "Terrain", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> PlaceableShipObjects = new(
@@ -367,7 +367,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "PlaceableShipObjects",
             false,
-            value => Imperium.Visualization.Collider("PlaceableShipObjects", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "PlaceableShipObjects", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> MiscLevelGeometry = new(
@@ -375,7 +375,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "MiscLevelGeometry",
             false,
-            value => Imperium.Visualization.Collider("MiscLevelGeometry", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "MiscLevelGeometry", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> ScanNode = new(
@@ -383,7 +383,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "ScanNode",
             false,
-            value => Imperium.Visualization.Collider("ScanNode", IdentifierType.LAYER)(value)
+            value => Imperium.Visualization.Collider(value, "ScanNode", IdentifierType.LAYER)
         );
 
         /// <summary>
@@ -395,10 +395,11 @@ public class ImpSettings(ConfigFile config)
             "Vents",
             false,
             value => Imperium.Visualization.Point(
+                value,
                 "EnemySpawn",
                 IdentifierType.TAG,
-                material: Materials.Xray
-            )(value)
+                material: ImpAssets.XRay
+            )
         );
 
         internal readonly ImpConfig<bool> AINodesIndoor = new(
@@ -407,11 +408,12 @@ public class ImpSettings(ConfigFile config)
             "AINodesIndoor",
             false,
             value => Imperium.Visualization.Point(
+                value,
                 "AINode",
                 IdentifierType.TAG,
                 size: 0.5f,
-                material: Materials.FresnelWhite
-            )(value)
+                material: ImpAssets.FresnelWhite
+            )
         );
 
         internal readonly ImpConfig<bool> AINodesOutdoor = new(
@@ -420,11 +422,12 @@ public class ImpSettings(ConfigFile config)
             "AINodesOutdoor",
             false,
             value => Imperium.Visualization.Point(
+                value,
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 0.8f,
-                material: Materials.FresnelWhite
-            )(value)
+                material: ImpAssets.FresnelWhite
+            )
         );
 
         internal readonly ImpConfig<bool> SpawnDenialPoints = new(
@@ -433,11 +436,12 @@ public class ImpSettings(ConfigFile config)
             "SpawnDenialPoints",
             false,
             value => Imperium.Visualization.Point(
+                value,
                 "SpawnDenialPoint",
                 IdentifierType.TAG,
                 size: 16,
-                material: Materials.FresnelRed
-            )(value)
+                material: ImpAssets.FresnelRed
+            )
         );
 
         internal readonly ImpConfig<bool> BeeSpawns = new(
@@ -446,11 +450,12 @@ public class ImpSettings(ConfigFile config)
             "BeeSpawns",
             false,
             value => Imperium.Visualization.Point(
+                value,
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 20f,
-                material: Materials.FresnelYellow
-            )(value)
+                material: ImpAssets.FresnelYellow
+            )
         );
 
         internal readonly ImpConfig<bool> OutsideEntitySpawns = new(
@@ -459,11 +464,12 @@ public class ImpSettings(ConfigFile config)
             "OutsideEntitySpawns",
             false,
             value => Imperium.Visualization.Point(
+                value,
                 "OutsideAINode",
                 IdentifierType.TAG,
                 size: 10f,
-                material: Materials.FresnelGreen
-            )(value)
+                material: ImpAssets.FresnelGreen
+            )
         );
 
         internal readonly ImpConfig<bool> NavMeshSurfaces = new(

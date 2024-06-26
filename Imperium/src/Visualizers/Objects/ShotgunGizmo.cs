@@ -8,7 +8,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class ShotgunGizmo : MonoBehaviour
 {
@@ -44,7 +44,7 @@ public class ShotgunGizmo : MonoBehaviour
         for (var i = 0; i < ImpConstants.ShotgunCollisionCount; i++)
         {
             spheres[i] = ImpGeometry.CreatePrimitive(
-                PrimitiveType.Sphere, transform, Materials.WireframePurple, 10
+                PrimitiveType.Sphere, transform, ImpAssets.WireframePurple, 10
             );
 
             collisionSpheres[i] = ImpGeometry.CreatePrimitive(
@@ -56,7 +56,7 @@ public class ShotgunGizmo : MonoBehaviour
         }
 
         // capsule = ImpGeometry.CreatePrimitive(
-        //     PrimitiveType.Capsule, null, API.Materials.WireframePurple
+        //     PrimitiveType.Capsule, null, API.ImpAssets.WireframePurple
         // );
         //
         // capsule.transform.position = Vector3.zero;

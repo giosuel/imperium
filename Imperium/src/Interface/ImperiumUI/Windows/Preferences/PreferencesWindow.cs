@@ -20,7 +20,7 @@ internal class PreferencesWindow : ImperiumWindow
     protected override void InitWindow()
     {
         content = transform.Find("Content");
-        
+
         var general = content.Find("Grid/General/General");
         ImpToggle.Bind("LoggingToggle", general, Imperium.Settings.Preferences.GeneralLogging, theme);
         ImpToggle.Bind("OracleLoggingToggle", general, Imperium.Settings.Preferences.OracleLogging, theme);
@@ -32,7 +32,7 @@ internal class PreferencesWindow : ImperiumWindow
             general,
             Imperium.Settings.Preferences.UnityExplorerMouseFix,
             theme,
-            new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer"))
+            interactableBindings: new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer"))
         );
         ImpToggle.Bind("TooltipsToggle", general, Imperium.Settings.Preferences.ShowTooltips, theme);
 

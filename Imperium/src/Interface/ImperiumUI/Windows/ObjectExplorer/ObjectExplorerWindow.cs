@@ -6,6 +6,7 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;

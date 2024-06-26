@@ -226,6 +226,8 @@ public class Imperium : BaseUnityPlugin
         IsImperiumEnabled = true;
 
         SpawnUI();
+
+        IsSceneLoaded.SetFalse();
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
@@ -274,19 +276,20 @@ public class Imperium : BaseUnityPlugin
             "Allows you to spawn objects\nsuch as Scrap or Entities.",
             InputBindings.InterfaceMap.SpawningUI
         );
-        Interface.RegisterInterface<OracleUI>(
-            ImpAssets.OracleUIObject,
-            "OracleUI",
-            "Oracle",
-            "Entity spawning predictions.",
-            InputBindings.InterfaceMap.OracleUI
-        );
         Interface.RegisterInterface<MapUI>(
             ImpAssets.MapUIObject,
             "MapUI",
             "Map",
             "Imperium's built-in map.",
             InputBindings.InterfaceMap.MapUI
+        );
+        Interface.RegisterInterface<OracleUI>(
+            ImpAssets.OracleUIObject,
+            "OracleUI",
+            "Oracle",
+            "Entity spawning predictions.",
+            InputBindings.InterfaceMap.OracleUI,
+            IsSceneLoaded
         );
         Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
 

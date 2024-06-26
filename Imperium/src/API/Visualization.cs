@@ -22,12 +22,7 @@ public static class Visualization
     /// <exception cref="ImperiumAPIException"></exception>
     public static InsightDefinition<T> InsightsFor<T>() where T : Component
     {
-        if (!Imperium.IsImperiumLaunched)
-        {
-            throw new ImperiumAPIException(
-                "Failed to execute API call. Imperium has not yet been initialized."
-            );
-        }
+        APIHelpers.AssertImperiumReady();
 
         return Imperium.Visualization.ObjectInsights.InsightsFor<T>();
     }

@@ -145,7 +145,7 @@ public class ImperiumUI : BaseUI
             {
                 switch (windowDefinition.IsOpen)
                 {
-                    case true when GetFocusedWindow() == floatingWindow:
+                    case true when GetFocusedWindow() == floatingWindow || windowControllers.Count < 2:
                         windowDefinition.Controller.Close();
                         break;
                     case true:

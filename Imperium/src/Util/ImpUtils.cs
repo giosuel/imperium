@@ -213,6 +213,8 @@ public abstract class ImpUtils
         {
             Imperium.Player.quickMenuManager.isMenuOpen = uiOpen;
             Cursor.lockState = uiOpen ? CursorLockMode.None : CursorLockMode.Locked;
+
+            if (uiOpen) Cursor.visible = true;
         }
     }
 

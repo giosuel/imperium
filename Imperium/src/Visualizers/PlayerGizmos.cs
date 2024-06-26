@@ -5,18 +5,20 @@ using BepInEx.Configuration;
 using GameNetcodeStuff;
 using Imperium.API.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Visualizers;
 
-internal class PlayerGizmos : BaseVisualizer<HashSet<PlayerControllerB>, PlayerGizmo>
+internal class PlayerGizmos : BaseVisualizer<IReadOnlyCollection<PlayerControllerB>, PlayerGizmo>
 {
     internal readonly Dictionary<PlayerControllerB, PlayerGizmoConfig> PlayerInfoConfigs = [];
 
-    internal PlayerGizmos(IBinding<HashSet<PlayerControllerB>> objectsBinding, ConfigFile config) : base(objectsBinding)
+    internal PlayerGizmos(
+        IBinding<IReadOnlyCollection<PlayerControllerB>> objectsBinding, ConfigFile config
+    ) : base(objectsBinding)
     {
         foreach (var player in Imperium.StartOfRound.allPlayerScripts)
         {
@@ -24,7 +26,7 @@ internal class PlayerGizmos : BaseVisualizer<HashSet<PlayerControllerB>, PlayerG
         }
     }
 
-    protected override void OnRefresh(HashSet<PlayerControllerB> objects)
+    protected override void OnRefresh(IReadOnlyCollection<PlayerControllerB> objects)
     {
         ClearObjects();
 

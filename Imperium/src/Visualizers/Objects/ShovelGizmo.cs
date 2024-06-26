@@ -9,7 +9,7 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class ShovelGizmo : MonoBehaviour
 {
@@ -26,7 +26,7 @@ public class ShovelGizmo : MonoBehaviour
     private void Awake()
     {
         capsule = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Capsule, transform, Materials.WireframePurple
+            PrimitiveType.Capsule, transform, ImpAssets.WireframePurple
         );
     }
 

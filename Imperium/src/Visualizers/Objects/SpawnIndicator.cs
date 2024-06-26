@@ -7,7 +7,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class SpawnIndicator : MonoBehaviour
 {

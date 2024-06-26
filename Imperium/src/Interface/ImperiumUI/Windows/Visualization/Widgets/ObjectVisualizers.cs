@@ -7,7 +7,7 @@ using Imperium.Interface.Common;
 using Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
 using Imperium.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion

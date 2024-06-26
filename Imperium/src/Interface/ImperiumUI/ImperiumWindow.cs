@@ -35,9 +35,10 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         tooltip = impTootip;
 
         titleBox = transform.Find("TitleBox");
-        if (titleBox) ImpButton.Bind("Close", titleBox, Close, theme: this.theme, isIconButton: true);
+        if (titleBox) ImpButton.Bind("Close", titleBox, Close, theme: theme, isIconButton: true);
 
         onOpen += OnOpen;
+
         theme.onUpdate += OnThemeUpdate;
         theme.onUpdate += value =>
         {

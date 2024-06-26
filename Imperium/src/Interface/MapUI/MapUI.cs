@@ -63,6 +63,8 @@ internal class MapUI : BaseUI
         layerSelector.InitUI(theme);
         layerSelector.Bind(new ImpBinding<bool>(true), Imperium.Settings.Map.CameraLayerMask);
 
+        Imperium.Settings.Map.RotationLock.onTrigger += OnRotationLockChange;
+
         selectedPlayer.Set(Imperium.Player);
     }
 
@@ -102,6 +104,8 @@ internal class MapUI : BaseUI
             new StyleOverride("Compass/West", Variant.FOREGROUND)
         );
     }
+
+    private void OnRotationLockChange() => MoveCameraToTarget(target);
 
     private Rect GetCameraRect()
     {
@@ -207,8 +211,28 @@ internal class MapUI : BaseUI
     {
         ImpToggle.Bind("MapSettings/MinimapEnabled", container, Imperium.Settings.Map.MinimapEnabled, theme);
         ImpToggle.Bind("MapSettings/CompassEnabled", container, Imperium.Settings.Map.CompassEnabled, theme);
-        ImpToggle.Bind("MapSettings/RotationLock", container, Imperium.Settings.Map.RotationLock, theme);
-        ImpToggle.Bind("MapSettings/UnlockView", container, Imperium.Settings.Map.UnlockView, theme);
+        ImpToggle.Bind(
+            "MapSettings/RotationLock",
+            container,
+            Imperium.Settings.Map.RotationLock,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Description = "Whether the camera is clamped\nto the target's rotation"
+            }
+        );
+        ImpToggle.Bind(
+            "MapSettings/UnlockView",
+            container,
+            Imperium.Settings.Map.UnlockView,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Description = "When off, the camera resets to a 45 angle.\nWhen on, the camers resets to top-down view."
+            }
+        );
         ImpToggle.Bind("MapSettings/AutoClipping", container, Imperium.Settings.Map.AutoClipping, theme);
         ImpButton.Bind(
             "MapSettings/MinimapSettings",
@@ -301,10 +325,10 @@ internal class MapUI : BaseUI
     ///     The list has to subscribe to all the source bindings in order to be updated when something changes.
     /// </summary>
     /// <returns></returns>
-    private static ImpBinding<HashSet<KeyValuePair<GameObject, string>>> GenerateMapHazardBinding()
+    private static ImpBinding<IReadOnlyCollection<KeyValuePair<GameObject, string>>> GenerateMapHazardBinding()
     {
         var mapHazardBinding =
-            new ImpExternalBinding<HashSet<KeyValuePair<GameObject, string>>, HashSet<Turret>>(
+            new ImpExternalBinding<IReadOnlyCollection<KeyValuePair<GameObject, string>>, IReadOnlyCollection<Turret>>(
                 () => Imperium.ObjectManager.CurrentLevelTurrets.Value
                     .Where(obj => obj)
                     .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Turret"))

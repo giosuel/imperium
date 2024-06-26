@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 internal class ObjectEntry : MonoBehaviour
 {

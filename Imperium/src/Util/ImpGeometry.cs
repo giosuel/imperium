@@ -205,8 +205,8 @@ public static class ImpGeometry
         return Rect.MinMaxRect(
             input.offsetMin.x * canvasScale / Screen.width,
             input.offsetMin.y * canvasScale / Screen.height,
-            Screen.width + input.offsetMax.x * canvasScale / Screen.width,
-            Screen.height + input.offsetMax.y * canvasScale / Screen.height
+            (Screen.width + input.offsetMax.x * canvasScale) / Screen.width,
+            (Screen.height + input.offsetMax.y * canvasScale) / Screen.height
         );
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using Imperium.Integration;
 using Imperium.Interface;
 using Imperium.Types;
 using Imperium.Util;
@@ -79,7 +80,8 @@ internal class ImpInterfaceManager : MonoBehaviour
         string dockButtonPath,
         string interfaceName,
         string interfaceDescription,
-        InputAction keybind
+        InputAction keybind,
+        params IBinding<bool>[] canOpenBindings
     ) where T : BaseUI
     {
         RegisterInterface<T>(obj);
@@ -90,7 +92,8 @@ internal class ImpInterfaceManager : MonoBehaviour
                 dockButtonPath,
                 this,
                 interfaceName,
-                interfaceDescription
+                interfaceDescription,
+                canOpenBindings
             );
         }
 
@@ -125,7 +128,11 @@ internal class ImpInterfaceManager : MonoBehaviour
         OpenInterface.Value.OnUIClose();
         OpenInterface.Set(null);
 
-        if (toggleCursorState) ImpUtils.Interface.ToggleCursorState(false);
+        if (toggleCursorState)
+        {
+            tooltip.Deactivate();
+            ImpUtils.Interface.ToggleCursorState(false);
+        }
     }
 
     public void Toggle<T>(bool toggleCursorState = true, bool closeOthers = true)
@@ -134,7 +141,7 @@ internal class ImpInterfaceManager : MonoBehaviour
 
         if (controller.IsOpen)
         {
-            Close();
+            Close(toggleCursorState);
         }
         else
         {
@@ -159,7 +166,7 @@ internal class ImpInterfaceManager : MonoBehaviour
         OpenInterface.Set(controller);
 
         // Close Unity Explorer menus
-        //UnityExplorerIntegration.CloseUI();
+        UnityExplorerIntegration.CloseUI();
 
         // Disable opening UIs when user is currently using terminal due to input selection overwrite
         Imperium.Player.quickMenuManager.CloseQuickMenu();

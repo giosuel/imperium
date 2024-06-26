@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Imperium.Core;
 
-internal abstract class ImpConstants
+public abstract class ImpConstants
 {
     internal abstract class Opacity
     {

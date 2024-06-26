@@ -15,7 +15,7 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 
 ## Features
 
-- Modular and user-centered UI system.
+- Modular and user-centered UI system with floating and resizable windows.
 - In-game overlays and indicators for hitboxes of shotguns, shovels, landmines, etc.
 - Customizable 3-axis freecam with built-in teleportation, night vision and custom FOV settings.
 - Built-in minimap and full-screen map with layer selection, zoom and more.

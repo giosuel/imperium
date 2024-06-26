@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.API;
 using Imperium.API.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using Visualization = Imperium.Core.Visualization;
@@ -30,8 +31,8 @@ internal class ScrapSpawnIndicators(
                     : spawn.itemSpawnRange;
 
                 var material = spawn.spawnedItemsCopyPosition
-                    ? Materials.WireframeCyan
-                    : Materials.WireframeAmaranth;
+                    ? ImpAssets.WireframeCyan
+                    : ImpAssets.WireframeAmaranth;
 
                 visualizerObjects[spawn.GetInstanceID()] = Visualization.VisualizePoint(
                     spawn.gameObject,

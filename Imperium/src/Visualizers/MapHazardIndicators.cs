@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using Imperium.API;
 using Imperium.API.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using Visualization = Imperium.Core.Visualization;
@@ -27,7 +28,7 @@ internal class MapHazardIndicators(
                 visualizerObjects[spawn.GetHashCode()] = Visualization.VisualizePoint(
                     null,
                     spawn.spawnRange,
-                    material: Materials.WireframeRed,
+                    material: ImpAssets.WireframeRed,
                     name: "Imp_HazardSpawnIndicator"
                 ).transform;
                 visualizerObjects[spawn.GetHashCode()].position = spawn.position;

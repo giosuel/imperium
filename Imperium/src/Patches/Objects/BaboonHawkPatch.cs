@@ -2,6 +2,7 @@
 
 using HarmonyLib;
 using Imperium.API;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -19,7 +20,7 @@ public static class BaboonHawkPatch
             __instance,
             __instance.eye,
             40f * 2,
-            material: Materials.WireframePurple,
+            material: ImpAssets.WireframePurple,
             relativepositionOverride: () => Vector3.forward * 38f + Vector3.up * 8f,
             absolutePositionOverride: eye => eye.position + eye.forward * 38f + eye.up * 8f
         );
@@ -29,7 +30,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             180,
             10,
-            material: Materials.WireframeCyan
+            material: ImpAssets.WireframeCyan
         );
 
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
@@ -37,7 +38,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             160,
             16,
-            material: Materials.WireframeAmaranth
+            material: ImpAssets.WireframeAmaranth
         );
 
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
@@ -45,7 +46,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             60,
             20,
-            material: Materials.WireframeYellow
+            material: ImpAssets.WireframeYellow
         );
     }
 }

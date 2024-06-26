@@ -9,7 +9,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class PlayerGizmo : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class PlayerGizmo : MonoBehaviour
         playerController = player;
 
         noiseRangeSphere = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Sphere, player.transform, Materials.WireframeRed
+            PrimitiveType.Sphere, player.transform, ImpAssets.WireframeRed
         );
     }
 

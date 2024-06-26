@@ -10,17 +10,16 @@ namespace Imperium.Core.Input;
 public class ImpInputBindings
 {
     internal readonly InputActionMap StaticMap = new();
-
     internal readonly ImpInputBaseMap BaseMap = new();
     internal readonly ImpInputFreecamMap FreecamMap = new();
     internal readonly ImpInputInterfaceMap InterfaceMap = new();
-    internal static PlayerActions GameMap => Imperium.Player.playerActions;
 
     private static float SpaceDoubleClickTimer;
 
     internal ImpInputBindings()
     {
         StaticMap.AddAction("Alt", binding: "<Keyboard>/alt");
+        StaticMap.Enable();
 
         BaseMap.ToggleFlight.performed += _ =>
         {

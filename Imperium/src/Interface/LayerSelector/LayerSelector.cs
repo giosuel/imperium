@@ -29,8 +29,8 @@ internal class LayerSelector : BaseUI
     private GameObject layerTemplate;
     private readonly LayerToggle[] layerToggles = new LayerToggle[31];
 
-    private ImpBinding<bool> IsEnabledBinding = new(false);
-    private ImpBinding<int> LayerMaskBinding = new(0);
+    private ImpBinding<bool> isEnabledBinding = new(false);
+    private ImpBinding<int> layerMaskBinding = new(0);
 
     protected override void InitUI()
     {
@@ -90,8 +90,8 @@ internal class LayerSelector : BaseUI
 
     internal void Bind(ImpBinding<bool> enabledBinding, ImpBinding<int> layerMaskBinding)
     {
-        IsEnabledBinding = enabledBinding;
-        LayerMaskBinding = layerMaskBinding;
+        isEnabledBinding = enabledBinding;
+        this.layerMaskBinding = layerMaskBinding;
         foreach (var toggle in layerToggles) toggle.UpdateIsOn(layerMaskBinding.Value);
     }
 
@@ -139,8 +139,8 @@ internal class LayerSelector : BaseUI
     private void OnLayerSelect()
     {
         GameUtils.PlayClip(ImpAssets.GrassClick);
-        var newMask = ImpUtils.ToggleLayerInMask(LayerMaskBinding.Value, selectedLayer);
-        LayerMaskBinding.Set(newMask);
+        var newMask = ImpUtils.ToggleLayerInMask(layerMaskBinding.Value, selectedLayer);
+        layerMaskBinding.Set(newMask);
         layerToggles[selectedLayer].UpdateIsOn(newMask);
     }
 
@@ -150,7 +150,7 @@ internal class LayerSelector : BaseUI
         {
             if (IsOpen) Close();
         }
-        else if (IsEnabledBinding is { Value: true } && Imperium.Player.isFreeCamera)
+        else if (isEnabledBinding is { Value: true } && Imperium.Player.isFreeCamera)
         {
             if (!IsOpen) Open();
         }

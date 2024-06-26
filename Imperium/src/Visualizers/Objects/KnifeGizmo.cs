@@ -1,7 +1,6 @@
 #region
 
 using System.Collections.Generic;
-using Imperium.API;
 using Imperium.Util;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
@@ -9,7 +8,7 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class KnifeGizmo : MonoBehaviour
 {
@@ -26,7 +25,7 @@ public class KnifeGizmo : MonoBehaviour
     private void Awake()
     {
         capsule = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Capsule, transform, Materials.WireframePurple
+            PrimitiveType.Capsule, transform, ImpAssets.WireframePurple
         );
     }
 

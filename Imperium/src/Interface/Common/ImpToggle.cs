@@ -2,6 +2,8 @@
 
 using System.Linq;
 using Imperium.Core;
+using Imperium.Interface;
+using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -32,12 +34,14 @@ public abstract class ImpToggle
     /// <param name="container"></param>
     /// <param name="valueBinding">Binding that decides on the state of the toggle</param>
     /// <param name="theme">The theme the button will use</param>
+    /// <param name="tooltipDefinition">The tooltip definition of the toggle tooltip.</param>
     /// <param name="interactableBindings">List of bindings that decide if the button is interactable</param>
     internal static Toggle Bind(
         string path,
         Transform container,
         IBinding<bool> valueBinding,
         IBinding<ImpTheme> theme = null,
+        TooltipDefinition tooltipDefinition = null,
         params ImpBinding<bool>[] interactableBindings
     )
     {
@@ -69,6 +73,18 @@ public abstract class ImpToggle
             {
                 interactableBinding.onUpdate += value => ToggleInteractable(checkmark, text, toggle, value);
             }
+        }
+
+        if (tooltipDefinition != null)
+        {
+            var interactable = toggleObject.gameObject.AddComponent<ImpInteractable>();
+            interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
+                tooltipDefinition.Title,
+                tooltipDefinition.Description,
+                tooltipDefinition.HasAccess
+            );
+            interactable.onExit += () => tooltipDefinition.Tooltip.Deactivate();
+            interactable.onOver += position => tooltipDefinition.Tooltip.UpdatePosition(position);
         }
 
         if (theme != null)

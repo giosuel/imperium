@@ -5,6 +5,7 @@ using System.Linq;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.API;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -63,7 +64,7 @@ internal static class EnemyAIPatch
             eyeObject ? eyeObject : __instance.eye,
             width,
             coneSize,
-            material: Materials.WireframePurple
+            material: ImpAssets.WireframePurple
         );
 
         if (proximityCheck > 0)
@@ -72,7 +73,7 @@ internal static class EnemyAIPatch
                 __instance,
                 null,
                 proximityCheck * 2,
-                material: Materials.WireframePurple
+                material: ImpAssets.WireframePurple
             );
         }
     }
@@ -88,7 +89,7 @@ internal static class EnemyAIPatch
             __instance.eye,
             width,
             range,
-            material: Materials.WireframeRed
+            material: ImpAssets.WireframeRed
         );
 
         if (proximityAwareness > 0)
@@ -97,7 +98,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.transform,
                 proximityAwareness * 2,
-                material: Materials.WireframeRed
+                material: ImpAssets.WireframeRed
             );
         }
     }
@@ -132,7 +133,7 @@ internal static class EnemyAIPatch
             __instance.eye,
             width,
             coneSize,
-            material: Materials.WireframeCyan
+            material: ImpAssets.WireframeCyan
         );
 
         if (proximityAwareness > 0)
@@ -141,7 +142,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: Materials.WireframeCyan
+                material: ImpAssets.WireframeCyan
             );
         }
     }
@@ -176,7 +177,7 @@ internal static class EnemyAIPatch
             overrideEye ? overrideEye : __instance.eye,
             width,
             range,
-            material: Materials.WireframeYellow
+            material: ImpAssets.WireframeYellow
         );
 
         if (proximityAwareness > 0)
@@ -185,7 +186,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: Materials.WireframeYellow
+                material: ImpAssets.WireframeYellow
             );
         }
     }
@@ -220,7 +221,7 @@ internal static class EnemyAIPatch
             null,
             width,
             coneSize,
-            material: Materials.WireframeAmaranth
+            material: ImpAssets.WireframeAmaranth
         );
 
         if (proximityAwareness > 0)
@@ -229,7 +230,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: Materials.WireframeAmaranth
+                material: ImpAssets.WireframeAmaranth
             );
         }
     }

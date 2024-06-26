@@ -1,6 +1,7 @@
 #region
 
 using Imperium.API.Types.Networking;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Unity.Netcode;
 using UnityEngine;
 

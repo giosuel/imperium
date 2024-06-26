@@ -2,6 +2,7 @@
 
 using HarmonyLib;
 using Imperium.API;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -22,7 +23,7 @@ public static class NutcrackerPatch
             __instance.eye,
             width,
             range,
-            material: Materials.WireframeCyan
+            material: ImpAssets.WireframeCyan
         );
 
         if (proximityAwareness > 0)
@@ -31,7 +32,7 @@ public static class NutcrackerPatch
                 __instance,
                 null,
                 proximityAwareness * 2,
-                material: Materials.WireframePurple
+                material: ImpAssets.WireframePurple
             );
         }
     }

@@ -6,7 +6,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using Imperium.API.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
@@ -16,11 +16,13 @@ namespace Imperium.Visualizers;
 /// <summary>
 ///     Entity-specific gizmos like LoS indicators, target rays, noise rays, etc.
 /// </summary>
-internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
+internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, EntityGizmo>
 {
     internal readonly Dictionary<EnemyType, EntityGizmoConfig> EntityInfoConfigs = [];
 
-    internal EntityGizmos(ImpBinding<HashSet<EnemyAI>> objectsBinding, ConfigFile config) : base(objectsBinding)
+    internal EntityGizmos(
+        IBinding<IReadOnlyCollection<EnemyAI>> objectsBinding, ConfigFile config
+    ) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
@@ -28,7 +30,7 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
         }
     }
 
-    protected override void OnRefresh(HashSet<EnemyAI> objects)
+    protected override void OnRefresh(IReadOnlyCollection<EnemyAI> objects)
     {
         ClearObjects();
 

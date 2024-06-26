@@ -2,6 +2,7 @@
 
 using Imperium.API;
 using Imperium.API.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using Visualization = Imperium.Core.Visualization;
@@ -24,7 +25,7 @@ internal class NavMeshVisualizer(
         {
             var navmeshVisualizer = new GameObject($"ImpVis_NavMeshSurface_{index}");
             var navmeshRenderer = navmeshVisualizer.AddComponent<MeshRenderer>();
-            navmeshRenderer.material = Materials.WireframeNavMesh;
+            navmeshRenderer.material = ImpAssets.WireframeNavMesh;
             var navmeshFilter = navmeshVisualizer.AddComponent<MeshFilter>();
             navmeshFilter.mesh = navmeshSurface;
 

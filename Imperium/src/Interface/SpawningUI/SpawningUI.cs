@@ -67,7 +67,7 @@ internal class SpawningUI : BaseUI
 
     private void GenerateItems()
     {
-        foreach (var entity in Imperium.ObjectManager.AllEntities.Value)
+        foreach (var entity in Imperium.ObjectManager.LoadedEntities.Value)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
@@ -83,7 +83,7 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
-        foreach (var item in Imperium.ObjectManager.AllItems.Value)
+        foreach (var item in Imperium.ObjectManager.LoadedItems.Value)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
@@ -99,7 +99,7 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
-        foreach (var (hazardName, hazard) in Imperium.ObjectManager.AllMapHazards.Value)
+        foreach (var (hazardName, hazard) in Imperium.ObjectManager.LoadedMapHazards.Value)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);

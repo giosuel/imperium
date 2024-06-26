@@ -11,7 +11,7 @@ Besides that, I re-wrote the whole internal networking and switched form manual 
 ### Added Stuff
 
 - Merged most of the smaller windows into a large Imperium UI that supports floating windows.
-- Added tooltips to serve as in-game help with the interface.
+- Added tooltips to several buttons and Imperium settings to serve as in-game help with the interface.
 - Added [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/) integration to make keybinds changeable in the settings.
 - Merged the navigator window and ship settings into a new Ship Control UI.
 - Moon settings were merged with the moon control center into a new Moon Control UI.
@@ -42,6 +42,7 @@ Besides that, I re-wrote the whole internal networking and switched form manual 
 - Fixed the animation skipping options `Interact` and `InteractHold`.
 - Fixed a typo in a function signature in the Imperium API.
 - Fixed a bug where players could die in orbit when god mode was off.
+- Changed it so insight generators are executed in `LateUpdate` for consistency.
 
 ## Imperium v0.1.9 [Beta] - The API Update
 
