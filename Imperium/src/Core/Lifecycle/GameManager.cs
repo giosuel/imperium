@@ -21,7 +21,7 @@ internal class GameManager : ImpLifecycleObject
         if (NetworkManager.Singleton.IsHost) FulfillQuotaEvent.OnServerReceive += FulfillQuota;
     }
 
-    internal readonly ImpBinding<int> CustomSeed = new(-1, -1);
+    internal readonly ImpBinding<int> CustomSeed = new(-1);
 
     internal readonly ImpNetworkBinding<int> GroupCredits = new(
         "GroupCredits",
@@ -87,64 +87,6 @@ internal class GameManager : ImpLifecycleObject
         ProfitQuota.Sync(Imperium.TimeOfDay.profitQuota);
         QuotaDeadline.Sync(Imperium.TimeOfDay.daysUntilDeadline);
         GroupCredits.Sync(Imperium.Terminal.groupCredits);
-    }
-
-    [ImpAttributes.LocalMethod]
-    internal static void ChangeWeather(int levelIndex, LevelWeatherType weatherType)
-    {
-        Imperium.StartOfRound.levels[levelIndex].currentWeather = weatherType;
-
-        RefreshWeather();
-
-        var planetName = Imperium.StartOfRound.levels[levelIndex].PlanetName;
-        var weatherName = weatherType.ToString();
-        Imperium.IO.Send($"Successfully changed the weather on {planetName} to {weatherName}",
-            type: NotificationType.Confirmation);
-    }
-
-    [ImpAttributes.LocalMethod]
-    private static void RefreshWeather()
-    {
-        Reflection.Invoke(Imperium.RoundManager, "SetToCurrentLevelWeather");
-        Imperium.StartOfRound.SetMapScreenInfoToCurrentLevel();
-        for (var i = 0; i < Imperium.TimeOfDay.effects.Length; i++)
-        {
-            var weatherEffect = Imperium.TimeOfDay.effects[i];
-            var isEnabled = (int)Imperium.StartOfRound.currentLevel.currentWeather == i;
-            weatherEffect.effectEnabled = isEnabled;
-            if (weatherEffect.effectPermanentObject)
-            {
-                weatherEffect.effectPermanentObject.SetActive(value: isEnabled);
-            }
-
-            if (weatherEffect.effectObject)
-            {
-                weatherEffect.effectObject.SetActive(value: isEnabled);
-            }
-
-            if (Imperium.TimeOfDay.sunAnimator)
-            {
-                if (isEnabled && !string.IsNullOrEmpty(weatherEffect.sunAnimatorBool))
-                {
-                    Imperium.TimeOfDay.sunAnimator.SetBool(weatherEffect.sunAnimatorBool, value: true);
-                }
-                else
-                {
-                    Imperium.TimeOfDay.sunAnimator.Rebind();
-                    Imperium.TimeOfDay.sunAnimator.Update(0);
-                }
-            }
-        }
-
-        // This prevents the player from permanently getting stuck in the underwater effect when turning
-        // off flooded weather while being underwater
-        if (Imperium.StartOfRound.currentLevel.currentWeather != LevelWeatherType.Flooded)
-        {
-            Imperium.Player.isUnderwater = false;
-            Imperium.Player.sourcesCausingSinking = Mathf.Clamp(Imperium.Player.sourcesCausingSinking - 1, 0, 100);
-            Imperium.Player.isMovementHindered = Mathf.Clamp(Imperium.Player.isMovementHindered - 1, 0, 100);
-            Imperium.Player.hinderedMultiplier = 1;
-        }
     }
 
     internal static void NavigateTo(int levelIndex)

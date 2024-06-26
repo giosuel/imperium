@@ -2,7 +2,7 @@
 
 using HarmonyLib;
 using Imperium.Interface.ImperiumUI;
-using Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 
 #endregion
 

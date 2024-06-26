@@ -177,6 +177,7 @@ internal class MapUI : BaseUI
             path: "ZoomSlider",
             container: container,
             valueBinding: Imperium.Settings.Map.CameraZoom,
+            useLogarithmicScale: true,
             indicatorUnit: "x",
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
             theme: theme

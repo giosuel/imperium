@@ -15,7 +15,7 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.Common;
+namespace Imperium.Interface.Common;
 
 public abstract class ImpInput
 {

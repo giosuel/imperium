@@ -44,6 +44,7 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> DisableOOB = new(config, "Player", "DisableOOB", false);
         internal readonly ImpConfig<bool> EnableFlying = new(config, "Player", "EnableFlying", false);
         internal readonly ImpConfig<bool> FlyingNoClip = new(config, "Player", "FlyingNoClip", false);
+        internal readonly ImpConfig<bool> Permadrunk = new(config, "Player", "Permadrunk", false);
 
         internal readonly ImpConfig<float> CustomFieldOfView = new(
             config,

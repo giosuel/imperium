@@ -227,9 +227,12 @@ internal class SpawningUI : BaseUI
         var isMapHazard = spawningObjectEntry.SpawnType == SpawningObjectEntry.SpawnObjectType.MapHazard;
         if (Imperium.Freecam.IsFreecamEnabled.Value || isMapHazard)
         {
+            var originTransform = Imperium.Freecam.IsFreecamEnabled.Value
+                ? Imperium.Freecam.transform
+                : Imperium.Player.gameplayCamera.transform;
             Imperium.ImpPositionIndicator.Activate(
                 position => spawningObjectEntry.Spawn(position, amount, value, false),
-                Imperium.Freecam.transform,
+                originTransform,
                 castGround: !isMapHazard
             );
         }

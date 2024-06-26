@@ -184,6 +184,9 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("Update")]
     private static void UpdatePostfixPatch(PlayerControllerB __instance)
     {
+        if (Imperium.Settings.Player.Permadrunk.Value) __instance.drunkness = 3;
+        if (Imperium.Settings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
+
         // Make player invincible to animation locking
         if (Imperium.Settings.Player.DisableLocking.Value)
         {
@@ -191,20 +194,20 @@ internal static class PlayerControllerPatch
             __instance.inSpecialInteractAnimation = false;
         }
 
-        if (Imperium.Settings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
+        // Apply custom FOV
+        if (Imperium.Settings.Player.CustomFieldOfView.Value > -1)
+        {
+            var targetFOV = Imperium.Settings.Player.CustomFieldOfView.Value;
+            if (__instance.inTerminalMenu) targetFOV -= 6;
+            if (__instance.IsInspectingItem) targetFOV -= 14;
+            if (__instance.isSprinting) targetFOV += 2f;
 
-        if (Imperium.Settings.Player.CustomFieldOfView.Value < 0) return;
-
-        var targetFOV = Imperium.Settings.Player.CustomFieldOfView.Value;
-        if (__instance.inTerminalMenu) targetFOV -= 6;
-        if (__instance.IsInspectingItem) targetFOV -= 14;
-        if (__instance.isSprinting) targetFOV += 2f;
-
-        __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
-            __instance.gameplayCamera.fieldOfView,
-            targetFOV,
-            6f * Time.deltaTime
-        );
+            __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
+                __instance.gameplayCamera.fieldOfView,
+                targetFOV,
+                6f * Time.deltaTime
+            );
+        }
     }
 
     // Temporarily stores gameHasStarted if patch overwrites it for pickup check

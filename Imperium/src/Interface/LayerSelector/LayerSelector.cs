@@ -86,10 +86,10 @@ internal class LayerSelector : BaseUI
         }
     }
 
-    internal void Bind(ImpBinding<bool> enabledBinding, ImpBinding<int> layerMaskBinding)
+    internal void Bind(ImpBinding<bool> enabledBinding, ImpBinding<int> maskMinding)
     {
         isEnabledBinding = enabledBinding;
-        this.layerMaskBinding = layerMaskBinding;
+        layerMaskBinding = maskMinding;
         foreach (var toggle in layerToggles) toggle.UpdateIsOn(layerMaskBinding.Value);
     }
 

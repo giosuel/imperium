@@ -7,12 +7,12 @@ using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ControlCenter;
 using Imperium.Interface.ImperiumUI.Windows.Info;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
 using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Interface.ImperiumUI.Windows.ShipControl;
 using Imperium.Interface.ImperiumUI.Windows.Teleportation;
 using Imperium.Interface.ImperiumUI.Windows.Visualization;
-using Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
 using Imperium.MonoBehaviours.ImpUI.RenderingUI;
 using Imperium.MonoBehaviours.ImpUI.SaveUI;
 using Imperium.Types;
@@ -136,7 +136,7 @@ public class ImperiumUI : BaseUI
         };
         windowControllers[typeof(T)] = windowDefinition;
 
-        floatingWindow.InitWindow(theme, windowDefinition, tooltip);
+        floatingWindow.InitWindow(theme, windowDefinition, tooltip, this);
         floatingWindow.onClose += OnCloseWindow<T>;
         floatingWindow.onOpen += OnOpenWindow<T>;
         floatingWindow.onFocus += OnFocusWindow<T>;
@@ -146,17 +146,13 @@ public class ImperiumUI : BaseUI
             container.Find("Dock"),
             () =>
             {
-                switch (windowDefinition.IsOpen)
+                if (windowDefinition.IsOpen)
                 {
-                    case true when GetFocusedWindow() == floatingWindow || windowControllers.Count < 2:
-                        windowDefinition.Controller.Close();
-                        break;
-                    case true:
-                        windowDefinition.Controller.FocusWindow();
-                        break;
-                    default:
-                        windowDefinition.Controller.Open();
-                        break;
+                    windowDefinition.Controller.Close();
+                }
+                else
+                {
+                    windowDefinition.Controller.Open();
                 }
             },
             theme,
@@ -199,11 +195,17 @@ public class ImperiumUI : BaseUI
 
     protected override void OnClose() => SaveLayout();
 
+    protected override void OnOpen()
+    {
+        foreach (var windowDefinition in controllerStack.Where(controller => controller.IsOpen))
+        {
+            windowDefinition.Controller.InvokeOnOpen();
+        }
+    }
+
     private void OnFocusWindow<T>() => controllerStack.MoveToBackOrAdd(windowControllers[typeof(T)]);
     private void OnOpenWindow<T>() => dockButtonBindings[typeof(T)].Set(true);
     private void OnCloseWindow<T>() => dockButtonBindings[typeof(T)].Set(false);
-
-    private ImperiumWindow GetFocusedWindow() => controllerStack.Last().Controller;
 
     private void SaveLayout()
     {

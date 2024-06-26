@@ -100,7 +100,7 @@ internal class TeleportationWindow : ImperiumWindow
     {
         if (anchor == null) return;
         Imperium.PlayerManager.TeleportLocalPlayer(anchor.Value);
-        Close();
+        CloseParent();
     }
 
     private void TeleportToCoords()

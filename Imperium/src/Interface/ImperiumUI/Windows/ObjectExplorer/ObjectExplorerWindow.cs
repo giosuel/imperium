@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
 using Imperium.Interface.Common;
-using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
 using Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
@@ -18,7 +17,7 @@ using Random = UnityEngine.Random;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 
 internal class ObjectExplorerWindow : ImperiumWindow
 {
@@ -162,6 +161,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
     public void Refresh()
     {
         Imperium.IO.LogInfo("REFRESHING");
+        // Imperium.IO.LogInfo(Debugging.GetStackTrace());
 
         // Create a list of key value pairs where the key is the type of object entry that will be added to the
         // instantiated list entry of each object (ObjectEntryXXX, Component)

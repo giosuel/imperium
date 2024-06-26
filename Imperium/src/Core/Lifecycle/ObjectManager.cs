@@ -83,8 +83,9 @@ internal class ObjectManager : ImpLifecycleObject
     private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
     private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem", Imperium.Networking);
 
-    private readonly ImpNetMessage<MapHazardSpawnRequest>
-        mapHazardSpawnMessage = new("MapHazardSpawn", Imperium.Networking);
+    private readonly ImpNetMessage<MapHazardSpawnRequest> mapHazardSpawnMessage = new(
+        "MapHazardSpawn", Imperium.Networking
+    );
 
     private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
 
@@ -127,6 +128,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     protected override void OnSceneLoad()
     {
+        Imperium.IO.LogInfo("ON SCENE LOADED : OBJECT MANAGER");
         RefreshLevelItems();
         RefreshLevelObstacles();
 

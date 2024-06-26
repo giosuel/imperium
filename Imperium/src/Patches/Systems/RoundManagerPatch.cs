@@ -167,6 +167,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("FinishGeneratingNewLevelClientRpc")]
     private static void FinishGeneratingNewLevelClientRpcPostfixPatch()
     {
+        Imperium.IO.LogInfo("=========FinishGeneratingNewLevelClientRpc============");
         Imperium.IsSceneLoaded.SetTrue();
     }
 }

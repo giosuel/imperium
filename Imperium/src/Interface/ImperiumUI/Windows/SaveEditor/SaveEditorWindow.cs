@@ -1,6 +1,7 @@
 #region
 
 using Imperium.Core;
+using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;

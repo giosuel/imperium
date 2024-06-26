@@ -32,6 +32,27 @@ public class WeatherForecaster : ImpWidget
             dropdownObj.transform.Find("Title").GetComponent<TMP_Text>().text = level.PlanetName;
             dropdowns[i] = dropdownObj.transform.Find("Dropdown").GetComponent<TMP_Dropdown>();
         }
+
+        var levels = Imperium.StartOfRound.levels;
+        var options = Enum.GetValues(typeof(LevelWeatherType)).Cast<LevelWeatherType>()
+            .Select(enumValue => Enum.GetName(typeof(LevelWeatherType), enumValue))
+            .Select(weather => new TMP_Dropdown.OptionData(weather))
+            .ToList();
+
+        foreach (var (levelIndex, dropdown) in dropdowns)
+        {
+            dropdown.options = options;
+            dropdown.value = (int)levels[levelIndex].currentWeather;
+
+            dropdown.onValueChanged.AddListener(_ =>
+            {
+                Imperium.MoonManager.ChangeWeather(new ChangeWeatherRequest
+                {
+                    LevelIndex = levelIndex,
+                    WeatherType = (LevelWeatherType)dropdown.value
+                });
+            });
+        }
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -66,30 +87,6 @@ public class WeatherForecaster : ImpWidget
                 new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
                 new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
             );
-        }
-    }
-
-    protected override void OnOpen()
-    {
-        var levels = Imperium.StartOfRound.levels;
-        var options = Enum.GetValues(typeof(LevelWeatherType)).Cast<LevelWeatherType>()
-            .Select(enumValue => Enum.GetName(typeof(LevelWeatherType), enumValue))
-            .Select(weather => new TMP_Dropdown.OptionData(weather))
-            .ToList();
-
-        foreach (var (levelIndex, dropdown) in dropdowns)
-        {
-            dropdown.options = options;
-            dropdown.value = (int)levels[levelIndex].currentWeather + 1;
-
-            dropdown.onValueChanged.AddListener(_ =>
-            {
-                Imperium.MoonManager.ChangeWeather(new ChangeWeatherRequest
-                {
-                    LevelIndex = levelIndex,
-                    WeatherType = (LevelWeatherType)dropdown.value
-                });
-            });
         }
     }
 }

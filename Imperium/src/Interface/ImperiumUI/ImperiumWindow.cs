@@ -29,8 +29,13 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
 
     private WindowDefinition windowDefinition;
 
-    public void InitWindow(ImpBinding<ImpTheme> themeBinding, WindowDefinition definition, ImpTooltip impTootip)
+    private ImperiumUI parent;
+
+    public void InitWindow(
+        ImpBinding<ImpTheme> themeBinding, WindowDefinition definition, ImpTooltip impTootip, ImperiumUI parentUI
+    )
     {
+        parent = parentUI;
         theme = themeBinding;
         windowDefinition = definition;
         tooltip = impTootip;
@@ -99,6 +104,8 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
 
     protected abstract void InitWindow();
 
+    protected void CloseParent() => parent.Close();
+
     /// <summary>
     ///     Hides the window.
     /// </summary>
@@ -127,6 +134,11 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         onOpen?.Invoke();
         GameUtils.PlayClip(ImpAssets.ButtonClick);
     }
+
+    /// <summary>
+    /// Called by <see cref="ImperiumUI"/> whever it opens.
+    /// </summary>
+    public void InvokeOnOpen() => onOpen?.Invoke();
 
     protected virtual void OnThemeUpdate(ImpTheme themeUpdated)
     {

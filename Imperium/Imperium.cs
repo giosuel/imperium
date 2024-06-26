@@ -167,6 +167,10 @@ public class Imperium : BaseUnityPlugin
         HUDManager = FindObjectOfType<HUDManager>();
 
         IsSceneLoaded = new ImpBinaryBinding(false);
+        IsSceneLoaded.onUpdate += value =>
+        {
+            Imperium.IO.LogInfo($" === ON SCENE LOADED UPDATED: {value}");
+        };
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 

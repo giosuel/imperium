@@ -19,7 +19,6 @@ public static class Visualization
     /// </summary>
     /// <typeparam name="T">The type of component your insight is meant for</typeparam>
     /// <returns>The existing or newly created insight definition for the given type</returns>
-    /// <exception cref="ImperiumAPIException"></exception>
     public static InsightDefinition<T> InsightsFor<T>() where T : Component
     {
         APIHelpers.AssertImperiumReady();
