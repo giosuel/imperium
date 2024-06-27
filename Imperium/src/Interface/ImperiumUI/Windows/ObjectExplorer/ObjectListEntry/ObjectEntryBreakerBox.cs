@@ -1,6 +1,7 @@
 #region
 
 using Imperium.Core.Lifecycle;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 #endregion
 

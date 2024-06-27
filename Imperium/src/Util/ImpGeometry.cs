@@ -196,4 +196,17 @@ public static class ImpGeometry
 
         return primitive;
     }
+
+    /// <summary>
+    ///     Normalizes the bounds of a rect transform into a rect that has its coordinates between 0 and 1.
+    /// </summary>
+    public static Rect NormalizeRectTransform(RectTransform input, float canvasScale)
+    {
+        return Rect.MinMaxRect(
+            input.offsetMin.x * canvasScale / Screen.width,
+            input.offsetMin.y * canvasScale / Screen.height,
+            (Screen.width + input.offsetMax.x * canvasScale) / Screen.width,
+            (Screen.height + input.offsetMax.y * canvasScale) / Screen.height
+        );
+    }
 }

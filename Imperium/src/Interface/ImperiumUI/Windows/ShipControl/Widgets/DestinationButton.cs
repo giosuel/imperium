@@ -7,9 +7,9 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace Imperium.Interface.ImperiumUI.Windows.ShipControl;
+namespace Imperium.Interface.ImperiumUI.Windows.ShipControl.Widgets;
 
-public class NavigatorButton : MonoBehaviour
+public class DestinationButton : MonoBehaviour
 {
     private Button button;
     private SelectableLevel level;

@@ -13,7 +13,7 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class EntityGizmo : MonoBehaviour
 {

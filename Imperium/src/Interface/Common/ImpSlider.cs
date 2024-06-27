@@ -115,7 +115,6 @@ public class ImpSlider : MonoBehaviour
             // Fixes weird null pointer error after respawning UI
             if (!impSlider) return;
 
-
             // Use option label if options are used
             impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }
                 ? $"{options.Value[(int)newValue]}{indicatorUnit}"
@@ -169,12 +168,17 @@ public class ImpSlider : MonoBehaviour
 
         if (interactableBindings.Length > 0)
         {
-            ToggleInteractable(impSlider.slider, interactableBindings.All(entry => entry.Value), interactableInvert);
+            var sliderArea = sliderObject.Find("Slider/SliderArea").GetComponent<Image>();
+
+            ToggleInteractable(
+                impSlider.slider, sliderArea,
+                interactableBindings.All(entry => entry.Value), interactableInvert
+            );
             foreach (var interactableBinding in interactableBindings)
             {
                 interactableBinding.onUpdate += value =>
                 {
-                    ToggleInteractable(impSlider.slider, value, interactableInvert);
+                    ToggleInteractable(impSlider.slider, sliderArea, value, interactableInvert);
                 };
             }
         }
@@ -218,8 +222,9 @@ public class ImpSlider : MonoBehaviour
         SetIndicatorText(value);
     }
 
-    private static void ToggleInteractable(Selectable input, bool isOn, bool inverted)
+    private static void ToggleInteractable(Selectable input, Image sliderArea, bool isOn, bool inverted)
     {
         input.interactable = inverted ? !isOn : isOn;
+        ImpUtils.Interface.ToggleImageActive(sliderArea, !isOn);
     }
 }

@@ -3,7 +3,7 @@
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using TMPro;
 using UnityEngine;
 

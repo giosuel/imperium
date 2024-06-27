@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using Imperium.API.Types.Networking;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;

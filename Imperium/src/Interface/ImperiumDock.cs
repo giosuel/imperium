@@ -1,20 +1,23 @@
+#region
+
 using Imperium.Core;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.Types;
+using Imperium.Util.Binding;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.Interface;
 
 public class ImperiumDock : BaseUI
 {
-    protected override void InitUI()
-    {
-    }
-
     internal void RegisterDockButton<T>(
         string buttonPath,
-        ImpInterfaceManager dockInterfaceManager
+        ImpInterfaceManager dockInterfaceManager,
+        string interfaceName,
+        string interfaceDescription,
+        params IBinding<bool>[] canOpenBindings
     ) where T : BaseUI
     {
         var button = ImpButton.Bind(
@@ -22,7 +25,16 @@ public class ImperiumDock : BaseUI
             container,
             () => dockInterfaceManager.Open<T>(),
             theme,
-            isIconButton: true
+            isIconButton: true,
+            playClickSound: false,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = interfaceName,
+                Description = interfaceDescription,
+                HasAccess = true
+            },
+            interactableBindings: canOpenBindings
         );
 
         var buttonImage = button.GetComponent<Image>();
@@ -34,6 +46,7 @@ public class ImperiumDock : BaseUI
                 buttonImage.enabled = false;
                 return;
             }
+
             buttonImage.enabled = selectedInterface.GetType() == typeof(T);
         };
     }

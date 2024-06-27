@@ -9,6 +9,11 @@ using UnityEngine;
 
 namespace Imperium.API.Types;
 
+/// <summary>
+///     Defines a custom visualization manager for a gizmo or an indicator in Imperium.
+/// </summary>
+/// <typeparam name="T">The type of objects this visualizer will handle</typeparam>
+/// <typeparam name="R">The visualizer object this manager works with</typeparam>
 public abstract class BaseVisualizer<T, R> where R : Component
 {
     protected readonly Dictionary<int, R> visualizerObjects = [];

@@ -63,6 +63,7 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("AllowPlayerDeath")]
     private static bool AllowPlayerDeathPatch(PlayerControllerB __instance, ref bool __result)
     {
+        // Internal override for Object Explorer kill functionality that ignores god mode
         if (Imperium.PlayerManager.AllowPlayerDeathOverride)
         {
             __result = true;
@@ -75,8 +76,7 @@ internal static class PlayerControllerPatch
             return false;
         }
 
-        __result = true;
-        return false;
+        return true;
     }
 
     [HarmonyPostfix]
@@ -133,6 +133,12 @@ internal static class PlayerControllerPatch
 
     #endregion
 
+    private static readonly int Walking = Animator.StringToHash("Walking");
+    private static readonly int Sprinting = Animator.StringToHash("Sprinting");
+    private static readonly int Sideways = Animator.StringToHash("Sideways");
+    private static readonly int Crouching = Animator.StringToHash("crouching");
+    private static readonly int Jumping = Animator.StringToHash("Jumping");
+
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
     private static void UpdatePrefixPatch(PlayerControllerB __instance)
@@ -165,11 +171,11 @@ internal static class PlayerControllerPatch
             __instance.fallValue = 0;
             __instance.fallValueUncapped = 0;
 
-            __instance.playerBodyAnimator.SetBool("Walking", value: false);
-            __instance.playerBodyAnimator.SetBool("Sprinting", value: false);
-            __instance.playerBodyAnimator.SetBool("Sideways", value: false);
-            __instance.playerBodyAnimator.SetBool("crouching", value: false);
-            __instance.playerBodyAnimator.SetBool("Jumping", value: true);
+            __instance.playerBodyAnimator.SetBool(Walking, value: false);
+            __instance.playerBodyAnimator.SetBool(Sprinting, value: false);
+            __instance.playerBodyAnimator.SetBool(Sideways, value: false);
+            __instance.playerBodyAnimator.SetBool(Crouching, value: false);
+            __instance.playerBodyAnimator.SetBool(Jumping, value: true);
             __instance.isCrouching = false;
         }
     }
@@ -178,6 +184,9 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("Update")]
     private static void UpdatePostfixPatch(PlayerControllerB __instance)
     {
+        if (Imperium.Settings.Player.Permadrunk.Value) __instance.drunkness = 3;
+        if (Imperium.Settings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
+
         // Make player invincible to animation locking
         if (Imperium.Settings.Player.DisableLocking.Value)
         {
@@ -185,20 +194,20 @@ internal static class PlayerControllerPatch
             __instance.inSpecialInteractAnimation = false;
         }
 
-        if (Imperium.Settings.Player.InfiniteSprint.Value) __instance.sprintMeter = 1;
+        // Apply custom FOV
+        if (Imperium.Settings.Player.CustomFieldOfView.Value > -1)
+        {
+            var targetFOV = Imperium.Settings.Player.CustomFieldOfView.Value;
+            if (__instance.inTerminalMenu) targetFOV -= 6;
+            if (__instance.IsInspectingItem) targetFOV -= 14;
+            if (__instance.isSprinting) targetFOV += 2f;
 
-        if (Imperium.Settings.Player.CustomFieldOfView.Value < 0) return;
-
-        var targetFOV = Imperium.Settings.Player.CustomFieldOfView.Value;
-        if (__instance.inTerminalMenu) targetFOV -= 6;
-        if (__instance.IsInspectingItem) targetFOV -= 14;
-        if (__instance.isSprinting) targetFOV += 2f;
-
-        __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
-            __instance.gameplayCamera.fieldOfView,
-            targetFOV,
-            6f * Time.deltaTime
-        );
+            __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
+                __instance.gameplayCamera.fieldOfView,
+                targetFOV,
+                6f * Time.deltaTime
+            );
+        }
     }
 
     // Temporarily stores gameHasStarted if patch overwrites it for pickup check

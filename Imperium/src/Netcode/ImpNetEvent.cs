@@ -1,7 +1,6 @@
 #region
 
 using System;
-using Imperium.Util.Binding;
 using LethalNetworkAPI;
 using Unity.Netcode;
 
@@ -42,7 +41,7 @@ public class ImpNetEvent : IClearable
 
     internal void DispatchToServer()
     {
-        Imperium.IO.LogInfo($"Client sends {identifier} event to server");
+        Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to server");
         clientEvent.InvokeServer();
     }
 
@@ -50,12 +49,12 @@ public class ImpNetEvent : IClearable
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Imperium.IO.LogInfo($"Server sends {identifier} event to clients");
+            Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients");
             serverEvent.InvokeAllClients();
         }
         else
         {
-            Imperium.IO.LogInfo($"Client sends {identifier} event to clients");
+            Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to clients");
             clientEvent.InvokeAllClients();
         }
     }

@@ -29,15 +29,15 @@ internal class ObjectManager : ImpLifecycleObject
      *
      * Loaded on Imperium initialization.
      */
-    internal readonly ImpBinding<HashSet<EnemyType>> AllEntities = new([]);
-    internal readonly ImpBinding<HashSet<EnemyType>> AllIndoorEntities = new([]);
-    internal readonly ImpBinding<HashSet<EnemyType>> AllOutdoorEntities = new([]);
-    internal readonly ImpBinding<HashSet<EnemyType>> AllDaytimeEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedIndoorEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedOutdoorEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedDaytimeEntities = new([]);
 
-    internal readonly ImpBinding<HashSet<Item>> AllItems = new([]);
-    internal readonly ImpBinding<HashSet<Item>> AllScrap = new([]);
-    internal readonly ImpBinding<Dictionary<string, GameObject>> AllMapHazards = new([]);
-    internal readonly ImpBinding<Dictionary<string, GameObject>> AllStaticPrefabs = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedItems = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedScrap = new([]);
+    internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedMapHazards = new();
+    internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedStaticPrefabs = new();
 
     /*
      * Current level objects
@@ -48,18 +48,18 @@ internal class ObjectManager : ImpLifecycleObject
      *
      * Refreshed when the ship is landing / taking off.
      */
-    internal readonly ImpBinding<HashSet<DoorLock>> CurrentLevelDoors = new([]);
-    internal readonly ImpBinding<HashSet<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
-    internal readonly ImpBinding<HashSet<Turret>> CurrentLevelTurrets = new([]);
-    internal readonly ImpBinding<HashSet<Landmine>> CurrentLevelLandmines = new([]);
-    internal readonly ImpBinding<HashSet<SpikeRoofTrap>> CurrentLevelSpikeTraps = new([]);
-    internal readonly ImpBinding<HashSet<BreakerBox>> CurrentLevelBreakerBoxes = new([]);
-    internal readonly ImpBinding<HashSet<EnemyVent>> CurrentLevelVents = new([]);
-    internal readonly ImpBinding<HashSet<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
-    internal readonly ImpBinding<HashSet<SteamValveHazard>> CurrentLevelSteamValves = new([]);
-    internal readonly ImpBinding<HashSet<EnemyAI>> CurrentLevelEntities = new([]);
-    internal readonly ImpBinding<HashSet<GrabbableObject>> CurrentLevelItems = new([]);
-    internal readonly ImpBinding<HashSet<PlayerControllerB>> CurrentPlayers = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<DoorLock>> CurrentLevelDoors = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<Turret>> CurrentLevelTurrets = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<Landmine>> CurrentLevelLandmines = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<SpikeRoofTrap>> CurrentLevelSpikeTraps = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<BreakerBox>> CurrentLevelBreakerBoxes = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<EnemyVent>> CurrentLevelVents = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<SteamValveHazard>> CurrentLevelSteamValves = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<EnemyAI>> CurrentLevelEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<GrabbableObject>> CurrentLevelItems = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<PlayerControllerB>> CurrentPlayers = new([]);
 
     /*
      * Cache of game objects indexed by name for visualizers and other object access.
@@ -83,8 +83,9 @@ internal class ObjectManager : ImpLifecycleObject
     private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
     private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem", Imperium.Networking);
 
-    private readonly ImpNetMessage<MapHazardSpawnRequest>
-        mapHazardSpawnMessage = new("MapHazardSpawn", Imperium.Networking);
+    private readonly ImpNetMessage<MapHazardSpawnRequest> mapHazardSpawnMessage = new(
+        "MapHazardSpawn", Imperium.Networking
+    );
 
     private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
 
@@ -127,6 +128,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     protected override void OnSceneLoad()
     {
+        Imperium.IO.LogInfo("ON SCENE LOADED : OBJECT MANAGER");
         RefreshLevelItems();
         RefreshLevelObstacles();
 
@@ -236,6 +238,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         var allMapHazards = new Dictionary<string, GameObject>();
         var allStaticPrefabs = new Dictionary<string, GameObject>();
+
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
         {
             switch (obj.name)
@@ -266,15 +269,15 @@ internal class ObjectManager : ImpLifecycleObject
 
         var allScrap = allItems.Where(scrap => scrap.isScrap).ToHashSet();
 
-        AllEntities.Set(allEntities);
-        AllIndoorEntities.Set(allIndoorEntities);
-        AllOutdoorEntities.Set(allOutdoorEntities);
-        AllDaytimeEntities.Set(allDaytimeEntities);
+        LoadedEntities.Set(allEntities);
+        LoadedIndoorEntities.Set(allIndoorEntities);
+        LoadedOutdoorEntities.Set(allOutdoorEntities);
+        LoadedDaytimeEntities.Set(allDaytimeEntities);
 
-        AllItems.Set(allItems);
-        AllScrap.Set(allScrap);
-        AllMapHazards.Set(allMapHazards);
-        AllStaticPrefabs.Set(allStaticPrefabs);
+        LoadedItems.Set(allItems);
+        LoadedScrap.Set(allScrap);
+        LoadedMapHazards.Set(allMapHazards);
+        LoadedStaticPrefabs.Set(allStaticPrefabs);
 
         GenerateDisplayNameMap();
     }
@@ -289,7 +292,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     internal string GetStaticPrefabName(string objectName)
     {
-        return AllStaticPrefabs.Value.TryGetValue(objectName, out var prefab) ? prefab.name : objectName;
+        return LoadedStaticPrefabs.Value.TryGetValue(objectName, out var prefab) ? prefab.name : objectName;
     }
 
     internal void RefreshLevelItems()
@@ -434,14 +437,14 @@ internal class ObjectManager : ImpLifecycleObject
 
     private void GenerateDisplayNameMap()
     {
-        foreach (var entity in AllEntities.Value)
+        foreach (var entity in LoadedEntities.Value)
         {
             if (!entity.enemyPrefab) continue;
             var displayName = entity.enemyPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
             if (!string.IsNullOrEmpty(displayName)) displayNameMap[entity.enemyName] = displayName;
         }
 
-        foreach (var item in AllItems.Value)
+        foreach (var item in LoadedItems.Value)
         {
             if (!item.spawnPrefab) continue;
             var displayName = item.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
@@ -476,7 +479,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnSpawnEntity(EntitySpawnRequest request, ulong clientId)
     {
-        var spawningEntity = AllEntities.Value
+        var spawningEntity = LoadedEntities.Value
             .FirstOrDefault(entity => entity.enemyName == request.Name
                                       && entity.enemyPrefab.name == request.PrefabName);
         if (!spawningEntity)
@@ -550,9 +553,9 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnSpawnItem(ItemSpawnRequest request, ulong clientId)
     {
-        var spawningItem = AllItems.Value
+        var spawningItem = LoadedItems.Value
             .FirstOrDefault(item => item.itemName == request.Name && item.spawnPrefab?.name == request.PrefabName);
-        var itemPrefab = spawningItem?.spawnPrefab ?? AllStaticPrefabs.Value[request.Name];
+        var itemPrefab = spawningItem?.spawnPrefab ?? LoadedStaticPrefabs.Value[request.Name];
 
         if (!itemPrefab || !itemPrefab.GetComponent<GrabbableObject>())
         {
@@ -677,7 +680,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnLandmine(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(AllMapHazards.Value["Landmine"], position, Quaternion.Euler(Vector3.zero));
+        var hazardObj = Object.Instantiate(LoadedMapHazards.Value["Landmine"], position, Quaternion.Euler(Vector3.zero));
         hazardObj.transform.Find("Landmine").rotation = Quaternion.Euler(270, 0, 0);
         hazardObj.transform.localScale = new Vector3(0.4574f, 0.4574f, 0.4574f);
 
@@ -689,7 +692,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnTurret(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(AllMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
+        var hazardObj = Object.Instantiate(LoadedMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
@@ -699,7 +702,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnSteamValve(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(AllMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
+        var hazardObj = Object.Instantiate(LoadedMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
@@ -710,7 +713,7 @@ internal class ObjectManager : ImpLifecycleObject
     private void SpawnSpikeTrap(Vector3 position)
     {
         var hazardObj = Object.Instantiate(
-            AllMapHazards.Value["Spike Trap"],
+            LoadedMapHazards.Value["Spike Trap"],
             position,
             Quaternion.Euler(Vector3.zero)
         );

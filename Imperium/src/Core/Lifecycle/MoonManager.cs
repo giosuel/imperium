@@ -17,11 +17,15 @@ internal class MoonManager : ImpLifecycleObject
 {
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
+    public int ScrapAmount;
+    public int ChallengeScrapAmount;
+
     internal MoonManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
     {
         changeWeatherMessage.OnClientRecive += OnWeatherChange;
     }
+
 
     internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToClients(request);
 
@@ -177,13 +181,17 @@ internal class MoonManager : ImpLifecycleObject
 
         var planetName = Imperium.StartOfRound.levels[request.LevelIndex].PlanetName;
         var weatherName = request.WeatherType.ToString();
-        Imperium.IO.Send($"Successfully changed the weather on {planetName} to {weatherName}",
-            type: NotificationType.Confirmation);
+        Imperium.IO.Send(
+            $"Successfully changed the weather on {planetName} to {weatherName}",
+            type: NotificationType.Confirmation
+        );
     }
 
     [ImpAttributes.LocalMethod]
     private static void RefreshWeather()
     {
+        if (!Imperium.IsSceneLoaded.Value) return;
+
         Reflection.Invoke(Imperium.RoundManager, "SetToCurrentLevelWeather");
         Imperium.StartOfRound.SetMapScreenInfoToCurrentLevel();
         for (var i = 0; i < Imperium.TimeOfDay.effects.Length; i++)

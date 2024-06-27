@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.MonoBehaviours.ImpUI.SpawningUI;
 using Imperium.Types;
 using TMPro;
@@ -44,12 +43,9 @@ internal class SpawningUI : BaseUI
         input.onValueChanged.AddListener(_ => OnInput(input.text));
         input.onSubmit.AddListener(_ => OnSubmit());
 
-        Imperium.InputBindings.SpawningMap["ArrowUp"].performed += OnSelectPrevious;
-        Imperium.InputBindings.SpawningMap["ArrowDown"].performed += OnSelectNext;
-        Imperium.InputBindings.SpawningMap["Submit"].performed += OnSelectNext;
-
-        onOpen += Imperium.InputBindings.SpawningMap.Enable;
-        onClose += Imperium.InputBindings.SpawningMap.Disable;
+        Imperium.InputBindings.BaseMap.PreviousItem.performed += OnSelectPrevious;
+        Imperium.InputBindings.BaseMap.NextItem.performed += OnSelectNext;
+        Imperium.InputBindings.BaseMap.SelectItem.performed += OnSelectNext;
 
         GenerateItems();
     }
@@ -70,7 +66,7 @@ internal class SpawningUI : BaseUI
 
     private void GenerateItems()
     {
-        foreach (var entity in Imperium.ObjectManager.AllEntities.Value)
+        foreach (var entity in Imperium.ObjectManager.LoadedEntities.Value)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
@@ -86,7 +82,7 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
-        foreach (var item in Imperium.ObjectManager.AllItems.Value)
+        foreach (var item in Imperium.ObjectManager.LoadedItems.Value)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
@@ -102,7 +98,7 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
-        foreach (var (hazardName, hazard) in Imperium.ObjectManager.AllMapHazards.Value)
+        foreach (var (hazardName, hazard) in Imperium.ObjectManager.LoadedMapHazards.Value)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
@@ -149,6 +145,8 @@ internal class SpawningUI : BaseUI
 
     private void OnSelectNext(InputAction.CallbackContext callbackContext)
     {
+        if (!IsOpen) return;
+
         var traverseCounter = 0;
         do
         {
@@ -180,6 +178,8 @@ internal class SpawningUI : BaseUI
 
     private void OnSelectPrevious(InputAction.CallbackContext callbackContext)
     {
+        if (!IsOpen) return;
+
         var traverseCounter = 0;
         do
         {
@@ -227,9 +227,12 @@ internal class SpawningUI : BaseUI
         var isMapHazard = spawningObjectEntry.SpawnType == SpawningObjectEntry.SpawnObjectType.MapHazard;
         if (Imperium.Freecam.IsFreecamEnabled.Value || isMapHazard)
         {
+            var originTransform = Imperium.Freecam.IsFreecamEnabled.Value
+                ? Imperium.Freecam.transform
+                : Imperium.Player.gameplayCamera.transform;
             Imperium.ImpPositionIndicator.Activate(
                 position => spawningObjectEntry.Spawn(position, amount, value, false),
-                Imperium.Freecam.transform,
+                originTransform,
                 castGround: !isMapHazard
             );
         }

@@ -2,8 +2,7 @@
 
 using HarmonyLib;
 using Imperium.Interface.ImperiumUI;
-using Imperium.MonoBehaviours.ImpUI.ImperiumUI;
-using Imperium.MonoBehaviours.ImpUI.ImperiumUI.Windows;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 
 #endregion
 
@@ -35,6 +34,7 @@ internal static class GrabbableObjectPatch
         }
 
         // Refresh object explorer for drop button
+        Imperium.IO.LogInfo("REFRESH EQUIPD");
         Imperium.Interface.Get<ImperiumUI>().Get<ObjectExplorerWindow>().Refresh();
     }
 

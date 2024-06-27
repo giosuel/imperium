@@ -6,7 +6,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class ObjectInsightEntry : MonoBehaviour
 {
@@ -23,7 +23,7 @@ public class ObjectInsightEntry : MonoBehaviour
         transform.Find("Title").GetComponent<TMP_Text>().text = insightName;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         insightValueText.text = insightGenerator(targetComponent);
     }

@@ -26,6 +26,7 @@ public abstract class ImpButton
     /// <param name="isIconButton">Whether the button represents an icon button (For theming)</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
     /// <param name="playClickSound">Whether the click sound playes when the button is clicked.</param>
+    /// <param name="tooltipDefinition">The tooltip definition of the button tooltip.</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the button is interactable</param>
     internal static Button Bind(
         string path,
@@ -35,6 +36,7 @@ public abstract class ImpButton
         bool isIconButton = false,
         bool interactableInvert = false,
         bool playClickSound = true,
+        TooltipDefinition tooltipDefinition = null,
         params IBinding<bool>[] interactableBindings
     )
     {
@@ -60,12 +62,24 @@ public abstract class ImpButton
             );
             foreach (var interactableBinding in interactableBindings)
             {
-                interactableBinding.onUpdate += value => ToggleInteractable(
+                interactableBinding.onUpdate += _ => ToggleInteractable(
                     button, icon,
                     interactableBindings.All(entry => entry.Value),
                     interactableInvert
                 );
             }
+        }
+
+        if (tooltipDefinition != null)
+        {
+            var interactable = buttonObject.gameObject.AddComponent<ImpInteractable>();
+            interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
+                tooltipDefinition.Title,
+                tooltipDefinition.Description,
+                tooltipDefinition.HasAccess
+            );
+            interactable.onExit += () => tooltipDefinition.Tooltip.Deactivate();
+            interactable.onOver += position => tooltipDefinition.Tooltip.UpdatePosition(position);
         }
 
         if (theme != null)

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
@@ -35,7 +36,7 @@ public abstract class ImpMultiSelect
         string path,
         Transform container,
         IBinding<T> selectionBinding,
-        IBinding<HashSet<T>> items,
+        IBinding<IReadOnlyCollection<T>> items,
         Func<T, string> labelGenerator,
         ImpBinding<ImpTheme> theme,
         string emptyPlaceholder = null

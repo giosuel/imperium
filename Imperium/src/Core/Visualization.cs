@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
-using Imperium.API;
 using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
 using Imperium.Types;
@@ -49,7 +48,7 @@ internal class Visualization
 
     internal readonly ObjectInsights ObjectInsights;
 
-    private static Material DefaultMaterial => Materials.WireframeCyan;
+    private static Material DefaultMaterial => ImpAssets.WireframeCyan;
 
     internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager, ConfigFile config)
     {
@@ -105,33 +104,37 @@ internal class Visualization
     ///     Visualizes the colliders of a group of game objects by tag or layer
     ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
     /// </summary>
+    /// <param name="isOn">Whether the visualizer is turned on or off</param>
     /// <param name="identifier">Tag or layer of the collider objects</param>
     /// <param name="type">If the identifier is a tag or a layer</param>
     /// <param name="thickness">Currently Unused</param>
     /// <param name="material"></param>
     /// <returns></returns>
-    internal Action<bool> Collider(
+    internal void Collider(
+        bool isOn,
         string identifier,
         IdentifierType type,
         float thickness = 0.05f,
         Material material = null
-    ) => isOn => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
+    ) => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
 
     /// <summary>
     ///     Visualizes a group of game objects with a sphere by tag or layer
     ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
     /// </summary>
+    /// <param name="isOn">Whether the visualizer is turned on or off</param>
     /// <param name="identifier">Tag or layer of the collider objects</param>
     /// <param name="type">If the identifier is a tag or a layer</param>
     /// <param name="size">Size of the indicating sphere</param>
     /// <param name="material"></param>
     /// <returns></returns>
-    internal Action<bool> Point(
+    internal void Point(
+        bool isOn,
         string identifier,
         IdentifierType type,
         float size = 1,
         Material material = null
-    ) => isOn => Visualize(identifier, isOn, VisualizePoint, type, false, size, material);
+    ) => Visualize(identifier, isOn, VisualizePoint, type, false, size, material);
 
     /// <summary>
     ///     Refreshes all collider and point visualizers

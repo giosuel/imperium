@@ -7,7 +7,7 @@ using Imperium.Interface.Common;
 using Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
 using Imperium.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
@@ -48,7 +48,14 @@ internal class ObjectVisualizers : ImpWidget
             transform,
             () => TogglePlayerConfigs(config => config.NoiseRange),
             theme: theme,
-            isIconButton: true
+            isIconButton: true,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = "Noise Visualization",
+                Description = "Currently not implemented",
+                HasAccess = true
+            }
         );
 
         ImpButton.Bind(
@@ -56,35 +63,65 @@ internal class ObjectVisualizers : ImpWidget
             transform,
             () => ToggleEntityConfigs(config => config.Pathfinding),
             theme: theme,
-            isIconButton: true
+            isIconButton: true,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = "Pathfinding",
+                HasAccess = true
+            }
         );
         ImpButton.Bind(
             "EntitiesHeader/Icons/Targeting",
             transform,
             () => ToggleEntityConfigs(config => config.Targeting),
             theme: theme,
-            isIconButton: true
+            isIconButton: true,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = "Targeting",
+                HasAccess = true
+            }
         );
         ImpButton.Bind(
             "EntitiesHeader/Icons/LineOfSight",
             transform,
             () => ToggleEntityConfigs(config => config.LineOfSight),
             theme: theme,
-            isIconButton: true
+            isIconButton: true,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = "Line Of Sight",
+                HasAccess = true
+            }
         );
         ImpButton.Bind(
             "EntitiesHeader/Icons/Hearing",
             transform,
             () => ToggleEntityConfigs(config => config.Hearing),
             theme: theme,
-            isIconButton: true
+            isIconButton: true,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = "Noise Detection",
+                HasAccess = true
+            }
         );
         ImpButton.Bind(
             "EntitiesHeader/Icons/Custom",
             transform,
             () => ToggleEntityConfigs(config => config.Custom),
             theme: theme,
-            isIconButton: true
+            isIconButton: true,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Title = "Custom",
+                HasAccess = true
+            }
         );
 
         Imperium.Visualization.ObjectInsights.InsightVisibilityBindings.onTrigger += Refresh;

@@ -24,9 +24,9 @@ internal static class RoundManagerPatch
     private static void SpawnScrapInLevelPrefixPatch(RoundManager __instance)
     {
         var random = ImpUtils.CloneRandom(__instance.AnomalyRandom);
-        MoonContainer.Current.ScrapAmount = (int)(random.Next(
+        Imperium.MoonManager.ScrapAmount = (int)(random.Next(
             __instance.currentLevel.minScrap, __instance.currentLevel.maxScrap) * __instance.scrapAmountMultiplier);
-        MoonContainer.Current.ChallengeScrapAmount = MoonContainer.Current.ScrapAmount + random.Next(10, 30);
+        Imperium.MoonManager.ChallengeScrapAmount = Imperium.MoonManager.ScrapAmount + random.Next(10, 30);
     }
 
     [HarmonyPrefix]
@@ -80,7 +80,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("YRotationThatFacesTheNearestFromPosition")]
     private static void YRotationThatFacesTheNearestFromPositionPatch(RoundManager __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
+        if (!Imperium.IsImperiumLoaded) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
         Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
@@ -91,7 +91,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("YRotationThatFacesTheFarthestFromPosition")]
     private static void YRotationThatFacesTheFarthestFromPosition(RoundManager __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
+        if (!Imperium.IsImperiumLoaded) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
         Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
@@ -167,6 +167,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("FinishGeneratingNewLevelClientRpc")]
     private static void FinishGeneratingNewLevelClientRpcPostfixPatch()
     {
+        Imperium.IO.LogInfo("=========FinishGeneratingNewLevelClientRpc============");
         Imperium.IsSceneLoaded.SetTrue();
     }
 }

@@ -1,32 +1,52 @@
 # Changelog
 
-## Imperium v0.2.0 [Beta] - The UI Update
+## Imperium v0.2.0 [Beta] - The Interface Update
 
-This update is mainly aimed at the UI rework. I switched from static views with frozen windows to a more dynamic approach with floating windows! 
+This update is a large one and mainly aimed at the rework of the UI system. As the current solution is quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows.
 
-Besides that, I also re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
+Alongside the new UI, I also decided to finally integrate [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
+
+Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
 
 ### Added Stuff
 
+- Merged most of the smaller windows into a large Imperium UI that supports floating windows.
+  - Windows can be dragged and resized with the mouse cursor.
+  - Holding `Alt` and dragging an window results in the window being resized.
+
+- Added tooltips to several buttons and Imperium settings to serve as in-game help with the interface.
+- Added [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/) integration to make keybinds changeable in the settings.
+- Merged the navigator window and ship settings into a new Ship Control UI.
+- Moon settings were merged with the moon control center into a new Moon Control UI.
+- The teleport UI and the waypoint manager were merged into a new Teleportation UI.
+- Added support for modded weathers in the Moon Control UI.
 - Added scrap, entity and map hazard spawning functions to the Imperium API.
 - Added steam valves as new map hazard in the object explorer and spawn UI.
-- Added a slider to change the current time of the day.
+- Added new custom visualizer for Nutcrackers.
+- Added an option to permanently enable the drunk effect from the TZP-Inhalant.
 
 ### QOL Changes
 
-- Toggling objects in the object explorer is now synced with other clients.
-- Disabling entities now results in them being frozen instead of deactivated.
-- Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
-- Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
-- Toggling steam valves will burst / repair them.
-- Freecam flight controls were changed to match with the creative flying controls
-  - `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Enable / Disable the selected layer
+- Small rework of the Object Explorer.
+  - Toggling objects in the object explorer is now synced with other clients.
+  - Disabling entities now results in them being frozen instead of deactivated.
+  - Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
+  - Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
+  - Toggling steam valves will burst / repair them.
+- Adjusted all themes to better match the new overlapping window style.
+- Pausing time is now possible from space.
+- Modded weather and moons now show up correctly in the respective UIs.
+- Freecam flight controls were changed to match with the creative flying controls.
+  - Default: `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Enable / Disable the selected layer.
+- The zoom slider in the Map UI now uses a logarithmic scale.
 
 ### Internal Fixes
 
 - Fixed a bug where it was not possible to join an Imperium lobby without having Imperium installed.
 - Fixed the animation skipping options `Interact` and `InteractHold`.
 - Fixed a typo in a function signature in the Imperium API.
+- Fixed a bug where players could die in orbit when god mode was off.
+- Changed it so insight generators are executed in `LateUpdate` for consistency.
 
 ## Imperium v0.1.9 [Beta] - The API Update
 

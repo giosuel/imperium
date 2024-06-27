@@ -1,7 +1,7 @@
 #region
 
 using HarmonyLib;
-using Imperium.API;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -19,7 +19,7 @@ public static class RadMechAIPatch
             __instance,
             __instance.eye,
             60f * 2,
-            material: Materials.WireframePurple,
+            material: ImpAssets.WireframePurple,
             relativepositionOverride: () => Vector3.forward * 58f - Vector3.up * 10f,
             absolutePositionOverride: eye => eye.forward * 58f - eye.up * 10f
         );

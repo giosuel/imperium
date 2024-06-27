@@ -1,17 +1,22 @@
 #region
 
+using System;
 using System.Collections.Generic;
+using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.Common;
+namespace Imperium.Interface.Common;
 
-internal abstract class ImpMultiSelectEntry
+internal abstract class ImpMultiSelectEntry : MonoBehaviour
 {
+    private ImpBinding<ImpTheme> theme;
+
     /// <summary>
     ///     MultiSelectEntry ImpUI Component - Represents an entry in a <see cref="ImpMultiSelect" />.
     ///     Note: This can also be used without ImpMultiSelect.
@@ -48,7 +53,7 @@ internal abstract class ImpMultiSelectEntry
 
         entryInteractable.onEnter += () => hoverBinding.Set(value);
         entryInteractable.onExit += () => hoverBinding.Set(default);
-        entryInteractable.onClick += () => selectionBinding.Set(value);
+        entryInteractable.onDown += () => selectionBinding.Set(value);
 
         selectionBinding.onUpdate += selectedValue =>
         {
@@ -62,15 +67,18 @@ internal abstract class ImpMultiSelectEntry
 
         if (theme != null)
         {
-            theme.onUpdate += updatedTheme => OnThemeUpdate(updatedTheme, entryObj.transform);
+            theme.onUpdate += updatedTheme =>
+            {
+                if (!entryObj) return;
+                OnThemeUpdate(updatedTheme, entryObj.transform);
+            };
             OnThemeUpdate(theme.Value, entryObj.transform);
         }
     }
-
-    private static void OnThemeUpdate(ImpTheme theme, Transform container)
+    private static void OnThemeUpdate(ImpTheme updatedTheme, Transform container)
     {
         ImpThemeManager.Style(
-            theme,
+            updatedTheme,
             container,
             new StyleOverride("Hover", Variant.FADED),
             new StyleOverride("Selected", Variant.LIGHTER),

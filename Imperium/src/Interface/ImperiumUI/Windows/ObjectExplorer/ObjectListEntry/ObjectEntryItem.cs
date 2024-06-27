@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 internal class ObjectEntryItem : ObjectEntry
 {
@@ -17,9 +17,10 @@ internal class ObjectEntryItem : ObjectEntry
 
     private Image buttonIcon;
 
+    private GrabbableObject item;
+
     protected override void Drop()
     {
-        var item = (GrabbableObject)component;
         if (!item.isHeld || item.playerHeldBy is null) return;
 
         Imperium.PlayerManager.DropItem(
@@ -39,7 +40,6 @@ internal class ObjectEntryItem : ObjectEntry
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
         Imperium.ImpPositionIndicator.Activate(position =>
         {
-            var item = (GrabbableObject)component;
             var itemTransform = item.transform;
             itemTransform.position = position + Vector3.up;
             item.startFallingPosition = itemTransform.position;
@@ -56,7 +56,9 @@ internal class ObjectEntryItem : ObjectEntry
     {
         base.UpdateEntry();
 
-        var isInteractable = ((GrabbableObject)component).isHeld;
+        item = (GrabbableObject)component;
+
+        var isInteractable = item.isHeld || item.heldByPlayerOnServer;
         if (!buttonIcon) buttonIcon = dropButton.transform.Find("Icon").GetComponent<Image>();
 
         ImpUtils.Interface.ToggleImageActive(buttonIcon, isInteractable);

@@ -73,7 +73,7 @@ internal class TeleportationWindow : ImperiumWindow
 
         RegisterWidget<Waypoints>(content, "Waypoints");
 
-        Imperium.InputBindings.BaseMap["Teleport"].performed += OnTeleport;
+        Imperium.InputBindings.BaseMap.Teleport.performed += OnTeleport;
     }
 
     protected override void OnOpen()
@@ -100,7 +100,7 @@ internal class TeleportationWindow : ImperiumWindow
     {
         if (anchor == null) return;
         Imperium.PlayerManager.TeleportLocalPlayer(anchor.Value);
-        Close();
+        CloseParent();
     }
 
     private void TeleportToCoords()

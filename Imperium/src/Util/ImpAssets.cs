@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Imperium.API;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Util;
 
-public abstract class ImpAssets
+internal abstract class ImpAssets
 {
     /*
      * UI Prefabs
      */
     internal static GameObject ImperiumDockObject;
+    internal static GameObject ImperiumTooltipObject;
 
     internal static GameObject ImperiumUIObject;
     internal static GameObject MapUIObject;
@@ -40,22 +40,22 @@ public abstract class ImpAssets
     internal static GameObject VisualizationWindowObject;
     internal static GameObject PreferencesWindowObject;
 
-    // internal static GameObject RenderingWindowObject;
-    // internal static GameObject WeatherUIObject;
-    // internal static GameObject SpawningUIObject;
-    // internal static GameObject MoonUIObject;
-    // internal static GameObject SaveUIObject;
-    // internal static GameObject ObjectsUIObject;
-    // internal static GameObject SettingsUIObject;
-    // internal static GameObject ConfirmationUIObject;
-    // internal static GameObject RenderingUIObject;
-    // internal static GameObject OracleUIObject;
-    // internal static GameObject NavigatorUIObject;
-    // internal static GameObject VisualizerUIObject;
-    // internal static GameObject MapUIObject;
-    // internal static GameObject MinimapSettingsObject;
-    // internal static GameObject LayerSelectorObject;
-    // internal static GameObject MinimapOverlayObject;
+    /*
+     * Materials
+     */
+    internal static Material FresnelWhite;
+    internal static Material FresnelBlue;
+    internal static Material FresnelYellow;
+    internal static Material FresnelGreen;
+    internal static Material FresnelRed;
+    internal static Material WireframeNavMesh;
+    internal static Material WireframePurple;
+    internal static Material WireframeCyan;
+    internal static Material WireframeAmaranth;
+    internal static Material WireframeYellow;
+    internal static Material WireframeGreen;
+    internal static Material WireframeRed;
+    internal static Material XRay;
 
     /*
      * Other Prefabs
@@ -97,6 +97,7 @@ public abstract class ImpAssets
         List<bool> loadResults =
         [
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/imperium_dock.prefab", out ImperiumDockObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/tooltip.prefab", out ImperiumTooltipObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/imperium_ui.prefab", out ImperiumUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/layer_selector.prefab", out LayerSelectorObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/map_ui.prefab", out MapUIObject),
@@ -122,19 +123,19 @@ public abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
-            LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out Materials.Xray),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_white.mat", out Materials.FresnelWhite),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_blue.mat", out Materials.FresnelBlue),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_red.mat", out Materials.FresnelRed),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_green.mat", out Materials.FresnelGreen),
-            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_yellow.mat", out Materials.FresnelYellow),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_navmesh.mat", out Materials.WireframeNavMesh),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_purple.mat", out Materials.WireframePurple),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_cyan.mat", out Materials.WireframeCyan),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_amaranth.mat", out Materials.WireframeAmaranth),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_yellow.mat", out Materials.WireframeYellow),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out Materials.WireframeGreen),
-            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out Materials.WireframeRed),
+            LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XRay),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_white.mat", out FresnelWhite),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_blue.mat", out FresnelBlue),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_red.mat", out FresnelRed),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_green.mat", out FresnelGreen),
+            LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_yellow.mat", out FresnelYellow),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_navmesh.mat", out WireframeNavMesh),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_purple.mat", out WireframePurple),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_cyan.mat", out WireframeCyan),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_amaranth.mat", out WireframeAmaranth),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_yellow.mat", out WireframeYellow),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out WireframeGreen),
+            LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out WireframeRed),
             LoadAsset(ImperiumAssets, "Assets/Materials/shig.mat", out ShiggyMaterial),
             LoadAsset(ImperiumAssets, "Assets/Audio/GrassClick.wav", out GrassClick),
             LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)

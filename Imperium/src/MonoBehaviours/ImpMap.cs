@@ -64,14 +64,14 @@ public class ImpMap : MonoBehaviour
         Imperium.IngamePlayerSettings.playerInput.actions.FindAction("SwitchItem").performed += OnMouseScroll;
 
         Minimap = Instantiate(ImpAssets.MinimapOverlayObject).AddComponent<MinimapOverlay>();
-        Minimap.InitUI(Imperium.Theme);
+        Minimap.InitUI(Imperium.Interface.Theme);
         Minimap.onOpen += OnMinimapOpen;
         Minimap.onClose += OnMinimapClose;
     }
 
     private static void OnMouseScroll(InputAction.CallbackContext context)
     {
-        if (!Imperium.Interface.Get<MapUI>().IsOpen && !Imperium.InputBindings.BaseMap["Alt"].IsPressed()) return;
+        if (!Imperium.Interface.Get<MapUI>().IsOpen && !Imperium.InputBindings.StaticMap["Alt"].IsPressed()) return;
 
         var multiplier = Imperium.Settings.Map.CameraZoom.Value / 100 * 8;
         Imperium.Settings.Map.CameraZoom.Set(

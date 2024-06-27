@@ -2,6 +2,7 @@
 
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Util;
 using Unity.Netcode;
 

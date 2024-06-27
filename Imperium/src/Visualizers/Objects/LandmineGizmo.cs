@@ -2,13 +2,12 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
-using Imperium.API;
 using Imperium.Util;
 using UnityEngine;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class LandmineGizmo : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class LandmineGizmo : MonoBehaviour
     private void Awake()
     {
         sphere = ImpGeometry.CreatePrimitive(
-            PrimitiveType.Sphere, transform, Materials.WireframeRed, 12f
+            PrimitiveType.Sphere, transform, ImpAssets.WireframeRed, 12f
         );
     }
 
@@ -66,7 +65,7 @@ public class LandmineGizmo : MonoBehaviour
 
                     var snapshotHitbox =
                         ImpGeometry.CreatePrimitive(
-                            PrimitiveType.Cube, transform, Materials.WireframeYellow
+                            PrimitiveType.Cube, transform, ImpAssets.WireframeYellow
                         );
 
                     var player = collider.GetComponent<PlayerControllerB>();
@@ -95,7 +94,7 @@ public class LandmineGizmo : MonoBehaviour
                     {
                         var snapshotHitbox =
                             ImpGeometry.CreatePrimitive(
-                                PrimitiveType.Cube, entityColliderScript.transform, Materials.WireframeYellow
+                                PrimitiveType.Cube, entityColliderScript.transform, ImpAssets.WireframeYellow
                             );
 
                         snapshotHitbox.transform.position = entityTransform.position;
@@ -110,7 +109,7 @@ public class LandmineGizmo : MonoBehaviour
                     {
                         var snapshotHitbox =
                             ImpGeometry.CreatePrimitive(
-                                PrimitiveType.Capsule, entityColliderScript.transform, Materials.WireframeYellow
+                                PrimitiveType.Capsule, entityColliderScript.transform, ImpAssets.WireframeYellow
                             );
 
                         snapshotHitbox.transform.position = entityTransform.position;

@@ -1,5 +1,6 @@
 #region
 
+using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using UnityEngine;
 
 #endregion

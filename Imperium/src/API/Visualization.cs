@@ -19,15 +19,9 @@ public static class Visualization
     /// </summary>
     /// <typeparam name="T">The type of component your insight is meant for</typeparam>
     /// <returns>The existing or newly created insight definition for the given type</returns>
-    /// <exception cref="ImperiumAPIException"></exception>
     public static InsightDefinition<T> InsightsFor<T>() where T : Component
     {
-        if (!Imperium.IsImperiumLaunched)
-        {
-            throw new ImperiumAPIException(
-                "Failed to execute API call. Imperium has not yet been initialized."
-            );
-        }
+        APIHelpers.AssertImperiumReady();
 
         return Imperium.Visualization.ObjectInsights.InsightsFor<T>();
     }

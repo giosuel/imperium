@@ -1,7 +1,6 @@
 #region
 
 using Imperium.API.Types.Networking;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.Types;
 
 #endregion
@@ -52,7 +51,9 @@ internal class OracleUI : BaseUI
     {
         ImpThemeManager.Style(
             themeUpdate,
-            container.Find("Viewport/Content"),
+            container,
+            new StyleOverride("Border", Variant.DARKER),
+            new StyleOverride("Background", Variant.BACKGROUND),
             new StyleOverride("Scrollbar", Variant.DARKEST),
             new StyleOverride("Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );

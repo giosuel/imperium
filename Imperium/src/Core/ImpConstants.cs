@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Imperium.Core;
 
-internal abstract class ImpConstants
+public abstract class ImpConstants
 {
     internal abstract class Opacity
     {
@@ -16,10 +16,10 @@ internal abstract class ImpConstants
         internal const float ImageDisabled = 0.3f;
     }
 
-    internal const int DefaultFOV = 66;
-    internal const float DefaultMovementSpeed = 4.6f;
-    internal const float DefaultJumpForce = 13f;
-    internal const float DefaultTimeSpeed = 1.4f;
+    public const int DefaultFOV = 66;
+    public const float DefaultMovementSpeed = 4.6f;
+    public const float DefaultJumpForce = 13f;
+    public const float DefaultTimeSpeed = 1.4f;
 
     internal const int ShotgunCollisionCount = 10;
     internal const float ShotgunDefaultCooldown = 0.7f;

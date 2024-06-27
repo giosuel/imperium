@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 #endregion
 
-namespace Imperium.Visualizers.MonoBehaviours;
+namespace Imperium.Visualizers.Objects;
 
 public class ObjectInsight : MonoBehaviour
 {

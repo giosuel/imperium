@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.API;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -22,7 +22,7 @@ internal static class EnemyAIPatch
         EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
     )
     {
-        if (!Imperium.IsImperiumReady) return true;
+        if (!Imperium.IsImperiumLoaded) return true;
 
         if (playerScript == Imperium.Player && Imperium.Settings.Player.Invisibility.Value)
         {
@@ -63,7 +63,7 @@ internal static class EnemyAIPatch
             eyeObject ? eyeObject : __instance.eye,
             width,
             coneSize,
-            material: Materials.WireframePurple
+            material: ImpAssets.WireframePurple
         );
 
         if (proximityCheck > 0)
@@ -72,22 +72,23 @@ internal static class EnemyAIPatch
                 __instance,
                 null,
                 proximityCheck * 2,
-                material: Materials.WireframePurple
+                material: ImpAssets.WireframePurple
             );
         }
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("CheckLineOfSight")]
-    private static void CheckLineOfSightPrefixPatch(EnemyAI __instance, List<GameObject> objectsToLookFor, float width,
-        int range, float proximityAwareness)
+    private static void CheckLineOfSightPrefixPatch(
+        EnemyAI __instance, List<GameObject> objectsToLookFor, float width, int range, float proximityAwareness
+    )
     {
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             __instance.eye,
             width,
             range,
-            material: Materials.WireframeRed
+            material: ImpAssets.WireframeRed
         );
 
         if (proximityAwareness > 0)
@@ -96,7 +97,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.transform,
                 proximityAwareness * 2,
-                material: Materials.WireframeRed
+                material: ImpAssets.WireframeRed
             );
         }
     }
@@ -131,7 +132,7 @@ internal static class EnemyAIPatch
             __instance.eye,
             width,
             coneSize,
-            material: Materials.WireframeCyan
+            material: ImpAssets.WireframeCyan
         );
 
         if (proximityAwareness > 0)
@@ -140,7 +141,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: Materials.WireframeCyan
+                material: ImpAssets.WireframeCyan
             );
         }
     }
@@ -175,7 +176,7 @@ internal static class EnemyAIPatch
             overrideEye ? overrideEye : __instance.eye,
             width,
             range,
-            material: Materials.WireframeYellow
+            material: ImpAssets.WireframeYellow
         );
 
         if (proximityAwareness > 0)
@@ -184,7 +185,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: Materials.WireframeYellow
+                material: ImpAssets.WireframeYellow
             );
         }
     }
@@ -219,7 +220,7 @@ internal static class EnemyAIPatch
             null,
             width,
             coneSize,
-            material: Materials.WireframeAmaranth
+            material: ImpAssets.WireframeAmaranth
         );
 
         if (proximityAwareness > 0)
@@ -228,7 +229,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: Materials.WireframeAmaranth
+                material: ImpAssets.WireframeAmaranth
             );
         }
     }

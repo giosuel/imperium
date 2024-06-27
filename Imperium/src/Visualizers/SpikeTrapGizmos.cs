@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
@@ -12,11 +12,11 @@ using UnityEngine;
 namespace Imperium.Visualizers;
 
 internal class SpikeTrapGizmos(
-    ImpBinding<HashSet<SpikeRoofTrap>> objectsBinding,
-    ImpBinding<bool> visibilityBinding
-) : BaseVisualizer<HashSet<SpikeRoofTrap>, SpikeTrapGizmo>(objectsBinding, visibilityBinding)
+    IBinding<IReadOnlyCollection<SpikeRoofTrap>> objectsBinding,
+    IBinding<bool> visibilityBinding
+) : BaseVisualizer<IReadOnlyCollection<SpikeRoofTrap>, SpikeTrapGizmo>(objectsBinding, visibilityBinding)
 {
-    protected override void OnRefresh(HashSet<SpikeRoofTrap> objects)
+    protected override void OnRefresh(IReadOnlyCollection<SpikeRoofTrap> objects)
     {
         ClearObjects();
 

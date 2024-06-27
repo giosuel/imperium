@@ -5,10 +5,9 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.Core;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI;
 using Imperium.MonoBehaviours.ImpUI.Common;
-using Imperium.MonoBehaviours.ImpUI.LayerSelector;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -48,8 +47,8 @@ internal class MapUI : BaseUI
     {
         mapUICameraRect = GetCameraRect();
 
-        Imperium.InputBindings.BaseMap["Reset"].performed += OnMapReset;
-        Imperium.InputBindings.BaseMap["Minimap"].performed += OnMinimapToggle;
+        Imperium.InputBindings.BaseMap.Reset.performed += OnMapReset;
+        Imperium.InputBindings.BaseMap.Minimap.performed += OnMinimapToggle;
 
         InitCompass();
         InitSliders();
@@ -61,6 +60,8 @@ internal class MapUI : BaseUI
         var layerSelector = container.Find("LayerSelector").gameObject.AddComponent<LayerSelector.LayerSelector>();
         layerSelector.InitUI(theme);
         layerSelector.Bind(new ImpBinding<bool>(true), Imperium.Settings.Map.CameraLayerMask);
+
+        Imperium.Settings.Map.RotationLock.onTrigger += OnRotationLockChange;
 
         selectedPlayer.Set(Imperium.Player);
     }
@@ -102,21 +103,15 @@ internal class MapUI : BaseUI
         );
     }
 
+    private void OnRotationLockChange() => MoveCameraToTarget(target);
+
     private Rect GetCameraRect()
     {
         var mapBorder = container.Find("MapBorder");
         var canvasScale = GetComponent<Canvas>().scaleFactor;
-        var mapBorderRect = mapBorder.gameObject.GetComponent<RectTransform>().rect;
-        var layerSelectorWidth = container.Find("LayerSelector").GetComponent<RectTransform>().rect.width * canvasScale - 5;
-        var mapContainerWidth = mapBorderRect.width * canvasScale - 5;
-        var mapContainerHeight = mapBorderRect.height * canvasScale - 5;
+        var borderTransform = mapBorder.gameObject.GetComponent<RectTransform>();
 
-        return new Rect(
-            (1 - mapContainerWidth / Screen.width) / 2,
-            (1 - mapContainerHeight / Screen.height) / 2,
-            mapContainerWidth / Screen.width - layerSelectorWidth / Screen.width,
-            mapContainerHeight / Screen.height
-        );
+        return ImpGeometry.NormalizeRectTransform(borderTransform, canvasScale);
     }
 
     private static void OnMinimapToggle(InputAction.CallbackContext _)
@@ -182,6 +177,7 @@ internal class MapUI : BaseUI
             path: "ZoomSlider",
             container: container,
             valueBinding: Imperium.Settings.Map.CameraZoom,
+            useLogarithmicScale: true,
             indicatorUnit: "x",
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
             theme: theme
@@ -214,8 +210,28 @@ internal class MapUI : BaseUI
     {
         ImpToggle.Bind("MapSettings/MinimapEnabled", container, Imperium.Settings.Map.MinimapEnabled, theme);
         ImpToggle.Bind("MapSettings/CompassEnabled", container, Imperium.Settings.Map.CompassEnabled, theme);
-        ImpToggle.Bind("MapSettings/RotationLock", container, Imperium.Settings.Map.RotationLock, theme);
-        ImpToggle.Bind("MapSettings/UnlockView", container, Imperium.Settings.Map.UnlockView, theme);
+        ImpToggle.Bind(
+            "MapSettings/RotationLock",
+            container,
+            Imperium.Settings.Map.RotationLock,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Description = "Whether the camera is clamped\nto the target's rotation"
+            }
+        );
+        ImpToggle.Bind(
+            "MapSettings/UnlockView",
+            container,
+            Imperium.Settings.Map.UnlockView,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Tooltip = tooltip,
+                Description = "When off, the camera resets to a 45 angle.\nWhen on, the camers resets to top-down view."
+            }
+        );
         ImpToggle.Bind("MapSettings/AutoClipping", container, Imperium.Settings.Map.AutoClipping, theme);
         ImpButton.Bind(
             "MapSettings/MinimapSettings",
@@ -308,10 +324,10 @@ internal class MapUI : BaseUI
     ///     The list has to subscribe to all the source bindings in order to be updated when something changes.
     /// </summary>
     /// <returns></returns>
-    private static ImpBinding<HashSet<KeyValuePair<GameObject, string>>> GenerateMapHazardBinding()
+    private static ImpBinding<IReadOnlyCollection<KeyValuePair<GameObject, string>>> GenerateMapHazardBinding()
     {
         var mapHazardBinding =
-            new ImpExternalBinding<HashSet<KeyValuePair<GameObject, string>>, HashSet<Turret>>(
+            new ImpExternalBinding<IReadOnlyCollection<KeyValuePair<GameObject, string>>, IReadOnlyCollection<Turret>>(
                 () => Imperium.ObjectManager.CurrentLevelTurrets.Value
                     .Where(obj => obj)
                     .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Turret"))
@@ -443,8 +459,8 @@ internal class MapUI : BaseUI
         // Mouse input processing
         if (IsOpen && !mouseDragBlocked)
         {
-            var input = Imperium.InputBindings.BaseMap["Look"].ReadValue<Vector2>();
-            if (Imperium.InputBindings.BaseMap["LeftClick"].IsPressed())
+            var input = Imperium.Player.playerActions.Movement.Look.ReadValue<Vector2>();
+            if (Imperium.InputBindings.BaseMap.MapRotate.IsPressed())
             {
                 mouseOffsetX += input.x * 0.25f;
                 mouseOffsetY -= input.y * 0.25f;
@@ -461,7 +477,7 @@ internal class MapUI : BaseUI
                 snapBackAnimationTimer = 0;
                 cameraTargetRotation = new Vector3(mouseOffsetX, mouseOffsetY, 0);
             }
-            else if (Imperium.InputBindings.BaseMap["RightClick"].IsPressed())
+            else if (Imperium.InputBindings.BaseMap.MapPan.IsPressed())
             {
                 var inputVector = new Vector3(
                     -input.x * 0.0016f * Imperium.Settings.Map.CameraZoom.Value,
