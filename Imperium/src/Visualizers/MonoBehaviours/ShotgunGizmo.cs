@@ -43,8 +43,8 @@ public class ShotgunGizmo : MonoBehaviour
     private const float CirclePointCount = 64;
 
     private static Color MinEntityDamageColor = new Color(0.6f, 1.0f, 0.6f);
-    private static Color MidEntityDamageColor = new Color(0.25f, 1.0f, 0.25f);
-    private static Color MaxEntityDamageColor = new Color(0.0f, 0.6f, 0.0f);
+    private static Color MidEntityDamageColor = new Color(0.3f, 1.0f, 0.3f);
+    private static Color MaxEntityDamageColor = new Color(0.0f, 0.5f, 0.0f);
     private static Color MinPlayerDamageColor = Color.yellow;
     private static Color MidPlayerDamageColor = new Color(1f, 0.5f, 0f);
     private static Color MaxPlayerDamageColor = Color.red;
@@ -285,8 +285,8 @@ public class ShotgunGizmo : MonoBehaviour
          * Entities
          */
         var colliders = new RaycastHit[10];
-        var ray = new Ray(shotgunPosition - shotgunForward * 10f, shotgunForward);
-        var hits = Physics.SphereCastNonAlloc(ray, 5f, colliders, 15f, 524288, QueryTriggerInteraction.Collide);
+        var ray = new Ray(shotgunPosition + shotgunForward * SpherecastStartOffset, shotgunForward);
+        var hits = Physics.SphereCastNonAlloc(ray, SpherecastRadius, colliders, SpherecastRange, 524288, QueryTriggerInteraction.Collide);
 
         spherecastOriginArea.gameObject.SetActive(false);
 
@@ -307,8 +307,8 @@ public class ShotgunGizmo : MonoBehaviour
             if (colliders[i].distance == 0f)
             {
                 // The target is inside the SpherecastOrigin area and will take no damage
-                startPoint = colliders[i].transform.position;
-                endPoint = startPoint + Vector3.up * 5f;
+                startPoint = shotgunPosition + shotgunForward * SpherecastStartOffset;
+                endPoint = colliders[i].collider.ClosestPoint(startPoint);
                 entityRayColor = SpherecastOriginColor;
                 spherecastOriginArea.gameObject.SetActive(true);
             }
