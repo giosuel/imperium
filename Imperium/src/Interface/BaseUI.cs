@@ -145,6 +145,11 @@ public abstract class BaseUI : MonoBehaviour, ICloseable
     }
 
     /// <summary>
+    /// Manually invoke the on open functionality.
+    /// </summary>
+    internal void InvokeOnOpen() => onOpen?.Invoke();
+
+    /// <summary>
     ///     Called every time the theme binding updates.
     /// </summary>
     /// <param name="themeUpdate">The updated theme</param>

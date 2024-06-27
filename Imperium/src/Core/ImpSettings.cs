@@ -793,6 +793,14 @@ public class ImpSettings(ConfigFile config)
 
     internal class PreferenceSettings(ConfigFile config) : SettingBase(config)
     {
+        internal readonly ImpConfig<bool> EnableImperium = new(
+            config,
+            "Preferences.General",
+            "EnableImperium",
+            true,
+            allowWhenDisabled: true
+        );
+
         internal readonly ImpConfig<bool> GeneralLogging = new(config, "Preferences.General", "GeneralLogging", true);
         internal readonly ImpConfig<bool> OracleLogging = new(config, "Preferences.General", "OracleLogging", false);
         internal readonly ImpConfig<bool> LeftHandedMode = new(config, "Preferences.General", "LeftHandedMode", false);
@@ -891,7 +899,14 @@ public class ImpSettings(ConfigFile config)
             true
         );
 
-        internal readonly ImpConfig<bool> QuickloadSkipStart = new(config, "Preferences.Quickload", "SkipStart", false);
+        internal readonly ImpConfig<bool> QuickloadSkipStart = new(
+            config,
+            "Preferences.Quickload",
+            "SkipStart",
+            false,
+            allowWhenDisabled: true
+        );
+
         internal readonly ImpConfig<bool> QuickloadSkipMenu = new(config, "Preferences.Quickload", "SkipMenu", false);
         internal readonly ImpConfig<bool> QuickloadOnQuit = new(config, "Preferences.Quickload", "OnQuit", false);
         internal readonly ImpConfig<bool> QuickloadCleanFile = new(config, "Preferences.Quickload", "CleanFile", false);

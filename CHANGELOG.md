@@ -8,6 +8,8 @@ Alongside the new UI, I also decided to finally integrate [InputUtils](https://t
 
 Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
 
+Finally, I also expanded the Imperium API and added a lot of new functionality.
+
 ### Added Stuff
 
 - Merged most of the smaller windows into a large Imperium UI that supports floating windows.
@@ -23,6 +25,7 @@ Besides that, I re-wrote the whole internal networking and switched form manual 
 - Added scrap, entity and map hazard spawning functions to the Imperium API.
 - Added steam valves as new map hazard in the object explorer and spawn UI.
 - Added new custom visualizer for Nutcrackers.
+- Added new custom visualizer for Hoarding Bugs.
 - Added an option to permanently enable the drunk effect from the TZP-Inhalant.
 
 ### QOL Changes
@@ -39,6 +42,8 @@ Besides that, I re-wrote the whole internal networking and switched form manual 
 - Freecam flight controls were changed to match with the creative flying controls.
   - Default: `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Enable / Disable the selected layer.
 - The zoom slider in the Map UI now uses a logarithmic scale.
+- Various small changes to the Oracle UI including new formatting of the vectors.
+- Added a way to highlight entity ghost spawns for indoor entities (Caused by a bug in the game).
 
 ### Internal Fixes
 
@@ -47,6 +52,9 @@ Besides that, I re-wrote the whole internal networking and switched form manual 
 - Fixed a typo in a function signature in the Imperium API.
 - Fixed a bug where players could die in orbit when god mode was off.
 - Changed it so insight generators are executed in `LateUpdate` for consistency.
+- Fixed player invisibility and made it more consistent across all entities.
+- Fixed a bug where the ship would always land instantly, even after disabling the option.
+- Fixed a bug where Nutcrackers were affected by infinite ammo and full auto shotgun.
 
 ## Imperium v0.1.9 [Beta] - The API Update
 

@@ -169,7 +169,7 @@ public class Imperium : BaseUnityPlugin
         IsSceneLoaded = new ImpBinaryBinding(false);
         IsSceneLoaded.onUpdate += value =>
         {
-            Imperium.IO.LogInfo($" === ON SCENE LOADED UPDATED: {value}");
+            IO.LogInfo($" === ON SCENE LOADED UPDATED: {value}");
         };
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
@@ -215,11 +215,6 @@ public class Imperium : BaseUnityPlugin
         ObjectManager.CurrentLevelSpiderWebs.onTrigger += Visualization.RefreshOverlays;
         ObjectManager.CurrentLevelBreakerBoxes.onTrigger += Visualization.RefreshOverlays;
 
-        InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
-
-        Settings.LoadAll();
-        PlayerManager.UpdateCameras();
-
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
         Harmony.PatchAll();
@@ -227,11 +222,19 @@ public class Imperium : BaseUnityPlugin
 
         WasImperiumAccessGranted = true;
         IsImperiumLaunched = true;
-        IsImperiumEnabled = true;
 
-        SpawnUI();
+        // Enable Imperium frontend if Imperium is enabled in the config
+        if (Settings.Preferences.EnableImperium.Value)
+        {
+            Settings.LoadAll();
+            PlayerManager.UpdateCameras();
 
-        IsSceneLoaded.SetFalse();
+            InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
+
+            IsImperiumEnabled = true;
+            SpawnUI();
+            IsSceneLoaded.SetFalse();
+        }
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)

@@ -234,34 +234,25 @@ internal class MoonManager : ImpLifecycleObject
         }
     }
 
-    internal static void NavigateTo(int levelIndex)
-    {
-        Imperium.StartOfRound.ChangeLevelServerRpc(levelIndex, Imperium.Terminal.groupCredits);
-
-        // Send scene refresh so moon related data is refreshed
-        Imperium.IsSceneLoaded.Refresh();
-    }
-
-    internal static void PlayClip(AudioClip audioClip, bool randomize = false)
-    {
-        RoundManager.PlayRandomClip(Imperium.HUDManager.UIAudio, [audioClip], randomize);
-    }
-
+    [ImpAttributes.RemoteMethod]
     internal static void ToggleDoors(bool isOpen)
     {
         Imperium.ObjectManager.CurrentLevelDoors.Value
             .Where(obj => obj)
             .ToList()
-            .ForEach(door =>
-            {
-                var animation = door.gameObject.GetComponent<AnimatedObjectTrigger>();
-                animation.TriggerAnimation(Imperium.Player);
-
-                Reflection.Set(door, "isDoorOpened", isOpen);
-                Reflection.Get<DoorLock, NavMeshObstacle>(door, "isDoorOpened").enabled = !isOpen;
-            });
+            .ForEach(door => ToggleDoor(door,  isOpen));
     }
 
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleDoor(DoorLock door, bool isOpen)
+    {
+        if (Reflection.Get<DoorLock, bool>(door, "isDoorOpened") != isOpen)
+        {
+            door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimation(Imperium.Player);
+        }
+    }
+
+    [ImpAttributes.RemoteMethod]
     internal static void ToggleDoorLocks(bool isLocked)
     {
         Imperium.ObjectManager.CurrentLevelDoors.Value
@@ -271,11 +262,12 @@ internal class MoonManager : ImpLifecycleObject
             {
                 if (isLocked && !door.isLocked)
                 {
+                    // TODO(giosuel): Sync over network
                     door.LockDoor();
                 }
                 else if (door.isLocked)
                 {
-                    door.UnlockDoor();
+                    door.UnlockDoorSyncWithServer();
                 }
             });
     }

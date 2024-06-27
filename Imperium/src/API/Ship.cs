@@ -11,8 +11,7 @@ public static class Ship
     public static void NavigateTo(int levelIndex)
     {
         APIHelpers.AssertImperiumReady();
-
-        if (Imperium.IsSceneLoaded.Value) throw new ImperiumAPIException("Ship is not currently in orbit.");
+        APIHelpers.AssertShipInOrbit();
 
         GameManager.NavigateTo(levelIndex);
     }

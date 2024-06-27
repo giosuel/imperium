@@ -79,8 +79,10 @@ internal class TeleportationWindow : ImperiumWindow
     protected override void OnOpen()
     {
         tpShip.interactable = Imperium.PlayerManager.ShipTPAnchor.Value != null;
-        tpMainEntrance.interactable = Imperium.PlayerManager.MainEntranceTPAnchor.Value != null;
-        tpApparatus.interactable = Imperium.PlayerManager.ApparatusTPAnchor.Value != null;
+        tpMainEntrance.interactable = Imperium.PlayerManager.MainEntranceTPAnchor.Value != null
+                                      && Imperium.IsSceneLoaded.Value;
+        tpApparatus.interactable = Imperium.PlayerManager.ApparatusTPAnchor.Value != null
+                                   && Imperium.IsSceneLoaded.Value;
 
         var position = Imperium.Player.transform.position;
         coordinateX.Set(MathF.Round(position.x, 2));

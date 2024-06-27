@@ -40,6 +40,8 @@ internal class ObjectEntryEntity : ObjectEntry
 
     protected override void ToggleObject(bool isActive)
     {
+        if (!component) return;
+
         var entity = (EnemyAI)component;
         entity.enabled = isActive;
         entity.agent.isStopped = !isActive;

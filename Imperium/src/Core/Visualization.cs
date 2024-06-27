@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using Imperium.API.Types;
 using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
 using Imperium.Types;

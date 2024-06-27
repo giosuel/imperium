@@ -10,8 +10,20 @@ internal static class APIHelpers
     {
         if (Imperium.IsImperiumLaunched) return;
 
-        throw new ImperiumAPIException(
-            "Failed to execute API call. Imperium has not yet been initialized."
-        );
+        throw new ImperiumAPIException("Failed to execute API call. Imperium has not yet been initialized.");
+    }
+
+    internal static void AssertShipLanded()
+    {
+        if (Imperium.IsSceneLoaded.Value) return;
+
+        throw new ImperiumAPIException("Ship is not currently in orbit.");
+    }
+
+    internal static void AssertShipInOrbit()
+    {
+        if (!Imperium.IsSceneLoaded.Value) return;
+
+        throw new ImperiumAPIException("Ship is not currently in orbit.");
     }
 }

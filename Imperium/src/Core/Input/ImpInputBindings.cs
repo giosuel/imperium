@@ -24,6 +24,7 @@ public class ImpInputBindings
         BaseMap.ToggleFlight.performed += _ =>
         {
             if (Imperium.Settings.Player.EnableFlying.Value
+                && Imperium.IsImperiumEnabled
                 && !Imperium.Player.quickMenuManager.isMenuOpen
                 && !Imperium.Player.inTerminalMenu
                 && !Imperium.Player.isTypingChat

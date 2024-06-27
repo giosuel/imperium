@@ -16,6 +16,11 @@ public sealed class ImpConfig<T> : ImpBinding<T>
 {
     private readonly ConfigEntry<T> config;
 
+    private readonly bool allowWhenDisabled;
+
+    // Always return the default value in configs if Imperium is not enabled.
+    public new T Value => Imperium.IsImperiumEnabled || allowWhenDisabled ? base.Value : DefaultValue;
+
     public ImpConfig(
         ConfigFile configFile,
         string section,
@@ -23,11 +28,14 @@ public sealed class ImpConfig<T> : ImpBinding<T>
         T defaultValue,
         Action<T> onUpdate = null,
         Action<T> fromLocalUpdate = null,
-        bool ignoreRefresh = false
+        bool ignoreRefresh = false,
+        bool allowWhenDisabled = false
     ) : base(defaultValue, default, onUpdate, fromLocalUpdate, ignoreRefresh)
     {
+        this.allowWhenDisabled = allowWhenDisabled;
+
         config = configFile.Bind(section, key, defaultValue);
-        Value = config.Value;
+        base.Value = config.Value;
     }
 
     public override void Set(T updatedValue, bool invokeUpdate = true)

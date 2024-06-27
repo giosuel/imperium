@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
 using Imperium.API.Types.Networking;
 using Imperium.Types;
 using Imperium.Util;
@@ -65,17 +66,17 @@ internal class Oracle
         );
 
         // Cycle Variables
-        State.Value.currentCycle = Mathf.RoundToInt(
+        State.Value.CurrentCycle = Mathf.RoundToInt(
             currentHour * Imperium.TimeOfDay.lengthOfHours / Imperium.TimeOfDay.totalTime * 9
         );
 
-        for (var i = State.Value.currentCycle; i <= 9; i++)
+        for (var i = State.Value.CurrentCycle; i <= 9; i++)
         {
-            State.Value.cycles[i].cycleTime = currentTime;
+            State.Value.Cycles[i].CycleTime = currentTime;
 
             if (!Imperium.MoonManager.DaytimeSpawningPaused.Value)
             {
-                State.Value.daytimeCycles[i] = SimulateDaytimeSpawnCycle(
+                State.Value.DaytimeCycles[i] = SimulateDaytimeSpawnCycle(
                     AnomalySimulator, EntitySimulator,
                     ref daytimePower,
                     daytimeEntityCounts,
@@ -86,7 +87,7 @@ internal class Oracle
 
             if (!Imperium.MoonManager.OutdoorSpawningPaused.Value)
             {
-                State.Value.outdoorCycles[i] = SimulateOutdoorSpawnCycle(
+                State.Value.OutdoorCycles[i] = SimulateOutdoorSpawnCycle(
                     AnomalySimulator, OutsideEnemySpawnSimulator,
                     ref outdoorPower,
                     outdoorEntityCounts,
@@ -98,7 +99,7 @@ internal class Oracle
             var spawnTimes = new List<int>();
             if (!Imperium.MoonManager.IndoorSpawningPaused.Value)
             {
-                State.Value.indoorCycles[i] = SimulateIndoorSpawnCycle(
+                State.Value.IndoorCycles[i] = SimulateIndoorSpawnCycle(
                     AnomalySimulator, EntitySimulator,
                     ref indoorPower,
                     indoorEntityCounts,
@@ -106,19 +107,19 @@ internal class Oracle
                     ref firstTimeSpawningEnemies,
                     currentHour, currentTime
                 );
-                spawnTimes = State.Value.indoorCycles[i].Select(report => report.spawnTime).ToList();
+                spawnTimes = State.Value.IndoorCycles[i].Select(report => report.SpawnTime).ToList();
             }
 
             var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
-            State.Value.cycles[i].minSpawnTime = (int)(10f + timeUpToCurrentHour);
-            State.Value.cycles[i].maxSpawnTime = (int)Imperium.TimeOfDay.lengthOfHours *
+            State.Value.Cycles[i].MinSpawnTime = (int)(10f + timeUpToCurrentHour);
+            State.Value.Cycles[i].MaxSpawnTime = (int)Imperium.TimeOfDay.lengthOfHours *
                 roundManager.hourTimeBetweenEnemySpawnBatches + timeUpToCurrentHour - 1;
 
             // Add next regular spawn time to possible spawns as fallback when no vents are being used
             spawnTimes.Add((currentHour + 1) * (int)Imperium.TimeOfDay.lengthOfHours);
 
             var lastSpawn = spawnTimes.Max();
-            State.Value.cycles[i].nextCycleTime = lastSpawn;
+            State.Value.Cycles[i].NextCycleTime = lastSpawn;
 
             // Advance cycle times
             currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
@@ -154,9 +155,13 @@ internal class Oracle
         var spawning = new List<SpawnReport>();
         var freeVents = Imperium.RoundManager.allEnemyVents.Where(t => !t.occupied).ToList();
 
+        // This is used to keep track of the currently used vents to detect ghost spawns
+        var occupiedVents = new HashSet<EnemyVent>();
+
         var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
 
-        if (!freeVents.Any() || cannotSpawnMoreInsideEnemies) return spawning;
+        // Skipping free vents check due to the ghost spawns bug
+        if ( !freeVents.Any() || cannotSpawnMoreInsideEnemies) return spawning;
 
         // Get time of next hour since AdvanceHourAndSpawnNewBatchOfEnemies increases currentHour before spawning
         var baseEntityAmount = roundManager.currentLevel.enemySpawnChanceThroughoutDay.Evaluate(
@@ -189,6 +194,9 @@ internal class Oracle
             );
             var spawnVent = freeVents[anomalySimulator.Next(freeVents.Count)];
 
+            var isGhostSpawn = occupiedVents.Contains(spawnVent);
+            occupiedVents.Add(spawnVent);
+
             for (var j = 0; j < roundManager.currentLevel.Enemies.Count; j++)
             {
                 var enemyType = roundManager.currentLevel.Enemies[j].enemyType;
@@ -209,13 +217,17 @@ internal class Oracle
                     continue;
                 }
 
-                var probability = roundManager.increasedInsideEnemySpawnRateIndex == j ? 100 :
-                    !enemyType.useNumberSpawnedFalloff ? (int)(roundManager.currentLevel.Enemies[j].rarity *
-                                                               enemyType.probabilityCurve.Evaluate(currentDayTime /
-                                                                   roundManager.timeScript.totalTime)) :
-                    (int)(roundManager.currentLevel.Enemies[j].rarity *
-                          (enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime) *
-                           enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)));
+                var probability = roundManager.increasedInsideEnemySpawnRateIndex == j
+                    ? 100
+                    : !enemyType.useNumberSpawnedFalloff
+                        ? (int)(roundManager.currentLevel.Enemies[j].rarity *
+                                enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime)
+                        )
+                        : (int)(roundManager.currentLevel.Enemies[j].rarity * (
+                                enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime) *
+                                enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)
+                            )
+                        );
 
                 probabilities.Add(probability);
             }
@@ -228,9 +240,10 @@ internal class Oracle
             entitySpawnCounts[spawningEntity]++;
             spawning.Add(new SpawnReport
             {
-                entity = spawningEntity,
-                position = spawnVent.floorNode?.position ?? Vector3.zero,
-                spawnTime = spawnTime
+                Entity = spawningEntity,
+                Position = spawnVent.floorNode?.position ?? Vector3.zero,
+                SpawnTime = spawnTime,
+                IsGhostSpawn = isGhostSpawn
             });
         }
 
@@ -331,9 +344,9 @@ internal class Oracle
 
                 spawning.Add(new SpawnReport
                 {
-                    entity = spawningEntity,
-                    position = position,
-                    spawnTime = (int)currentDayTime
+                    Entity = spawningEntity,
+                    Position = position,
+                    SpawnTime = (int)currentDayTime
                 });
             }
         }
@@ -425,9 +438,9 @@ internal class Oracle
 
                 spawning.Add(new SpawnReport
                 {
-                    entity = enemyType,
-                    position = position,
-                    spawnTime = (int)currentDayTime
+                    Entity = enemyType,
+                    Position = position,
+                    SpawnTime = (int)currentDayTime
                 });
             }
         }

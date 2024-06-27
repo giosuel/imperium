@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.API.Types;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util;
@@ -71,11 +72,11 @@ public class OracleCycleEntry : MonoBehaviour
         reports.ForEach(Destroy);
         reports.Clear();
 
-        title.text = $"Cycle #{cycleIndex} ({Formatting.FormatDayTime(state.cycles[cycleIndex].cycleTime)})";
+        title.text = $"Cycle #{cycleIndex} ({Formatting.FormatDayTime(state.Cycles[cycleIndex].CycleTime)})";
 
-        state.indoorCycles[cycleIndex].ForEach(entry => AddReport(entry, indoorList));
-        if (outdoorList) state.outdoorCycles[cycleIndex].ForEach(entry => AddReport(entry, outdoorList));
-        if (daytimeList) state.daytimeCycles[cycleIndex].ForEach(entry => AddReport(entry, daytimeList));
+        state.IndoorCycles[cycleIndex].ForEach(entry => AddReport(entry, indoorList));
+        if (outdoorList) state.OutdoorCycles[cycleIndex].ForEach(entry => AddReport(entry, outdoorList));
+        if (daytimeList) state.DaytimeCycles[cycleIndex].ForEach(entry => AddReport(entry, daytimeList));
     }
 
     private void AddReport(SpawnReport report, Transform list)
@@ -83,14 +84,15 @@ public class OracleCycleEntry : MonoBehaviour
         var reportObject = Instantiate(entryTemplate, list, true);
         reportObject.SetActive(true);
         reportObject.transform.Find("Name").GetComponent<TMP_Text>().text =
-            Imperium.ObjectManager.GetDisplayName(report.entity.enemyName);
+            Imperium.ObjectManager.GetDisplayName(report.Entity.enemyName);
         reportObject.transform.Find("Time").GetComponent<TMP_Text>().text =
-            Formatting.FormatDayTime(report.spawnTime);
+            Formatting.FormatDayTime(report.SpawnTime);
+        reportObject.transform.Find("GhostSpawn").gameObject.SetActive(report.IsGhostSpawn);
 
         var clickableText = reportObject.transform.Find("Position").gameObject.AddComponent<ImpClickableText>();
         clickableText.Init(
-            Formatting.FormatVector(report.position, 2),
-            () => Imperium.PlayerManager.TeleportLocalPlayer(report.position)
+            Formatting.FormatVector(report.Position, 1),
+            () => Imperium.PlayerManager.TeleportLocalPlayer(report.Position)
         );
 
         reports.Add(reportObject);

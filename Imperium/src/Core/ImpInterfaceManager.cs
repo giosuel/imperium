@@ -6,6 +6,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using Imperium.Integration;
 using Imperium.Interface;
+using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -53,6 +54,8 @@ internal class ImpInterfaceManager : MonoBehaviour
             interfaceManager.transform
         ).AddComponent<ImperiumDock>();
         interfaceManager.imperiumDock.InitUI(interfaceManager.Theme, interfaceManager.tooltip);
+
+        Imperium.IsSceneLoaded.onTrigger += interfaceManager.InvokeOnOpen;
 
         return interfaceManager;
     }
@@ -147,6 +150,11 @@ internal class ImpInterfaceManager : MonoBehaviour
         {
             Open<T>(toggleCursorState, closeOthers);
         }
+    }
+
+    private void InvokeOnOpen()
+    {
+        if (OpenInterface.Value) OpenInterface.Value.InvokeOnOpen();
     }
 
     public void Open(Type type, bool toggleCursorState = true, bool closeOthers = true)

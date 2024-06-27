@@ -24,6 +24,7 @@ public class ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConn
             else
             {
                 StartOfRoundPatch.InstantTakeoffHarmony.UnpatchSelf();
+                Imperium.StartOfRound.shipAnimator.ResetTrigger("landing");
                 Imperium.StartOfRound.shipAnimator.enabled = true;
             }
         }
@@ -42,6 +43,7 @@ public class ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConn
             else
             {
                 StartOfRoundPatch.InstantLandingHarmony.UnpatchSelf();
+                Imperium.StartOfRound.shipAnimator.ResetTrigger("landing");
                 Imperium.StartOfRound.shipAnimator.enabled = true;
             }
         }

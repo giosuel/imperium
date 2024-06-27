@@ -1,12 +1,11 @@
 #region
 
-using Imperium.Interface.ImperiumUI;
 using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Util;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.RenderingUI;
+namespace Imperium.Interface.ImperiumUI.Windows.Rendering;
 
 internal class RenderingWindow : ImperiumWindow
 {
@@ -78,5 +77,8 @@ internal class RenderingWindow : ImperiumWindow
             theme
         );
         ImpToggle.Bind("PlayerFilters/ScanSphereToggle", content, Imperium.Settings.Rendering.ScanSphere, theme);
+
+        // Refresh space sun whenever the ship takes off
+        Imperium.IsSceneLoaded.onTrigger += Imperium.Settings.Rendering.SpaceSun.Refresh;
     }
 }

@@ -160,7 +160,8 @@ internal class MinimapOverlay : BaseUI
         if (Imperium.Player.quickMenuManager.isMenuOpen &&
             (!Imperium.Interface.Get<MinimapSettings>()?.IsOpen ?? true)
             || !Imperium.Settings.Map.MinimapEnabled.Value
-            || Imperium.Freecam.IsFreecamEnabled.Value)
+            || Imperium.Freecam.IsFreecamEnabled.Value
+            || !Imperium.IsImperiumEnabled)
         {
             if (IsOpen) Close();
         }

@@ -14,10 +14,6 @@ namespace Imperium.Interface.ImperiumUI.Windows.ControlCenter;
 
 internal class ControlCenterWindow : ImperiumWindow
 {
-    private TMP_InputField levelSeedInput;
-    private TMP_Text levelSeedTitle;
-    private TMP_Text levelSeedText;
-
     private Transform content;
 
     protected override void InitWindow()
@@ -25,10 +21,9 @@ internal class ControlCenterWindow : ImperiumWindow
         content = transform.Find("Content");
 
         InitQuotaAndCredits();
-        InitEntitySpawning();
-        InitGeneration();
         InitPlayerSettings();
         InitGameSettings();
+        InitAnimationSkipping();
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -37,68 +32,6 @@ internal class ControlCenterWindow : ImperiumWindow
             themeUpdate,
             transform,
             new StyleOverride("Separator", Variant.DARKER)
-        );
-    }
-
-    private void InitGeneration()
-    {
-        levelSeedTitle = content.Find("Left/Seed/Title").GetComponent<TMP_Text>();
-        levelSeedText = content.Find("Left/Seed/Input/Text Area/Text").GetComponent<TMP_Text>();
-
-        ImpButton.Bind(
-            "Left/Seed/Reset",
-            content,
-            () => Imperium.GameManager.CustomSeed.Reset(),
-            theme: theme,
-            interactableInvert: true,
-            interactableBindings: Imperium.IsSceneLoaded
-        );
-
-        levelSeedInput = ImpInput.Bind(
-            "Left/Seed/Input",
-            content,
-            Imperium.GameManager.CustomSeed,
-            theme: theme,
-            interactableInvert: true,
-            interactableBindings: Imperium.IsSceneLoaded
-        );
-    }
-
-    protected override void OnOpen()
-    {
-        levelSeedInput.text = Imperium.IsSceneLoaded.Value
-            ? Imperium.StartOfRound.randomMapSeed.ToString()
-            : Imperium.GameManager.CustomSeed.Value != -1
-                ? Imperium.GameManager.CustomSeed.Value.ToString()
-                : "";
-
-        Imperium.GameManager.ProfitQuota.Refresh();
-        Imperium.GameManager.GroupCredits.Refresh();
-        Imperium.GameManager.QuotaDeadline.Refresh();
-
-        levelSeedInput.interactable = !Imperium.IsSceneLoaded.Value;
-        ImpUtils.Interface.ToggleTextActive(levelSeedTitle, !Imperium.IsSceneLoaded.Value);
-        ImpUtils.Interface.ToggleTextActive(levelSeedText, !Imperium.IsSceneLoaded.Value);
-    }
-
-    private void InitEntitySpawning()
-    {
-        ImpToggle.Bind(
-            "Left/PauseIndoorSpawning", content,
-            Imperium.MoonManager.IndoorSpawningPaused,
-            theme
-        );
-
-        ImpToggle.Bind(
-            "Left/PauseOutdoorSpawning", content,
-            Imperium.MoonManager.OutdoorSpawningPaused,
-            theme
-        );
-
-        ImpToggle.Bind(
-            "Left/PauseDaytimeSpawning", content,
-            Imperium.MoonManager.DaytimeSpawningPaused,
-            theme
         );
     }
 
@@ -144,15 +77,8 @@ internal class ControlCenterWindow : ImperiumWindow
         ImpToggle.Bind("Left/DisableQuota", content, Imperium.GameManager.DisableQuota, theme: theme);
     }
 
-    private void InitGameSettings()
+    private void InitAnimationSkipping()
     {
-        ImpToggle.Bind(
-            "Right/GameSettings/UnlockShop",
-            content,
-            Imperium.ShipManager.UnlockShop,
-            theme: theme
-        );
-
         ImpToggle.Bind(
             "Right/AnimationSettings/Scoreboard",
             content,
@@ -175,6 +101,16 @@ internal class ControlCenterWindow : ImperiumWindow
             "Right/AnimationSettings/Interact",
             content,
             Imperium.Settings.AnimationSkipping.Interact,
+            theme: theme
+        );
+    }
+
+    private void InitGameSettings()
+    {
+        ImpToggle.Bind(
+            "Left/GameSettings/UnlockShop",
+            content,
+            Imperium.ShipManager.UnlockShop,
             theme: theme
         );
     }
