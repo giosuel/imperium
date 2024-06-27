@@ -57,4 +57,18 @@ internal static class ShotgunItemPatch
 
         Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("GrabItemFromEnemy")]
+    private static void GrabItemFromEnemyPostfixPatch(ShotgunItem __instance)
+    {
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("DiscardItemFromEnemy")]
+    private static void DiscardItemFromEnemyPostfixPatch(ShotgunItem __instance)
+    {
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
+    }
 }
