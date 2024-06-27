@@ -161,7 +161,7 @@ internal class Oracle
         var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
 
         // Skipping free vents check due to the ghost spawns bug
-        if ( !freeVents.Any() || cannotSpawnMoreInsideEnemies) return spawning;
+        if (!freeVents.Any() || cannotSpawnMoreInsideEnemies) return spawning;
 
         // Get time of next hour since AdvanceHourAndSpawnNewBatchOfEnemies increases currentHour before spawning
         var baseEntityAmount = roundManager.currentLevel.enemySpawnChanceThroughoutDay.Evaluate(

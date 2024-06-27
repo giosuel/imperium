@@ -2,11 +2,11 @@
 
 ## Imperium v0.2.0 [Beta] - The Interface Update
 
-This update is a large one and mainly aimed at the rework of the UI system. As the current solution is quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows.
+This update is a large one and mainly aimed at the rework of the UI system. As the previous solution was quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows!
 
-Alongside the new UI, I also decided to finally integrate [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
+Alongside the new UI, I also decided to finally integrate [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
 
-Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](https://github.com/Xilophor/LethalNetworkAPI) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
+Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](<https://github.com/Xilophor/LethalNetworkAPI>) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
 
 Finally, I also expanded the Imperium API and added a lot of new functionality.
 
@@ -17,7 +17,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
   - Holding `Alt` and dragging an window results in the window being resized.
 
 - Added tooltips to several buttons and Imperium settings to serve as in-game help with the interface.
-- Added [InputUtils](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/) integration to make keybinds changeable in the settings.
+- Added [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>) integration to make keybinds changeable in the settings.
 - Merged the navigator window and ship settings into a new Ship Control UI.
 - Moon settings were merged with the moon control center into a new Moon Control UI.
 - The teleport UI and the waypoint manager were merged into a new Teleportation UI.
@@ -28,19 +28,23 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
 - Added new custom visualizer for Hoarding Bugs.
 - Added an option to permanently enable the drunk effect from the TZP-Inhalant.
 
-### QOL Changes
+### Changes
 
-- Small rework of the Object Explorer.
+- Small Object Explorer functionality rework.
   - Toggling objects in the object explorer is now synced with other clients.
   - Disabling entities now results in them being frozen instead of deactivated.
   - Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
   - Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
   - Toggling steam valves will burst / repair them.
-- Adjusted all themes to better match the new overlapping window style.
+- Merged the shotgun visualizer rework by [digger1213](<https://github.com/digger1213>).
 - Pausing time is now possible from space.
+
+### QoL Improvements
+
+- Adjusted all themes to better match the new overlapping window style.
 - Modded weather and moons now show up correctly in the respective UIs.
 - Freecam flight controls were changed to match with the creative flying controls.
-  - Default: `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Enable / Disable the selected layer.
+  - Default: `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Toggle the selected layer.
 - The zoom slider in the Map UI now uses a logarithmic scale.
 - Various small changes to the Oracle UI including new formatting of the vectors.
 - Added a way to highlight entity ghost spawns for indoor entities (Caused by a bug in the game).

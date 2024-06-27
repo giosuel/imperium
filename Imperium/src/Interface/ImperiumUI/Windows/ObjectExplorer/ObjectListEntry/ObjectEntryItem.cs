@@ -1,5 +1,6 @@
 #region
 
+using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
 using Imperium.Util;
 using UnityEngine;
@@ -23,10 +24,11 @@ internal class ObjectEntryItem : ObjectEntry
     {
         if (!item.isHeld || item.playerHeldBy is null) return;
 
-        Imperium.PlayerManager.DropItem(
-            item.playerHeldBy.playerClientId,
-            PlayerManager.GetItemHolderSlot(item)
-        );
+        Imperium.PlayerManager.DropItem(new DropItemRequest
+        {
+            PlayerId = item.playerHeldBy.playerClientId,
+            ItemIndex = PlayerManager.GetItemHolderSlot(item)
+        });
     }
 
     public override void Destroy()
@@ -38,18 +40,7 @@ internal class ObjectEntryItem : ObjectEntry
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(position =>
-        {
-            var itemTransform = item.transform;
-            itemTransform.position = position + Vector3.up;
-            item.startFallingPosition = itemTransform.position;
-            if (item.transform.parent != null)
-            {
-                item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
-            }
-
-            item.FallToGround();
-        }, origin);
+        Imperium.ImpPositionIndicator.Activate(position => ObjectManager.TeleportItem(item, position), origin);
     }
 
     public override void UpdateEntry()

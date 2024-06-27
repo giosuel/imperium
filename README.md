@@ -126,20 +126,13 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 ### Special Thanks To
 
-- [Nebby](https://thunderstore.io/c/lethal-company/p/Nebulaetrix/) for helping with the documentation and the testing!
-
-- [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for her amazing [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
-
+- [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for helping with the [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
+- [digger1213](https://github.com/digger1213) for writing the the shotgun visualizer!
 - [Xilo](https://github.com/Xilophor) for helping me with the networking and writing the [LethalNetworkingAPI](https://github.com/Xilophor/LethalNetworkAPI)!
-
+- [Nebby](https://thunderstore.io/c/lethal-company/p/Nebulaetrix/) for helping with the documentation and the testing!
 - [Swaggies](https://thunderstore.io/c/lethal-company/p/Swaggies), [aminoob](https://thunderstore.io/c/lethal-company/p/aminoob/) and star0138 for the help with the testing of Imperium!
-
 - [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
-
 - [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
-
-- [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
-
+- [chaser324](https://github.com/Chaser324) for providing the wireframe shaders for the collider visualizations!
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
-
-- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for wA the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for writing the [Unity Netcode Patcher](https://github.com/EvaisaDev/UnityNetcodePatcher) and [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/)!

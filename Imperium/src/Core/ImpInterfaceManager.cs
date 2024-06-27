@@ -100,7 +100,7 @@ internal class ImpInterfaceManager : MonoBehaviour
             );
         }
 
-        keybind.performed += _ => Toggle<T>();
+        keybind.performed += Toggle<T>;
     }
 
     public void RefreshTheme() => Theme.Refresh();
@@ -137,6 +137,8 @@ internal class ImpInterfaceManager : MonoBehaviour
             ImpUtils.Interface.ToggleCursorState(false);
         }
     }
+
+    public void Toggle<T>(InputAction.CallbackContext _) => Toggle<T>();
 
     public void Toggle<T>(bool toggleCursorState = true, bool closeOthers = true)
     {

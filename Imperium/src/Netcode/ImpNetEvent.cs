@@ -8,7 +8,7 @@ using Unity.Netcode;
 
 namespace Imperium.Netcode;
 
-public class ImpNetEvent : IClearable
+public class ImpNetEvent : INetworkSubscribable
 {
     private readonly LethalClientEvent clientEvent;
     private readonly LethalServerEvent serverEvent;
@@ -65,5 +65,9 @@ public class ImpNetEvent : IClearable
     {
         clientEvent.ClearSubscriptions();
         serverEvent.ClearSubscriptions();
+    }
+
+    public void BroadcastToClient(ulong clientId)
+    {
     }
 }

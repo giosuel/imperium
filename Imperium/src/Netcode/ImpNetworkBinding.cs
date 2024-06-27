@@ -11,7 +11,7 @@ using Unity.Netcode;
 
 namespace Imperium.Netcode;
 
-public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
+public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 {
     public event Action<T> onUpdate;
     public event Action<T> onUpdateFromLocal;
@@ -59,7 +59,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
         serverMessage.OnReceived += OnServerReceived;
         clientMessage.OnReceived += OnClientReceived;
 
-        if (masterBinding != null) Set(masterBinding.Value);
+        if (masterBinding != null && NetworkManager.Singleton.IsHost) Set(masterBinding.Value);
 
         networking.RegisterSubscriber(this);
     }
@@ -70,7 +70,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
         if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
         {
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
-            if (request.InvokeServerUpdate) onUpdateServer?.Invoke(request.Payload);
+            // if (request.InvokeServerUpdate) onUpdateServer?.Invoke(request.Payload);
 
             serverMessage.SendAllClients(request);
         }
@@ -122,9 +122,21 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, IClearable
         serverMessage.ClearSubscriptions();
         clientMessage.ClearSubscriptions();
     }
+
+    public void BroadcastToClient(ulong clientId)
+    {
+        if (!NetworkManager.Singleton.IsHost) return;
+
+        serverMessage.SendClient(new BindingUpdateRequest<T>
+        {
+            Payload = Value,
+            InvokeUpdate = true
+        }, clientId);
+    }
 }
 
-public interface IClearable
+public interface INetworkSubscribable
 {
     public void Clear();
+    public void BroadcastToClient(ulong clientId);
 }

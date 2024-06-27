@@ -177,19 +177,7 @@ public class ImperiumUI : BaseUI
 
         if (keybind != null)
         {
-            keybind.performed += _ =>
-            {
-                if (!IsOpen) Open();
-
-                if (windowDefinition.IsOpen)
-                {
-                    windowDefinition.Controller.FocusWindow();
-                }
-                else
-                {
-                    windowDefinition.Controller.Open();
-                }
-            };
+            keybind.performed += windowDefinition.Controller.OnKeybindOpen;
         }
     }
 

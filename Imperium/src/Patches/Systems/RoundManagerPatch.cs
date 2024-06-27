@@ -164,10 +164,6 @@ internal static class RoundManagerPatch
     ///     Level is finished generating, all scrap and map obstacles have been placed, no entities yet
     /// </summary>
     [HarmonyPostfix]
-    [HarmonyPatch("FinishGeneratingNewLevelClientRpc")]
-    private static void FinishGeneratingNewLevelClientRpcPostfixPatch()
-    {
-        Imperium.IO.LogInfo("=========FinishGeneratingNewLevelClientRpc============");
-        Imperium.IsSceneLoaded.SetTrue();
-    }
+    [HarmonyPatch("RefreshEnemiesList")]
+    private static void RefreshEnemiesListPostfixPatch() => Imperium.IsSceneLoaded.SetTrue();
 }

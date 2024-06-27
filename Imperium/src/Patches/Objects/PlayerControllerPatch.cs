@@ -25,7 +25,7 @@ internal static class PlayerControllerPatch
             if (GameNetworkManager.Instance.localPlayerController != __instance) return;
             Imperium.Player = GameNetworkManager.Instance.localPlayerController;
 
-            Imperium.Networking = new ImpNetworking(Imperium.Settings.Preferences.AllowClients);
+            Imperium.Networking = new ImpNetworking();
             Imperium.Networking.RequestImperiumAccess();
         }
     }

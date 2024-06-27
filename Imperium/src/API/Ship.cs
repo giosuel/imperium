@@ -13,6 +13,6 @@ public static class Ship
         APIHelpers.AssertImperiumReady();
         APIHelpers.AssertShipInOrbit();
 
-        GameManager.NavigateTo(levelIndex);
+        Imperium.ShipManager.NavigateTo(levelIndex);
     }
 }

@@ -65,9 +65,10 @@ internal class LayerSelector : BaseUI
     {
         ImpThemeManager.Style(
             themeUpdate,
-            transform,
+            container,
             new StyleOverride("", Variant.BACKGROUND),
-            new StyleOverride("Border", Variant.DARKER)
+            new StyleOverride("Border", Variant.DARKER),
+            new StyleOverride("TitleBox", Variant.DARKER)
         );
 
         ImpThemeManager.Style(

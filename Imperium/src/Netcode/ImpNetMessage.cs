@@ -8,7 +8,7 @@ using Unity.Netcode;
 
 namespace Imperium.Netcode;
 
-public class ImpNetMessage<T> : IClearable
+public class ImpNetMessage<T> : INetworkSubscribable
 {
     private readonly LethalClientMessage<T> clientMessage;
     private readonly LethalServerMessage<T> serverMessage;
@@ -66,5 +66,9 @@ public class ImpNetMessage<T> : IClearable
     {
         clientMessage.ClearSubscriptions();
         serverMessage.ClearSubscriptions();
+    }
+
+    public void BroadcastToClient(ulong clientId)
+    {
     }
 }

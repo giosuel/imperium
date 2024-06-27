@@ -8,6 +8,7 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using Vector2 = System.Numerics.Vector2;
 
 #endregion
@@ -78,6 +79,20 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         OnThemeUpdate(theme.Value);
 
         transform.gameObject.SetActive(false);
+    }
+
+    internal void OnKeybindOpen(InputAction.CallbackContext _)
+    {
+        if (!windowDefinition.IsOpen) Open();
+
+        if (windowDefinition.IsOpen)
+        {
+            windowDefinition.Controller.FocusWindow();
+        }
+        else
+        {
+            windowDefinition.Controller.Open();
+        }
     }
 
     internal void PlaceWindow(Vector2 position, float scale, bool isOpen)

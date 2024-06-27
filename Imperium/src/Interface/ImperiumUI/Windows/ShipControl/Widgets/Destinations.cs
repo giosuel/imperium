@@ -51,7 +51,7 @@ public class Destinations : ImpWidget
         navigationButtonObj.SetActive(true);
 
         var navigationButton = navigationButtonObj.AddComponent<DestinationButton>();
-        navigationButton.Init(levelIndex, () => GameManager.NavigateTo(levelIndex));
+        navigationButton.Init(levelIndex, () => Imperium.ShipManager.NavigateTo(levelIndex));
         onOpen += navigationButton.OnOpen;
 
         buttons.Add(navigationButtonObj);

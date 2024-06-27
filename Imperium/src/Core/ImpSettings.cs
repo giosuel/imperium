@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
 using Imperium.Core.Lifecycle;
+using Imperium.Netcode;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -42,7 +43,18 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> Muted = new(config, "Player", "Muted", false);
         internal readonly ImpConfig<bool> PickupOverwrite = new(config, "Player", "PickupOverwrite", false);
         internal readonly ImpConfig<bool> DisableOOB = new(config, "Player", "DisableOOB", false);
-        internal readonly ImpConfig<bool> EnableFlying = new(config, "Player", "EnableFlying", false);
+
+        internal readonly ImpConfig<bool> EnableFlying = new(
+            config,
+            "Player",
+            "EnableFlying",
+            false,
+            onUpdate: value =>
+            {
+                if (!value) Imperium.PlayerManager.IsFlying.SetFalse();
+            }
+        );
+
         internal readonly ImpConfig<bool> FlyingNoClip = new(config, "Player", "FlyingNoClip", false);
         internal readonly ImpConfig<bool> Permadrunk = new(config, "Player", "Permadrunk", false);
 
@@ -1035,18 +1047,6 @@ public class ImpSettings(ConfigFile config)
         IsLoading = false;
     }
 
-    // Since the Imperium settings are defined in abstract, static classes for simplicity, in order to emulate
-    // an object life-cycle, we have to re-initialize the static fields when re-launching Imperium.
-    // We need to reload because ImpSetting holds ImpBindings that have registered callbacks that might end up
-    // throwing a NullReferenceException if their host objects have been destroyed.
-    // private static void Reinstantiate<T>()
-    // {
-    //     typeof(T).GetConstructor(
-    //         BindingFlags.Static | BindingFlags.NonPublic,
-    //         null, Type.EmptyTypes, null
-    //     )!.Invoke(null, null);
-    // }
-
     internal void LoadAll()
     {
         Load(Player);
@@ -1078,20 +1078,4 @@ public class ImpSettings(ConfigFile config)
 
         Imperium.Reload();
     }
-
-    // internal static void Reinstantiate()
-    // {
-    //     Reinstantiate<Player>();
-    //     Reinstantiate<Shotgun>();
-    //     Reinstantiate<Shovel>();
-    //     Reinstantiate<Time>();
-    //     Reinstantiate<Game>();
-    //     Reinstantiate<Ship>();
-    //     Reinstantiate<AnimationSkipping>();
-    //     Reinstantiate<Map>();
-    //     Reinstantiate<Visualizations>();
-    //     Reinstantiate<Rendering>();
-    //     Reinstantiate<Preferences>();
-    //     Reinstantiate<Freecam>();
-    // }
 }

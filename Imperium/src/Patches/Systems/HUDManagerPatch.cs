@@ -30,6 +30,6 @@ internal static class HUDManagerPatch
     [HarmonyPatch("PingScan_performed")]
     private static bool PingScan_performedPatch(HUDManager __instance)
     {
-        return !Imperium.Interface.Get<MapUI>().IsOpen;
+        return !Imperium.Interface.Get<MapUI>()?.IsOpen ?? true;
     }
 }

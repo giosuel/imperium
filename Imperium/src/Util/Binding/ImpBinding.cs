@@ -46,7 +46,7 @@ public class ImpBinding<T> : IBinding<T>
         this.onUpdateFromLocal += onUpdateFromLocal;
     }
 
-    public void Refresh()
+    public virtual void Refresh()
     {
         if (!ignoreRefresh) Set(Value);
     }

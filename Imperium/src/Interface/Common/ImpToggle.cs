@@ -98,6 +98,8 @@ public abstract class ImpToggle
 
     private static void OnThemeUpdate(ImpTheme theme, Transform container)
     {
+        if (!container) return;
+
         ImpThemeManager.Style(
             theme,
             container,

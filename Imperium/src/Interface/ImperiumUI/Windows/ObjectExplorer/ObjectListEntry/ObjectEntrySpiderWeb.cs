@@ -1,11 +1,10 @@
 #region
 
 using Imperium.API.Types.Networking;
-using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 internal class ObjectEntrySpiderWeb : ObjectEntry
 {
@@ -25,8 +24,8 @@ internal class ObjectEntrySpiderWeb : ObjectEntry
 
     public override void Destroy()
     {
-        base.Destroy();
         Imperium.ObjectManager.DespawnObstacle(objectNetId!.Value);
+        base.Destroy();
     }
 
     protected override void TeleportHere()

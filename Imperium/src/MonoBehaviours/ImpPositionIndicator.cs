@@ -36,20 +36,7 @@ public class ImpPositionIndicator : MonoBehaviour
     internal static ImpPositionIndicator Create() =>
         Instantiate(ImpAssets.IndicatorObject).AddComponent<ImpPositionIndicator>();
 
-    private void Awake()
-    {
-        indicatorObject = transform.Find("IndicatorObject").gameObject;
-        indicatorLineRenderer = indicatorObject.GetComponent<LineRenderer>();
-
-        HideIndicator();
-    }
-
-    private void OnLeftClick(InputAction.CallbackContext context)
-    {
-        if (IsActive) SubmitIndicator();
-    }
-
-    public void Activate(Action<Vector3> callback, Transform originTransform = null, bool castGround = true)
+    internal void Activate(Action<Vector3> callback, Transform originTransform = null, bool castGround = true)
     {
         castToGround = castGround;
         registeredCallback = callback;
@@ -57,10 +44,32 @@ public class ImpPositionIndicator : MonoBehaviour
         ShowIndicator();
     }
 
+    internal void Deactivate()
+    {
+        IsActive = false;
+        registeredCallback = null;
+
+        Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed -= OnLeftClick;
+        Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Enable();
+    }
+
+    private void Awake()
+    {
+        indicatorObject = transform.Find("IndicatorObject").gameObject;
+        indicatorLineRenderer = indicatorObject.GetComponent<LineRenderer>();
+
+        Deactivate();
+    }
+
+    private void OnLeftClick(InputAction.CallbackContext context)
+    {
+        if (IsActive) SubmitIndicator();
+    }
+
     private void SubmitIndicator()
     {
         registeredCallback?.Invoke(indicatorObject.transform.position);
-        HideIndicator();
+        Deactivate();
     }
 
     private void ShowIndicator()
@@ -73,16 +82,7 @@ public class ImpPositionIndicator : MonoBehaviour
         Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Disable();
     }
 
-    public void HideIndicator()
-    {
-        IsActive = false;
-        registeredCallback = null;
-
-        Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed -= OnLeftClick;
-        Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Enable();
-    }
-
-    public void Update()
+    private void Update()
     {
         if (!IsActive || !origin) return;
 

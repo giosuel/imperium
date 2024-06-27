@@ -53,20 +53,28 @@ internal class PlayerManager : ImpLifecycleObject
         sceneLoaded.onTrigger += MainEntranceTPAnchor.Refresh;
         sceneLoaded.onTrigger += ApparatusTPAnchor.Refresh;
 
-        dropItemMessage.OnClientRecive += OnDropitem;
-        teleportPlayerMessage.OnClientRecive += OnTeleportPlayer;
-        killPlayerMessage.OnClientRecive += OnKillPlayer;
-        revivePlayerMessage.OnClientRecive += OnRevivePlayer;
+        dropItemMessage.OnClientRecive += OnDropitemClient;
+        killPlayerMessage.OnClientRecive += OnKillPlayerClient;
+        revivePlayerMessage.OnClientRecive += OnRevivePlayerClient;
+        teleportPlayerMessage.OnClientRecive += OnTeleportPlayerClient;
+
+        if (NetworkManager.Singleton.IsHost)
+        {
+            dropItemMessage.OnServerReceive += OnDropItemServer;
+            killPlayerMessage.OnClientRecive += OnKillPlayerServer;
+            revivePlayerMessage.OnClientRecive += OnRevivePlayerServer;
+            teleportPlayerMessage.OnServerReceive += OnTeleportPlayerServer;
+        }
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void KillPlayer(ulong playerId) => killPlayerMessage.DispatchToClients(playerId);
+    internal void KillPlayer(ulong playerId) => killPlayerMessage.DispatchToServer(playerId);
 
     [ImpAttributes.RemoteMethod]
-    internal void RevivePlayer(ulong playerId) => revivePlayerMessage.DispatchToClients(playerId);
+    internal void RevivePlayer(ulong playerId) => revivePlayerMessage.DispatchToServer(playerId);
 
     [ImpAttributes.RemoteMethod]
-    internal void TeleportPlayer(TeleportPlayerRequest request) => teleportPlayerMessage.DispatchToClients(request);
+    internal void TeleportPlayer(TeleportPlayerRequest request) => teleportPlayerMessage.DispatchToServer(request);
 
     [ImpAttributes.RemoteMethod]
     internal void TeleportLocalPlayer(Vector3 position) => TeleportPlayer(new TeleportPlayerRequest
@@ -76,14 +84,7 @@ internal class PlayerManager : ImpLifecycleObject
     });
 
     [ImpAttributes.RemoteMethod]
-    internal void DropItem(ulong playerId, int itemIndex)
-    {
-        dropItemMessage.DispatchToClients(new DropItemRequest
-        {
-            PlayerId = playerId,
-            ItemIndex = itemIndex
-        });
-    }
+    internal void DropItem(DropItemRequest request) => dropItemMessage.DispatchToClients(request);
 
     [ImpAttributes.LocalMethod]
     internal static void GrabObject(GrabbableObject grabbableItem, PlayerControllerB player)
@@ -117,18 +118,6 @@ internal class PlayerManager : ImpLifecycleObject
     {
         player.health = 100;
         HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
-    }
-
-    [ImpAttributes.RemoteMethod]
-    internal static void DiscardHotbarItem(int playerIndex, int itemSlot)
-    {
-        var player = StartOfRound.Instance.allPlayerScripts[playerIndex];
-        var previousSlot = player.currentItemSlot;
-
-        // Switch to item slot, discard item and switch back
-        Reflection.Invoke(player, "SwitchToItemSlot", itemSlot, null);
-        player.DiscardHeldObject();
-        Reflection.Invoke(player, "SwitchToItemSlot", previousSlot, null);
     }
 
     internal static void UpdateCameras(bool _) => UpdateCameras();
@@ -218,7 +207,7 @@ internal class PlayerManager : ImpLifecycleObject
     #region RPC Handlers
 
     [ImpAttributes.LocalMethod]
-    private static void OnDropitem(DropItemRequest request)
+    private static void OnDropitemClient(DropItemRequest request)
     {
         var player = StartOfRound.Instance.allPlayerScripts[request.PlayerId];
         var previousSlot = player.currentItemSlot;
@@ -229,8 +218,20 @@ internal class PlayerManager : ImpLifecycleObject
         Reflection.Invoke(player, "SwitchToItemSlot", previousSlot, null);
     }
 
+    [ImpAttributes.HostOnly]
+    private void OnDropItemServer(DropItemRequest request, ulong clientId)
+    {
+        dropItemMessage.DispatchToClients(request);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnTeleportPlayerServer(TeleportPlayerRequest request, ulong clientId)
+    {
+        teleportPlayerMessage.DispatchToClients(request);
+    }
+
     [ImpAttributes.LocalMethod]
-    private static void OnTeleportPlayer(TeleportPlayerRequest request)
+    private static void OnTeleportPlayerClient(TeleportPlayerRequest request)
     {
         var player = Imperium.StartOfRound.allPlayerScripts[request.PlayerId];
 
@@ -256,8 +257,11 @@ internal class PlayerManager : ImpLifecycleObject
         if (request.PlayerId == NetworkManager.Singleton.LocalClientId) TimeOfDay.Instance.DisableAllWeather();
     }
 
+    [ImpAttributes.HostOnly]
+    private void OnKillPlayerServer(ulong playerId) => killPlayerMessage.DispatchToClients(playerId);
+
     [ImpAttributes.LocalMethod]
-    private void OnKillPlayer(ulong playerId)
+    private void OnKillPlayerClient(ulong playerId)
     {
         Imperium.StartOfRound.livingPlayers++;
 
@@ -269,8 +273,11 @@ internal class PlayerManager : ImpLifecycleObject
         }
     }
 
+    [ImpAttributes.HostOnly]
+    private void OnRevivePlayerServer(ulong playerId) => revivePlayerMessage.DispatchToClients(playerId);
+
     [ImpAttributes.LocalMethod]
-    private static void OnRevivePlayer(ulong playerId)
+    private static void OnRevivePlayerClient(ulong playerId)
     {
         var player = Imperium.StartOfRound.allPlayerScripts[playerId];
 

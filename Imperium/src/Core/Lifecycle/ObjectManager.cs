@@ -128,7 +128,6 @@ internal class ObjectManager : ImpLifecycleObject
 
     protected override void OnSceneLoad()
     {
-        Imperium.IO.LogInfo("ON SCENE LOADED : OBJECT MANAGER");
         RefreshLevelItems();
         RefreshLevelObstacles();
 
@@ -197,6 +196,19 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     internal void ToggleObject(string name, bool isOn) => FindObject(name)?.SetActive(isOn);
+
+    internal static void TeleportItem(GrabbableObject item, Vector3 position)
+    {
+        var itemTransform = item.transform;
+        itemTransform.position = position + Vector3.up;
+        item.startFallingPosition = itemTransform.position;
+        if (item.transform.parent != null)
+        {
+            item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
+        }
+
+        item.FallToGround();
+    }
 
     /// <summary>
     ///     Fetches all game objects from resources to be used later for spawning
@@ -765,14 +777,17 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private static void DespawnObject(GameObject gameObject)
     {
+        if (!gameObject) return;
+
         if (gameObject.TryGetComponent<GrabbableObject>(out var grabbableObject))
         {
             if (grabbableObject.isHeld && grabbableObject.playerHeldBy is not null)
             {
-                Imperium.PlayerManager.DropItem(
-                    grabbableObject.playerHeldBy.playerClientId,
-                    PlayerManager.GetItemHolderSlot(grabbableObject)
-                );
+                Imperium.PlayerManager.DropItem(new DropItemRequest
+                {
+                    PlayerId = grabbableObject.playerHeldBy.playerClientId,
+                    ItemIndex = PlayerManager.GetItemHolderSlot(grabbableObject)
+                });
             }
         }
 

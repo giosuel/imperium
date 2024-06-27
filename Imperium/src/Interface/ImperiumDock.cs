@@ -41,6 +41,8 @@ public class ImperiumDock : BaseUI
         buttonImage.enabled = false;
         dockInterfaceManager.OpenInterface.onUpdate += selectedInterface =>
         {
+            if (!buttonImage) return;
+
             if (!selectedInterface)
             {
                 buttonImage.enabled = false;

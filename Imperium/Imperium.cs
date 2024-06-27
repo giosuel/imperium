@@ -19,6 +19,7 @@ using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -113,6 +114,7 @@ public class Imperium : BaseUnityPlugin
 
         Settings = new ImpSettings(Config);
         IO = new ImpOutput(Logger);
+        InputBindings = new ImpInputBindings();
 
         if (!ImpAssets.Load()) return;
 
@@ -161,16 +163,12 @@ public class Imperium : BaseUnityPlugin
 
         // Re-instantiate settings to get rid of existing bindings
         Settings = new ImpSettings(configFile);
+        Networking.BindAllowClients(Settings.Preferences.AllowClients);
 
-        InputBindings = new ImpInputBindings();
         Terminal = GameObject.Find("TerminalScript").GetComponent<Terminal>();
         HUDManager = FindObjectOfType<HUDManager>();
 
         IsSceneLoaded = new ImpBinaryBinding(false);
-        IsSceneLoaded.onUpdate += value =>
-        {
-            IO.LogInfo($" === ON SCENE LOADED UPDATED: {value}");
-        };
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 
@@ -189,8 +187,6 @@ public class Imperium : BaseUnityPlugin
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
 
-        // MoonContainer.Create(ObjectManager);
-
         MoonManager.IndoorSpawningPaused.onTrigger += Oracle.Simulate;
         MoonManager.OutdoorSpawningPaused.onTrigger += Oracle.Simulate;
         MoonManager.DaytimeSpawningPaused.onTrigger += Oracle.Simulate;
@@ -204,7 +200,7 @@ public class Imperium : BaseUnityPlugin
 
         Interface.OpenInterface.onUpdate += openInterface =>
         {
-            if (openInterface) ImpPositionIndicator.HideIndicator();
+            if (openInterface) ImpPositionIndicator.Deactivate();
         };
 
         ObjectManager.CurrentPlayers.onTrigger += Visualization.RefreshOverlays;
@@ -227,13 +223,29 @@ public class Imperium : BaseUnityPlugin
         if (Settings.Preferences.EnableImperium.Value)
         {
             Settings.LoadAll();
-            PlayerManager.UpdateCameras();
 
             InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
 
+            InputBindings.BaseMap.Enable();
+            InputBindings.StaticMap.Enable();
+            InputBindings.FreecamMap.Enable();
+            InputBindings.InterfaceMap.Enable();
+
             IsImperiumEnabled = true;
+
             SpawnUI();
+
+            // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
+
+            PlayerManager.UpdateCameras();
+        }
+        else
+        {
+            InputBindings.BaseMap.Disable();
+            InputBindings.StaticMap.Disable();
+            InputBindings.FreecamMap.Disable();
+            InputBindings.InterfaceMap.Disable();
         }
     }
 

@@ -24,21 +24,11 @@ public class ImpBinaryBinding : ImpBinding<bool>
     }
 
     public void Toggle() => Set(!Value);
-    public void SetTrue()
-    {
-        Imperium.IO.LogInfo("BINARY BINDING UPDATE ONTRUE");
-        Set(true);
-    }
-
-    public void SetFalse()
-    {
-        Imperium.IO.LogInfo("BINARY BINDING UPDATE ONFALSE");
-        Set(false);
-    }
+    public void SetTrue() => Set(true);
+    public void SetFalse() => Set(false);
 
     private void OnUpdate(bool updatedValue)
     {
-        Imperium.IO.LogInfo("BINARY BINDING UPDATE");
         if (updatedValue)
         {
             onTrue?.Invoke();

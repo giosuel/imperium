@@ -1,9 +1,20 @@
+using Imperium.API.Types.Networking;
 using Imperium.Util.Binding;
 
 namespace Imperium.API;
 
 public static class Player
 {
+    /// <summary>
+    /// Teleports a player to a specified location.
+    /// </summary>
+    public static void TeleportPlayer(TeleportPlayerRequest request)
+    {
+        APIHelpers.AssertImperiumReady();
+
+        Imperium.PlayerManager.TeleportPlayer(request);
+    }
+
     /// <summary>
     /// Whether the player has infinite stamina.
     /// </summary>

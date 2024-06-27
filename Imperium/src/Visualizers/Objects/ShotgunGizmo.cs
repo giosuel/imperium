@@ -64,10 +64,7 @@ public class ShotgunGizmo : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        Init(shotgun, isActivelyHolding);
-    }
+    private void OnEnable() => Init(shotgun, isActivelyHolding);
 
     private void OnDisable()
     {
@@ -217,8 +214,7 @@ public class ShotgunGizmo : MonoBehaviour
         SetupRendererObject();
 
         var heldByPlayer = shotgunItem.playerHeldBy && isHolding;
-        var heldByNutcracker = shotgunItem.heldByEnemy &&
-                               shotgunItem.heldByEnemy.TryGetComponent<NutcrackerEnemyAI>(out _);
+        var heldByNutcracker = shotgunItem.heldByEnemy && shotgunItem.heldByEnemy.TryGetComponent<NutcrackerEnemyAI>(out _);
         if (gameObject.activeSelf && (heldByPlayer || heldByNutcracker))
         {
             rayHolder.transform.parent = null;

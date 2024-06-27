@@ -83,49 +83,8 @@ internal class InfoWindow : ImperiumWindow
     public void OnSceneChange()
     {
         seed.text = Imperium.StartOfRound.randomMapSeed.ToString();
-        startingCredits.text = Imperium.Terminal.groupCredits + "$";
+        SetChallengeMoonModifiers();
 
-        var powerIncreaseRandom = new Random(StartOfRound.Instance.randomMapSeed + 5781);
-        indoorPowerIncrease.text =
-            (Imperium.StartOfRound.currentLevel.maxEnemyPowerCount + powerIncreaseRandom.Next(0, 8)).ToString();
-        outdoorPowerIncrease.text =
-            (Imperium.StartOfRound.currentLevel.maxOutsideEnemyPowerCount + powerIncreaseRandom.Next(0, 8)).ToString();
-        scrapSpawnIncrease.text = $"+{Imperium.MoonManager.ChallengeScrapAmount - Imperium.MoonManager.ScrapAmount}";
-
-        var weatherRandom = new Random(StartOfRound.Instance.randomMapSeed);
-        weather1Multiplier.text = $"x{(weatherRandom.Next(0, 100) < 20 ? weatherRandom.Next(20, 80) * 0.02f : 1)}";
-        weather2Multiplier.text = $"x{(weatherRandom.Next(0, 100) < 20 ? weatherRandom.Next(20, 80) * 0.02f : 1)}";
-
-        var increasedIndoorIndex = Imperium.RoundManager.increasedInsideEnemySpawnRateIndex;
-        indoorEntity.text = increasedIndoorIndex != -1
-            ? Imperium.StartOfRound.currentLevel.Enemies[increasedIndoorIndex].enemyType.enemyName
-            : "-";
-
-        var increasedOutdoorIndex = Imperium.RoundManager.increasedOutsideEnemySpawnRateIndex;
-        outdoorEntity.text = increasedOutdoorIndex != -1
-            ? Imperium.StartOfRound.currentLevel.OutsideEnemies[increasedOutdoorIndex].enemyType.enemyName
-            : "-";
-
-        var increasedScrapIndex = Imperium.RoundManager.increasedScrapSpawnRateIndex;
-        scrap.text = increasedScrapIndex != -1
-            ? Imperium.StartOfRound.currentLevel.spawnableScrap[increasedScrapIndex].spawnableItem.itemName
-            : "-";
-
-        var increasedMapObjectIndex = Imperium.RoundManager.increasedMapPropSpawnRateIndex;
-        mapObject.text = increasedMapObjectIndex != -1
-            ? Imperium.StartOfRound.currentLevel.spawnableOutsideObjects[increasedMapObjectIndex].spawnableObject.name
-            : "-";
-
-        var increasedMapHazardIndex = Imperium.RoundManager.increasedMapHazardSpawnRateIndex;
-        mapHazard.text = increasedMapHazardIndex != -1
-            ? Imperium.StartOfRound.currentLevel.spawnableMapObjects[increasedMapHazardIndex].prefabToSpawn.name
-            : "-";
-
-        scrapAmount.text = Imperium.ObjectManager.CurrentLevelItems.Value.Count(item => item.itemProperties.isScrap)
-            .ToString();
-        weather.text = (int)Imperium.StartOfRound.currentLevel.currentWeather >= 0
-            ? ImpConstants.MoonWeathers[(int)Imperium.StartOfRound.currentLevel.currentWeather]
-            : "Clear";
         mapObjects.text = "?";
         turrets.text = Imperium.ObjectManager.CurrentLevelTurrets.Value.Count.ToString();
         landmines.text = Imperium.ObjectManager.CurrentLevelLandmines.Value.Count.ToString();
@@ -136,5 +95,71 @@ internal class InfoWindow : ImperiumWindow
         maxIndoorPower.text = Imperium.RoundManager.currentLevel.maxEnemyPowerCount.ToString();
         maxOutdoorPower.text = Imperium.RoundManager.currentLevel.maxOutsideEnemyPowerCount.ToString();
         maxDaytimePower.text = Imperium.RoundManager.currentLevel.maxDaytimeEnemyPowerCount.ToString();
+    }
+
+    private void SetChallengeMoonModifiers()
+    {
+        startingCredits.text = Imperium.Terminal.groupCredits + "$";
+
+        var powerIncreaseRandom = new Random(StartOfRound.Instance.randomMapSeed + 5781);
+
+        var indoorIncrease = powerIncreaseRandom.Next(0, 8);
+        var increasedIndoor = Imperium.StartOfRound.currentLevel.maxEnemyPowerCount + indoorIncrease;
+
+        var outdoorIncrease = powerIncreaseRandom.Next(0, 8);
+        var increasedOutdoor = Imperium.StartOfRound.currentLevel.maxOutsideEnemyPowerCount + outdoorIncrease;
+
+        var increasedScrap = Imperium.MoonManager.ChallengeScrapAmount - Imperium.MoonManager.ScrapAmount;
+
+        if (Imperium.IsSceneLoaded.Value)
+        {
+            indoorPowerIncrease.text = $"+{indoorIncrease} ({increasedIndoor})";
+            outdoorPowerIncrease.text = $"+{increasedOutdoor} ({increasedOutdoor})";
+            scrapSpawnIncrease.text = $"+{increasedScrap} ({Imperium.MoonManager.ChallengeScrapAmount})";
+
+            var weatherRandom = new Random(StartOfRound.Instance.randomMapSeed);
+            weather1Multiplier.text = $"x{(weatherRandom.Next(0, 100) < 20 ? weatherRandom.Next(20, 80) * 0.02f : 1)}";
+            weather2Multiplier.text = $"x{(weatherRandom.Next(0, 100) < 20 ? weatherRandom.Next(20, 80) * 0.02f : 1)}";
+        }
+        else
+        {
+            indoorPowerIncrease.text = "?";
+            outdoorPowerIncrease.text = "?";
+            scrapSpawnIncrease.text = "?";
+
+            weather1Multiplier.text = "?";
+            weather2Multiplier.text = "?";
+        }
+
+        var increasedIndoorIndex = Imperium.RoundManager.increasedInsideEnemySpawnRateIndex;
+        indoorEntity.text = increasedIndoorIndex != -1 && Imperium.IsSceneLoaded.Value
+            ? Imperium.StartOfRound.currentLevel.Enemies[increasedIndoorIndex].enemyType.enemyName
+            : "-";
+
+        var increasedOutdoorIndex = Imperium.RoundManager.increasedOutsideEnemySpawnRateIndex;
+        outdoorEntity.text = increasedOutdoorIndex != -1 && Imperium.IsSceneLoaded.Value
+            ? Imperium.StartOfRound.currentLevel.OutsideEnemies[increasedOutdoorIndex].enemyType.enemyName
+            : "-";
+
+        var increasedScrapIndex = Imperium.RoundManager.increasedScrapSpawnRateIndex;
+        scrap.text = increasedScrapIndex != -1 && Imperium.IsSceneLoaded.Value
+            ? Imperium.StartOfRound.currentLevel.spawnableScrap[increasedScrapIndex].spawnableItem.itemName
+            : "-";
+
+        var increasedMapObjectIndex = Imperium.RoundManager.increasedMapPropSpawnRateIndex;
+        mapObject.text = increasedMapObjectIndex != -1 && Imperium.IsSceneLoaded.Value
+            ? Imperium.StartOfRound.currentLevel.spawnableOutsideObjects[increasedMapObjectIndex].spawnableObject.name
+            : "-";
+
+        var increasedMapHazardIndex = Imperium.RoundManager.increasedMapHazardSpawnRateIndex;
+        mapHazard.text = increasedMapHazardIndex != -1 && Imperium.IsSceneLoaded.Value
+            ? Imperium.StartOfRound.currentLevel.spawnableMapObjects[increasedMapHazardIndex].prefabToSpawn.name
+            : "-";
+
+        scrapAmount.text = Imperium.ObjectManager.CurrentLevelItems.Value.Count(item => item.itemProperties.isScrap)
+            .ToString();
+        weather.text = (int)Imperium.StartOfRound.currentLevel.currentWeather >= 0
+            ? ImpConstants.MoonWeathers[(int)Imperium.StartOfRound.currentLevel.currentWeather]
+            : "Clear";
     }
 }

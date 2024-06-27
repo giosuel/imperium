@@ -23,46 +23,26 @@ internal class MoonManager : ImpLifecycleObject
     internal MoonManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
     {
-        changeWeatherMessage.OnClientRecive += OnWeatherChange;
+        changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
+        changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
     }
 
 
-    internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToClients(request);
+    internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToServer(request);
 
     internal readonly ImpNetworkBinding<bool> IndoorSpawningPaused = new(
         "IndoorSpawningPaused",
-        Imperium.Networking,
-        onUpdateClient: value =>
-        {
-            Imperium.IO.Send(
-                value ? "Indoor spawning has been paused!" : "Indoor spawning has been resumed!",
-                type: NotificationType.Confirmation
-            );
-        }
+        Imperium.Networking
     );
 
     internal readonly ImpNetworkBinding<bool> OutdoorSpawningPaused = new(
         "OutdoorSpawningPaused",
-        Imperium.Networking,
-        onUpdateClient: value =>
-        {
-            Imperium.IO.Send(
-                value ? "Outdoor spawning has been paused!" : "Outdoor spawning has been resumed!",
-                type: NotificationType.Confirmation
-            );
-        }
+        Imperium.Networking
     );
 
     internal readonly ImpNetworkBinding<bool> DaytimeSpawningPaused = new(
         "DaytimeSpawningPaused",
-        Imperium.Networking,
-        onUpdateClient: value =>
-        {
-            Imperium.IO.Send(
-                value ? "Daytime spawning has been paused!" : "Daytime spawning has been resumed!",
-                type: NotificationType.Confirmation
-            );
-        }
+        Imperium.Networking
     );
 
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
@@ -172,8 +152,14 @@ internal class MoonManager : ImpLifecycleObject
         WeatherVariable2.Sync(Imperium.TimeOfDay.currentWeatherVariable2);
     }
 
+    [ImpAttributes.HostOnly]
+    private void OnWeatherChangeServer(ChangeWeatherRequest request, ulong clientId)
+    {
+        changeWeatherMessage.DispatchToClients(request);
+    }
+
     [ImpAttributes.LocalMethod]
-    private static void OnWeatherChange(ChangeWeatherRequest request)
+    private static void OnWeatherChangeClient(ChangeWeatherRequest request)
     {
         Imperium.StartOfRound.levels[request.LevelIndex].currentWeather = request.WeatherType;
 
@@ -185,6 +171,9 @@ internal class MoonManager : ImpLifecycleObject
             $"Successfully changed the weather on {planetName} to {weatherName}",
             type: NotificationType.Confirmation
         );
+
+        // Refresh UIs with new weather information
+        Imperium.IsSceneLoaded.Refresh();
     }
 
     [ImpAttributes.LocalMethod]

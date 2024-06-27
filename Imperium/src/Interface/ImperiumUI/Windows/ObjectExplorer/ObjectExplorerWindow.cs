@@ -160,9 +160,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
     public void Refresh()
     {
-        Imperium.IO.LogInfo("REFRESHING");
-        // Imperium.IO.LogInfo(Debugging.GetStackTrace());
-
         // Create a list of key value pairs where the key is the type of object entry that will be added to the
         // instantiated list entry of each object (ObjectEntryXXX, Component)
         var instanceIdSet = new HashSet<int>();

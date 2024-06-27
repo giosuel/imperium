@@ -34,8 +34,7 @@ internal static class GrabbableObjectPatch
         }
 
         // Refresh object explorer for drop button
-        Imperium.IO.LogInfo("REFRESH EQUIPD");
-        Imperium.Interface.Get<ImperiumUI>().Get<ObjectExplorerWindow>().Refresh();
+        Imperium.Interface.Get<ImperiumUI>()?.Get<ObjectExplorerWindow>()?.Refresh();
     }
 
     [HarmonyPostfix]
@@ -59,6 +58,6 @@ internal static class GrabbableObjectPatch
     internal static void DiscardItemPatch(GrabbableObject __instance)
     {
         // Refresh object explorer for drop button
-        Imperium.Interface.Get<ImperiumUI>().Get<ObjectExplorerWindow>().Refresh();
+        Imperium.Interface.Get<ImperiumUI>()?.Get<ObjectExplorerWindow>()?.Refresh();
     }
 }

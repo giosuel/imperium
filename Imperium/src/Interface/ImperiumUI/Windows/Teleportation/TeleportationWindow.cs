@@ -148,7 +148,7 @@ internal class TeleportationWindow : ImperiumWindow
 
         if (Imperium.ImpPositionIndicator.IsActive)
         {
-            Imperium.ImpPositionIndicator.HideIndicator();
+            Imperium.ImpPositionIndicator.Deactivate();
         }
         else
         {

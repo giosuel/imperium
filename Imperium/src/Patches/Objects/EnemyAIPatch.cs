@@ -239,7 +239,7 @@ internal static class EnemyAIPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("GetAllPlayersInLineOfSight")]
-    private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
+    private static void GetAllPlayersInLineOfSightPostfixPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
     {
         if (Imperium.Settings.Player.Invisibility.Value && __result.Contains(Imperium.Player))
         {
@@ -247,7 +247,7 @@ internal static class EnemyAIPatch
         }
     }
 
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForPlayer")]
     private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance, ref PlayerControllerB __result)
     {

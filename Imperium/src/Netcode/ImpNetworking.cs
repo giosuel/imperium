@@ -16,24 +16,27 @@ namespace Imperium.Netcode;
 
 public class ImpNetworking
 {
-    private readonly HashSet<IClearable> RegisteredNetworkSubscribers = [];
+    private readonly HashSet<INetworkSubscribable> RegisteredNetworkSubscribers = [];
 
     internal static readonly ImpBinding<int> ConnectedPlayers = new(1);
 
     private readonly ImpNetEvent authenticateEvent;
     private readonly ImpNetEvent enableImperiumEvent;
     private readonly ImpNetEvent disableImperiumEvent;
+    private readonly ImpNetEvent clientRequestValues;
 
     private readonly ImpNetMessage<NetworkNotification> networkLog;
 
     internal readonly ImpNetworkBinding<List<ulong>> ImperiumUsers;
 
-    public ImpNetworking(IBinding<bool> allowClientsBinding)
+    public ImpNetworking()
     {
         authenticateEvent = new ImpNetEvent("AuthenticateImperium", this);
         enableImperiumEvent = new ImpNetEvent("EnableImperium", this);
         disableImperiumEvent = new ImpNetEvent("DisableImperium", this);
         networkLog = new ImpNetMessage<NetworkNotification>("NetworkLog", this);
+        
+        clientRequestValues = new ImpNetEvent("ClientRequestValues", this);
 
         ImperiumUsers = new ImpNetworkBinding<List<ulong>>(
             "ImperiumUsers",
@@ -44,7 +47,7 @@ public class ImpNetworking
         if (NetworkManager.Singleton.IsHost)
         {
             authenticateEvent.OnServerReceive += OnAuthenticateRequest;
-            allowClientsBinding.onUpdate += ToggleImperiumAccess;
+            clientRequestValues.OnServerReceive += OnClientRequestValues;
         }
         else
         {
@@ -56,7 +59,15 @@ public class ImpNetworking
         networkLog.OnClientRecive += OnLogReceived;
     }
 
-    internal void RegisterSubscriber(IClearable subscriber) => RegisteredNetworkSubscribers.Add(subscriber);
+    internal void BindAllowClients(IBinding<bool> allowClientsBinding)
+    {
+        if (NetworkManager.Singleton.IsHost)
+        {
+            allowClientsBinding.onUpdate += ToggleImperiumAccess;
+        }
+    }
+
+    internal void RegisterSubscriber(INetworkSubscribable subscriber) => RegisteredNetworkSubscribers.Add(subscriber);
 
     internal void SendLog(NetworkNotification report)
     {
@@ -70,12 +81,21 @@ public class ImpNetworking
     );
 
     [ImpAttributes.HostOnly]
+    private void OnClientRequestValues(ulong clientId)
+    {
+        foreach (var subscribable in RegisteredNetworkSubscribers)
+        {
+            subscribable.BroadcastToClient(clientId);
+        }
+    }
+
+    [ImpAttributes.HostOnly]
     private void OnAuthenticateRequest(ulong clientId)
     {
         // Always grant Imperium access if the request comes from the host
         if (clientId == NetworkManager.ServerClientId)
         {
-            authenticateEvent.DispatchToClients();
+            authenticateEvent.DispatchToClients([NetworkManager.ServerClientId]);
             return;
         }
 
@@ -83,19 +103,19 @@ public class ImpNetworking
         {
             var playerName = clientId.GetPlayerController()?.playerUsername ?? $"#{clientId}";
             Imperium.IO.Send(
-                $"Imperium access was granted to client #{playerName}.",
+                $"Imperium access was granted to client {playerName}.",
                 type: NotificationType.AccessControl
             );
             Imperium.IO.LogInfo($"[NET] Client #{clientId} successfully requested Imperium access ({playerName})!");
 
-            authenticateEvent.DispatchToClients();
+            authenticateEvent.DispatchToClients([clientId]);
             ImperiumUsers.Set(ImperiumUsers.Value.Concat([clientId]).ToList());
         }
         else
         {
             var playerName = clientId.GetPlayerController()?.playerUsername ?? $"#{clientId}";
             Imperium.IO.Send(
-                $"Imperium access was denied to client #{playerName}.",
+                $"Imperium access was denied to client {playerName}.",
                 type: NotificationType.AccessControl
             );
             Imperium.IO.LogInfo($"[NET] Client #{clientId} failed to request Imperium access ({playerName})!");
@@ -105,6 +125,7 @@ public class ImpNetworking
     [ImpAttributes.HostOnly]
     private void ToggleImperiumAccess(bool hasAccess)
     {
+        Imperium.IO.LogInfo("TOGGLE IMPERIM ACCESS FOR CLIENTS");
         if (hasAccess)
         {
             enableImperiumEvent.DispatchToClients();
@@ -116,14 +137,18 @@ public class ImpNetworking
     }
 
     [ImpAttributes.LocalMethod]
-    private static void OnAuthenticateResponse()
+    private void OnAuthenticateResponse()
     {
+        // actually authenticated client ID
         Imperium.IO.Send(
             "Imperium access was granted!",
             type: NotificationType.AccessControl
         );
         Imperium.IO.LogInfo("[NET] Imperium access was granted!");
         Imperium.Launch();
+
+        // Request network values update from server if client is not host
+        if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();
     }
 
     [ImpAttributes.LocalMethod]
@@ -141,7 +166,7 @@ public class ImpNetworking
     }
 
     [ImpAttributes.LocalMethod]
-    private static void OnEnableImperiumAccess()
+    private void OnEnableImperiumAccess()
     {
         if (NetworkManager.Singleton.IsHost) return;
 
@@ -157,6 +182,9 @@ public class ImpNetworking
         else
         {
             Imperium.Launch();
+
+            // Request network values update from server if client is not host
+            if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();
         }
     }
 
@@ -170,7 +198,7 @@ public class ImpNetworking
         yield return new WaitForSeconds(5f);
         if (!Imperium.IsImperiumLaunched)
         {
-            Imperium.IO.Send("Failed to aqcuire Imperium access! Shutting down...", isWarning: true);
+            Imperium.IO.Send("Failed to acquire Imperium access! Shutting down...", isWarning: true);
         }
     }
 
@@ -189,7 +217,6 @@ public class ImpNetworking
             $"[NET] Imperium has detected a disconnect: {clientId} (host: {NetworkManager.Singleton.IsHost})"
         );
         Imperium.IO.Send($"A client has disconnected! ID: {clientId}", "Imperium Networking");
-
         ConnectedPlayers.Set(ConnectedPlayers.Value - 1);
     }
 

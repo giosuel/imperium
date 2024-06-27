@@ -88,12 +88,4 @@ internal class GameManager : ImpLifecycleObject
         QuotaDeadline.Sync(Imperium.TimeOfDay.daysUntilDeadline);
         GroupCredits.Sync(Imperium.Terminal.groupCredits);
     }
-
-    internal static void NavigateTo(int levelIndex)
-    {
-        Imperium.StartOfRound.ChangeLevelServerRpc(levelIndex, Imperium.Terminal.groupCredits);
-
-        // Send scene refresh so moon related data is refreshed
-        Imperium.IsSceneLoaded.Refresh();
-    }
 }

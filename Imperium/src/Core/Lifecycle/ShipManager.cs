@@ -2,15 +2,39 @@
 
 using Imperium.Netcode;
 using Imperium.Patches.Systems;
+using Imperium.Util;
 using Imperium.Util.Binding;
+using Unity.Netcode;
 
 #endregion
 
 namespace Imperium.Core.Lifecycle;
 
-public class ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-    : ImpLifecycleObject(sceneLoaded, playersConnected)
+public class ShipManager : ImpLifecycleObject
 {
+    private readonly ImpNetMessage<int> navigateShipMessage = new("NavigateShip", Imperium.Networking);
+
+    public ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) : base(sceneLoaded, playersConnected)
+    {
+        if (NetworkManager.Singleton.IsHost) navigateShipMessage.OnServerReceive += OnNavigateToServer;
+        navigateShipMessage.OnClientRecive += OnNavigateToClient;
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void NavigateTo(int levelIndex) => navigateShipMessage.DispatchToServer(levelIndex);
+
+    [ImpAttributes.HostOnly]
+    private void OnNavigateToServer(int levelIndex, ulong clientId) => navigateShipMessage.DispatchToClients(levelIndex);
+
+    [ImpAttributes.HostOnly]
+    private static void OnNavigateToClient(int levelIndex)
+    {
+        Imperium.StartOfRound.ChangeLevelClientRpc(levelIndex, Imperium.GameManager.GroupCredits.Value);
+
+        // Send scene refresh so moon related data is refreshed
+        Imperium.IsSceneLoaded.Refresh();
+    }
+
     internal readonly ImpNetworkBinding<bool> InstantTakeoff = new(
         "InstantTakeoff",
         Imperium.Networking,
