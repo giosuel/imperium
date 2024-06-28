@@ -24,8 +24,8 @@ internal class ObjectEntrySpiderWeb : ObjectEntry
 
     public override void Destroy()
     {
-        Imperium.ObjectManager.DespawnObstacle(objectNetId!.Value);
         base.Destroy();
+        Imperium.ObjectManager.DespawnObstacle(objectNetId!.Value);
     }
 
     protected override void TeleportHere()

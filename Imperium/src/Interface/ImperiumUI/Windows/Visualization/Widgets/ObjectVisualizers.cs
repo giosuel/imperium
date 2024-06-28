@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
+using Imperium.Interface.ImperiumUI.Windows.Visualization.ObjectVisualizerEntries;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects;

@@ -1,8 +1,6 @@
 #region
 
-using Imperium.Core;
 using Imperium.Interface.MapUI;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
@@ -11,7 +9,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 #endregion
 
-namespace Imperium.MonoBehaviours;
+namespace Imperium.Core.Scripts;
 
 public class ImpMap : MonoBehaviour
 {

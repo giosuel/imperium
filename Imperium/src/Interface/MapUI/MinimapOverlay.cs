@@ -1,7 +1,5 @@
 #region
 
-using Imperium.Interface;
-using Imperium.Interface.MapUI;
 using Imperium.Types;
 using Imperium.Util;
 using TMPro;
@@ -9,7 +7,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.MapUI;
+namespace Imperium.Interface.MapUI;
 
 internal class MinimapOverlay : BaseUI
 {

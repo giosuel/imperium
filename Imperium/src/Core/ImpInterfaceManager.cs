@@ -6,7 +6,6 @@ using System.Linq;
 using BepInEx.Configuration;
 using Imperium.Integration;
 using Imperium.Interface;
-using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;

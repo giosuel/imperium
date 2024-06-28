@@ -1,11 +1,10 @@
 #region
 
 using Imperium.Interface.Common;
-using Imperium.Interface.ImperiumUI;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.SaveUI;
+namespace Imperium.Interface.ImperiumUI.Windows.SaveEditor;
 
 internal class ConfirmationWindow : ImperiumWindow
 {

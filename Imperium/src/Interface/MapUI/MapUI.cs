@@ -5,7 +5,6 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.Core;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;

@@ -15,8 +15,7 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace Imperium.Interface.ImperiumUI;
 
-internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler, IBeginDragHandler, IEndDragHandler,
-    IPointerDownHandler
+internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
     protected ImpBinding<ImpTheme> theme;
 

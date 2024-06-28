@@ -48,6 +48,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
 - The zoom slider in the Map UI now uses a logarithmic scale.
 - Various small changes to the Oracle UI including new formatting of the vectors.
 - Added a way to highlight entity ghost spawns for indoor entities (Caused by a bug in the game).
+- Disabling the flying option now disables flight. 
 
 ### Internal Fixes
 

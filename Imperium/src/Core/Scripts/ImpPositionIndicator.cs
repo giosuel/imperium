@@ -1,7 +1,6 @@
 #region
 
 using System;
-using Imperium.Core;
 using Imperium.Util;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,31 +9,30 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.MonoBehaviours;
+namespace Imperium.Core.Scripts;
 
 public class ImpPositionIndicator : MonoBehaviour
 {
     private Transform origin;
     private GameObject indicatorObject;
     private LineRenderer indicatorLineRenderer;
+    private bool castToGround;
 
     private Action<Vector3> registeredCallback;
 
-    private bool isActive;
-    private bool castToGround;
+    internal bool IsActive { get; private set; }
 
-    internal bool IsActive
+    internal static ImpPositionIndicator Create() => Instantiate(
+        ImpAssets.IndicatorObject
+    ).AddComponent<ImpPositionIndicator>();
+
+    private void Awake()
     {
-        get => isActive;
-        set
-        {
-            isActive = value;
-            indicatorObject.SetActive(value);
-        }
-    }
+        indicatorObject = transform.Find("IndicatorObject").gameObject;
+        indicatorLineRenderer = indicatorObject.GetComponent<LineRenderer>();
 
-    internal static ImpPositionIndicator Create() =>
-        Instantiate(ImpAssets.IndicatorObject).AddComponent<ImpPositionIndicator>();
+        Deactivate();
+    }
 
     internal void Activate(Action<Vector3> callback, Transform originTransform = null, bool castGround = true)
     {
@@ -47,18 +45,11 @@ public class ImpPositionIndicator : MonoBehaviour
     internal void Deactivate()
     {
         IsActive = false;
+        indicatorObject.SetActive(false);
         registeredCallback = null;
 
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed -= OnLeftClick;
         Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Enable();
-    }
-
-    private void Awake()
-    {
-        indicatorObject = transform.Find("IndicatorObject").gameObject;
-        indicatorLineRenderer = indicatorObject.GetComponent<LineRenderer>();
-
-        Deactivate();
     }
 
     private void OnLeftClick(InputAction.CallbackContext context)
@@ -75,6 +66,7 @@ public class ImpPositionIndicator : MonoBehaviour
     private void ShowIndicator()
     {
         IsActive = true;
+        indicatorObject.SetActive(true);
 
         Imperium.Interface.Close();
 

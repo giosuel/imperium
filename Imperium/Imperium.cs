@@ -7,6 +7,7 @@ using HarmonyLib;
 using Imperium.Core;
 using Imperium.Core.Input;
 using Imperium.Core.Lifecycle;
+using Imperium.Core.Scripts;
 using Imperium.Integration;
 using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.MapUI;

@@ -2,7 +2,6 @@
 
 using Imperium.Extensions;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;

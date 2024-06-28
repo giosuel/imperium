@@ -6,7 +6,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours;
+namespace Imperium.Core.Scripts;
 
 public class ShiggyAI : EnemyAI
 {

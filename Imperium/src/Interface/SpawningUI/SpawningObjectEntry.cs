@@ -11,7 +11,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.SpawningUI;
+namespace Imperium.Interface.SpawningUI;
 
 public class SpawningObjectEntry : MonoBehaviour
 {
