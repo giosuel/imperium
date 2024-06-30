@@ -14,7 +14,7 @@ internal static class ShotgunItemPatch
     [HarmonyPatch("ShootGun")]
     private static void ShootGunPatch(ShotgunItem __instance)
     {
-        if (ImpSettings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
+        if (Imperium.Settings.Shotgun.InfiniteAmmo.Value && __instance.playerHeldBy != null) __instance.shellsLoaded = 2;
     }
 
     [HarmonyPrefix]
@@ -23,11 +23,11 @@ internal static class ShotgunItemPatch
     {
         if (__instance.isHeld)
         {
-            __instance.useCooldown = ImpSettings.Shotgun.FullAuto.Value
+            __instance.useCooldown = Imperium.Settings.Shotgun.FullAuto.Value && __instance.playerHeldBy != null
                 ? 0
                 // Get default use cooldown from the shotgun spawn prefab
                 : __instance.itemProperties.spawnPrefab.GetComponent<ShotgunItem>().useCooldown;
-            if (ImpSettings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
+            if (Imperium.Settings.Shotgun.InfiniteAmmo.Value) __instance.shellsLoaded = 2;
         }
     }
 
@@ -55,6 +55,20 @@ internal static class ShotgunItemPatch
         // Reset shotgun cooldown to default value when dropping
         __instance.useCooldown = ImpConstants.ShotgunDefaultCooldown;
 
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("GrabItemFromEnemy")]
+    private static void GrabItemFromEnemyPostfixPatch(ShotgunItem __instance)
+    {
+        Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("DiscardItemFromEnemy")]
+    private static void DiscardItemFromEnemyPostfixPatch(ShotgunItem __instance)
+    {
         Imperium.Visualization.ShotgunGizmos.Refresh(__instance, false);
     }
 }

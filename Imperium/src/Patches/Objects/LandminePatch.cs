@@ -1,7 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
 using UnityEngine;
 
 #endregion
@@ -22,41 +21,41 @@ internal static class LandminePatch
     [HarmonyPatch("OnTriggerEnter")]
     internal static void OnTriggerEnterPrefixPatch(Landmine __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("OnTriggerEnter")]
     internal static void OnTriggerEnterPostfixPatch(Landmine __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("OnTriggerExit")]
     internal static void OnTriggerExitPrefixPatch(Landmine __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("OnTriggerExit")]
     internal static void OnTriggerExitPostfixPatch(Landmine __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnExplosion")]
     internal static void SpawnExplosionPrefixPatch(Landmine __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("SpawnExplosion")]
     internal static void SpawnExplosionPostfixPatch(Landmine __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 }

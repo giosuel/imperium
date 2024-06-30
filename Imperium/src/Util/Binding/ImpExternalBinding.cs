@@ -16,21 +16,29 @@ namespace Imperium.Util.Binding;
 /// <typeparam name="R">Type of the parent binding</typeparam>
 public class ImpExternalBinding<T, R> : ImpBinding<T>
 {
+    private readonly Func<T> valueGetter;
+
     /// <param name="valueGetter">Getter function that returns the value</param>
     /// <param name="refresher">ImpBinding that the binder is listening to</param>
     /// <param name="onUpdate">
     ///     <see cref="ImpBinding{T}.onUpdate" />
     /// </param>
-    /// <param name="syncUpdate">
-    ///     <see cref="ImpBinding{T}.onUpdateSync" />
+    /// <param name="fromLocalUpdate">
+    ///     <see cref="ImpBinding{T}.onUpdateFromLocal" />
     /// </param>
     public ImpExternalBinding(
         Func<T> valueGetter,
-        ImpBinding<R> refresher,
+        IBinding<R> refresher = null,
         Action<T> onUpdate = null,
-        Action<T> syncUpdate = null
-    ) : base(ImpUtils.InvokeDefaultOnNull(valueGetter), onUpdate, syncUpdate)
+        Action<T> fromLocalUpdate = null
+    ) : base(ImpUtils.InvokeDefaultOnNull(valueGetter), onUpdate: onUpdate, onUpdateFromLocal: fromLocalUpdate)
     {
-        refresher.onUpdate += _ => Set(ImpUtils.InvokeDefaultOnNull(valueGetter));
+        this.valueGetter = valueGetter;
+        if (refresher != null) refresher.onUpdate += _ => Set(ImpUtils.InvokeDefaultOnNull(valueGetter));
+    }
+
+    public override void Set(T updatedValue, bool invokeUpdate = true)
+    {
+        base.Set(ImpUtils.InvokeDefaultOnNull(valueGetter), invokeUpdate);
     }
 }

@@ -1,13 +1,14 @@
 #region
 
 using System.Collections.Generic;
+using GameNetcodeStuff;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Core;
 
-internal abstract class ImpConstants
+public abstract class ImpConstants
 {
     internal abstract class Opacity
     {
@@ -16,10 +17,10 @@ internal abstract class ImpConstants
         internal const float ImageDisabled = 0.3f;
     }
 
-    internal const int DefaultFOV = 66;
-    internal const float DefaultMovementSpeed = 4.6f;
-    internal const float DefaultJumpForce = 13f;
-    internal const float DefaultTimeSpeed = 1.4f;
+    public const int DefaultFOV = 66;
+    public const float DefaultMovementSpeed = 4.6f;
+    public const float DefaultJumpForce = 13f;
+    public const float DefaultTimeSpeed = 1.4f;
 
     internal const int ShotgunCollisionCount = 10;
     internal const float ShotgunDefaultCooldown = 0.7f;
@@ -32,9 +33,26 @@ internal abstract class ImpConstants
     internal const int DefaultMapCameraFarClipFreeLook = 200;
     internal const int DefaultMapCameraNearClipFreeLook = -20;
 
+    internal const float DefaultCarPushForceMultiplier = 27;
+
     internal const string GeneralSaveFile = "LCGeneralSaveData";
 
     internal static readonly LayerMask IndicatorMask = LayerMask.GetMask("Room", "Terrain", "Railing");
+
+    /*
+     * Maps the class names of default insights to more recognizable names.
+     */
+    internal static readonly Dictionary<string, string> ClassNameMap = new()
+    {
+        { nameof(PlayerControllerB), "Players" },
+        { nameof(EnemyAI), "Enemies" },
+        { nameof(GrabbableObject), "Items" },
+        { nameof(Turret), "Turrets" },
+        { nameof(Landmine), "Landmines" },
+        { nameof(SteamValveHazard), "Steam Valves" },
+        { nameof(BridgeTrigger), "Bridges" },
+        { nameof(VehicleController), "Company Cruiser" }
+    };
 
     internal static readonly string[] MoonWeathers =
     [

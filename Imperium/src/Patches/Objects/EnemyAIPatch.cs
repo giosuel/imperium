@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.Core;
 using Imperium.Util;
 using UnityEngine;
 
@@ -15,24 +14,22 @@ namespace Imperium.Patches.Objects;
 [HarmonyPatch(typeof(EnemyAI))]
 internal static class EnemyAIPatch
 {
-    private static PlayerControllerB[] playerBackup = [];
-
-    [HarmonyPrefix]
-    [HarmonyPatch("PlayerIsTargetable")]
-    private static bool PlayerIsTargetablePatch(
-        EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
-    )
-    {
-        if (!Imperium.IsImperiumReady) return true;
-
-        if (playerScript == Imperium.Player && ImpSettings.Player.Invisibility.Value)
-        {
-            __result = false;
-            return false;
-        }
-
-        return true;
-    }
+    // [HarmonyPostfix]
+    // [HarmonyPatch("PlayerIsTargetable")]
+    // private static bool PlayerIsTargetablePatch(
+    //     EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
+    // )
+    // {
+    //     if (!Imperium.IsImperiumLoaded) return true;
+    //
+    //     if (playerScript == Imperium.Player && Imperium.Settings.Player.Invisibility.Value)
+    //     {
+    //         __result = false;
+    //         return false;
+    //     }
+    //
+    //     return true;
+    // }
 
     [HarmonyPostfix]
     [HarmonyPatch("KillEnemy")]
@@ -64,7 +61,7 @@ internal static class EnemyAIPatch
             eyeObject ? eyeObject : __instance.eye,
             width,
             coneSize,
-            material: ImpAssets.WireframePurpleMaterial
+            material: ImpAssets.WireframePurple
         );
 
         if (proximityCheck > 0)
@@ -73,22 +70,23 @@ internal static class EnemyAIPatch
                 __instance,
                 null,
                 proximityCheck * 2,
-                material: ImpAssets.WireframePurpleMaterial
+                material: ImpAssets.WireframePurple
             );
         }
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("CheckLineOfSight")]
-    private static void CheckLineOfSightPrefixPatch(EnemyAI __instance, List<GameObject> objectsToLookFor, float width,
-        int range, float proximityAwareness)
+    private static void CheckLineOfSightPrefixPatch(
+        EnemyAI __instance, List<GameObject> objectsToLookFor, float width, int range, float proximityAwareness
+    )
     {
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             __instance.eye,
             width,
             range,
-            material: ImpAssets.WireframeRedMaterial
+            material: ImpAssets.WireframeRed
         );
 
         if (proximityAwareness > 0)
@@ -97,7 +95,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.transform,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeRedMaterial
+                material: ImpAssets.WireframeRed
             );
         }
     }
@@ -111,13 +109,6 @@ internal static class EnemyAIPatch
         EnemyAI __instance, float width, int range, int proximityAwareness
     )
     {
-        if (ImpSettings.Player.Invisibility.Value)
-        {
-            playerBackup = Imperium.StartOfRound.allPlayerScripts;
-            Imperium.StartOfRound.allPlayerScripts = Imperium.StartOfRound.allPlayerScripts
-                .Where(player => player != Imperium.Player).ToArray();
-        }
-
         var coneSize = range;
 
         if (__instance.isOutside
@@ -132,7 +123,7 @@ internal static class EnemyAIPatch
             __instance.eye,
             width,
             coneSize,
-            material: ImpAssets.WireframeCyanMaterial
+            material: ImpAssets.WireframeCyan
         );
 
         if (proximityAwareness > 0)
@@ -141,21 +132,8 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeCyanMaterial
+                material: ImpAssets.WireframeCyan
             );
-        }
-    }
-
-    /// <summary>
-    ///     Restores allPlayerScripts modified by prefix patch
-    /// </summary>
-    [HarmonyPostfix]
-    [HarmonyPatch("CheckLineOfSightForPlayer")]
-    private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance)
-    {
-        if (ImpSettings.Player.Invisibility.Value)
-        {
-            Imperium.StartOfRound.allPlayerScripts = playerBackup;
         }
     }
 
@@ -166,17 +144,17 @@ internal static class EnemyAIPatch
         float proximityAwareness, Transform overrideEye
     )
     {
-        if ((!__instance.isOutside && objectPosition.y > -80f) || objectPosition.y < -100f)
-        {
-            return;
-        }
+        // if (!__instance.isOutside && objectPosition.y > -80f || objectPosition.y < -100f)
+        // {
+        //     return;
+        // }
 
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
             overrideEye ? overrideEye : __instance.eye,
             width,
             range,
-            material: ImpAssets.WireframeYellowMaterial
+            material: ImpAssets.WireframeYellow
         );
 
         if (proximityAwareness > 0)
@@ -185,7 +163,7 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeYellowMaterial
+                material: ImpAssets.WireframeYellow
             );
         }
     }
@@ -199,13 +177,6 @@ internal static class EnemyAIPatch
         EnemyAI __instance, float width, int range, int proximityAwareness
     )
     {
-        if (ImpSettings.Player.Invisibility.Value)
-        {
-            playerBackup = Imperium.StartOfRound.allPlayerScripts;
-            Imperium.StartOfRound.allPlayerScripts = Imperium.StartOfRound.allPlayerScripts
-                .Where(player => player != Imperium.Player).ToArray();
-        }
-
         var coneSize = range;
 
         if (__instance.isOutside
@@ -220,7 +191,7 @@ internal static class EnemyAIPatch
             null,
             width,
             coneSize,
-            material: ImpAssets.WireframeAmaranthMaterial
+            material: ImpAssets.WireframeAmaranth
         );
 
         if (proximityAwareness > 0)
@@ -229,21 +200,8 @@ internal static class EnemyAIPatch
                 __instance,
                 __instance.eye,
                 proximityAwareness * 2,
-                material: ImpAssets.WireframeAmaranthMaterial
+                material: ImpAssets.WireframeAmaranth
             );
-        }
-    }
-
-    /// <summary>
-    ///     Restores allPlayerScripts modified by prefix patch
-    /// </summary>
-    [HarmonyPostfix]
-    [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
-    private static void CheckLineOfSightForClosestPlayerPostfixPatch(EnemyAI __instance)
-    {
-        if (ImpSettings.Player.Invisibility.Value)
-        {
-            Imperium.StartOfRound.allPlayerScripts = playerBackup;
         }
     }
 
@@ -251,27 +209,69 @@ internal static class EnemyAIPatch
     [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
     private static void MeetsStandardPlayerCollisionConditionsPrefix()
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
     private static void MeetsStandardPlayerCollisionConditionsPostfix()
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
-    private static void UpdatePrefixPatch()
+    private static void UpdatePrefixPatch(EnemyAI __instance)
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("Update")]
     private static void UpdatePostfixPatch()
     {
-        if (ImpSettings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+    }
+
+    /*
+     * Player Invisibility Patches
+     */
+    [HarmonyPostfix]
+    [HarmonyPatch("GetAllPlayersInLineOfSight")]
+    private static void GetAllPlayersInLineOfSightPostfixPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
+    {
+        if (Imperium.Settings.Player.Invisibility.Value && __result != null && __result.Contains(Imperium.Player))
+        {
+            __result = __result.Where(player => player != Imperium.Player).ToArray();
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("CheckLineOfSightForPlayer")]
+    private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance, ref PlayerControllerB __result)
+    {
+        if (Imperium.Settings.Player.Invisibility.Value && __result == Imperium.Player) __result = null;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
+    private static void CheckLineOfSightForClosestPlayerPostfixPatch(EnemyAI __instance, ref PlayerControllerB __result)
+    {
+        if (Imperium.Settings.Player.Invisibility.Value && __result == Imperium.Player) __result = null;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("CheckLineOfSightForPosition")]
+    private static void CheckLineOfSightForPositionPostfixPatch(
+        EnemyAI __instance, Vector3 objectPosition, ref bool __result
+    )
+    {
+        if (
+            Imperium.Settings.Player.Invisibility.Value &&
+            objectPosition == Imperium.Player.gameplayCamera.transform.position
+        )
+        {
+            __result = false;
+        }
     }
 }

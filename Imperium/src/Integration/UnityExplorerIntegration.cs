@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using HarmonyLib;
-using Imperium.Core;
 using Imperium.Util;
 using UnityExplorer;
 using UniverseLib.UI;
@@ -64,7 +63,7 @@ public static class UnityExplorerIntegration
     {
         if (ExplorerCore.GUID == id)
         {
-            if (ImpSettings.Preferences.UnityExplorerMouseFix.Value)
+            if (Imperium.Settings.Preferences.UnityExplorerMouseFix.Value)
             {
                 ImpUtils.Interface.ToggleCursorState(active);
             }

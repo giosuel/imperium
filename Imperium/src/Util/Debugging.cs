@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -54,4 +55,12 @@ public static class Debugging
 
         return path.AsEnumerable().Reverse().Aggregate((a, b) => a + "/" + b);
     }
+
+    public static string GetStackTrace() =>
+        "Stack Trace Report\n" + new StackTrace().GetFrames()?
+            .ToList()
+            .Skip(1)
+            .Select(tr => $"{tr.GetMethod().DeclaringType?.FullName} :: {tr.GetMethod()}")
+            .Aggregate((a, b) => $"{a}\n -> {b}")
+            .Trim();
 }

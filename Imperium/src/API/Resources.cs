@@ -16,16 +16,68 @@ namespace Imperium.API;
 /// </summary>
 public static class Resources
 {
+    #region Static Resources
+
     /// <summary>
-    ///     List of all the entities in the current level.
+    ///     List of all loaded objects of the <see cref="EnemyType" /> type.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<EnemyAI>> CurrentLevelEntities
+    public static ReadOnlyBinding<IReadOnlyCollection<EnemyType>> LoadedEntities
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelEntities;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<EnemyType>>.Wrap(Imperium.ObjectManager.LoadedEntities);
+        }
+    }
+
+    /// <summary>
+    ///     List of all loaded objects of the <see cref="Item" /> type.
+    ///     Excludes all items which names are listed in <see cref="ImpConstants.ItemBlacklist" />.
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<Item>> LoadedItems
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<Item>>.Wrap(Imperium.ObjectManager.LoadedItems);
+        }
+    }
+
+    /// <summary>
+    ///     List of all loaded objects of the <see cref="Item" /> type, that also have the <see cref="Item.isScrap" /> flag.
+    ///     Excludes all items which names are listed in <see cref="ImpConstants.ItemBlacklist" />.
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<Item>> LoadedScrap
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<Item>>.Wrap(Imperium.ObjectManager.LoadedScrap);
+        }
+    }
+
+    #endregion
+
+    #region Level Resources
+
+    /// <summary>
+    ///     List of all the entities in the current level.
+    ///     This is updated whenever
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<EnemyAI>> CurrentEntities
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<EnemyAI>>.Wrap(Imperium.ObjectManager.CurrentLevelEntities);
         }
     }
 
@@ -33,12 +85,13 @@ public static class Resources
     ///     List of all the items and scrap in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<GrabbableObject>> CurrentLevelItems
+    public static ReadOnlyBinding<IReadOnlyCollection<GrabbableObject>> CurrentItems
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelItems;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<GrabbableObject>>.Wrap(Imperium.ObjectManager.CurrentLevelItems);
         }
     }
 
@@ -46,12 +99,13 @@ public static class Resources
     ///     List of all the players in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<PlayerControllerB>> CurrentPlayers
+    public static ReadOnlyBinding<IReadOnlyCollection<PlayerControllerB>> CurrentPlayers
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentPlayers;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<PlayerControllerB>>.Wrap(Imperium.ObjectManager.CurrentPlayers);
         }
     }
 
@@ -59,12 +113,13 @@ public static class Resources
     ///     List of all the doors in the current scene.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<DoorLock>> CurrentLevelDoors
+    public static ReadOnlyBinding<IReadOnlyCollection<DoorLock>> CurrentLevelDoors
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelDoors;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<DoorLock>>.Wrap(Imperium.ObjectManager.CurrentLevelDoors);
         }
     }
 
@@ -72,12 +127,15 @@ public static class Resources
     ///     List of all the security doors in the current scene.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<TerminalAccessibleObject>> CurrentLevelSecurityDoors
+    public static ReadOnlyBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelSecurityDoors;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<TerminalAccessibleObject>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelSecurityDoors
+            );
         }
     }
 
@@ -85,12 +143,13 @@ public static class Resources
     ///     List of all the turrets in the current scene.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<Turret>> CurrentLevelTurrets
+    public static ReadOnlyBinding<IReadOnlyCollection<Turret>> CurrentLevelTurrets
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelTurrets;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<Turret>>.Wrap(Imperium.ObjectManager.CurrentLevelTurrets);
         }
     }
 
@@ -98,12 +157,13 @@ public static class Resources
     ///     List of all the landmines in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<Landmine>> CurrentLevelLandmines
+    public static ReadOnlyBinding<IReadOnlyCollection<Landmine>> CurrentLevelLandmines
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelLandmines;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<Landmine>>.Wrap(Imperium.ObjectManager.CurrentLevelLandmines);
         }
     }
 
@@ -111,12 +171,13 @@ public static class Resources
     ///     List of all the spike traps in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<SpikeRoofTrap>> CurrentLevelSpikeTraps
+    public static ReadOnlyBinding<IReadOnlyCollection<SpikeRoofTrap>> CurrentLevelSpikeTraps
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelSpikeTraps;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<SpikeRoofTrap>>.Wrap(Imperium.ObjectManager.CurrentLevelSpikeTraps);
         }
     }
 
@@ -124,25 +185,29 @@ public static class Resources
     ///     List of all the breaker boxes in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<BreakerBox>> CurrentLevelBreakerBoxes
+    public static ReadOnlyBinding<IReadOnlyCollection<BreakerBox>> CurrentLevelBreakerBoxes
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelBreakerBoxes;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<BreakerBox>>.Wrap(Imperium.ObjectManager.CurrentLevelBreakerBoxes);
         }
     }
 
     /// <summary>
-    ///     List of all the steamleaks in the current level.
+    ///     List of all the steam valves in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<GameObject>> CurrentLevelSteamleaks
+    public static ReadOnlyBinding<IReadOnlyCollection<SteamValveHazard>> CurrentLevelSteamValves
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelSteamleaks;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<SteamValveHazard>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelSteamValves
+            );
         }
     }
 
@@ -150,12 +215,13 @@ public static class Resources
     ///     List of all the vents in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<EnemyVent>> CurrentLevelVents
+    public static ReadOnlyBinding<IReadOnlyCollection<EnemyVent>> CurrentLevelVents
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelVents;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<EnemyVent>>.Wrap(Imperium.ObjectManager.CurrentLevelVents);
         }
     }
 
@@ -163,12 +229,49 @@ public static class Resources
     ///     List of all the spider webs in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ImpBinding<HashSet<SandSpiderWebTrap>> CurrentLevelSpiderWebs
+    public static ReadOnlyBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs
     {
         get
         {
-            if (!Imperium.IsImperiumLaunched) throw new ImperiumAPIException("Imperium API is not ready.");
-            return Imperium.ObjectManager.CurrentLevelSpiderWebs;
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<SandSpiderWebTrap>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelSpiderWebs
+            );
         }
     }
+
+    /// <summary>
+    ///     List of all the company cruisers in the current level.
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCompanyCruisers
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<VehicleController>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelCompanyCruisers
+            );
+        }
+    }
+
+    /// <summary>
+    ///     List of all the mold spores in the current level.
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<GameObject>> CurrentLevelMoldSpores
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<GameObject>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelMoldSpores
+            );
+        }
+    }
+
+    #endregion
 }

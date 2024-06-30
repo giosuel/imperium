@@ -1,7 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -22,10 +21,10 @@ internal static class PreInitPatches
         [HarmonyPatch("SkipToFinalSetting")]
         private static void SkipToFinalSettingPatch(PreInitSceneScript __instance)
         {
-            if (ImpSettings.Preferences.QuickloadSkipStart.Value &&
-                (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
+            if (Imperium.Settings.Preferences.QuickloadSkipStart.Value &&
+                (!ReturnedFromGame || Imperium.Settings.Preferences.QuickloadOnQuit.Value))
             {
-                Imperium.Log.LogInfo("[SYS] Quickload is bypassing start-up sequence...");
+                Imperium.IO.LogInfo("[SYS] Quickload is bypassing start-up sequence...");
                 SceneManager.LoadScene("InitScene");
             }
         }
@@ -39,19 +38,19 @@ internal static class PreInitPatches
         [HarmonyPatch("Start")]
         private static void StartPatch(MenuManager __instance)
         {
-            if (ImpSettings.Preferences.QuickloadSkipMenu.Value &&
-                (!ReturnedFromGame || ImpSettings.Preferences.QuickloadOnQuit.Value))
+            if (Imperium.Settings.Preferences.QuickloadSkipMenu.Value &&
+                (!ReturnedFromGame || Imperium.Settings.Preferences.QuickloadOnQuit.Value))
             {
-                var saveNum = ImpSettings.Preferences.QuickloadSaveNumber.Value;
-                Imperium.Log.LogInfo($"[SYS] Quickload is loading level #{saveNum}...");
+                var saveNum = Imperium.Settings.Preferences.QuickloadSaveNumber.Value;
+                Imperium.IO.LogInfo($"[SYS] Quickload is loading level #{saveNum}...");
 
                 var fileName = $"LCSaveFile{saveNum}";
 
-                if (ImpSettings.Preferences.QuickloadCleanFile.Value && ES3.FileExists(fileName))
+                if (Imperium.Settings.Preferences.QuickloadCleanFile.Value && ES3.FileExists(fileName))
                     ES3.DeleteFile(fileName);
 
                 GameNetworkManager.Instance.currentSaveFileName = fileName;
-                GameNetworkManager.Instance.saveFileNum = ImpSettings.Preferences.QuickloadSaveNumber.Value;
+                GameNetworkManager.Instance.saveFileNum = Imperium.Settings.Preferences.QuickloadSaveNumber.Value;
                 GameNetworkManager.Instance.lobbyHostSettings =
                     new HostSettings("Imperium Test Environment", false);
 
@@ -63,7 +62,7 @@ internal static class PreInitPatches
         [HarmonyPatch("SetLoadingScreen")]
         private static bool SetLoadingScreenPatch(MenuManager __instance)
         {
-            return !ImpSettings.Preferences.QuickloadSkipMenu.Value || ReturnedFromGame;
+            return !Imperium.Settings.Preferences.QuickloadSkipMenu.Value || ReturnedFromGame;
         }
 
         [HarmonyPostfix]

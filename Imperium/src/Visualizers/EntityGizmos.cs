@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
+using Imperium.API.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
@@ -14,19 +16,21 @@ namespace Imperium.Visualizers;
 /// <summary>
 ///     Entity-specific gizmos like LoS indicators, target rays, noise rays, etc.
 /// </summary>
-internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
+internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, EntityGizmo>
 {
     internal readonly Dictionary<EnemyType, EntityGizmoConfig> EntityInfoConfigs = [];
 
-    internal EntityGizmos(ImpBinding<HashSet<EnemyAI>> objectsBinding) : base(objectsBinding)
+    internal EntityGizmos(
+        IBinding<IReadOnlyCollection<EnemyAI>> objectsBinding, ConfigFile config
+    ) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
-            EntityInfoConfigs[entity] = new EntityGizmoConfig(entity.enemyName);
+            EntityInfoConfigs[entity] = new EntityGizmoConfig(entity.enemyName, config);
         }
     }
 
-    protected override void OnRefresh(HashSet<EnemyAI> objects)
+    protected override void OnRefresh(IReadOnlyCollection<EnemyAI> objects)
     {
         ClearObjects();
 
@@ -60,6 +64,7 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.ConeVisualizerUpdate(
+                instance,
                 eye ?? instance.transform,
                 angle, size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
@@ -78,7 +83,8 @@ internal class EntityGizmos : BaseVisualizer<HashSet<EnemyAI>, EntityGizmo>
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
         {
             entity.SphereVisualizerUpdate(
-                eye ?? instance.transform,
+                instance,
+                eye,
                 size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
                 relativepositionOverride,

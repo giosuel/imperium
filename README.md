@@ -4,18 +4,18 @@
 
 Imperium is a powerful and highly performant all-in-one debugging tool to test and explore game mechanics and functionality in Lethal Company.
 
-It is a client-side and server-side mod, meaning it works in singleplayer and multiplayer, as long as Imperium is also installed on the host.
+Imperium works on the client-side and server-side, meaning it works in singleplayer as well as multiplayer, as long as Imperium is installed on the host.
 
 > [!IMPORTANT]
-> Imperium was made with the intent to be a tool to test game functionality and provide more insight into the weird and wonderful mechanics of Lethal Company.
+> Imperium was made with the intent to be a tool to debug game functionalities and provide more insight into the weird and wonderful mechanics of Lethal Company.
 >
-> The Imperium team strongly stands against cheating and trolling in public lobbies. If you really want to cheat, at least put some effort into making your own hacked client!
+> I strongly stand against cheating and trolling in public lobbies. If you really want to cheat, at least put some effort into making your own hacked client!
 
 ![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-control-center.png?raw=true)
 
 ## Features
 
-- Modular and user-centered UI system.
+- Modular and user-centered UI system with floating and resizable windows.
 - In-game overlays and indicators for hitboxes of shotguns, shovels, landmines, etc.
 - Customizable 3-axis freecam with built-in teleportation, night vision and custom FOV settings.
 - Built-in minimap and full-screen map with layer selection, zoom and more.
@@ -82,6 +82,14 @@ Tha spawning console allows you to spawn entities, scrap and map hazards into th
 
 ![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
 
+## Ship and Moon Control
+
+![ship-moon-control](https://github.com/giosuel/imperium/blob/main/assets/ship-moon-control.png?raw=true)
+
+## Moon / Challenge Moon Information
+
+![moon-information](https://github.com/giosuel/imperium/blob/main/assets/moon-info.png?raw=true)
+
 ## The Save File Editor
 
 Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).
@@ -116,7 +124,7 @@ Entities spawned with Imperium do not count towards current level power or their
 
 ## Bug Reports and Feature Requests
 
-Feel free to submit bug reports or feature requests asissues on Imperium's [Github](https://github.com/giosuel/imperium) page. Please include your BepInEx log file or an excerpt to make our life easier.
+Feel free to submit bug reports or feature requests asissues on Imperium's [Github](https://github.com/giosuel/imperium) page. Please include your BepInEx log file or an excerpt to make my life easier.
 
 ## Credits
 
@@ -126,18 +134,13 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 ### Special Thanks To
 
+- [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for helping with the [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
+- [digger1213](https://github.com/digger1213) for writing the the shotgun visualizer!
+- [Xilo](https://github.com/Xilophor) for helping me with the networking and writing the [LethalNetworkingAPI](https://github.com/Xilophor/LethalNetworkAPI)!
 - [Nebby](https://thunderstore.io/c/lethal-company/p/Nebulaetrix/) for helping with the documentation and the testing!
-
-- [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for her amazing [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
-
 - [Swaggies](https://thunderstore.io/c/lethal-company/p/Swaggies), [aminoob](https://thunderstore.io/c/lethal-company/p/aminoob/) and star0138 for the help with the testing of Imperium!
-
 - [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
-
 - [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
-
-- [chaser324](https://github.com/Chaser324) for providing the wireframe shader for the collider visualizations!
-
+- [chaser324](https://github.com/Chaser324) for providing the wireframe shaders for the collider visualizations!
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
-
-- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for wA the [unity netcode patcher](https://github.com/EvaisaDev/UnityNetcodePatcher)!
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for writing the [Unity Netcode Patcher](https://github.com/EvaisaDev/UnityNetcodePatcher) and [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/)!

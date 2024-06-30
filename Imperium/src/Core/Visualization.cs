@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
+using Imperium.API.Types;
+using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
@@ -46,89 +49,103 @@ internal class Visualization
 
     internal readonly ObjectInsights ObjectInsights;
 
-    private static Material DefaultMaterial => ImpAssets.WireframeCyanMaterial;
+    private static Material DefaultMaterial => ImpAssets.WireframeCyan;
 
-    internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager)
+    internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager, ConfigFile config)
     {
         // Static visualizers are updated by object lists
         LandmineGizmos = new LandmineGizmos(
             objectManager.CurrentLevelLandmines,
-            ImpSettings.Visualizations.LandmineIndicators
+            Imperium.Settings.Visualization.LandmineIndicators
         );
         SpikeTrapGizmos = new SpikeTrapGizmos(
             objectManager.CurrentLevelSpikeTraps,
-            ImpSettings.Visualizations.SpikeTrapIndicators
+            Imperium.Settings.Visualization.SpikeTrapIndicators
         );
         VentTimers = new VentTimers(
             objectManager.CurrentLevelVents,
-            ImpSettings.Visualizations.VentTimers
+            Imperium.Settings.Visualization.VentTimers
         );
         SpawnIndicators = new SpawnIndicators(
             oracleStateBinding,
-            ImpSettings.Visualizations.SpawnIndicators
+            Imperium.Settings.Visualization.SpawnIndicators
         );
         ScrapSpawns = new ScrapSpawnIndicators(
             objectManager.CurrentScrapSpawnPoints,
-            ImpSettings.Visualizations.ScrapSpawns
+            Imperium.Settings.Visualization.ScrapSpawns
         );
         HazardSpawns = new MapHazardIndicators(
             RoundManagerPatch.MapHazardPositions,
-            ImpSettings.Visualizations.HazardSpawns
+            Imperium.Settings.Visualization.HazardSpawns
         );
         NavMeshVisualizer = new NavMeshVisualizer(
             Imperium.IsSceneLoaded,
-            ImpSettings.Visualizations.NavMeshSurfaces
+            Imperium.Settings.Visualization.NavMeshSurfaces
         );
 
         // Weapon indicators are different as they are only updated via patches
-        ShotgunGizmos = new ShotgunGizmos(ImpSettings.Visualizations.ShotgunIndicators);
-        ShovelGizmos = new ShovelGizmos(ImpSettings.Visualizations.ShovelIndicators);
-        KnifeGizmos = new KnifeGizmos(ImpSettings.Visualizations.KnifeIndicators);
+        ShotgunGizmos = new ShotgunGizmos(Imperium.Settings.Visualization.ShotgunIndicators);
+        ShovelGizmos = new ShovelGizmos(Imperium.Settings.Visualization.ShovelIndicators);
+        KnifeGizmos = new KnifeGizmos(Imperium.Settings.Visualization.KnifeIndicators);
 
         // Player and entity infos are separate as they have their own configs
-        PlayerGizmos = new PlayerGizmos(objectManager.CurrentPlayers);
-        EntityGizmos = new EntityGizmos(objectManager.CurrentLevelEntities);
+        PlayerGizmos = new PlayerGizmos(objectManager.CurrentPlayers, config);
+        EntityGizmos = new EntityGizmos(objectManager.CurrentLevelEntities, config);
 
-        ObjectInsights = new ObjectInsights();
+        ObjectInsights = new ObjectInsights(config);
         Imperium.IsSceneLoaded.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelEntities.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentPlayers.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelItems.onTrigger += ObjectInsights.Refresh;
+
+        Imperium.ObjectManager.CurrentPlayers.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelItems.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelMoldSpores.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelCompanyCruisers.onTrigger += RefreshOverlays;
     }
 
     /// <summary>
     ///     Visualizes the colliders of a group of game objects by tag or layer
     ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
     /// </summary>
+    /// <param name="isOn">Whether the visualizer is turned on or off</param>
     /// <param name="identifier">Tag or layer of the collider objects</param>
     /// <param name="type">If the identifier is a tag or a layer</param>
     /// <param name="thickness">Currently Unused</param>
     /// <param name="material"></param>
     /// <returns></returns>
-    internal Action<bool> Collider(
+    internal void Collider(
+        bool isOn,
         string identifier,
         IdentifierType type,
         float thickness = 0.05f,
         Material material = null
-    ) => isOn => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
+    ) => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
 
     /// <summary>
     ///     Visualizes a group of game objects with a sphere by tag or layer
     ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
     /// </summary>
+    /// <param name="isOn">Whether the visualizer is turned on or off</param>
     /// <param name="identifier">Tag or layer of the collider objects</param>
     /// <param name="type">If the identifier is a tag or a layer</param>
     /// <param name="size">Size of the indicating sphere</param>
     /// <param name="material"></param>
     /// <returns></returns>
-    internal Action<bool> Point(
+    internal void Point(
+        bool isOn,
         string identifier,
         IdentifierType type,
         float size = 1,
         Material material = null
-    ) => isOn => Visualize(identifier, isOn, VisualizePoint, type, false, size, material);
+    ) => Visualize(identifier, isOn, VisualizePoint, type, false, size, material);
 
     /// <summary>
     ///     Refreshes all collider and point visualizers
@@ -164,10 +181,7 @@ internal class Visualization
     {
         return obj.GetComponents<BoxCollider>()
             .Select(collider => VisualizeBoxCollider(collider, material))
-            .Concat(
-                obj.GetComponents<CapsuleCollider>()
-                    .Select(collider => VisualizeCapsuleCollider(collider, material))
-            )
+            .Concat(obj.GetComponents<CapsuleCollider>().Select(collider => VisualizeCapsuleCollider(collider, material)))
             .ToList();
     }
 
@@ -229,6 +243,25 @@ internal class Visualization
         visualizer.transform.position = collider.transform.position;
         visualizer.transform.localPosition = collider.center;
         visualizer.transform.localScale = new Vector3(collider.radius * 2, collider.height / 2, collider.radius * 2);
+        visualizer.transform.rotation = collider.transform.rotation;
+
+        return visualizer;
+    }
+
+    private static GameObject VisualizeSphereCollider(SphereCollider collider, Material material, string name = null)
+    {
+        if (!collider) return null;
+
+        var visualizer = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Sphere,
+            collider.transform,
+            material ?? DefaultMaterial,
+            name: $"ImpVis_{name ?? collider.GetInstanceID().ToString()}"
+        );
+
+        visualizer.transform.position = collider.transform.position;
+        visualizer.transform.localPosition = collider.center;
+        visualizer.transform.localScale = Vector3.one * collider.radius;
         visualizer.transform.rotation = collider.transform.rotation;
 
         return visualizer;
@@ -321,7 +354,7 @@ internal class Visualization
     /// </summary>
     internal static string GenerateSphereHash(Object obj, Object origin, float size)
     {
-        return $"{obj.GetInstanceID()}{origin.GetInstanceID()}_{size}";
+        return $"{obj.GetInstanceID()}{origin?.GetInstanceID()}_{size}";
     }
 
     /// <summary>
@@ -485,6 +518,19 @@ internal class Visualization
 
             ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[collider.GetInstanceID()] =
                 VisualizeCapsuleCollider(collider, material, uniqueIdentifier);
+        }
+
+        // We don't want to visualize the collider of the noise listener
+        if (obj.name == "Imp_NoiseListener") return;
+
+        foreach (var collider in obj.GetComponents<SphereCollider>())
+        {
+            // Visualizer for object collider has already been created
+            if (ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)
+                .ContainsKey(collider.GetInstanceID())) return;
+
+            ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[collider.GetInstanceID()] =
+                VisualizeSphereCollider(collider, material, uniqueIdentifier);
         }
     }
 }

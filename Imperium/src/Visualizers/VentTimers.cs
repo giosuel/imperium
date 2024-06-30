@@ -2,9 +2,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
@@ -12,11 +13,11 @@ using UnityEngine;
 namespace Imperium.Visualizers;
 
 internal class VentTimers(
-    ImpBinding<HashSet<EnemyVent>> objectsBinding,
-    ImpBinding<bool> visibleBinding
-) : BaseVisualizer<HashSet<EnemyVent>, VentTimer>(objectsBinding, visibleBinding)
+    IBinding<IReadOnlyCollection<EnemyVent>> objectsBinding,
+    IBinding<bool> visibilityBinding
+) : BaseVisualizer<IReadOnlyCollection<EnemyVent>, VentTimer>(objectsBinding, visibilityBinding)
 {
-    protected override void OnRefresh(HashSet<EnemyVent> objects)
+    protected override void OnRefresh(IReadOnlyCollection<EnemyVent> objects)
     {
         foreach (var entityVent in objects.Where(obj => obj))
         {

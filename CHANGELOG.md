@@ -1,5 +1,74 @@
 # Changelog
 
+## Imperium v0.2.0 [Beta] - The Interface Update
+
+This update is a huge one and mainly aimed at the rework of the UI system as well as the integration of new visualizers and debug options for the new update v55! As the previous UI solution was quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows! I also decided to finally integrate [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
+
+Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](<https://github.com/Xilophor/LethalNetworkAPI>) for all network communication in Imperium. This should provide more stability when using Imperium in multiplayer and reduce client de-syncs when changing game variables at runtime.
+
+Finally, I also expanded the Imperium API and added a lot of new functionality, including being able to synchronously spawn items and entities as well as enabling and disabling core functionality such as god mode or flight.
+
+### Added Stuff
+
+- Merged most of the smaller windows into a large Imperium UI that supports floating windows.
+  - Windows can be dragged and resized with the mouse cursor.
+  - Holding `Alt` and dragging an window results in the window being resized.
+
+- Added tooltips to several buttons and Imperium settings to serve as in-game help with the interface.
+- Added [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>) integration to make keybinds changeable in the settings.
+- Merged the navigator window and ship settings into a new Ship Control UI.
+- Moon settings were merged with the moon control center into a new Moon Control UI.
+- The teleport UI and the waypoint manager were merged into a new Teleportation UI.
+- Added support for modded weathers in the Moon Control UI.
+- Added scrap, entity and map hazard spawning functions to the Imperium API.
+- Added steam valves as new map hazard in the object explorer and spawn UI.
+- Added new custom visualizer for Nutcrackers.
+- Added new custom visualizer for Hoarding Bugs.
+- Added an option to permanently enable the drunk effect from the TZP-Inhalant.
+- Added new custom visualizer for the Kidnapper Fox.
+- Added an option to spawn Vain Shrouds from the SpawningUI.
+- Added a new visualizer for Vain Shrouds.
+- Added a new visualizer for Vain Shroud attraction points.
+- Added an option to spawn the Company Cruiser from the SpawningUI.
+- Added default insights for the Company Cruiser.
+- Added a slider to change the push control for the Company Cruiser.
+
+### Changes
+
+- Small Object Explorer functionality rework.
+  - Toggling objects in the object explorer is now synced with other clients.
+  - Disabling entities now results in them being frozen instead of deactivated.
+  - Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
+  - Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
+  - Toggling steam valves will burst / repair them.
+- Merged the amazing shotgun visualizer rework by [digger1213](<https://github.com/digger1213>).
+- Pausing time is now possible from space.
+
+### QoL Improvements
+
+- Adjusted all themes to better match the new overlapping window style.
+- Modded weather and moons now show up correctly in the respective UIs.
+- Freecam flight controls were changed to match with the creative flying controls.
+  - Default: `Ctrl` -> Descend, `Space` -> Ascend, `Return` -> Toggle the selected layer.
+- The zoom slider in the Map UI now uses a logarithmic scale.
+- Various small changes to the Oracle UI including new formatting of the vectors.
+- Added a way to highlight entity ghost spawns for indoor entities (Caused by a bug in the game).
+- Disabling the flying option now disables flight.
+- Added aliases for Insight class names to simplify class identification.
+- Changed the trigger, collider and navmesh surface visualizer's material.
+
+### Internal Fixes
+
+- Fixed a bug where it was not possible to join an Imperium lobby without having Imperium installed.
+- Fixed the animation skipping options `Interact` and `InteractHold`.
+- Fixed a typo in a function signature in the Imperium API.
+- Fixed a bug where players could die in orbit when god mode was off.
+- Changed it so insight generators are executed in `LateUpdate` for consistency.
+- Fixed player invisibility and made it more consistent across all entities.
+- Fixed a bug where the ship would always land instantly, even after disabling the option.
+- Fixed a bug where Nutcrackers were affected by infinite ammo and full auto shotgun.
+- Added various functions to the log silencer feature of Imperium.
+
 ## Imperium v0.1.9 [Beta] - The API Update
 
 As so many of you have requested more advanced debugging functionality that can be accessed by other mods, I have started to implement an API that can be used either in the UE console or by other mods.

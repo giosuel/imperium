@@ -24,9 +24,9 @@ internal static class RoundManagerPatch
     private static void SpawnScrapInLevelPrefixPatch(RoundManager __instance)
     {
         var random = ImpUtils.CloneRandom(__instance.AnomalyRandom);
-        MoonManager.Current.ScrapAmount = (int)(random.Next(
+        Imperium.MoonManager.ScrapAmount = (int)(random.Next(
             __instance.currentLevel.minScrap, __instance.currentLevel.maxScrap) * __instance.scrapAmountMultiplier);
-        MoonManager.Current.ChallengeScrapAmount = MoonManager.Current.ScrapAmount + random.Next(10, 30);
+        Imperium.MoonManager.ChallengeScrapAmount = Imperium.MoonManager.ScrapAmount + random.Next(10, 30);
     }
 
     [HarmonyPrefix]
@@ -80,10 +80,10 @@ internal static class RoundManagerPatch
     [HarmonyPatch("YRotationThatFacesTheNearestFromPosition")]
     private static void YRotationThatFacesTheNearestFromPositionPatch(RoundManager __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
+        if (!Imperium.IsImperiumLoaded) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
+        Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
         Imperium.Oracle.Simulate();
     }
 
@@ -91,10 +91,10 @@ internal static class RoundManagerPatch
     [HarmonyPatch("YRotationThatFacesTheFarthestFromPosition")]
     private static void YRotationThatFacesTheFarthestFromPosition(RoundManager __instance)
     {
-        if (!Imperium.IsImperiumReady) return;
+        if (!Imperium.IsImperiumLoaded) return;
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.Log.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
+        Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
         Imperium.Oracle.Simulate();
     }
 
@@ -143,30 +143,27 @@ internal static class RoundManagerPatch
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
     private static bool PlotOutEnemiesForNextHourPatch()
     {
-        return !Imperium.GameManager.IndoorSpawningPaused.Value;
+        return !Imperium.MoonManager.IndoorSpawningPaused.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnEnemiesOutside")]
     private static bool SpawnEnemiesOutsidePatch()
     {
-        return !Imperium.GameManager.OutdoorSpawningPaused.Value;
+        return !Imperium.MoonManager.OutdoorSpawningPaused.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnDaytimeEnemiesOutside")]
     private static bool SpawnDaytimeEnemiesOutsidePatch(RoundManager __instance)
     {
-        return !Imperium.GameManager.DaytimeSpawningPaused.Value;
+        return !Imperium.MoonManager.DaytimeSpawningPaused.Value;
     }
 
     /// <summary>
     ///     Level is finished generating, all scrap and map obstacles have been placed, no entities yet
     /// </summary>
     [HarmonyPostfix]
-    [HarmonyPatch("FinishGeneratingNewLevelClientRpc")]
-    private static void FinishGeneratingNewLevelClientRpcPostfixPatch()
-    {
-        Imperium.IsSceneLoaded.SetTrue();
-    }
+    [HarmonyPatch("RefreshEnemiesList")]
+    private static void RefreshEnemiesListPostfixPatch() => Imperium.IsSceneLoaded.SetTrue();
 }

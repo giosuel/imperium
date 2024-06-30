@@ -1,8 +1,7 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
-using Imperium.MonoBehaviours.ImpUI.MapUI;
+using Imperium.Interface.MapUI;
 
 #endregion
 
@@ -15,9 +14,9 @@ internal static class HUDManagerPatch
     [HarmonyPatch("SetClockVisible")]
     private static bool SetClockVisiblePatch(HUDManager __instance)
     {
-        if (ImpSettings.Time.PermanentClock.Value || !Imperium.Player.isInsideFactory)
+        if (Imperium.Settings.Time.PermanentClock.Value || !Imperium.Player.isInsideFactory)
         {
-            __instance.Clock.targetAlpha = Imperium.GameManager.TimeIsPaused.Value ? 0.4f : 1f;
+            __instance.Clock.targetAlpha = Imperium.MoonManager.TimeIsPaused.Value ? 0.4f : 1f;
             return false;
         }
 
@@ -31,6 +30,6 @@ internal static class HUDManagerPatch
     [HarmonyPatch("PingScan_performed")]
     private static bool PingScan_performedPatch(HUDManager __instance)
     {
-        return !Imperium.Interface.Get<MapUI>().IsOpen;
+        return !Imperium.Interface.Get<MapUI>()?.IsOpen ?? true;
     }
 }

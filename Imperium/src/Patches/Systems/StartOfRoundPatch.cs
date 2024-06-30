@@ -2,11 +2,8 @@
 
 using System.Collections.Generic;
 using HarmonyLib;
-using Imperium.Core;
-using Imperium.Netcode;
+using Imperium.API.Types.Networking;
 using Imperium.Util;
-using Unity.Netcode;
-using UnityEngine;
 
 #endregion
 
@@ -15,52 +12,25 @@ namespace Imperium.Patches.Systems;
 [HarmonyPatch(typeof(StartOfRound))]
 public class StartOfRoundPatch
 {
-    [HarmonyPatch(typeof(StartOfRound))]
-    internal static class PreloadPatches
-    {
-        /// <summary>
-        ///     This is used as the entry function for Imperium
-        /// </summary>
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(StartOfRound), "Awake")]
-        private static void ConnectClientToPlayerObjectPatch(StartOfRound __instance)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                Object.Instantiate(ImpNetworkManager.NetworkPrefab).GetComponent<NetworkObject>().Spawn();
-            }
-        }
-    }
-
     [HarmonyPrefix]
     [HarmonyPatch("StartGame")]
     private static void StartGamePrefixPatch(StartOfRound __instance)
     {
-        if (ImpSettings.Ship.InstantLanding.Value) __instance.shipAnimator.enabled = false;
+        __instance.shipAnimator.speed = Imperium.ShipManager.InstantLanding.Value ? 1000f : 1;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("ShipLeave")]
     private static void ShipLeavePrefixPatch(StartOfRound __instance)
     {
-        if (ImpSettings.Ship.InstantTakeoff.Value) __instance.shipAnimator.enabled = false;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("ShipLeave")]
-    private static void ShipLeavePostfixPatch(StartOfRound __instance)
-    {
-        if (ImpSettings.Ship.InstantTakeoff.Value)
-        {
-            Object.FindObjectOfType<ElevatorAnimationEvents>().ElevatorFullyRunning();
-        }
+        __instance.shipAnimator.speed = Imperium.ShipManager.InstantTakeoff.Value ? 1000f : 1;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("TeleportPlayerInShipIfOutOfRoomBounds")]
     private static bool TeleportPlayerInShipIfOutOfRoomBoundsPatch()
     {
-        return !ImpSettings.Player.DisableOOB.Value;
+        return !Imperium.Settings.Player.DisableOOB.Value;
     }
 
     [HarmonyPostfix]
@@ -74,13 +44,13 @@ public class StartOfRoundPatch
     [HarmonyPatch("ShipLeaveAutomatically")]
     private static bool ShipLeaveAutomaticallyPatch(StartOfRound __instance)
     {
-        if (ImpSettings.Ship.PreventLeave.Value)
+        if (Imperium.ShipManager.PreventShipLeave.Value)
         {
             // We have to revert this
             __instance.allPlayersDead = false;
 
-            ImpOutput.Send("Prevented the ship from leaving.", type: NotificationType.Other);
-            Imperium.Log.LogInfo("[MON] Prevented the ship from leaving.");
+            Imperium.IO.Send("Prevented the ship from leaving.", type: NotificationType.Other);
+            Imperium.IO.LogInfo("[MON] Prevented the ship from leaving.");
             return false;
         }
 

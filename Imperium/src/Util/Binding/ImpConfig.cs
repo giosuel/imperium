@@ -8,46 +8,48 @@ using BepInEx.Configuration;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-///     ImpBinding that also maintains and updates a BepInEx config in the background.
+///     Imperium configuration that is linked to a BepInEx config file.
+///     It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
+///     e.g. PlayerManager.UpdateCameras()
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public class ImpConfig<T> : ImpBinding<T>
+public sealed class ImpConfig<T> : ImpBinding<T>
 {
     private readonly ConfigEntry<T> config;
 
-    /// <summary>
-    ///     Imperium configuration that is linked to a BepInEx config file.
-    ///     It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
-    ///     e.g. PlayerManager.UpdateCameras()
-    /// </summary>
-    /// <param name="section">BepInEx config file section</param>
-    /// <param name="key">BepInEx config file key</param>
-    /// <param name="defaultValue"></param>
-    /// <param name="onUpdate">
-    ///     <see cref="ImpBinding{T}.onUpdate" />
-    /// </param>
-    /// <param name="syncUpdate">
-    ///     <see cref="ImpBinding{T}.onUpdateSync" />
-    /// </param>
-    /// <param name="ignoreRefresh">
-    ///     <see cref="ImpBinding{T}.ignoreRefresh" />
-    /// </param>
+    private readonly bool allowWhenDisabled;
+
+    // Always return the default value in configs if Imperium is not enabled.
+    public new T Value => Imperium.IsImperiumEnabled || allowWhenDisabled ? base.Value : DefaultValue;
+
     public ImpConfig(
+        ConfigFile configFile,
         string section,
         string key,
         T defaultValue,
         Action<T> onUpdate = null,
-        Action<T> syncUpdate = null,
-        bool ignoreRefresh = false
-    ) : base(defaultValue, onUpdate, syncUpdate, ignoreRefresh)
+        Action<T> fromLocalUpdate = null,
+        bool ignoreRefresh = false,
+        bool allowWhenDisabled = false
+    ) : base(defaultValue, default, onUpdate, fromLocalUpdate, ignoreRefresh)
     {
-        config = Imperium.ConfigFile.Bind(section, key, defaultValue);
-        Value = config.Value;
+        this.allowWhenDisabled = allowWhenDisabled;
+
+        config = configFile.Bind(section, key, defaultValue);
+        base.Value = config.Value;
     }
 
-    public override void Set(T value, bool skipSync)
+    public override void Set(T updatedValue, bool invokeUpdate = true)
     {
-        config.Value = value;
-        base.Set(config.Value, skipSync);
+        config.Value = updatedValue;
+        base.Set(updatedValue, invokeUpdate);
+    }
+
+    /// <summary>
+    ///     Whenever refresh is called while Imperium is disabled, we want the callbacks to also use the default value.
+    /// </summary>
+    public override void Refresh()
+    {
+        base.Value = Imperium.IsImperiumEnabled || allowWhenDisabled ? base.Value : DefaultValue;
+        base.Refresh();
     }
 }

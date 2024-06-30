@@ -1,28 +1,32 @@
 #region
 
 using System.Collections.Generic;
+using BepInEx.Configuration;
 using GameNetcodeStuff;
+using Imperium.API.Types;
 using Imperium.Util.Binding;
-using Imperium.Visualizers.MonoBehaviours;
+using Imperium.Visualizers.Objects;
 using UnityEngine;
 
 #endregion
 
 namespace Imperium.Visualizers;
 
-internal class PlayerGizmos : BaseVisualizer<HashSet<PlayerControllerB>, PlayerGizmo>
+internal class PlayerGizmos : BaseVisualizer<IReadOnlyCollection<PlayerControllerB>, PlayerGizmo>
 {
     internal readonly Dictionary<PlayerControllerB, PlayerGizmoConfig> PlayerInfoConfigs = [];
 
-    internal PlayerGizmos(ImpBinding<HashSet<PlayerControllerB>> objectsBinding) : base(objectsBinding)
+    internal PlayerGizmos(
+        IBinding<IReadOnlyCollection<PlayerControllerB>> objectsBinding, ConfigFile config
+    ) : base(objectsBinding)
     {
         foreach (var player in Imperium.StartOfRound.allPlayerScripts)
         {
-            PlayerInfoConfigs[player] = new PlayerGizmoConfig(player.playerUsername);
+            PlayerInfoConfigs[player] = new PlayerGizmoConfig(player.playerUsername, config);
         }
     }
 
-    protected override void OnRefresh(HashSet<PlayerControllerB> objects)
+    protected override void OnRefresh(IReadOnlyCollection<PlayerControllerB> objects)
     {
         ClearObjects();
 
@@ -32,8 +36,13 @@ internal class PlayerGizmos : BaseVisualizer<HashSet<PlayerControllerB>, PlayerG
             {
                 var playerGizmoObject = new GameObject($"Imp_PlayerInfo_{player.GetInstanceID()}");
                 var playerGizmo = playerGizmoObject.AddComponent<PlayerGizmo>();
-                playerGizmo.Init(PlayerInfoConfigs[player], player.GetComponent<PlayerControllerB>());
+                if (!PlayerInfoConfigs.TryGetValue(player, out var playerInfoConfig))
+                {
+                    Imperium.IO.LogInfo("[ERR] Player was not found, no config loaded for insight.");
+                    continue;
+                }
 
+                playerGizmo.Init(playerInfoConfig, player.GetComponent<PlayerControllerB>());
                 visualizerObjects[player.GetInstanceID()] = playerGizmo;
             }
         }

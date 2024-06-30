@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using BepInEx.Configuration;
 using Imperium.API.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -13,14 +14,18 @@ namespace Imperium.Types;
 
 internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Component
 {
+    private readonly ConfigFile config;
+
     private readonly Dictionary<Type, InsightDefinition<Component>> globalInsights;
     private readonly ImpBinding<Dictionary<Type, ImpBinding<bool>>> insightVisibilityBindings;
 
     internal InsightDefinitionImpl(
         Dictionary<Type, InsightDefinition<Component>> globalInsights,
-        ImpBinding<Dictionary<Type, ImpBinding<bool>>> insightVisibilityBindings
+        ImpBinding<Dictionary<Type, ImpBinding<bool>>> insightVisibilityBindings,
+        ConfigFile config
     )
     {
+        this.config = config;
         this.globalInsights = globalInsights;
         this.insightVisibilityBindings = insightVisibilityBindings;
 
@@ -57,7 +62,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
 
     public InsightDefinition<T> SetConfigKey(string configKey)
     {
-        VisibilityBinding = new ImpConfig<bool>("Visualization.Insights", configKey, false);
+        VisibilityBinding = new ImpConfig<bool>(config, "Visualization.Insights", configKey, false);
 
         // Register possibly new binding in visibility binding list
         insightVisibilityBindings.Value[typeof(T)] = VisibilityBinding;

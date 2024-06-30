@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.Core;
+using UnityEngine;
 
 #endregion
 
@@ -16,27 +16,24 @@ internal static class InteractTriggerPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("specialInteractAnimation")]
-    private static void specialInteractAnimationPrefixPatch(InteractTrigger __instance)
+    private static void specialInteractAnimationPrefixPatch(InteractTrigger __instance, PlayerControllerB playerController)
     {
-        if (ImpSettings.AnimationSkipping.Interact.Value)
+        if (Imperium.Settings.AnimationSkipping.Interact.Value)
         {
-            if (ImpSettings.AnimationSkipping.InteractHold.Value)
+            // Backup original animation wait time
+            if (!OriginalAnimationWaitTimes.ContainsKey(__instance.GetInstanceID()))
             {
-                // Backup original animation wait time
-                if (!OriginalAnimationWaitTimes.ContainsKey(__instance.GetInstanceID()))
-                {
-                    OriginalAnimationWaitTimes[__instance.GetInstanceID()] = __instance.animationWaitTime;
-                }
-
-                __instance.animationWaitTime = 0;
+                OriginalAnimationWaitTimes[__instance.GetInstanceID()] = __instance.animationWaitTime;
             }
-            else
+
+            __instance.animationWaitTime = 0;
+        }
+        else
+        {
+            // Restore original animation wait time if it has been changed before
+            if (OriginalAnimationWaitTimes.TryGetValue(__instance.GetInstanceID(), out var originalWaitTime))
             {
-                // Restore original animation wait time if it has been changed before
-                if (OriginalAnimationWaitTimes.TryGetValue(__instance.GetInstanceID(), out var originalWaitTime))
-                {
-                    __instance.animationWaitTime = originalWaitTime;
-                }
+                __instance.animationWaitTime = originalWaitTime;
             }
         }
     }
@@ -45,9 +42,23 @@ internal static class InteractTriggerPatch
     [HarmonyPatch("specialInteractAnimation")]
     private static void specialInteractAnimationPatch(InteractTrigger __instance, PlayerControllerB playerController)
     {
-        if (ImpSettings.AnimationSkipping.Interact.Value)
+        if (Imperium.Settings.AnimationSkipping.Interact.Value)
         {
             playerController.playerBodyAnimator.ResetTrigger(__instance.animationString);
         }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("HoldInteractNotFilled")]
+    internal static void HoldInteractNotFilledPrefixPatch(InteractTrigger __instance)
+    {
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("HoldInteractNotFilled")]
+    internal static void HoldInteractNotFilledPostfixPatch(InteractTrigger __instance)
+    {
+        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
 }
