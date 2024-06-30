@@ -45,9 +45,11 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
         this.identifier = identifier;
 
         Value = currentValue;
-        DefaultValue = !EqualityComparer<T>.Default.Equals(defaultValue, default)
-            ? defaultValue
-            : currentValue;
+        DefaultValue = masterBinding != null
+            ? masterBinding.DefaultValue
+            : !EqualityComparer<T>.Default.Equals(defaultValue, default)
+                ? defaultValue
+                : currentValue;
 
         onUpdate += onUpdateClient;
         this.onUpdateServer = onUpdateServer;

@@ -1,6 +1,7 @@
 #region
 
 using HarmonyLib;
+using Imperium.Core.Lifecycle;
 using Imperium.Util;
 using UnityEngine;
 
@@ -23,5 +24,19 @@ public static class VehicleControllerPatch
     internal static void ReactToDamagePostfixPatch(VehicleController __instance)
     {
         if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("PushTruckWithArms")]
+    internal static void PushTruckWithArmsPrefixPatch(VehicleController __instance)
+    {
+        __instance.pushForceMultiplier = Imperium.PlayerManager.CarPushForceBinding.Value;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("PushTruckClientRpc")]
+    internal static void PushTruckClientRpcPrefixPatch(VehicleController __instance)
+    {
+        __instance.pushForceMultiplier = Imperium.PlayerManager.CarPushForceBinding.Value;
     }
 }

@@ -42,6 +42,12 @@ internal class PlayerManager : ImpLifecycleObject
         () => GameObject.Find("LungApparatus(Clone)")?.transform.position
     );
 
+    internal readonly ImpNetworkBinding<float> CarPushForceBinding = new(
+        "CarPushForce",
+        Imperium.Networking,
+        masterBinding: Imperium.Settings.Player.PushForce
+    );
+
     internal bool AllowPlayerDeathOverride;
     internal bool FlyIsAscending;
     internal bool FlyIsDescending;
@@ -263,8 +269,6 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private void OnKillPlayerClient(ulong playerId)
     {
-        Imperium.StartOfRound.livingPlayers++;
-
         if (playerId == NetworkManager.Singleton.LocalClientId)
         {
             AllowPlayerDeathOverride = true;
@@ -280,6 +284,8 @@ internal class PlayerManager : ImpLifecycleObject
     private static void OnRevivePlayerClient(ulong playerId)
     {
         var player = Imperium.StartOfRound.allPlayerScripts[playerId];
+
+        Imperium.StartOfRound.livingPlayers++;
 
         // ReSharper disable once Unity.PreferAddressByIdToGraphicsParams
         if (player.playerBodyAnimator) player.playerBodyAnimator.SetBool("Limp", value: false);

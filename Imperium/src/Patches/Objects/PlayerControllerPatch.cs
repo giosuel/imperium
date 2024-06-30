@@ -61,27 +61,21 @@ internal static class PlayerControllerPatch
         }
     }
 
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("AllowPlayerDeath")]
-    private static bool AllowPlayerDeathPatch(PlayerControllerB __instance, ref bool __result)
+    private static void AllowPlayerDeathPatch(PlayerControllerB __instance, ref bool __result)
     {
         // Internal override for Object Explorer kill functionality that ignores god mode
         if (Imperium.PlayerManager.AllowPlayerDeathOverride)
         {
             Imperium.IO.LogInfo("GOD MODE OVERRIDE");
             __result = true;
-            return false;
         }
-
-        if (Imperium.Settings.Player.GodMode.Value)
+        else if (Imperium.Settings.Player.GodMode.Value)
         {
             Imperium.IO.LogInfo("GOD MODE PRVEENT");
             __result = false;
-            return false;
         }
-
-        Imperium.IO.LogInfo("GOD MODE NOTHING");
-        return true;
     }
 
     [HarmonyPostfix]
@@ -198,8 +192,12 @@ internal static class PlayerControllerPatch
             __instance.snapToServerPosition = false;
             __instance.inSpecialInteractAnimation = false;
         }
+    }
 
-        // Apply custom FOV
+    [HarmonyPostfix]
+    [HarmonyPatch("LateUpdate")]
+    private static void LateUpdatePostfixPatch(PlayerControllerB __instance)
+    {
         if (Imperium.Settings.Player.CustomFieldOfView.Value > -1)
         {
             var targetFOV = Imperium.Settings.Player.CustomFieldOfView.Value;
@@ -223,7 +221,10 @@ internal static class PlayerControllerPatch
     private static void BeginGrabObjectPrefixPatch(PlayerControllerB __instance)
     {
         gameHasStartedBridge = GameNetworkManager.Instance.gameHasStarted;
-        if (Imperium.Settings.Player.PickupOverwrite.Value) GameNetworkManager.Instance.gameHasStarted = true;
+        if (Imperium.Settings.Player.PickupOverwrite.Value && Imperium.IsImperiumEnabled)
+        {
+            GameNetworkManager.Instance.gameHasStarted = true;
+        }
     }
 
     [HarmonyPostfix]

@@ -77,6 +77,7 @@ internal abstract class ImpAssets
      * Materials
      */
     public static Material ShiggyMaterial;
+    public static Material TriggerMaterial;
 
     internal static AssetBundle ImperiumAssets;
 
@@ -140,6 +141,11 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Audio/GrassClick.wav", out GrassClick),
             LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
         ];
+
+        foreach (var material in Resources.FindObjectsOfTypeAll<Material>())
+        {
+            if (material.name == "testTriggerRed") TriggerMaterial = material;
+        }
 
 
         if (loadResults.Any(result => result == false))

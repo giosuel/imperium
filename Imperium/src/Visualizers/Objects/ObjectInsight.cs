@@ -105,7 +105,7 @@ public class ObjectInsight : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!targetObject)
+        if (!targetObject || !insightPanelCanvasRect)
         {
             Destroy(gameObject);
             return;

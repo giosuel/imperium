@@ -72,11 +72,10 @@ public class ImpSettings(ConfigFile config)
             false,
             value =>
             {
-                Imperium.StartOfRound.allowLocalPlayerDeath = value;
-
                 // Restore health to full when turning on god mode
                 if (value) PlayerManager.RestoreLocalPlayerHealth(Imperium.Player);
-            });
+            }
+        );
 
         internal readonly ImpConfig<float> MovementSpeed = new(
             config,
@@ -99,6 +98,13 @@ public class ImpSettings(ConfigFile config)
             "Player",
             "NightVision",
             0
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<float> PushForce = new(
+            config,
+            "Player",
+            "PushForce",
+            ImpConstants.DefaultCarPushForceMultiplier
         );
     }
 
@@ -307,7 +313,7 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "MoldAttractionPoints",
             false,
-            value => Imperium.Visualization.Collider(value, "MoldAttractionPoint", IdentifierType.TAG)
+            value => Imperium.Visualization.Point(value, "MoldAttractionPoint", IdentifierType.TAG)
         );
 
         internal readonly ImpConfig<bool> TileBorders = new(
@@ -331,7 +337,9 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Visualization.Colliders",
             false,
-            value => Imperium.Visualization.Collider(value, "Visualization.Colliders", IdentifierType.LAYER)
+            value => Imperium.Visualization.Collider(
+                value, "Visualization.Colliders", IdentifierType.LAYER, material: ImpAssets.TriggerMaterial
+            )
         );
 
         internal readonly ImpConfig<bool> Triggers = new(
@@ -339,7 +347,9 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Colliders",
             "Triggers",
             false,
-            value => Imperium.Visualization.Collider(value, "Triggers", IdentifierType.LAYER)
+            value => Imperium.Visualization.Collider(
+                value, "Triggers", IdentifierType.LAYER, material: ImpAssets.TriggerMaterial
+            )
         );
 
         internal readonly ImpConfig<bool> PhysicsObject = new(

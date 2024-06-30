@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Imperium.Interface.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -63,6 +64,13 @@ public class ImpFreecam : MonoBehaviour
         Imperium.InputBindings.BaseMap.Reset.performed += OnFreecamReset;
         Imperium.InputBindings.FreecamMap.LayerSelector.performed += OnToggleLayerSelector;
         Imperium.Settings.Freecam.FreecamLayerMask.onUpdate += value => FreecamCamera.cullingMask = value;
+    }
+
+    private void OnDestroy()
+    {
+        Imperium.InputBindings.BaseMap.Freecam.performed -= OnFreecamToggle;
+        Imperium.InputBindings.BaseMap.Minicam.performed -= OnMinicamToggle;
+        Imperium.InputBindings.BaseMap.Reset.performed -= OnFreecamReset;
     }
 
     private void OnMinicamToggle(InputAction.CallbackContext callbackContext)

@@ -246,7 +246,7 @@ internal class SpawningUI : BaseUI
             SpawningObjectEntry.SpawnObjectType.MapHazard or
             SpawningObjectEntry.SpawnObjectType.StaticPrefab or
             SpawningObjectEntry.SpawnObjectType.CompanyCruiser;
-        if (Imperium.Freecam.IsFreecamEnabled.Value || useIndicator)
+        if (Imperium.Freecam.IsFreecamEnabled.Value || Imperium.PlayerManager.IsFlying.Value || useIndicator)
         {
             var originTransform = Imperium.Freecam.IsFreecamEnabled.Value
                 ? Imperium.Freecam.transform

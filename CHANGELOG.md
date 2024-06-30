@@ -31,6 +31,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality, 
 - Added a new visualizer for Vain Shroud attraction points.
 - Added an option to spawn the Company Cruiser from the SpawningUI.
 - Added default insights for the Company Cruiser.
+- Added a slider to change the push control for the Company Cruiser.
 
 ### Changes
 
@@ -40,7 +41,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality, 
   - Toggling turrets and landmines now results in them being enabled / disabled as if an employee would do it from the terminal instead of the object itself being enabled / disabled.
   - Toggling breaker boxes now results in all the switches being flipped instead of the object itself being  enabled / disabled.
   - Toggling steam valves will burst / repair them.
-- Merged the shotgun visualizer rework by [digger1213](<https://github.com/digger1213>).
+- Merged the amazing shotgun visualizer rework by [digger1213](<https://github.com/digger1213>).
 - Pausing time is now possible from space.
 
 ### QoL Improvements
@@ -54,6 +55,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality, 
 - Added a way to highlight entity ghost spawns for indoor entities (Caused by a bug in the game).
 - Disabling the flying option now disables flight.
 - Added aliases for Insight class names to simplify class identification.
+- Changed the trigger, collider and navmesh surface visualizer's material.
 
 ### Internal Fixes
 

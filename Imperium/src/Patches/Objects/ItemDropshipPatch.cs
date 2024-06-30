@@ -24,4 +24,11 @@ public static class ItemDropshipPatch
     {
         if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("DeliverVehicleClientRpc")]
+    internal static void DeliverVehicleClientRpcPostfixPatch(ItemDropship __instance)
+    {
+        Imperium.ObjectManager.RefreshLevelObstacles();
+    }
 }

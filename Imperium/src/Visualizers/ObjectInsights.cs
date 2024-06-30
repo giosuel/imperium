@@ -139,12 +139,15 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetIsDeadGenerator(entity => entity.isEnemyDead)
             .RegisterInsight("Health", entity => $"{entity.enemyHP} HP")
             .RegisterInsight("Behaviour State", entity => entity.currentBehaviourStateIndex.ToString())
-            .RegisterInsight("Movement Speed", entity => $"{entity.agent.speed:0.0}")
+            .RegisterInsight("Movement Speed", entity => entity.agent ? $"{entity.agent.speed:0.0}" : "0")
             .RegisterInsight("Stun Timer", entity => $"{Math.Max(0, entity.stunNormalizedTimer):0.0}s")
             .RegisterInsight("Target", entity => entity.targetPlayer ? entity.targetPlayer.playerUsername : "-")
             .RegisterInsight("Location", ImpUtils.GetEntityLocationText)
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Entities");
+
+        InsightsFor<NutcrackerEnemyAI>()
+            .SetPositionOverride(entity => DefaultPositionOverride(entity) + Vector3.down * 7f);
 
         InsightsFor<Turret>()
             .SetNameGenerator(turret => $"Turret #{turret.GetInstanceID()}")

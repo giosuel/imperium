@@ -7,7 +7,6 @@ using GameNetcodeStuff;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
-using Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
 using Imperium.Types;
 using Imperium.Util;
 using TMPro;
@@ -59,7 +58,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         playerCount = content.Find("PlayerListTitle/Count").GetComponent<TMP_Text>();
         entityList = content.Find("EntityList");
         entityCount = content.Find("EntityListTitle/Count").GetComponent<TMP_Text>();
-        cruiserList = content.Find("EntityList");
+        cruiserList = content.Find("CruiserList");
         cruiserCount = content.Find("CruiserListTitle/Count").GetComponent<TMP_Text>();
         itemList = content.Find("ItemList");
         itemCount = content.Find("ItemListTitle/Count").GetComponent<TMP_Text>();
@@ -205,7 +204,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
                 var entryObj = Instantiate(listTemplate, entryList.transform);
                 entryObj.SetActive(true);
                 objectEntry = (ObjectEntry)entryObj.AddComponent(type);
-                objectEntry.Init(component, theme);
+                objectEntry.Init(component, theme, tooltip);
 
                 objectEntries[component.GetInstanceID()] = objectEntry;
             }

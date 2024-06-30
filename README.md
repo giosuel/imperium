@@ -82,6 +82,14 @@ Tha spawning console allows you to spawn entities, scrap and map hazards into th
 
 ![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
 
+## Ship and Moon Control
+
+![ship-moon-control](https://github.com/giosuel/imperium/blob/main/assets/ship-moon-control.png?raw=true)
+
+## Moon / Challenge Moon Information
+
+![moon-information](https://github.com/giosuel/imperium/blob/main/assets/moon-info.png?raw=true)
+
 ## The Save File Editor
 
 Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).

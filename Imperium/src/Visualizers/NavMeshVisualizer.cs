@@ -24,7 +24,7 @@ internal class NavMeshVisualizer(
         {
             var navmeshVisualizer = new GameObject($"ImpVis_NavMeshSurface_{index}");
             var navmeshRenderer = navmeshVisualizer.AddComponent<MeshRenderer>();
-            navmeshRenderer.material = ImpAssets.WireframeNavMesh;
+            navmeshRenderer.material = ImpAssets.TriggerMaterial;
             var navmeshFilter = navmeshVisualizer.AddComponent<MeshFilter>();
             navmeshFilter.mesh = navmeshSurface;
 

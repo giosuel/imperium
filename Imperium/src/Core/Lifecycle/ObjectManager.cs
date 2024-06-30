@@ -191,6 +191,9 @@ internal class ObjectManager : ImpLifecycleObject
     internal void DespawnObstacle(ulong obstacleNetId) => obstacleDespawnMessage.DispatchToServer(obstacleNetId);
 
     [ImpAttributes.RemoteMethod]
+    internal void TeleportObject(ObjectTeleportRequest request) => objectTeleportationRequest.DispatchToServer(request);
+
+    [ImpAttributes.RemoteMethod]
     internal void InvokeEntitiesChanged() => entitiesChanged.DispatchToClients();
 
     [ImpAttributes.RemoteMethod]
@@ -880,13 +883,32 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private void OnObjectTeleportationRequestClient(ObjectTeleportRequest request)
     {
-        if (!CurrentLevelObjects.TryGetValue(request.NetworkId, out var obj))
+        if (!CurrentLevelObjects.TryGetValue(request.NetworkId, out var obj) || !obj)
         {
             Imperium.IO.LogError($"Failed to teleport object item with net ID {request.NetworkId}");
             return;
         }
 
-        obj.transform.position = request.Destination;
+        if (obj.TryGetComponent<GrabbableObject>(out var item))
+        {
+            var itemTransform = item.transform;
+            itemTransform.position = request.Destination + Vector3.up;
+            item.startFallingPosition = itemTransform.position;
+            if (item.transform.parent != null)
+            {
+                item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
+            }
+
+            item.FallToGround();
+        }
+        else if (obj.TryGetComponent<Landmine>(out _))
+        {
+            obj.transform.parent.position = request.Destination;
+        }
+        else
+        {
+            obj.transform.position = request.Destination;
+        }
     }
 
     [ImpAttributes.HostOnly]

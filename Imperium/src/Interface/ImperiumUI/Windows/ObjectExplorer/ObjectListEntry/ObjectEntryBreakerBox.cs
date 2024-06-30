@@ -1,17 +1,17 @@
 #region
 
+using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
-using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 internal class ObjectEntryBreakerBox : ObjectEntry
 {
     protected override bool CanRespawn() => false;
     protected override bool CanDrop() => false;
-    protected override bool CanDestroy() => false;
+    protected override bool CanDestroy() => true;
     protected override bool CanTeleportHere() => true;
 
     public override void Destroy()
@@ -23,7 +23,14 @@ internal class ObjectEntryBreakerBox : ObjectEntry
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
+        Imperium.ImpPositionIndicator.Activate(position =>
+        {
+            Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
+            {
+                Destination = position,
+                NetworkId = objectNetId!.Value
+            });
+        }, origin, castGround: false);
     }
 
     protected override void ToggleObject(bool isActive) => MoonManager.ToggleBreaker((BreakerBox)component, isActive);

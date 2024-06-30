@@ -17,24 +17,14 @@ public class StartOfRoundPatch
     [HarmonyPatch("StartGame")]
     private static void StartGamePrefixPatch(StartOfRound __instance)
     {
-        if (Imperium.ShipManager.InstantLanding.Value) __instance.shipAnimator.enabled = false;
+        __instance.shipAnimator.speed = Imperium.ShipManager.InstantLanding.Value ? 1000f : 1;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("ShipLeave")]
     private static void ShipLeavePrefixPatch(StartOfRound __instance)
     {
-        if (Imperium.ShipManager.InstantTakeoff.Value) __instance.shipAnimator.enabled = false;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("ShipLeave")]
-    private static void ShipLeavePostfixPatch(StartOfRound __instance)
-    {
-        if (Imperium.ShipManager.InstantTakeoff.Value)
-        {
-            Object.FindObjectOfType<ElevatorAnimationEvents>().ElevatorFullyRunning();
-        }
+        __instance.shipAnimator.speed = Imperium.ShipManager.InstantTakeoff.Value ? 1000f : 1;
     }
 
     [HarmonyPrefix]

@@ -14,7 +14,7 @@ internal class ObjectEntryPlayer : ObjectEntry
     protected override bool CanDestroy() => false;
     protected override bool CanRespawn() => true;
     protected override bool CanDrop() => false;
-    protected override bool CanToggle() => true;
+    protected override bool CanToggle() => false;
 
     protected override bool CanKill() => !((PlayerControllerB)component).isPlayerDead;
     protected override bool CanRevive() => ((PlayerControllerB)component).isPlayerDead;

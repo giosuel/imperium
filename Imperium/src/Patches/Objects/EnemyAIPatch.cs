@@ -240,7 +240,7 @@ internal static class EnemyAIPatch
     [HarmonyPatch("GetAllPlayersInLineOfSight")]
     private static void GetAllPlayersInLineOfSightPostfixPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
     {
-        if (Imperium.Settings.Player.Invisibility.Value && __result.Contains(Imperium.Player))
+        if (Imperium.Settings.Player.Invisibility.Value && __result != null && __result.Contains(Imperium.Player))
         {
             __result = __result.Where(player => player != Imperium.Player).ToArray();
         }

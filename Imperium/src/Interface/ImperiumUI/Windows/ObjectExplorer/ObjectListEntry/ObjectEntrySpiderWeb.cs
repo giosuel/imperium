@@ -31,7 +31,14 @@ internal class ObjectEntrySpiderWeb : ObjectEntry
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
+        Imperium.ImpPositionIndicator.Activate(position =>
+        {
+            Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
+            {
+                Destination = position,
+                NetworkId = objectNetId!.Value
+            });
+        }, origin);
     }
 
     protected override string GetObjectName() => $"Spider Web <i>{component.GetInstanceID()}</i>";

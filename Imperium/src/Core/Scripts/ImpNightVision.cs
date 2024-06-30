@@ -11,22 +11,22 @@ public class ImpNightVision : MonoBehaviour
     private Light FarLight;
     private Light NearLight;
 
-    internal static ImpNightVision Create() => new GameObject("ImpNightVision").AddComponent<ImpNightVision>();
+    internal static ImpNightVision Create() => new GameObject("Imp_NightVision").AddComponent<ImpNightVision>();
 
     private void Awake()
     {
         var mapCamera = GameObject.Find("MapCamera").transform;
-        transform.SetParent(mapCamera);
+        transform.SetParent(Imperium.Player.gameplayCamera.transform);
 
-        NearLight = new GameObject("Imp_NightVision_Near").AddComponent<Light>();
+        NearLight = new GameObject("Near").AddComponent<Light>();
         NearLight.transform.SetParent(transform);
-        NearLight.transform.position = mapCamera.position + Vector3.up * 20f;
+        NearLight.transform.position = mapCamera.position + Vector3.down * 80f;
         NearLight.range = 70f;
         NearLight.color = new Color(0.875f, 0.788f, 0.791f, 1);
 
-        FarLight = new GameObject("Imp_NightVision_Far").AddComponent<Light>();
+        FarLight = new GameObject("Far").AddComponent<Light>();
         FarLight.transform.SetParent(transform);
-        FarLight.transform.position = mapCamera.position + Vector3.up * 70f;
+        FarLight.transform.position = mapCamera.position + Vector3.down * 30f;
         FarLight.range = 500f;
     }
 

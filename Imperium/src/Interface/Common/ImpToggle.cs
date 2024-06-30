@@ -56,7 +56,9 @@ public abstract class ImpToggle
         var text = (toggleObject.Find("Text") ?? toggleObject.Find("Text (TMP)"))?.GetComponent<TMP_Text>();
 
         toggle.isOn = valueBinding.Value;
-        toggle.onValueChanged.AddListener(value => valueBinding.Set(value));
+
+        var interactable = toggleObject.gameObject.AddComponent<ImpInteractable>();
+        interactable.onClick += () => valueBinding.Set(!valueBinding.Value);
         valueBinding.onUpdate += value => toggle.isOn = value;
 
         // Only play the click sound when the update was invoked by the local client
@@ -75,7 +77,6 @@ public abstract class ImpToggle
 
         if (tooltipDefinition != null)
         {
-            var interactable = toggleObject.gameObject.AddComponent<ImpInteractable>();
             interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
                 tooltipDefinition.Title,
                 tooltipDefinition.Description,

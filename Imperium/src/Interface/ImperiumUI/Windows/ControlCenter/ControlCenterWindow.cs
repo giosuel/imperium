@@ -212,5 +212,13 @@ internal class ControlCenterWindow : ImperiumWindow
             valueBinding: Imperium.Settings.Player.NightVision,
             indicatorUnit: "%"
         );
+
+        ImpSlider.Bind(
+            path: "Right/PushForce",
+            container: content,
+            theme: theme,
+            debounceTime: 0.1f,
+            valueBinding: Imperium.PlayerManager.CarPushForceBinding
+        );
     }
 }

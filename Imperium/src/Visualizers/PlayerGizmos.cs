@@ -36,8 +36,12 @@ internal class PlayerGizmos : BaseVisualizer<IReadOnlyCollection<PlayerControlle
             {
                 var playerGizmoObject = new GameObject($"Imp_PlayerInfo_{player.GetInstanceID()}");
                 var playerGizmo = playerGizmoObject.AddComponent<PlayerGizmo>();
-                playerGizmo.Init(PlayerInfoConfigs[player], player.GetComponent<PlayerControllerB>());
-
+                if (!PlayerInfoConfigs.TryGetValue(player, out var playerInfoConfig))
+                {
+                    Imperium.IO.LogInfo("[ERR] Player was not found, no config loaded for insight.");
+                    continue;
+                }
+                playerGizmo.Init(playerInfoConfig, player.GetComponent<PlayerControllerB>());
                 visualizerObjects[player.GetInstanceID()] = playerGizmo;
             }
         }

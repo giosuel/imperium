@@ -38,7 +38,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.1.9";
+    public const string PLUGIN_VERSION = "0.2.0";
 
     private static ConfigFile configFile;
     private static Harmony Harmony;
@@ -115,7 +115,12 @@ public class Imperium : BaseUnityPlugin
 
         Settings = new ImpSettings(Config);
         IO = new ImpOutput(Logger);
+
         InputBindings = new ImpInputBindings();
+        InputBindings.BaseMap.Disable();
+        InputBindings.StaticMap.Disable();
+        InputBindings.FreecamMap.Disable();
+        InputBindings.InterfaceMap.Disable();
 
         if (!ImpAssets.Load()) return;
 

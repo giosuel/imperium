@@ -34,7 +34,14 @@ internal class ObjectEntryEntity : ObjectEntry
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(position => component.transform.position = position, origin);
+        Imperium.ImpPositionIndicator.Activate(position =>
+        {
+            Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
+            {
+                Destination = position,
+                NetworkId = objectNetId!.Value
+            });
+        }, origin);
     }
 
     protected override void ToggleObject(bool isActive)

@@ -114,7 +114,7 @@ internal class InfoWindow : ImperiumWindow
         if (Imperium.IsSceneLoaded.Value)
         {
             indoorPowerIncrease.text = $"+{indoorIncrease} ({increasedIndoor})";
-            outdoorPowerIncrease.text = $"+{increasedOutdoor} ({increasedOutdoor})";
+            outdoorPowerIncrease.text = $"+{outdoorIncrease} ({increasedOutdoor})";
             scrapSpawnIncrease.text = $"+{increasedScrap} ({Imperium.MoonManager.ChallengeScrapAmount})";
 
             var weatherRandom = new Random(StartOfRound.Instance.randomMapSeed);

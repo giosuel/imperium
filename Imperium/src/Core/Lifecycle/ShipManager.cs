@@ -26,9 +26,11 @@ public class ShipManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnNavigateToServer(int levelIndex, ulong clientId) => navigateShipMessage.DispatchToClients(levelIndex);
 
-    [ImpAttributes.HostOnly]
+    [ImpAttributes.LocalMethod]
     private static void OnNavigateToClient(int levelIndex)
     {
+        if (!Imperium.StartOfRound.inShipPhase) return;
+
         Imperium.StartOfRound.ChangeLevelClientRpc(levelIndex, Imperium.GameManager.GroupCredits.Value);
 
         // Send scene refresh so moon related data is refreshed
@@ -44,12 +46,11 @@ public class ShipManager : ImpLifecycleObject
             if (value)
             {
                 StartOfRoundPatch.InstantTakeoffHarmony.PatchAll(typeof(StartOfRoundPatch.InstantTakeoffPatches));
+                Imperium.StartOfRound.shipAnimator.speed = 1000f;
             }
             else
             {
                 StartOfRoundPatch.InstantTakeoffHarmony.UnpatchSelf();
-                Imperium.StartOfRound.shipAnimator.ResetTrigger("landing");
-                Imperium.StartOfRound.shipAnimator.enabled = true;
             }
         }
     );
@@ -63,12 +64,11 @@ public class ShipManager : ImpLifecycleObject
             if (value)
             {
                 StartOfRoundPatch.InstantLandingHarmony.PatchAll(typeof(StartOfRoundPatch.InstantLandingPatches));
+                Imperium.StartOfRound.shipAnimator.speed = 1000f;
             }
             else
             {
                 StartOfRoundPatch.InstantLandingHarmony.UnpatchSelf();
-                Imperium.StartOfRound.shipAnimator.ResetTrigger("landing");
-                Imperium.StartOfRound.shipAnimator.enabled = true;
             }
         }
     );

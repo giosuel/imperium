@@ -26,6 +26,8 @@ internal class ObjectEntrySteamValve : ObjectEntry
 
     protected override void ToggleObject(bool isActive)
     {
+        if (!steamValve) return;
+
         if (!isActive)
         {
             // Reflection.Invoke(steamValve, "BurstValve");
@@ -46,7 +48,14 @@ internal class ObjectEntrySteamValve : ObjectEntry
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
+        Imperium.ImpPositionIndicator.Activate(position =>
+        {
+            Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
+            {
+                Destination = position,
+                NetworkId = objectNetId!.Value
+            });
+        }, origin);
     }
 
     protected override string GetObjectName() => $"Steam Valve <i>{component.GetInstanceID()}</i>";

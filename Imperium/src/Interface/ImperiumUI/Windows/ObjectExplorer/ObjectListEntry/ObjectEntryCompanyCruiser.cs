@@ -34,7 +34,11 @@ internal class ObjectCompanyCruiser : ObjectEntry
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
         Imperium.ImpPositionIndicator.Activate(position =>
         {
-            GetContainerObject().transform.position = position + Vector3.up * 5f;
+            Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
+            {
+                Destination = position + Vector3.up * 5f,
+                NetworkId = objectNetId!.Value
+            });
         }, origin);
     }
 

@@ -16,11 +16,12 @@ namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 internal class ObjectEntry : MonoBehaviour
 {
     private TMP_Text objectNameText;
-    private Toggle activeToggle;
 
     protected Button dropButton;
     protected Button reviveButton;
     protected Button killButton;
+    protected Button destroyButton;
+    protected Button teleportHereButton;
 
     protected string objectName;
     protected GameObject containerObject;
@@ -30,9 +31,12 @@ internal class ObjectEntry : MonoBehaviour
 
     protected ImpBinding<bool> IsObjectActive;
 
-    internal void Init(Component objectComponent, ImpBinding<ImpTheme> theme)
+    protected ImpTooltip tooltip;
+
+    internal void Init(Component objectComponent, ImpBinding<ImpTheme> theme, ImpTooltip tooltipObj)
     {
         component = objectComponent;
+        tooltip = tooltipObj;
 
         objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
         objectName = GetObjectName();
@@ -57,7 +61,7 @@ internal class ObjectEntry : MonoBehaviour
         }
 
         // Active toggle
-        activeToggle = ImpToggle.Bind("Active", transform, IsObjectActive, theme);
+        var activeToggle = ImpToggle.Bind("Active", transform, IsObjectActive, theme);
         activeToggle.gameObject.SetActive(CanToggle() && objectNetId.HasValue);
         IsObjectActive.onUpdate += ToggleObject;
         IsObjectActive.onTrigger += ToggleDisabledObject;
@@ -74,11 +78,11 @@ internal class ObjectEntry : MonoBehaviour
         );
 
         // Teleport here button
-        var teleportHereButton = ImpButton.Bind("TeleportHere", transform, TeleportHere, theme, isIconButton: true);
+        teleportHereButton = ImpButton.Bind("TeleportHere", transform, TeleportHere, theme, isIconButton: true);
         teleportHereButton.gameObject.SetActive(CanTeleportHere());
 
         // Destroy button (Unthemed, as it's red in any theme)
-        var destroyButton = ImpButton.Bind("Destroy", transform, Destroy);
+        destroyButton = ImpButton.Bind("Destroy", transform, Destroy);
         destroyButton.gameObject.SetActive(CanDestroy());
 
         // Respawn button

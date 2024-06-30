@@ -29,13 +29,20 @@ internal class ObjectEntryTurret : ObjectEntry
     public override void Destroy()
     {
         base.Destroy();
-        Imperium.ObjectManager.DespawnEntity(containerObject.GetComponent<NetworkObject>().NetworkObjectId);
+        Imperium.ObjectManager.DespawnEntity(objectNetId!.Value);
     }
 
     protected override void TeleportHere()
     {
         var origin = Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null;
-        Imperium.ImpPositionIndicator.Activate(position => GetContainerObject().transform.position = position, origin);
+        Imperium.ImpPositionIndicator.Activate(position =>
+        {
+            Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
+            {
+                Destination = position,
+                NetworkId = objectNetId!.Value
+            });
+        }, origin);
     }
 
     protected override string GetObjectName() => $"Turret <i>{component.GetInstanceID()}</i>";
