@@ -77,6 +77,18 @@ internal class Visualizers : ImpWidget
             theme
         );
         ImpToggle.Bind(
+            "Colliders/MoldSpores",
+            transform,
+            Imperium.Settings.Visualization.MoldSpores,
+            theme
+        );
+        ImpToggle.Bind(
+            "Colliders/MoldAttractionPoints",
+            transform,
+            Imperium.Settings.Visualization.MoldAttractionPoints,
+            theme
+        );
+        ImpToggle.Bind(
             "Colliders/RoomLight",
             transform,
             Imperium.Settings.Visualization.RoomLight,

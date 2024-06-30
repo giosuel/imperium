@@ -85,9 +85,9 @@ internal class TeleportationWindow : ImperiumWindow
                                    && Imperium.IsSceneLoaded.Value;
 
         var position = Imperium.Player.transform.position;
-        coordinateX.Set(MathF.Round(position.x, 2));
-        coordinateY.Set(MathF.Round(position.y, 2));
-        coordinateZ.Set(MathF.Round(position.z, 2));
+        // coordinateX.Set(MathF.Round(position.x, 2));
+        // coordinateY.Set(MathF.Round(position.y, 2));
+        // coordinateZ.Set(MathF.Round(position.z, 2));
 
         FillFireExitDropdown();
     }

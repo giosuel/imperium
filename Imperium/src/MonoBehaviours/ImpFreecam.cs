@@ -106,6 +106,8 @@ public class ImpFreecam : MonoBehaviour
 
     private void OnFreecamEnable()
     {
+        if (!FreecamCamera) return;
+
         Imperium.Interface.Close();
 
         if (IsMinicamEnabled.Value) IsMinicamEnabled.SetFalse();
@@ -126,6 +128,8 @@ public class ImpFreecam : MonoBehaviour
 
     private void OnFreecamDisable()
     {
+        if (!FreecamCamera) return;
+
         layerSelector.OnUIClose();
 
         // Hide UI if view is not switching to minimap state

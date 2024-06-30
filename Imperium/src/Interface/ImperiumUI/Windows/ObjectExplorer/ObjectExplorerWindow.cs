@@ -28,6 +28,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private TMP_Text playerCount;
     private Transform entityList;
     private TMP_Text entityCount;
+    private Transform cruiserList;
+    private TMP_Text cruiserCount;
     private Transform itemList;
     private TMP_Text itemCount;
     private Transform hazardList;
@@ -36,6 +38,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private TMP_Text ventCount;
     private Transform otherList;
     private TMP_Text otherCount;
+    private Transform moldSporeList;
+    private TMP_Text moldSporeCount;
 
     private readonly ImpTimer refreshTimer = ImpTimer.ForInterval(0.08f);
 
@@ -55,6 +59,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
         playerCount = content.Find("PlayerListTitle/Count").GetComponent<TMP_Text>();
         entityList = content.Find("EntityList");
         entityCount = content.Find("EntityListTitle/Count").GetComponent<TMP_Text>();
+        cruiserList = content.Find("EntityList");
+        cruiserCount = content.Find("CruiserListTitle/Count").GetComponent<TMP_Text>();
         itemList = content.Find("ItemList");
         itemCount = content.Find("ItemListTitle/Count").GetComponent<TMP_Text>();
         hazardList = content.Find("HazardList");
@@ -63,6 +69,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ventCount = content.Find("VentListTitle/Count").GetComponent<TMP_Text>();
         otherList = content.Find("OtherList");
         otherCount = content.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
+        moldSporeList = content.Find("VainShroudList");
+        moldSporeCount = content.Find("VainShroudListTitle/Count").GetComponent<TMP_Text>();
 
         ImpButton.CreateCollapse("PlayerListTitle/Arrow", content, playerList);
         ImpButton.CreateCollapse("EntityListTitle/Arrow", content, entityList);
@@ -70,6 +78,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ImpButton.CreateCollapse("HazardListTitle/Arrow", content, hazardList);
         ImpButton.CreateCollapse("VentListTitle/Arrow", content, ventList);
         ImpButton.CreateCollapse("OtherListTitle/Arrow", content, otherList);
+        ImpButton.CreateCollapse("VainShroudListTitle/Arrow", content, moldSporeList);
 
         Imperium.ObjectManager.CurrentLevelDoors.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelSecurityDoors.onTrigger += Refresh;
@@ -83,6 +92,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
         Imperium.ObjectManager.CurrentLevelEntities.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentLevelItems.onTrigger += Refresh;
         Imperium.ObjectManager.CurrentPlayers.onTrigger += Refresh;
+        Imperium.ObjectManager.CurrentLevelMoldSpores.onTrigger += Refresh;
+        Imperium.ObjectManager.CurrentLevelCompanyCruisers.onTrigger += Refresh;
 
         if (Random.Range(0, 100) >= 99) titleBox.Find("Title").GetComponent<TMP_Text>().text = "Emporium Control Panel";
     }
@@ -94,10 +105,12 @@ internal class ObjectExplorerWindow : ImperiumWindow
             content,
             new StyleOverride("PlayerListTitle", Variant.DARKER),
             new StyleOverride("EntityListTitle", Variant.DARKER),
+            new StyleOverride("CruiserListTitle", Variant.DARKER),
             new StyleOverride("HazardListTitle", Variant.DARKER),
             new StyleOverride("ItemListTitle", Variant.DARKER),
             new StyleOverride("VentListTitle", Variant.DARKER),
-            new StyleOverride("OtherListTitle", Variant.DARKER)
+            new StyleOverride("OtherListTitle", Variant.DARKER),
+            new StyleOverride("VainShroudListTitle", Variant.DARKER)
         );
 
         ImpThemeManager.Style(
@@ -112,10 +125,12 @@ internal class ObjectExplorerWindow : ImperiumWindow
             content,
             new StyleOverride("PlayerListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("EntityListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("CruiserListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("HazardListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("ItemListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VentListTitle/Count", Variant.FADED_TEXT),
-            new StyleOverride("OtherListTitle/Count", Variant.FADED_TEXT)
+            new StyleOverride("OtherListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("VainShroudListTitle/Count", Variant.FADED_TEXT)
         );
     }
 
@@ -154,6 +169,12 @@ internal class ObjectExplorerWindow : ImperiumWindow
             .Concat(Imperium.ObjectManager.CurrentLevelItems.Value
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryItem), entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelMoldSpores.Value
+                .Where(obj => obj != null)
+                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryMoldSpore), entry.transform)))
+            .Concat(Imperium.ObjectManager.CurrentLevelCompanyCruisers.Value
+                .Where(obj => obj != null)
+                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectCompanyCruiser), entry)))
             .Concat(Imperium.ObjectManager.CurrentPlayers.Value
                 .Where(obj => obj != null)
                 .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryPlayer), entry)));
@@ -174,6 +195,9 @@ internal class ObjectExplorerWindow : ImperiumWindow
                     GrabbableObject => itemList,
                     PlayerControllerB => playerList,
                     EnemyVent => ventList,
+                    // Make this more clear, MoldSpores is the only thing using transform as component right now
+                    Transform => moldSporeList,
+                    VehicleController => cruiserList,
                     Turret or Landmine or SpikeRoofTrap or SandSpiderWebTrap or SteamValveHazard => hazardList,
                     _ => otherList
                 };
@@ -218,6 +242,15 @@ internal class ObjectExplorerWindow : ImperiumWindow
             entities.Count
         );
 
+        var companyCruisers = Objects
+            .Where(entry => entry.Key == typeof(ObjectCompanyCruiser))
+            .Select(entry => entry.Value)
+            .ToList();
+        cruiserCount.text = Formatting.FormatFraction(
+            companyCruisers.Count(p => p.gameObject.activeInHierarchy),
+            companyCruisers.Count
+        );
+
         var items = Imperium.ObjectManager.CurrentLevelItems.Value.Where(obj => obj != null).ToList();
         itemCount.text = Formatting.FormatFraction(
             items.Count(p => p.gameObject.activeSelf),
@@ -249,6 +282,15 @@ internal class ObjectExplorerWindow : ImperiumWindow
         otherCount.text = Formatting.FormatFraction(
             other.Count(p => p.gameObject.activeInHierarchy),
             other.Count
+        );
+
+        var moldSpores = Objects
+            .Where(entry => entry.Key == typeof(ObjectEntryMoldSpore))
+            .Select(entry => entry.Value)
+            .ToList();
+        moldSporeCount.text = Formatting.FormatFraction(
+            moldSpores.Count(p => p.gameObject.activeInHierarchy),
+            moldSpores.Count
         );
     }
 

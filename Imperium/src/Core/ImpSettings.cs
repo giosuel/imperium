@@ -258,7 +258,7 @@ public class ImpSettings(ConfigFile config)
             config,
             "Visualization.Colliders",
             "Entities",
-            true,
+            false,
             value => Imperium.Visualization.Collider(value, "Enemies", IdentifierType.LAYER)
         );
 
@@ -292,6 +292,22 @@ public class ImpSettings(ConfigFile config)
             "InteractTriggers",
             false,
             value => Imperium.Visualization.Collider(value, "InteractTrigger", IdentifierType.TAG)
+        );
+
+        internal readonly ImpConfig<bool> MoldSpores = new(
+            config,
+            "Visualization.Colliders",
+            "MoldSpores",
+            false,
+            value => Imperium.Visualization.Collider(value, "MoldSpore", IdentifierType.TAG)
+        );
+
+        internal readonly ImpConfig<bool> MoldAttractionPoints = new(
+            config,
+            "Visualization.Colliders",
+            "MoldAttractionPoints",
+            false,
+            value => Imperium.Visualization.Collider(value, "MoldAttractionPoint", IdentifierType.TAG)
         );
 
         internal readonly ImpConfig<bool> TileBorders = new(

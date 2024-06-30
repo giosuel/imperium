@@ -54,8 +54,10 @@ internal static class PlayerControllerPatch
     {
         if (Imperium.Settings.Player.GodMode.Value)
         {
-            Imperium.IO.Send($"God mode saved you from death by '{(causeOfDeath).ToString()}'",
-                type: NotificationType.GodMode);
+            Imperium.IO.Send(
+                $"God mode saved you from death by '{causeOfDeath.ToString()}'",
+                type: NotificationType.GodMode
+            );
         }
     }
 
@@ -66,16 +68,19 @@ internal static class PlayerControllerPatch
         // Internal override for Object Explorer kill functionality that ignores god mode
         if (Imperium.PlayerManager.AllowPlayerDeathOverride)
         {
+            Imperium.IO.LogInfo("GOD MODE OVERRIDE");
             __result = true;
             return false;
         }
 
         if (Imperium.Settings.Player.GodMode.Value)
         {
+            Imperium.IO.LogInfo("GOD MODE PRVEENT");
             __result = false;
             return false;
         }
 
+        Imperium.IO.LogInfo("GOD MODE NOTHING");
         return true;
     }
 

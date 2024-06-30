@@ -36,3 +36,18 @@ public readonly struct MapHazardSpawnRequest()
     [SerializeField] public int Amount { get; init; } = 1;
     [SerializeField] public bool SendNotification { get; init; } = false;
 }
+
+public readonly struct StaticPrefabSpawnRequest()
+{
+    [SerializeField] public string Name { get; init; }
+    [SerializeField] public Vector3 SpawnPosition { get; init; } = default;
+    [SerializeField] public int Amount { get; init; } = 1;
+    [SerializeField] public bool SendNotification { get; init; } = false;
+    [SerializeField] public ulong UniqueIdentifier { get; init; }
+}
+
+public readonly struct CompanyCruiserSpawnRequest()
+{
+    [SerializeField] public Vector3 SpawnPosition { get; init; } = default;
+    [SerializeField] public bool SendNotification { get; init; } = false;
+}

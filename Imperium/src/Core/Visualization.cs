@@ -99,6 +99,16 @@ internal class Visualization
         Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelItems.onTrigger += ObjectInsights.Refresh;
+
+        Imperium.ObjectManager.CurrentPlayers.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelItems.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelMoldSpores.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelCompanyCruisers.onTrigger += RefreshOverlays;
     }
 
     /// <summary>
@@ -171,10 +181,7 @@ internal class Visualization
     {
         return obj.GetComponents<BoxCollider>()
             .Select(collider => VisualizeBoxCollider(collider, material))
-            .Concat(
-                obj.GetComponents<CapsuleCollider>()
-                    .Select(collider => VisualizeCapsuleCollider(collider, material))
-            )
+            .Concat(obj.GetComponents<CapsuleCollider>().Select(collider => VisualizeCapsuleCollider(collider, material)))
             .ToList();
     }
 
@@ -236,6 +243,25 @@ internal class Visualization
         visualizer.transform.position = collider.transform.position;
         visualizer.transform.localPosition = collider.center;
         visualizer.transform.localScale = new Vector3(collider.radius * 2, collider.height / 2, collider.radius * 2);
+        visualizer.transform.rotation = collider.transform.rotation;
+
+        return visualizer;
+    }
+
+    private static GameObject VisualizeSphereCollider(SphereCollider collider, Material material, string name = null)
+    {
+        if (!collider) return null;
+
+        var visualizer = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Sphere,
+            collider.transform,
+            material ?? DefaultMaterial,
+            name: $"ImpVis_{name ?? collider.GetInstanceID().ToString()}"
+        );
+
+        visualizer.transform.position = collider.transform.position;
+        visualizer.transform.localPosition = collider.center;
+        visualizer.transform.localScale = Vector3.one * collider.radius;
         visualizer.transform.rotation = collider.transform.rotation;
 
         return visualizer;
@@ -328,7 +354,7 @@ internal class Visualization
     /// </summary>
     internal static string GenerateSphereHash(Object obj, Object origin, float size)
     {
-        return $"{obj.GetInstanceID()}{origin.GetInstanceID()}_{size}";
+        return $"{obj.GetInstanceID()}{origin?.GetInstanceID()}_{size}";
     }
 
     /// <summary>
@@ -492,6 +518,19 @@ internal class Visualization
 
             ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[collider.GetInstanceID()] =
                 VisualizeCapsuleCollider(collider, material, uniqueIdentifier);
+        }
+
+        // We don't want to visualize the collider of the noise listener
+        if (obj.name == "Imp_NoiseListener") return;
+
+        foreach (var collider in obj.GetComponents<SphereCollider>())
+        {
+            // Visualizer for object collider has already been created
+            if (ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)
+                .ContainsKey(collider.GetInstanceID())) return;
+
+            ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, uniqueIdentifier)[collider.GetInstanceID()] =
+                VisualizeSphereCollider(collider, material, uniqueIdentifier);
         }
     }
 }

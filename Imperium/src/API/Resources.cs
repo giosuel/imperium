@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using Imperium.Util.Binding;
+using UnityEngine;
 
 #endregion
 
@@ -234,8 +235,41 @@ public static class Resources
         {
             APIHelpers.AssertImperiumReady();
 
-            return ReadOnlyBinding<IReadOnlyCollection<SandSpiderWebTrap>>.Wrap(Imperium.ObjectManager
-                .CurrentLevelSpiderWebs);
+            return ReadOnlyBinding<IReadOnlyCollection<SandSpiderWebTrap>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelSpiderWebs
+            );
+        }
+    }
+
+    /// <summary>
+    ///     List of all the company cruisers in the current level.
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCompanyCruisers
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<VehicleController>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelCompanyCruisers
+            );
+        }
+    }
+
+    /// <summary>
+    ///     List of all the mold spores in the current level.
+    /// </summary>
+    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
+    public static ReadOnlyBinding<IReadOnlyCollection<GameObject>> CurrentLevelMoldSpores
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return ReadOnlyBinding<IReadOnlyCollection<GameObject>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelMoldSpores
+            );
         }
     }
 

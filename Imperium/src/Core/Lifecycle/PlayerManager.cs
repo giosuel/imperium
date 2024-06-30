@@ -61,8 +61,8 @@ internal class PlayerManager : ImpLifecycleObject
         if (NetworkManager.Singleton.IsHost)
         {
             dropItemMessage.OnServerReceive += OnDropItemServer;
-            killPlayerMessage.OnClientRecive += OnKillPlayerServer;
-            revivePlayerMessage.OnClientRecive += OnRevivePlayerServer;
+            killPlayerMessage.OnServerReceive += OnKillPlayerServer;
+            revivePlayerMessage.OnServerReceive += OnRevivePlayerServer;
             teleportPlayerMessage.OnServerReceive += OnTeleportPlayerServer;
         }
     }
@@ -258,7 +258,7 @@ internal class PlayerManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnKillPlayerServer(ulong playerId) => killPlayerMessage.DispatchToClients(playerId);
+    private void OnKillPlayerServer(ulong playerId, ulong clientId) => killPlayerMessage.DispatchToClients(playerId);
 
     [ImpAttributes.LocalMethod]
     private void OnKillPlayerClient(ulong playerId)
@@ -274,7 +274,7 @@ internal class PlayerManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnRevivePlayerServer(ulong playerId) => revivePlayerMessage.DispatchToClients(playerId);
+    private void OnRevivePlayerServer(ulong playerId, ulong clientId) => revivePlayerMessage.DispatchToClients(playerId);
 
     [ImpAttributes.LocalMethod]
     private static void OnRevivePlayerClient(ulong playerId)
@@ -298,7 +298,7 @@ internal class PlayerManager : ImpLifecycleObject
         player.isInElevator = true;
         player.isInHangarShipRoom = true;
         player.isInsideFactory = false;
-        player.wasInElevatorLastFrame = false;
+        player.parentedToElevatorLastFrame = false;
         player.setPositionOfDeadPlayer = false;
         player.criticallyInjured = false;
         player.bleedingHeavily = false;

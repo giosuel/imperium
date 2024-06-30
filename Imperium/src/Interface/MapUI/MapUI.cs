@@ -346,6 +346,9 @@ internal class MapUI : BaseUI
                     .Concat(Imperium.ObjectManager.CurrentLevelSpiderWebs.Value
                         .Where(obj => obj)
                         .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Spider Web")))
+                    .Concat(Imperium.ObjectManager.CurrentLevelMoldSpores.Value
+                        .Where(obj => obj)
+                        .Select(entry => new KeyValuePair<GameObject, string>(entry, "Mold Spore")))
                     .ToHashSet(),
                 Imperium.ObjectManager.CurrentLevelTurrets
             );

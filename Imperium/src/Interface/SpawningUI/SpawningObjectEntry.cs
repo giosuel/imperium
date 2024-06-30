@@ -100,6 +100,22 @@ public class SpawningObjectEntry : MonoBehaviour
                     SendNotification = true
                 });
                 break;
+            case SpawnObjectType.StaticPrefab:
+                Imperium.ObjectManager.SpawnStaticPrefab(new StaticPrefabSpawnRequest
+                {
+                    Name = spawnObjectName,
+                    SpawnPosition = position,
+                    Amount = amount,
+                    SendNotification = true
+                });
+                break;
+            case SpawnObjectType.CompanyCruiser:
+                Imperium.ObjectManager.SpawmCompanyCruiser(new CompanyCruiserSpawnRequest
+                {
+                    SpawnPosition = position + Vector3.up * 5f,
+                    SendNotification = true
+                });
+                break;
             default:
                 return;
         }
@@ -133,6 +149,8 @@ public class SpawningObjectEntry : MonoBehaviour
     {
         Entty,
         Item,
-        MapHazard
+        MapHazard,
+        StaticPrefab,
+        CompanyCruiser
     }
 }

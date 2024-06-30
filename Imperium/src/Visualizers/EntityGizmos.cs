@@ -84,7 +84,7 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         {
             entity.SphereVisualizerUpdate(
                 instance,
-                eye ?? instance.transform,
+                eye,
                 size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
                 relativepositionOverride,

@@ -71,6 +71,12 @@ internal class LayerSelector : BaseUI
             new StyleOverride("TitleBox", Variant.DARKER)
         );
 
+        ImpThemeManager.StyleText(
+            themeUpdate,
+            container,
+            new StyleOverride("TitleBox/Title", Variant.FOREGROUND)
+        );
+
         ImpThemeManager.Style(
             themeUpdate,
             layerTemplate.transform,

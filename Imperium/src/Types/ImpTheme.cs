@@ -73,6 +73,8 @@ public static class ImpThemeManager
         params StyleOverride[] colorOverrides
     )
     {
+        if (!container) return;
+
         foreach (var colorOverride in colorOverrides)
         {
             var image = string.IsNullOrEmpty(colorOverride.Path)
@@ -90,6 +92,8 @@ public static class ImpThemeManager
         params StyleOverride[] colorOverrides
     )
     {
+        if (!container) return;
+
         foreach (var colorOverride in colorOverrides)
         {
             var image = string.IsNullOrEmpty(colorOverride.Path)

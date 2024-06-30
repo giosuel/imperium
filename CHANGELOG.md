@@ -27,6 +27,11 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
 - Added new custom visualizer for Nutcrackers.
 - Added new custom visualizer for Hoarding Bugs.
 - Added an option to permanently enable the drunk effect from the TZP-Inhalant.
+- Added new custom visualizer for the Kidnapper Fox.
+- Added an option to spawn Vain Shrouds from the SpawningUI.
+- Added a new visualizer for Vain Shrouds.
+- Added a new visualizer for Vain Shroud attraction points.
+- Added an option to spawn the Company Cruiser from the SpawningUI.
 
 ### Changes
 

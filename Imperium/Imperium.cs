@@ -203,14 +203,6 @@ public class Imperium : BaseUnityPlugin
             if (openInterface) ImpPositionIndicator.Deactivate();
         };
 
-        ObjectManager.CurrentPlayers.onTrigger += Visualization.RefreshOverlays;
-        ObjectManager.CurrentLevelEntities.onTrigger += Visualization.RefreshOverlays;
-        ObjectManager.CurrentLevelItems.onTrigger += Visualization.RefreshOverlays;
-        ObjectManager.CurrentLevelLandmines.onTrigger += Visualization.RefreshOverlays;
-        ObjectManager.CurrentLevelTurrets.onTrigger += Visualization.RefreshOverlays;
-        ObjectManager.CurrentLevelSpiderWebs.onTrigger += Visualization.RefreshOverlays;
-        ObjectManager.CurrentLevelBreakerBoxes.onTrigger += Visualization.RefreshOverlays;
-
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
         Harmony.PatchAll();
@@ -222,8 +214,6 @@ public class Imperium : BaseUnityPlugin
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
         {
-            Settings.LoadAll();
-
             InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
 
             InputBindings.BaseMap.Enable();
@@ -232,6 +222,8 @@ public class Imperium : BaseUnityPlugin
             InputBindings.InterfaceMap.Enable();
 
             IsImperiumEnabled = true;
+
+            Settings.LoadAll();
 
             SpawnUI();
 

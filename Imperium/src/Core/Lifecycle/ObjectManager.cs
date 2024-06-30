@@ -58,7 +58,9 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SteamValveHazard>> CurrentLevelSteamValves = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<EnemyAI>> CurrentLevelEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelMoldSpores = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<GrabbableObject>> CurrentLevelItems = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCompanyCruisers = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<PlayerControllerB>> CurrentPlayers = new([]);
 
     /*
@@ -78,6 +80,9 @@ internal class ObjectManager : ImpLifecycleObject
     // Used by the server to execute a despawn request from a client via network ID
     private readonly Dictionary<ulong, GameObject> CurrentLevelObjects = [];
 
+    // Used to lookup the unique identifier of a spawned static prefab
+    internal readonly Dictionary<GameObject, ulong> StaticPrefabLookupMap = [];
+
     private readonly Dictionary<string, string> displayNameMap = [];
 
     private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
@@ -85,6 +90,14 @@ internal class ObjectManager : ImpLifecycleObject
 
     private readonly ImpNetMessage<MapHazardSpawnRequest> mapHazardSpawnMessage = new(
         "MapHazardSpawn", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<StaticPrefabSpawnRequest> staticPrefabSpawnMessage = new(
+        "StaticPrefabSpawn", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<CompanyCruiserSpawnRequest> companyCruiserSpawnMessage = new(
+        "CompanyCruiserSpawn", Imperium.Networking
     );
 
     private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
@@ -119,11 +132,15 @@ internal class ObjectManager : ImpLifecycleObject
             entitySpawnMessage.OnServerReceive += OnSpawnEntity;
             itemSpawnMessage.OnServerReceive += OnSpawnItem;
             mapHazardSpawnMessage.OnServerReceive += OnSpawnMapHazard;
+            staticPrefabSpawnMessage.OnServerReceive += OnStaticPrefabSpawnServer;
+            companyCruiserSpawnMessage.OnServerReceive += OnSpawnCompanyCruiser;
 
             entityDespawnMessage.OnServerReceive += OnDespawnEntity;
             itemDespawnMessage.OnServerReceive += OnDespawnItem;
             obstacleDespawnMessage.OnServerReceive += OnDespawnObstacle;
         }
+
+        staticPrefabSpawnMessage.OnClientRecive += OnStaticPrefabSpawnClient;
     }
 
     protected override void OnSceneLoad()
@@ -148,6 +165,15 @@ internal class ObjectManager : ImpLifecycleObject
 
     [ImpAttributes.RemoteMethod]
     internal void SpawnMapHazard(MapHazardSpawnRequest request) => mapHazardSpawnMessage.DispatchToServer(request);
+
+    [ImpAttributes.RemoteMethod]
+    internal void SpawnStaticPrefab(StaticPrefabSpawnRequest request) => staticPrefabSpawnMessage.DispatchToServer(request);
+
+    [ImpAttributes.RemoteMethod]
+    internal void SpawmCompanyCruiser(CompanyCruiserSpawnRequest request)
+    {
+        companyCruiserSpawnMessage.DispatchToServer(request);
+    }
 
     [ImpAttributes.RemoteMethod]
     internal void DespawnItem(ulong itemNetId) => itemDespawnMessage.DispatchToServer(itemNetId);
@@ -224,11 +250,22 @@ internal class ObjectManager : ImpLifecycleObject
         var allOutdoorEntities = new HashSet<EnemyType>();
         var allDaytimeEntities = new HashSet<EnemyType>();
 
+        EnemyType redPillType = null;
+        var shiggyExists = false;
+
         foreach (var enemyType in Resources.FindObjectsOfTypeAll<EnemyType>().Distinct())
         {
             allEntities.Add(enemyType);
 
-            if (enemyType.enemyName == "Red pill") allEntities.Add(CreateShiggyType(enemyType));
+            switch (enemyType.enemyName)
+            {
+                case "Red pill":
+                    redPillType = enemyType;
+                    break;
+                case "Shiggy":
+                    shiggyExists = true;
+                    break;
+            }
 
             if (enemyType.isDaytimeEnemy)
             {
@@ -243,6 +280,9 @@ internal class ObjectManager : ImpLifecycleObject
                 allIndoorEntities.Add(enemyType);
             }
         }
+
+        // Instantiate shiggy type if not already exists and if redpill has been found
+        if (redPillType && !shiggyExists) allEntities.Add(CreateShiggyType(redPillType));
 
         var allItems = Resources.FindObjectsOfTypeAll<Item>()
             .Where(item => !ImpConstants.ItemBlacklist.Contains(item.itemName))
@@ -274,10 +314,14 @@ internal class ObjectManager : ImpLifecycleObject
                 case "StickyNoteItem":
                     allStaticPrefabs["Sticky note"] = obj;
                     break;
+                case "CompanyCruiser":
+                    allStaticPrefabs["Company Cruiser"] = obj;
+                    break;
             }
         }
 
         allStaticPrefabs["Body"] = Imperium.StartOfRound.ragdollGrabbableObjectPrefab;
+        allStaticPrefabs["Mold"] = Object.FindObjectOfType<MoldSpreadManager>().moldPrefab;
 
         var allScrap = allItems.Where(scrap => scrap.isScrap).ToHashSet();
 
@@ -349,11 +393,18 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<SteamValveHazard> currentLevelSteamValves = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
         HashSet<RandomScrapSpawn> currentScrapSpawnPoints = [];
+        HashSet<GameObject> currentMoldSpores = [];
+        HashSet<VehicleController> currentLevelCompanyCruisers = [];
 
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
         {
             // Ignore objects that are hidden
             if (obj.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
+            if (obj.name.Contains("MoldSpore"))
+            {
+                currentMoldSpores.Add(obj);
+                continue;
+            }
 
             foreach (var component in obj.GetComponents<Component>())
             {
@@ -388,6 +439,9 @@ internal class ObjectManager : ImpLifecycleObject
                         break;
                     case RandomScrapSpawn scrapSpawn:
                         currentScrapSpawnPoints.Add(scrapSpawn);
+                        break;
+                    case VehicleController vehicleController:
+                        currentLevelCompanyCruisers.Add(vehicleController);
                         break;
                 }
             }
@@ -444,6 +498,16 @@ internal class ObjectManager : ImpLifecycleObject
         if (currentScrapSpawnPoints.Count > 0)
         {
             CurrentScrapSpawnPoints.Set(CurrentScrapSpawnPoints.Value.Union(currentScrapSpawnPoints).ToHashSet());
+        }
+
+        if (currentLevelCompanyCruisers.Count > 0)
+        {
+            CurrentLevelCompanyCruisers.Set(CurrentLevelCompanyCruisers.Value.Union(currentLevelCompanyCruisers).ToHashSet());
+        }
+
+        if (currentMoldSpores.Count > 0)
+        {
+            CurrentLevelMoldSpores.Set(CurrentLevelMoldSpores.Value.Union(currentMoldSpores).ToHashSet());
         }
     }
 
@@ -682,6 +746,90 @@ internal class ObjectManager : ImpLifecycleObject
             Imperium.Networking.SendLog(new NetworkNotification
             {
                 Message = $"{mountString} {request.Name} {verbString} been spawned!",
+                Type = NotificationType.Spawning
+            });
+        }
+
+        obstaclesChanged.DispatchToClients();
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnStaticPrefabSpawnServer(StaticPrefabSpawnRequest request, ulong clientId)
+    {
+        staticPrefabSpawnMessage.DispatchToClients(new StaticPrefabSpawnRequest
+        {
+            Name = request.Name,
+            Amount = request.Amount,
+            SpawnPosition = request.SpawnPosition,
+            SendNotification = request.SendNotification,
+            UniqueIdentifier = (ulong)Random.Range(111111, 999999)
+        });
+    }
+
+    [ImpAttributes.LocalMethod]
+    private void OnStaticPrefabSpawnClient(StaticPrefabSpawnRequest request)
+    {
+        for (var i = 0; i < request.Amount; i++)
+        {
+            switch (request.Name)
+            {
+                case "Mold":
+                    CurrentLevelObjects[request.UniqueIdentifier] = Object.Instantiate(
+                        LoadedStaticPrefabs.Value["Mold"], request.SpawnPosition, Quaternion.Euler(Vector3.zero)
+                    );
+                    StaticPrefabLookupMap[CurrentLevelObjects[request.UniqueIdentifier]] = request.UniqueIdentifier;
+                    break;
+                default:
+                    Imperium.IO.LogError($"[SPAWN] Failed to spawn map hazard {request.Name}");
+                    return;
+            }
+        }
+
+        var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+        var verbString = request.Amount == 1 ? "has" : "have";
+
+        if (request.SendNotification)
+        {
+            Imperium.IO.Send(
+                $"{mountString} {request.Name} {verbString} been spawned!",
+                type: NotificationType.Spawning
+            );
+        }
+
+        RefreshLevelObstacles();
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnSpawnCompanyCruiser(CompanyCruiserSpawnRequest request, ulong clientId)
+    {
+        // Raycast to find the ground to spawn the entity on
+        var hasGround = Physics.Raycast(
+            new Ray(request.SpawnPosition + Vector3.up * 2f, Vector3.down),
+            out var groundInfo, 100, ImpConstants.IndicatorMask
+        );
+        var actualSpawnPosition = hasGround
+            ? groundInfo.point
+            : clientId.GetPlayerController()!.transform.position;
+
+        var cruiserObj = Object.Instantiate(
+            LoadedStaticPrefabs.Value["Company Cruiser"],
+            actualSpawnPosition + Vector3.up * 2.5f,
+            Quaternion.identity,
+            RoundManager.Instance.VehiclesContainer
+        );
+        var vehicleController = cruiserObj.GetComponent<VehicleController>();
+        vehicleController.mainRigidbody.MovePosition(actualSpawnPosition);
+        vehicleController.hasBeenSpawned = true;
+
+        var netObject = cruiserObj.gameObject.GetComponentInChildren<NetworkObject>();
+        netObject.Spawn(destroyWithScene: true);
+        CurrentLevelObjects[netObject.NetworkObjectId] = cruiserObj;
+
+        if (request.SendNotification)
+        {
+            Imperium.Networking.SendLog(new NetworkNotification
+            {
+                Message = "A trusty Company Cruiser has been spawned!",
                 Type = NotificationType.Spawning
             });
         }

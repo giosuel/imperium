@@ -173,7 +173,15 @@ public class ImperiumUI : BaseUI
 
         var buttonImage = button.GetComponent<Image>();
         buttonImage.enabled = buttonBinding.Value;
-        buttonBinding.onUpdate += isOn => buttonImage.enabled = isOn;
+        buttonBinding.onUpdate += isOn =>
+        {
+            if (!buttonImage)
+            {
+                Imperium.IO.LogError("Button image on dock button was null");
+                return;
+            }
+            buttonImage.enabled = isOn;
+        };
 
         if (keybind != null)
         {

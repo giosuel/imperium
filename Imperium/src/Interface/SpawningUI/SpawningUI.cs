@@ -113,6 +113,25 @@ internal class SpawningUI : BaseUI
             );
             entries.Add(spawningEntry);
         }
+
+        foreach (var (staticPrefabName, staticPrefab) in Imperium.ObjectManager.LoadedStaticPrefabs.Value)
+        {
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            var spawnType = staticPrefabName == "Company Cruiser"
+                ? SpawningObjectEntry.SpawnObjectType.CompanyCruiser
+                : SpawningObjectEntry.SpawnObjectType.StaticPrefab;
+            spawningEntry.Init(
+                spawnType,
+                staticPrefabName,
+                staticPrefab.name,
+                () => Spawn(spawningEntry, 1, -1),
+                () => SelectItemAndDeselectOthers(currentIndex),
+                theme
+            );
+            entries.Add(spawningEntry);
+        }
     }
 
     private void SelectItemAndDeselectOthers(int index)
@@ -224,16 +243,20 @@ internal class SpawningUI : BaseUI
 
     private void Spawn(SpawningObjectEntry spawningObjectEntry, int amount, int value)
     {
-        var isMapHazard = spawningObjectEntry.SpawnType == SpawningObjectEntry.SpawnObjectType.MapHazard;
-        if (Imperium.Freecam.IsFreecamEnabled.Value || isMapHazard)
+        var useIndicator = spawningObjectEntry.SpawnType is
+            SpawningObjectEntry.SpawnObjectType.MapHazard or
+            SpawningObjectEntry.SpawnObjectType.StaticPrefab or
+            SpawningObjectEntry.SpawnObjectType.CompanyCruiser;
+        if (Imperium.Freecam.IsFreecamEnabled.Value || useIndicator)
         {
             var originTransform = Imperium.Freecam.IsFreecamEnabled.Value
                 ? Imperium.Freecam.transform
                 : Imperium.Player.gameplayCamera.transform;
+
             Imperium.ImpPositionIndicator.Activate(
                 position => spawningObjectEntry.Spawn(position, amount, value, false),
                 originTransform,
-                castGround: !isMapHazard
+                castGround: false
             );
         }
         else

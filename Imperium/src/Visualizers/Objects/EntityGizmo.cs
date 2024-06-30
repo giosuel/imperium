@@ -7,6 +7,7 @@ using BepInEx.Configuration;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -107,7 +108,7 @@ public class EntityGizmo : MonoBehaviour
 
     internal void SphereVisualizerUpdate(
         EnemyAI instance,
-        Transform eye,
+        [CanBeNull] Transform eye,
         float size, Material material,
         Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
         Func<Vector3> relativepositionOverride = null,
@@ -142,7 +143,7 @@ public class EntityGizmo : MonoBehaviour
         else
         {
             visualizer.transform.position = absolutePositionOverride?.Invoke(eye) ?? eye.position;
-            visualizer.transform.rotation = eye.rotation;
+            visualizer.transform.rotation = eye ? eye.rotation : Quaternion.identity;
             visualizer.transform.SetParent(null, true);
         }
 
