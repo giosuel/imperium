@@ -2,13 +2,11 @@
 
 ## Imperium v0.2.0 [Beta] - The Interface Update
 
-This update is a large one and mainly aimed at the rework of the UI system. As the previous solution was quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows!
+This update is a huge one and mainly aimed at the rework of the UI system as well as the integration of new visualizers and debug options for the new update v55! As the previous UI solution was quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows! I also decided to finally integrate [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
 
-Alongside the new UI, I also decided to finally integrate [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.
+Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](<https://github.com/Xilophor/LethalNetworkAPI>) for all network communication in Imperium. This should provide more stability when using Imperium in multiplayer and reduce client de-syncs when changing game variables at runtime.
 
-Besides that, I re-wrote the whole internal networking and switched form manual RPCs to using the [LethalNetworkAPI](<https://github.com/Xilophor/LethalNetworkAPI>) for all network communication in Imperium. This should provide more stability and reduce desyncs to a minimum.
-
-Finally, I also expanded the Imperium API and added a lot of new functionality.
+Finally, I also expanded the Imperium API and added a lot of new functionality, including being able to synchronously spawn items and entities as well as enabling and disabling core functionality such as god mode or flight.
 
 ### Added Stuff
 
@@ -32,6 +30,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
 - Added a new visualizer for Vain Shrouds.
 - Added a new visualizer for Vain Shroud attraction points.
 - Added an option to spawn the Company Cruiser from the SpawningUI.
+- Added default insights for the Company Cruiser.
 
 ### Changes
 
@@ -53,6 +52,8 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
 - The zoom slider in the Map UI now uses a logarithmic scale.
 - Various small changes to the Oracle UI including new formatting of the vectors.
 - Added a way to highlight entity ghost spawns for indoor entities (Caused by a bug in the game).
+- Disabling the flying option now disables flight.
+- Added aliases for Insight class names to simplify class identification.
 
 ### Internal Fixes
 
@@ -64,6 +65,7 @@ Finally, I also expanded the Imperium API and added a lot of new functionality.
 - Fixed player invisibility and made it more consistent across all entities.
 - Fixed a bug where the ship would always land instantly, even after disabling the option.
 - Fixed a bug where Nutcrackers were affected by infinite ammo and full auto shotgun.
+- Added various functions to the log silencer feature of Imperium.
 
 ## Imperium v0.1.9 [Beta] - The API Update
 

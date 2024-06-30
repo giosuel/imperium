@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
@@ -12,7 +11,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.Common;
+namespace Imperium.Interface.Common;
 
 public abstract class ImpMultiSelect
 {

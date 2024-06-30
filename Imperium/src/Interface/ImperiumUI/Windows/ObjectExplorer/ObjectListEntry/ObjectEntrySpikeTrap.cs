@@ -1,12 +1,11 @@
 #region
 
 using Imperium.API.Types.Networking;
-using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 internal class ObjectEntrySpikeTrap : ObjectEntry
 {

@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using Imperium.API.Types;
-using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;

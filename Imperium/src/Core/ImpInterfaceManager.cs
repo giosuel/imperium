@@ -6,7 +6,6 @@ using System.Linq;
 using BepInEx.Configuration;
 using Imperium.Integration;
 using Imperium.Interface;
-using Imperium.MonoBehaviours.ImpUI.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -101,6 +100,14 @@ internal class ImpInterfaceManager : MonoBehaviour
         }
 
         keybind.performed += Toggle<T>;
+        keybinds.Add((keybind, Toggle<T>));
+    }
+
+    private readonly List<(InputAction, Action<InputAction.CallbackContext>)> keybinds = [];
+
+    private void OnDestroy()
+    {
+        foreach (var (action, function) in keybinds) action.performed -= function;
     }
 
     public void RefreshTheme() => Theme.Refresh();

@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using GameNetcodeStuff;
 using UnityEngine;
 
 #endregion
@@ -35,6 +36,21 @@ public abstract class ImpConstants
     internal const string GeneralSaveFile = "LCGeneralSaveData";
 
     internal static readonly LayerMask IndicatorMask = LayerMask.GetMask("Room", "Terrain", "Railing");
+
+    /*
+     * Maps the class names of default insights to more recognizable names.
+     */
+    internal static readonly Dictionary<string, string> ClassNameMap = new()
+    {
+        { nameof(PlayerControllerB), "Players" },
+        { nameof(EnemyAI), "Enemies" },
+        { nameof(GrabbableObject), "Items" },
+        { nameof(Turret), "Turrets" },
+        { nameof(Landmine), "Landmines" },
+        { nameof(SteamValveHazard), "Steam Valves" },
+        { nameof(BridgeTrigger), "Bridges" },
+        { nameof(VehicleController), "Company Cruiser" }
+    };
 
     internal static readonly string[] MoonWeathers =
     [

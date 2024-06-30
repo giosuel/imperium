@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.LayerSelector;
+namespace Imperium.Interface.LayerSelector;
 
 internal class LayerToggle : MonoBehaviour
 {

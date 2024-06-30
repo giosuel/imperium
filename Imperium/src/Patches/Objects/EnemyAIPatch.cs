@@ -236,8 +236,7 @@ internal static class EnemyAIPatch
     /*
      * Player Invisibility Patches
      */
-
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("GetAllPlayersInLineOfSight")]
     private static void GetAllPlayersInLineOfSightPostfixPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
     {

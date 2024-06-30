@@ -1,13 +1,12 @@
 #region
 
 using System;
-using Imperium.Interface.Common;
 using Imperium.Util;
 using TMPro;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.Common;
+namespace Imperium.Interface.Common;
 
 /// <summary>
 ///     Clickable TMP text component that also supports has a custom hover effect

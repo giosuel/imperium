@@ -125,7 +125,6 @@ public class ImpNetworking
     [ImpAttributes.HostOnly]
     private void ToggleImperiumAccess(bool hasAccess)
     {
-        Imperium.IO.LogInfo("TOGGLE IMPERIM ACCESS FOR CLIENTS");
         if (hasAccess)
         {
             enableImperiumEvent.DispatchToClients();

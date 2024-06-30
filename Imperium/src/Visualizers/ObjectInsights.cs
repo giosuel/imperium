@@ -172,6 +172,18 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("SteamValves");
 
+        InsightsFor<VehicleController>()
+            .SetNameGenerator(_ => "Company Cruiser")
+            .SetIsDeadGenerator(cruiser => cruiser.carDestroyed)
+            .RegisterInsight("Cruiser HP", cruiser => $"{cruiser.carHP} HP")
+            .RegisterInsight("Ignition Started", cruiser => cruiser.ignitionStarted ? "Yes" : "No")
+            .RegisterInsight("Movement", cruiser => Formatting.FormatVector(cruiser.moveInputVector, 1))
+            .RegisterInsight("Steering", cruiser => $"{cruiser.steeringInput:0.0}")
+            .RegisterInsight("Turbulence", cruiser => $"{cruiser.turbulenceAmount:0.0}")
+            .RegisterInsight("Stress", cruiser => $"{cruiser.carStress:0.0}")
+            .SetPositionOverride(DefaultPositionOverride)
+            .SetConfigKey("CompanyCruiser");
+
         InsightsFor<BridgeTrigger>()
             .SetNameGenerator(bridge => $"Bridge #{bridge.GetInstanceID()}")
             .SetIsDeadGenerator(bridge => bridge.hasBridgeFallen)

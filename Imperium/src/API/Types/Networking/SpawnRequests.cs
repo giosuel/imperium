@@ -51,3 +51,10 @@ public readonly struct CompanyCruiserSpawnRequest()
     [SerializeField] public Vector3 SpawnPosition { get; init; } = default;
     [SerializeField] public bool SendNotification { get; init; } = false;
 }
+
+public readonly struct ObjectTeleportRequest()
+{
+    // This can be either the network ID or the imperium unique identifier assigned when spawning.
+    [SerializeField] public ulong NetworkId { get; init; } = default;
+    [SerializeField] public Vector3 Destination { get; init; }
+}

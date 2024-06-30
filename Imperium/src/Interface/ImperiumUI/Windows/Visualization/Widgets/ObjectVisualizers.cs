@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.Core;
 using Imperium.Interface.Common;
-using Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
+using Imperium.Interface.ImperiumUI.Windows.Visualization.ObjectVisualizerEntries;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects;
 using UnityEngine;
@@ -218,7 +220,8 @@ internal class ObjectVisualizers : ImpWidget
             insightEntryObject.SetActive(true);
 
             var insightEntry = insightEntryObject.AddComponent<ObjectVisualizerInsightEntry>();
-            insightEntry.Init(objectType.Name, objectConfig, theme);
+            var entryName = ImpConstants.ClassNameMap.GetValueOrDefault(objectType.Name, RichText.Italic(objectType.Name));
+            insightEntry.Init(entryName, objectConfig, theme);
 
             insightEntries[objectType.FullName ?? objectType.Name] = insightEntry;
         }

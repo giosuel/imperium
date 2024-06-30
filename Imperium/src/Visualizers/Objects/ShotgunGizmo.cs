@@ -209,6 +209,8 @@ public class ShotgunGizmo : MonoBehaviour
 
     public void Init(ShotgunItem shotgunItem, bool isHolding)
     {
+        if (!shotgunItem) return;
+
         isActivelyHolding = isHolding;
         shotgun = shotgunItem;
         SetupRendererObject();

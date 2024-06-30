@@ -1,6 +1,5 @@
 #region
 
-using Imperium.Core;
 using Imperium.Interface.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -12,7 +11,7 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.MonoBehaviours;
+namespace Imperium.Core.Scripts;
 
 public class ImpFreecam : MonoBehaviour
 {

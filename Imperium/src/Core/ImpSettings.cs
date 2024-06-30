@@ -854,7 +854,8 @@ public class ImpSettings(ConfigFile config)
             config,
             "Preferences.Host",
             "AllowClients",
-            true
+            true,
+            ignoreRefresh: true
         );
 
         internal readonly ImpConfig<bool> UnityExplorerMouseFix = new(

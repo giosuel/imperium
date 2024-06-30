@@ -9,14 +9,14 @@ using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Key = DunGen.Key;
 using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
 namespace Imperium.Interface.ImperiumUI;
 
-internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler, IBeginDragHandler, IEndDragHandler,
-    IPointerDownHandler
+internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
     protected ImpBinding<ImpTheme> theme;
 
@@ -31,6 +31,8 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
     private WindowDefinition windowDefinition;
 
     private ImperiumUI parent;
+
+    internal InputAction openKeybind;
 
     public void InitWindow(
         ImpBinding<ImpTheme> themeBinding, WindowDefinition definition, ImpTooltip impTootip, ImperiumUI parentUI
@@ -81,17 +83,23 @@ internal abstract class ImperiumWindow : MonoBehaviour, ICloseable, IDragHandler
         transform.gameObject.SetActive(false);
     }
 
+    private void OnDestroy()
+    {
+        if (openKeybind != null) openKeybind.performed -= OnKeybindOpen;
+    }
+
     internal void OnKeybindOpen(InputAction.CallbackContext _)
     {
-        if (!windowDefinition.IsOpen) Open();
+        if (!parent.IsOpen) parent.Open();
 
         if (windowDefinition.IsOpen)
         {
-            windowDefinition.Controller.FocusWindow();
+            FocusWindow();
+            GameUtils.PlayClip(ImpAssets.ButtonClick);
         }
         else
         {
-            windowDefinition.Controller.Open();
+            Open();
         }
     }
 

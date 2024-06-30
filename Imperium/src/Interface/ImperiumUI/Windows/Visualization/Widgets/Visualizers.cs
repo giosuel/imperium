@@ -1,6 +1,6 @@
 #region
 
-using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Interface.Common;
 
 #endregion
 

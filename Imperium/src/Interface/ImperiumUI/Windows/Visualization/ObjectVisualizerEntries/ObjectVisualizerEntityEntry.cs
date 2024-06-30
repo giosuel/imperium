@@ -1,6 +1,6 @@
 #region
 
-using Imperium.MonoBehaviours.ImpUI.Common;
+using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects;
@@ -9,7 +9,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.VisualizationUI.ObjectVisualizerEntries;
+namespace Imperium.Interface.ImperiumUI.Windows.Visualization.ObjectVisualizerEntries;
 
 public class ObjectVisualizerEntityEntry : MonoBehaviour
 {

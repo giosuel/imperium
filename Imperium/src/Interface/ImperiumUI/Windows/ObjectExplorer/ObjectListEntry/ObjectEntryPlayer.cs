@@ -2,13 +2,12 @@
 
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
-using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Util;
 using Unity.Netcode;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.ImpUI.ImperiumUI.ObjectListEntry;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
 internal class ObjectEntryPlayer : ObjectEntry
 {
