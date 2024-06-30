@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -56,7 +57,7 @@ public static class Debugging
     }
 
     public static string GetStackTrace() =>
-        "Stack Trace Report\n" + new System.Diagnostics.StackTrace().GetFrames()?
+        "Stack Trace Report\n" + new StackTrace().GetFrames()?
             .ToList()
             .Skip(1)
             .Select(tr => $"{tr.GetMethod().DeclaringType?.FullName} :: {tr.GetMethod()}")

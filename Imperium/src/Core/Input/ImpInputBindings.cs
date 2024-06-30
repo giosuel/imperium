@@ -29,9 +29,15 @@ public class ImpInputBindings
     }
 
     private static void OnFlyAscendPerformed(InputAction.CallbackContext _) => Imperium.PlayerManager.FlyIsAscending = true;
-    private static void OnFlyAscendCancelled(InputAction.CallbackContext _) => Imperium.PlayerManager.FlyIsAscending = false;
-    private static void OnFlyDescendPerformed(InputAction.CallbackContext _) => Imperium.PlayerManager.FlyIsDescending = true;
-    private static void OnFlyDescendCancelled(InputAction.CallbackContext _) => Imperium.PlayerManager.FlyIsDescending = false;
+
+    private static void OnFlyAscendCancelled(InputAction.CallbackContext _) =>
+        Imperium.PlayerManager.FlyIsAscending = false;
+
+    private static void OnFlyDescendPerformed(InputAction.CallbackContext _) =>
+        Imperium.PlayerManager.FlyIsDescending = true;
+
+    private static void OnFlyDescendCancelled(InputAction.CallbackContext _) =>
+        Imperium.PlayerManager.FlyIsDescending = false;
 
     private static void OnToggleFlight(InputAction.CallbackContext _)
     {

@@ -11,7 +11,7 @@ using Vector3 = UnityEngine.Vector3;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
+namespace Imperium.Visualizers.Objects.NoiseOverlay;
 
 public class NoiseIndicator : MonoBehaviour
 {

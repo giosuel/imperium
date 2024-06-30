@@ -3,7 +3,6 @@
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
 using Imperium.Util;
-using UnityEngine;
 using UnityEngine.UI;
 
 #endregion

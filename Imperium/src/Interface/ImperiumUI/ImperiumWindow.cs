@@ -9,14 +9,14 @@ using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using Key = DunGen.Key;
 using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
 namespace Imperium.Interface.ImperiumUI;
 
-internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
+internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler,
+    IPointerDownHandler
 {
     protected ImpBinding<ImpTheme> theme;
 
@@ -159,7 +159,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     }
 
     /// <summary>
-    /// Called by <see cref="ImperiumUI"/> whever it opens.
+    ///     Called by <see cref="ImperiumUI" /> whever it opens.
     /// </summary>
     public void InvokeOnOpen() => onOpen?.Invoke();
 

@@ -1,12 +1,16 @@
+#region
+
 using System;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.API;
 
 public static class Utils
 {
     /// <summary>
-    /// Activates the position indicator.
+    ///     Activates the position indicator.
     /// </summary>
     /// <param name="callback">The callback that is executed when a position has been picked.</param>
     /// <param name="parent">The transform the indicator origin will be parented to. Default: Player Camera</param>
@@ -19,7 +23,7 @@ public static class Utils
     }
 
     /// <summary>
-    /// Deactivates the position indicator.
+    ///     Deactivates the position indicator.
     /// </summary>
     public static void DeactivateIndicator()
     {

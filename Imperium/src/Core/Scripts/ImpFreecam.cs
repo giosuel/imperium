@@ -1,6 +1,5 @@
 #region
 
-using System;
 using Imperium.Interface.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;

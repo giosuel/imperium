@@ -7,7 +7,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 
 #endregion
 
@@ -229,7 +228,7 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.ObjectManager.CurrentLevelDoors.Value
             .Where(obj => obj)
             .ToList()
-            .ForEach(door => ToggleDoor(door,  isOpen));
+            .ForEach(door => ToggleDoor(door, isOpen));
     }
 
     [ImpAttributes.RemoteMethod]

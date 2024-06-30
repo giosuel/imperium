@@ -180,6 +180,7 @@ public class ImperiumUI : BaseUI
                 Imperium.IO.LogError("Button image on dock button was null");
                 return;
             }
+
             buttonImage.enabled = isOn;
         };
 

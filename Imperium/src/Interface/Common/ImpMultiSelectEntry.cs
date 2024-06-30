@@ -1,9 +1,7 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using Imperium.Types;
-using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -74,6 +72,7 @@ internal abstract class ImpMultiSelectEntry : MonoBehaviour
             OnThemeUpdate(theme.Value, entryObj.transform);
         }
     }
+
     private static void OnThemeUpdate(ImpTheme updatedTheme, Transform container)
     {
         ImpThemeManager.Style(

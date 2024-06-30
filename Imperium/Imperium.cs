@@ -13,14 +13,12 @@ using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.MapUI;
 using Imperium.Interface.OracleUI;
 using Imperium.Interface.SpawningUI;
-using Imperium.MonoBehaviours;
-using Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using Unity.Netcode;
+using Imperium.Visualizers.Objects.NoiseOverlay;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

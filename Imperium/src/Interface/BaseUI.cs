@@ -145,7 +145,7 @@ public abstract class BaseUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Manually invoke the on open functionality.
+    ///     Manually invoke the on open functionality.
     /// </summary>
     internal void InvokeOnOpen() => onOpen?.Invoke();
 

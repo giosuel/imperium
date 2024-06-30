@@ -4,7 +4,6 @@ using Imperium.Core;
 using Imperium.Core.Scripts;
 using Imperium.Interface.Common;
 using Imperium.Interface.MapUI;
-using Imperium.MonoBehaviours;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;

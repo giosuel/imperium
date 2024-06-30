@@ -68,12 +68,10 @@ internal static class PlayerControllerPatch
         // Internal override for Object Explorer kill functionality that ignores god mode
         if (Imperium.PlayerManager.AllowPlayerDeathOverride)
         {
-            Imperium.IO.LogInfo("GOD MODE OVERRIDE");
             __result = true;
         }
         else if (Imperium.Settings.Player.GodMode.Value)
         {
-            Imperium.IO.LogInfo("GOD MODE PRVEENT");
             __result = false;
         }
     }

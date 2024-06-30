@@ -45,7 +45,7 @@ public sealed class ImpConfig<T> : ImpBinding<T>
     }
 
     /// <summary>
-    /// Whenever refresh is called while Imperium is disabled, we want the callbacks to also use the default value.
+    ///     Whenever refresh is called while Imperium is disabled, we want the callbacks to also use the default value.
     /// </summary>
     public override void Refresh()
     {

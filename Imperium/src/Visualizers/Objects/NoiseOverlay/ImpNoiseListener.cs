@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.MonoBehaviours.VisualizerObjects.NoiseOverlay;
+namespace Imperium.Visualizers.Objects.NoiseOverlay;
 
 internal class ImpNoiseListener : MonoBehaviour, INoiseListener
 {

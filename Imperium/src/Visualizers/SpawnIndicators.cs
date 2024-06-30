@@ -1,7 +1,6 @@
 #region
 
 using Imperium.API.Types;
-using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects;

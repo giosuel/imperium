@@ -5,7 +5,6 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
-using Imperium.MonoBehaviours;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -86,7 +85,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly Dictionary<GameObject, ulong> StaticPrefabLookupMap = [];
 
     private readonly Dictionary<string, string> displayNameMap = [];
-    
+
     private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
     private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem", Imperium.Networking);
 
@@ -491,7 +490,8 @@ internal class ObjectManager : ImpLifecycleObject
 
         if (currentLevelCompanyCruisers.Count > 0)
         {
-            CurrentLevelCompanyCruisers.Set(CurrentLevelCompanyCruisers.Value.Union(currentLevelCompanyCruisers).ToHashSet());
+            CurrentLevelCompanyCruisers.Set(
+                CurrentLevelCompanyCruisers.Value.Union(currentLevelCompanyCruisers).ToHashSet());
         }
 
         if (currentMoldSpores.Count > 0)

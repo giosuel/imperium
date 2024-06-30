@@ -1,12 +1,16 @@
+#region
+
 using Imperium.API.Types.Networking;
 using Imperium.Util.Binding;
+
+#endregion
 
 namespace Imperium.API;
 
 public static class Player
 {
     /// <summary>
-    /// Teleports a player to a specified location.
+    ///     Teleports a player to a specified location.
     /// </summary>
     public static void TeleportPlayer(TeleportPlayerRequest request)
     {
@@ -16,7 +20,7 @@ public static class Player
     }
 
     /// <summary>
-    /// Whether the player has infinite stamina.
+    ///     Whether the player has infinite stamina.
     /// </summary>
     public static IBinding<bool> InfiniteSprint
     {
@@ -29,7 +33,7 @@ public static class Player
     }
 
     /// <summary>
-    /// Whether animation locking is disabled for the player.
+    ///     Whether animation locking is disabled for the player.
     /// </summary>
     public static IBinding<bool> DisableLocking
     {
@@ -42,7 +46,7 @@ public static class Player
     }
 
     /// <summary>
-    /// Whether the player has infinite battery.
+    ///     Whether the player has infinite battery.
     /// </summary>
     public static IBinding<bool> InfiniteBattery
     {
@@ -55,7 +59,7 @@ public static class Player
     }
 
     /// <summary>
-    /// Whether the player can pick up items in orbit.
+    ///     Whether the player can pick up items in orbit.
     /// </summary>
     public static IBinding<bool> PickupOverwrite
     {
@@ -68,7 +72,7 @@ public static class Player
     }
 
     /// <summary>
-    /// Whether the player can enter flying mode.
+    ///     Whether the player can enter flying mode.
     /// </summary>
     public static IBinding<bool> EnableFlying
     {
@@ -81,7 +85,7 @@ public static class Player
     }
 
     /// <summary>
-    /// Whether the player is on god mode.
+    ///     Whether the player is on god mode.
     /// </summary>
     public static IBinding<bool> GodMode
     {
@@ -94,8 +98,8 @@ public static class Player
     }
 
     /// <summary>
-    /// Controls the current night vision of the player.
-    /// Default: 0
+    ///     Controls the current night vision of the player.
+    ///     Default: 0
     /// </summary>
     public static IBinding<float> NightVision
     {
@@ -108,8 +112,8 @@ public static class Player
     }
 
     /// <summary>
-    /// Controls the current movement speed of the player.
-    /// Default: <see cref="ImpConstants.DefaultMovementSpeed"/>
+    ///     Controls the current movement speed of the player.
+    ///     Default: <see cref="ImpConstants.DefaultMovementSpeed" />
     /// </summary>
     public static IBinding<float> MovementSpeed
     {
@@ -122,8 +126,8 @@ public static class Player
     }
 
     /// <summary>
-    /// Controls the current jump force of the player.
-    /// Default: <see cref="ImpConstants.DefaultJumpForce"/>
+    ///     Controls the current jump force of the player.
+    ///     Default: <see cref="ImpConstants.DefaultJumpForce" />
     /// </summary>
     public static IBinding<float> JumpForce
     {
@@ -136,8 +140,8 @@ public static class Player
     }
 
     /// <summary>
-    /// Controls the FOV of the player. If set to -1, the game's default FoV will ve applied.
-    /// Default: -1
+    ///     Controls the FOV of the player. If set to -1, the game's default FoV will ve applied.
+    ///     Default: -1
     /// </summary>
     public static IBinding<float> CustomFieldOfView
     {

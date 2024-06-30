@@ -15,7 +15,7 @@ public static class Events
     public static ReadOnlyBinding<bool> IsSceneLoaded => ReadOnlyBinding<bool>.Wrap(Imperium.IsSceneLoaded);
 
     /// <summary>
-    /// The amount of players, including the host, that are currently connected to the game.
+    ///     The amount of players, including the host, that are currently connected to the game.
     /// </summary>
     public static ReadOnlyBinding<int> ConnectedPlayers => ReadOnlyBinding<int>.Wrap(ImpNetworking.ConnectedPlayers);
 }

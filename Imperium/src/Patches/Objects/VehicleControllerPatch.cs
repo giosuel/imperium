@@ -1,8 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core.Lifecycle;
-using Imperium.Util;
 using UnityEngine;
 
 #endregion

@@ -1,6 +1,5 @@
 #region
 
-using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;

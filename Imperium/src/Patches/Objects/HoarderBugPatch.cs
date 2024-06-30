@@ -1,9 +1,7 @@
 #region
 
-using System.Linq;
 using HarmonyLib;
 using Imperium.Util;
-using UnityEngine;
 
 #endregion
 

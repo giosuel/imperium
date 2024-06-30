@@ -35,7 +35,7 @@ public class ImpNetworking
         enableImperiumEvent = new ImpNetEvent("EnableImperium", this);
         disableImperiumEvent = new ImpNetEvent("DisableImperium", this);
         networkLog = new ImpNetMessage<NetworkNotification>("NetworkLog", this);
-        
+
         clientRequestValues = new ImpNetEvent("ClientRequestValues", this);
 
         ImperiumUsers = new ImpNetworkBinding<List<ulong>>(
