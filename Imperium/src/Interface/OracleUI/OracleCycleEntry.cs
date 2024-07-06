@@ -87,7 +87,7 @@ public class OracleCycleEntry : MonoBehaviour
             Imperium.ObjectManager.GetDisplayName(report.Entity.enemyName);
         reportObject.transform.Find("Time").GetComponent<TMP_Text>().text =
             Formatting.FormatDayTime(report.SpawnTime);
-        reportObject.transform.Find("GhostSpawn").gameObject.SetActive(report.IsGhostSpawn);
+        reportObject.transform.Find("GhostSpawn").gameObject.SetActive(false);
 
         var clickableText = reportObject.transform.Find("Position").gameObject.AddComponent<ImpClickableText>();
         clickableText.Init(

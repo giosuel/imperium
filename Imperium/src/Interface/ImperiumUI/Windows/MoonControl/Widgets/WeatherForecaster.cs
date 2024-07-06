@@ -18,6 +18,8 @@ public class WeatherForecaster : ImpWidget
     private Transform container;
     private readonly Dictionary<int, TMP_Dropdown> dropdowns = [];
 
+    // TODO(giosuel): Implement a refresh on all clients when the weather is changed from MoonManager.WeatherEvent
+
     protected override void InitWidget()
     {
         container = transform.Find("ScrollView/Viewport/Content/WeatherGrid");
@@ -35,6 +37,7 @@ public class WeatherForecaster : ImpWidget
 
         var levels = Imperium.StartOfRound.levels;
         var options = Enum.GetValues(typeof(LevelWeatherType)).Cast<LevelWeatherType>()
+            .OrderBy(enumValue => enumValue)
             .Select(enumValue => Enum.GetName(typeof(LevelWeatherType), enumValue))
             .Select(weather => new TMP_Dropdown.OptionData(weather))
             .ToList();
@@ -49,7 +52,7 @@ public class WeatherForecaster : ImpWidget
                 Imperium.MoonManager.ChangeWeather(new ChangeWeatherRequest
                 {
                     LevelIndex = levelIndex,
-                    WeatherType = (LevelWeatherType)dropdown.value
+                    WeatherType = (LevelWeatherType)(dropdown.value - 1)
                 });
             });
         }

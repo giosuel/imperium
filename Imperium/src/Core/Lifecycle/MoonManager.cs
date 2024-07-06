@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Linq;
 using Imperium.API.Types.Networking;
 using Imperium.Netcode;
@@ -14,6 +15,8 @@ namespace Imperium.Core.Lifecycle;
 
 internal class MoonManager : ImpLifecycleObject
 {
+    internal readonly ImpBinding<bool> WeatherEvent = new(true);
+
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
     public int ScrapAmount;
@@ -25,7 +28,6 @@ internal class MoonManager : ImpLifecycleObject
         changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
         changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
     }
-
 
     internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToServer(request);
 
@@ -158,11 +160,9 @@ internal class MoonManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private static void OnWeatherChangeClient(ChangeWeatherRequest request)
+    private void OnWeatherChangeClient(ChangeWeatherRequest request)
     {
         Imperium.StartOfRound.levels[request.LevelIndex].currentWeather = request.WeatherType;
-
-        RefreshWeather();
 
         var planetName = Imperium.StartOfRound.levels[request.LevelIndex].PlanetName;
         var weatherName = request.WeatherType.ToString();
@@ -171,17 +171,18 @@ internal class MoonManager : ImpLifecycleObject
             type: NotificationType.Confirmation
         );
 
-        // Refresh UIs with new weather information
-        Imperium.IsSceneLoaded.Refresh();
+        RefreshWeatherEffects();
+        WeatherEvent.Refresh();
     }
 
     [ImpAttributes.LocalMethod]
-    private static void RefreshWeather()
+    private static void RefreshWeatherEffects()
     {
         if (!Imperium.IsSceneLoaded.Value) return;
 
         Reflection.Invoke(Imperium.RoundManager, "SetToCurrentLevelWeather");
         Imperium.StartOfRound.SetMapScreenInfoToCurrentLevel();
+        Imperium.TimeOfDay.SetWeatherBasedOnVariables();
         for (var i = 0; i < Imperium.TimeOfDay.effects.Length; i++)
         {
             var weatherEffect = Imperium.TimeOfDay.effects[i];

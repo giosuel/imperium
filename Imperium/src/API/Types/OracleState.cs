@@ -15,14 +15,6 @@ public record SpawnReport
     public Vector3 Position { get; init; }
 
     public int SpawnTime { get; init; }
-
-    /*
-     * This is a fix for a vanilla bug.
-     *
-     * A ghost spawn happens when an entity gets assigned to an already occupied vent. This entity
-     * will never spawn but take up power and count towards the entity's max spawn count nontheless.
-     */
-    public bool IsGhostSpawn { get; init; }
 }
 
 public record CycleInformation
