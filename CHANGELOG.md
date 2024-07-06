@@ -1,5 +1,17 @@
 # Changelog
 
+## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
+
+A hotfix to allow support for the released v56 version of Lethal Company.
+
+**Note:** *This version of Imperium is **only** compatible with the [Version 56](<https://steamdb.info/changelist/24262549/>) of Lethal Company.*
+
+### Internal Fixes
+
+- Added compatibility for the new v56 patch ([24261494](<https://steamdb.info/changelist/24262549/>)).
+- Fixed a bug where setting the weather to "None" would break the game.
+- Updated Oracle Spawn Prediction to account for the bugfixes and weed enemies.
+
 ## Imperium v0.2.0 [Beta] - The Interface Update
 
 This update is a huge one and mainly aimed at the rework of the UI system as well as the integration of new visualizers and debug options for the new update v55! As the previous UI solution was quite static and hard to maintain and expand, I decided to switch from static views with frozen windows to a more dynamic approach with floating windows! I also decided to finally integrate [InputUtils](<https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/>), as a lot of people have requested. Imperium keybinds can now be re-bound in the settings.

@@ -16,3 +16,5 @@ manifest.json
 out/
 
 Imperium.props.user
+
+*.zip
