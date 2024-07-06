@@ -54,17 +54,6 @@ public abstract class ImpConstants
         { nameof(VehicleController), "Company Cruiser" }
     };
 
-    internal static readonly string[] MoonWeathers =
-    [
-        "None",
-        "Dust Clouds",
-        "Rainy",
-        "Stormy",
-        "Foggy",
-        "Flooded",
-        "Eclipsed"
-    ];
-
     // Items that have no spawn prefab
     public static readonly HashSet<string> ItemBlacklist = ["box"];
 }
