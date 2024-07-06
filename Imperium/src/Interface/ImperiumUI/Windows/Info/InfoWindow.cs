@@ -159,7 +159,7 @@ internal class InfoWindow : ImperiumWindow
         scrapAmount.text = Imperium.ObjectManager.CurrentLevelItems.Value.Count(item => item.itemProperties.isScrap)
             .ToString();
         weather.text = (int)Imperium.StartOfRound.currentLevel.currentWeather >= 0
-            ? ImpConstants.MoonWeathers[(int)Imperium.StartOfRound.currentLevel.currentWeather]
+            ? Imperium.StartOfRound.currentLevel.currentWeather.ToString()
             : "Clear";
     }
 }

@@ -57,6 +57,7 @@
         <PackageReference Include="Xilophor.LethalNetworkAPI" Version="3.0.0-beta.4" />
         <PackageReference Include="Rune580.Mods.LethalCompany.InputUtils" Version="0.7.3" />
 
+        <PackageReference Include="mrov.WeatherRegistry" Version="*-*" />
         <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false" />
     </ItemGroup>
 
