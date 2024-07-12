@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Imperium.API.Types;
 using UnityEngine;
 
@@ -24,5 +25,51 @@ public static class Visualization
         APIHelpers.AssertImperiumReady();
 
         return Imperium.Visualization.ObjectInsights.InsightsFor<T>();
+    }
+
+    public static void DrawNoiseLine(EnemyAI instance, Vector3 origin)
+    {
+        Imperium.Visualization.EntityGizmos.NoiseVisualizerUpdate(instance, origin);
+    }
+
+    public static void DrawCone(
+        EnemyAI instance,
+        Transform eye,
+        float coneAngle,
+        float coneLength,
+        Material material,
+        GizmoType gizmoType = GizmoType.Custom,
+        Func<Vector3> relativepositionOverride = null,
+        Func<Transform, Vector3> absolutePositionOverride = null
+    )
+    {
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
+            instance, eye, coneAngle, coneLength, material,
+            gizmoType == GizmoType.Custom,
+            relativepositionOverride, absolutePositionOverride
+        );
+    }
+
+    public static void DrawSphere(
+        EnemyAI instance,
+        Transform eye,
+        float radius,
+        Material material,
+        GizmoType gizmoType = GizmoType.Custom,
+        Func<Vector3> relativepositionOverride = null,
+        Func<Transform, Vector3> absolutePositionOverride = null
+    )
+    {
+        Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
+            instance, eye, radius * 2, material,
+            gizmoType == GizmoType.Custom,
+            relativepositionOverride, absolutePositionOverride
+        );
+    }
+
+    public enum GizmoType
+    {
+        LineOfSight,
+        Custom
     }
 }

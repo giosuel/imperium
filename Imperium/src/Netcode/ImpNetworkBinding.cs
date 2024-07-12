@@ -24,8 +24,10 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     public T Value { get; private set; }
 
-    private readonly LethalServerMessage<BindingUpdateRequest<T>> serverMessage;
-    private readonly LethalClientMessage<BindingUpdateRequest<T>> clientMessage;
+    // private readonly LethalServerMessage<BindingUpdateRequest<T>> serverMessage;
+    // private readonly LethalClientMessage<BindingUpdateRequest<T>> clientMessage;
+
+    private readonly LNetworkMessage<BindingUpdateRequest<T>> networkMessage;
 
     // This optional binding provides the initial value and is changed only when the local client updates the state.
     private readonly IBinding<T> masterBinding;
@@ -55,11 +57,16 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
         this.onUpdateServer = onUpdateServer;
         this.masterBinding = masterBinding;
 
-        serverMessage = new LethalServerMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
-        clientMessage = new LethalClientMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
+        networkMessage = LNetworkMessage<BindingUpdateRequest<T>>.Connect($"{identifier}_binding");
 
-        serverMessage.OnReceived += OnServerReceived;
-        clientMessage.OnReceived += OnClientReceived;
+        // serverMessage = new LethalServerMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
+        // clientMessage = new LethalClientMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
+
+        // serverMessage.OnReceived += OnServerReceived;
+        // clientMessage.OnReceived += OnClientReceived;
+
+        networkMessage.OnServerReceived += OnServerReceived;
+        networkMessage.OnClientReceived += OnClientReceived;
 
         if (masterBinding != null && NetworkManager.Singleton.IsHost) Set(masterBinding.Value);
 
@@ -74,7 +81,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
             // if (request.InvokeServerUpdate) onUpdateServer?.Invoke(request.Payload);
 
-            serverMessage.SendAllClients(request);
+            networkMessage.SendClients(request);
         }
     }
 
@@ -105,7 +112,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
             onTriggerFromLocal?.Invoke();
         }
 
-        clientMessage.SendServer(new BindingUpdateRequest<T>
+        networkMessage.SendServer(new BindingUpdateRequest<T>
         {
             Payload = updatedValue,
             InvokeUpdate = invokeUpdate,
@@ -121,15 +128,14 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     public void Clear()
     {
-        serverMessage.ClearSubscriptions();
-        clientMessage.ClearSubscriptions();
+        networkMessage.ClearSubscriptions();
     }
 
     public void BroadcastToClient(ulong clientId)
     {
         if (!NetworkManager.Singleton.IsHost) return;
 
-        serverMessage.SendClient(new BindingUpdateRequest<T>
+        networkMessage.SendClient(new BindingUpdateRequest<T>
         {
             Payload = Value,
             InvokeUpdate = true

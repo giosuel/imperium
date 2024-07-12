@@ -81,7 +81,7 @@ internal class ObjectManager : ImpLifecycleObject
     // Used by the server to execute a despawn request from a client via network ID
     private readonly Dictionary<ulong, GameObject> CurrentLevelObjects = [];
 
-    // Used to lookup the unique identifier of a spawned static prefab
+    // Used to look up the unique identifier of a spawned static prefab
     internal readonly Dictionary<GameObject, ulong> StaticPrefabLookupMap = [];
 
     private readonly Dictionary<string, string> displayNameMap = [];
@@ -229,7 +229,11 @@ internal class ObjectManager : ImpLifecycleObject
         return obj;
     }
 
-    internal void ToggleObject(string name, bool isOn) => FindObject(name)?.SetActive(isOn);
+    internal void ToggleObject(string name, bool isOn)
+    {
+        var obj = FindObject(name);
+        if (obj) obj.SetActive(isOn);
+    }
 
     internal static void TeleportItem(GrabbableObject item, Vector3 position)
     {

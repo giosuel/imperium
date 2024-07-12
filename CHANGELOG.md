@@ -1,5 +1,13 @@
 # Changelog
 
+## Imperium v0.2.2 [Beta] - Fixes Patch
+
+### Internal Fixes
+
+- Fixed a bug where the weather wouldn't update on the ship's screen when in orbit.
+- Fixed a bug where the player would keep bleeding when activating god mode.
+- Fixed a bug where the damage UI overlay wouldn't go away when activating god mode.
+
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 
 A hotfix to allow support for the released v56 version of Lethal Company.

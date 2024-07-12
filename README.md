@@ -143,4 +143,4 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 - [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shaders for the collider visualizations!
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
-- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for writing the [Unity Netcode Patcher](https://github.com/EvaisaDev/UnityNetcodePatcher) and [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/)!
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for writing the [Unity Netcode Patcher](https://github.com/EvaisaDev/UnityNetcodePatcher) and [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/)! 

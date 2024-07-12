@@ -122,6 +122,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .RegisterInsight("Stamina", player => $"{player.sprintTime:0.0}s")
             .RegisterInsight("Visibility", player => $"{((IVisibleThreat)player).GetVisibility():0.0}")
             .RegisterInsight("Location", ImpUtils.GetPlayerLocationText)
+            .SetPositionOverride(entity => DefaultPositionOverride(entity) + Vector3.up * 2f)
             .SetConfigKey("Players");
 
         InsightsFor<GrabbableObject>()

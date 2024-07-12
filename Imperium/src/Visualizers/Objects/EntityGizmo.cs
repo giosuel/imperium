@@ -63,7 +63,6 @@ public class EntityGizmo : MonoBehaviour
     }
 
     internal void ConeVisualizerUpdate(
-        EnemyAI instance,
         Transform eye,
         float angle, float size,
         Material material,
@@ -81,7 +80,8 @@ public class EntityGizmo : MonoBehaviour
             visualizer.AddComponent<MeshFilter>().mesh = visualization.GetOrGenerateCone(angle);
 
             VisualizerObjects[identifier] = visualizer;
-            VisualizerObjectNetIds[identifier] = instance.GetComponent<NetworkObject>().NetworkObjectId;
+            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>()?.NetworkObjectId
+                                                 ?? (ulong)entityController.GetInstanceID();
         }
 
         visualizer.transform.localScale = Vector3.one * size;
@@ -107,7 +107,6 @@ public class EntityGizmo : MonoBehaviour
     }
 
     internal void SphereVisualizerUpdate(
-        EnemyAI instance,
         [CanBeNull] Transform eye,
         float size, Material material,
         Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
@@ -129,7 +128,8 @@ public class EntityGizmo : MonoBehaviour
             );
 
             VisualizerObjects[identifier] = visualizer;
-            VisualizerObjectNetIds[identifier] = instance.GetComponent<NetworkObject>().NetworkObjectId;
+            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>()?.NetworkObjectId
+                                                 ?? (ulong)entityController.GetInstanceID();
         }
 
         visualizer.transform.localScale = Vector3.one * size;
@@ -142,7 +142,7 @@ public class EntityGizmo : MonoBehaviour
         }
         else
         {
-            visualizer.transform.position = absolutePositionOverride?.Invoke(eye) ?? eye.position;
+            visualizer.transform.position = absolutePositionOverride?.Invoke(eye) ?? eye?.position ?? Vector3.zero;
             visualizer.transform.rotation = eye ? eye.rotation : Quaternion.identity;
             visualizer.transform.SetParent(null, true);
         }

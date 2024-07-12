@@ -257,6 +257,10 @@ public class Imperium : BaseUnityPlugin
 
     internal static void Unload()
     {
+        if (!IsImperiumLaunched) return;
+
+        PreInitPatches.ReturnedFromGame = true;
+
         Harmony.UnpatchSelf();
 
         DisableImperium();

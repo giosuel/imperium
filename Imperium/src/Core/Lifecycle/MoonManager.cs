@@ -15,7 +15,7 @@ namespace Imperium.Core.Lifecycle;
 
 internal class MoonManager : ImpLifecycleObject
 {
-    internal readonly ImpBinding<bool> WeatherEvent = new(true);
+    internal readonly ImpEvent WeatherEvent = new();
 
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
@@ -171,8 +171,9 @@ internal class MoonManager : ImpLifecycleObject
             type: NotificationType.Confirmation
         );
 
+        Imperium.StartOfRound.SetMapScreenInfoToCurrentLevel();
         RefreshWeatherEffects();
-        WeatherEvent.Refresh();
+        WeatherEvent.Trigger();
     }
 
     [ImpAttributes.LocalMethod]
@@ -181,7 +182,6 @@ internal class MoonManager : ImpLifecycleObject
         if (!Imperium.IsSceneLoaded.Value) return;
 
         Reflection.Invoke(Imperium.RoundManager, "SetToCurrentLevelWeather");
-        Imperium.StartOfRound.SetMapScreenInfoToCurrentLevel();
         Imperium.TimeOfDay.SetWeatherBasedOnVariables();
         for (var i = 0; i < Imperium.TimeOfDay.effects.Length; i++)
         {

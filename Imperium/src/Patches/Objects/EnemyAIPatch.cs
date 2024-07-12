@@ -82,7 +82,7 @@ internal static class EnemyAIPatch
     )
     {
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
-            __instance,
+            __instance ,
             __instance.eye,
             width,
             range,

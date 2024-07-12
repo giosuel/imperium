@@ -10,8 +10,9 @@ namespace Imperium.Netcode;
 
 public class ImpNetMessage<T> : INetworkSubscribable
 {
-    private readonly LethalClientMessage<T> clientMessage;
-    private readonly LethalServerMessage<T> serverMessage;
+    private readonly LNetworkMessage<T> networkMessage;
+    // private readonly LethalClientMessage<T> clientMessage;
+    // private readonly LethalServerMessage<T> serverMessage;
 
     internal event Action<T, ulong> OnServerReceive;
 
@@ -24,18 +25,20 @@ public class ImpNetMessage<T> : INetworkSubscribable
     {
         this.identifier = identifier;
 
-        clientMessage = new LethalClientMessage<T>($"{identifier}_message");
-        serverMessage = new LethalServerMessage<T>($"{identifier}_message");
+        // clientMessage = new LethalClientMessage<T>($"{identifier}_message");
+        // serverMessage = new LethalServerMessage<T>($"{identifier}_message");
 
-        serverMessage.OnReceived += (data, clientId) =>
+        networkMessage = LNetworkMessage<T>.Connect($"{identifier}_message");
+
+        networkMessage.OnServerReceived += (data, clientId) =>
         {
             if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
             {
                 OnServerReceive?.Invoke(data, clientId);
             }
         };
-        clientMessage.OnReceived += data => OnClientRecive?.Invoke(data);
-        clientMessage.OnReceivedFromClient += (data, clientId) => OnClientReciveFromClient?.Invoke(data, clientId);
+        networkMessage.OnClientReceived += data => OnClientRecive?.Invoke(data);
+        networkMessage.OnClientReceivedFromClient += (data, clientId) => OnClientReciveFromClient?.Invoke(data, clientId);
 
         networking.RegisterSubscriber(this);
     }
@@ -43,7 +46,7 @@ public class ImpNetMessage<T> : INetworkSubscribable
     internal void DispatchToServer(T data)
     {
         Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to server");
-        clientMessage.SendServer(data);
+        networkMessage.SendServer(data);
     }
 
     internal void DispatchToClients(T data)
@@ -51,21 +54,20 @@ public class ImpNetMessage<T> : INetworkSubscribable
         if (NetworkManager.Singleton.IsHost)
         {
             Imperium.IO.LogInfo($"[NET] Server sends {identifier} data to clients");
-            serverMessage.SendAllClients(data);
+            networkMessage.SendClients(data);
         }
         else
         {
             Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to clients");
-            clientMessage.SendAllClients(data);
+            networkMessage.SendClients(data);
         }
     }
 
-    internal void DispatchToClients(T data, params ulong[] clientIds) => serverMessage.SendClients(data, clientIds);
+    internal void DispatchToClients(T data, params ulong[] clientIds) => networkMessage.SendClients(data, clientIds);
 
     public void Clear()
     {
-        clientMessage.ClearSubscriptions();
-        serverMessage.ClearSubscriptions();
+        networkMessage.ClearSubscriptions();
     }
 
     public void BroadcastToClient(ulong clientId)
