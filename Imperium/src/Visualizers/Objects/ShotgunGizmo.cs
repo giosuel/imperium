@@ -69,7 +69,6 @@ public class ShotgunGizmo : MonoBehaviour
     private void OnDisable()
     {
         if (!rayHolder) return;
-        rayHolder.transform.SetParent(transform);
         rayHolder.SetActive(false);
     }
 
@@ -203,7 +202,7 @@ public class ShotgunGizmo : MonoBehaviour
         // Generate the cross-section of the 20dmg range
         var lowDmgCone = GenerateArcPoints(0, PlayerLowDmgRange, -30, 30);
         lowDmgCone.Insert(0, midDmgCone[1]);
-        lowDmgCone.Add(midDmgCone[killCone.Count - 2]);
+        lowDmgCone.Add(midDmgCone[midDmgCone.Count - 2]);
         AddLineToRayHolder(MinPlayerDamageColor * HitboxColorMultiplier, lowDmgCone);
     }
 
@@ -232,7 +231,7 @@ public class ShotgunGizmo : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (!rayHolder || !rayHolder.activeSelf) return;
 
