@@ -69,7 +69,7 @@ public class ImpMap : MonoBehaviour
 
     private static void OnMouseScroll(InputAction.CallbackContext context)
     {
-        if (!Imperium.Interface.Get<MapUI>().IsOpen && !Imperium.InputBindings.StaticMap["Alt"].IsPressed()) return;
+        if (!Imperium.Interface.IsOpen<MapUI>() && !Imperium.InputBindings.StaticMap["Alt"].IsPressed()) return;
 
         var multiplier = Imperium.Settings.Map.CameraZoom.Value / 100 * 8;
         Imperium.Settings.Map.CameraZoom.Set(
@@ -100,6 +100,6 @@ public class ImpMap : MonoBehaviour
     private void OnMinimapClose()
     {
         // Hide the map only when neither the minimap not the map are open
-        if (!Imperium.Interface.Get<MapUI>().IsOpen) Camera.enabled = false;
+        if (!Imperium.Interface.IsOpen<MapUI>()) Camera.enabled = false;
     }
 }

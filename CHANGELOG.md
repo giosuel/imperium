@@ -2,11 +2,26 @@
 
 ## Imperium v0.2.2 [Beta] - Fixes Patch
 
+This update is mainly focused at QoL changes, bug fixes and compatibility changes. I decided to postpone the lobby access control features I am also working on to the future, as this will be quite a big change and I want Imperium in a somewhat stable state before pushing larger content updates.
+
+Probably the biggest change is, that Imperium is now usable even if clients don't have it installed. There is currently no desync guarding, meaning it is possible to cause desync issues when clients don't have it installed, so use with caution! I will be working on automatically deactivating certain functionality based on the lobby to avoid these issues in the future.
+
+### Added Stuff
+
+- 
+
+### Changes
+
+- 
+
 ### Internal Fixes
 
 - Fixed a bug where the weather wouldn't update on the ship's screen when in orbit.
 - Fixed a bug where the player would keep bleeding when activating god mode.
 - Fixed a bug where the damage UI overlay wouldn't go away when activating god mode.
+- Improved the first-person visualizer tracking of the shotgun visualizer by digger1213.
+- Upgraded [LethalNetworkAPI](<https://thunderstore.io/c/lethal-company/p/xilophor/LethalNetworkAPI/>) from v2 to v3.
+- Fixed a bug where scrolling would result in error spam in the logs.
 
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 

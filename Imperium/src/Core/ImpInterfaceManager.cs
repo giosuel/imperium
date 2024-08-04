@@ -9,6 +9,7 @@ using Imperium.Interface;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -121,6 +122,12 @@ internal class ImpInterfaceManager : MonoBehaviour
     public T Get<T>() where T : BaseUI
     {
         return (T)interfaceControllers.FirstOrDefault(controller => controller.Value is T).Value;
+    }
+
+    public bool IsOpen<T>() where T : BaseUI
+    {
+        var controller = (T)interfaceControllers.FirstOrDefault(controller => controller.Value is T).Value;
+        return controller && controller.IsOpen;
     }
 
     public void Open<T>(bool toggleCursorState = true, bool closeOthers = true)

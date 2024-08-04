@@ -54,7 +54,7 @@
 
         <PackageReference Include="ArmDot.Engine.MSBuildTasks" Version="2023.12.0" />
         <PackageReference Include="rainbowblood.UniverseLib.Mono" Version="2.*" />
-<!--        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="3.0.0-beta.11" />-->
+        <PackageReference Include="Xilophor.LethalNetworkAPI" Version="3.1.1" />
         <PackageReference Include="Rune580.Mods.LethalCompany.InputUtils" Version="0.7.3" />
 
         <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" Private="false" />
@@ -83,7 +83,6 @@
 
     <ItemGroup>
         <Reference Include="UnityExplorer.BIE5.Mono" HintPath="..\deps\UnityExplorer.BIE5.Mono.dll" />
-        <Reference Include="LethalNetworkAPI" HintPath="..\deps\LethalNetworkAPI.dll" />
     </ItemGroup>
 
     <ItemGroup>

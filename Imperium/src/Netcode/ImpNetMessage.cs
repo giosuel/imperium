@@ -11,8 +11,6 @@ namespace Imperium.Netcode;
 public class ImpNetMessage<T> : INetworkSubscribable
 {
     private readonly LNetworkMessage<T> networkMessage;
-    // private readonly LethalClientMessage<T> clientMessage;
-    // private readonly LethalServerMessage<T> serverMessage;
 
     internal event Action<T, ulong> OnServerReceive;
 
@@ -24,9 +22,6 @@ public class ImpNetMessage<T> : INetworkSubscribable
     public ImpNetMessage(string identifier, ImpNetworking networking)
     {
         this.identifier = identifier;
-
-        // clientMessage = new LethalClientMessage<T>($"{identifier}_message");
-        // serverMessage = new LethalServerMessage<T>($"{identifier}_message");
 
         networkMessage = LNetworkMessage<T>.Connect($"{identifier}_message");
 
