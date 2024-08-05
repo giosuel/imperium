@@ -2,6 +2,7 @@
 
 #region
 
+using JetBrains.Annotations;
 using UnityEngine;
 
 #endregion
@@ -16,6 +17,12 @@ public readonly struct EntitySpawnRequest()
     [SerializeField] public int Amount { get; init; } = 1;
     [SerializeField] public int Health { get; init; } = -1;
     [SerializeField] public bool SendNotification { get; init; } = false;
+
+    /*
+     * Masked specific parameters
+     */
+    [SerializeField] public long MaskedPlayerId { get; init; } = -1;
+    [SerializeField] public string MaskedName { get; init; } = null;
 }
 
 public readonly struct ItemSpawnRequest()

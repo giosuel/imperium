@@ -22,6 +22,7 @@ Probably the biggest change is, that Imperium is now usable even if clients don'
 - Improved the first-person visualizer tracking of the shotgun visualizer by digger1213.
 - Upgraded [LethalNetworkAPI](<https://thunderstore.io/c/lethal-company/p/xilophor/LethalNetworkAPI/>) from v2 to v3.
 - Fixed a bug where scrolling would result in error spam in the logs.
+- Added fallback to Imperium startup if errors occur.
 
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 

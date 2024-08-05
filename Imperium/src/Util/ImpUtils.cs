@@ -134,6 +134,35 @@ public abstract class ImpUtils
     }
 
     /// <summary>
+    /// Runs a function, catches all exceptions and returns a boolean with the status if the mod is executed in prod mode.
+    ///
+    /// In debugging mode, the function is executed as-is, without any error handling.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="exception"></param>
+    /// <returns></returns>
+    public static bool RunSafeInProd(Action action, out Exception exception)
+    {
+#if DEBUG
+        try
+        {
+            action.Invoke();
+            exception = null;
+            return true;
+        }
+        catch (Exception e)
+        {
+            exception = e;
+            return false;
+        }
+#else
+        action.Invoke();
+        exception = null;
+        return true;
+#endif
+    }
+
+    /// <summary>
     ///     Attempts to deserialize a JSON string into a given object. If <see cref="JsonSerializationException" /> is thrown
     ///     or the resulting object is null, false is returned and default is assigned to the out argument.
     /// </summary>

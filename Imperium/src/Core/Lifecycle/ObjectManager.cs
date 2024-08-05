@@ -9,6 +9,7 @@ using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using LethalNetworkAPI;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -583,6 +584,15 @@ internal class ObjectManager : ImpLifecycleObject
             var netObject = entityObj.gameObject.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
             CurrentLevelObjects[netObject.NetworkObjectId] = entityObj;
+
+            // Checked if spawned entity is a masked and the masked parameters are set
+            if (
+                entityObj.TryGetComponent<MaskedPlayerEnemy>(out var maskedEntity)
+                && request is { MaskedPlayerId: > -1, MaskedName: not null }
+            )
+            {
+                AssignMaskedToPlayer(maskedEntity, (ulong)request.MaskedPlayerId, request.MaskedName);
+            }
         }
 
         var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
@@ -617,6 +627,24 @@ internal class ObjectManager : ImpLifecycleObject
         shiggyAI.enemyType = enemyType;
 
         return shiggyPrefab;
+    }
+
+    private static void AssignMaskedToPlayer(MaskedPlayerEnemy maskedEntity, ulong playerId, string maskedName)
+    {
+        var mimickPlayer = playerId.GetPlayerController();
+        if (!mimickPlayer) return;
+
+        maskedEntity.mimickingPlayer = mimickPlayer;
+        maskedEntity.SetSuit(mimickPlayer.currentSuitID);
+        maskedEntity.SetEnemyOutside(!mimickPlayer.isInsideFactory);
+        maskedEntity.SetVisibilityOfMaskedEnemy();
+
+        var usernameBillboard = maskedEntity.transform.Find("PlayerUsernameCanvas");
+        var usernameBillboardText = usernameBillboard.GetComponentInChildren<TextMeshProUGUI>();
+        var usernameBillboardAlpha = usernameBillboard.GetComponentInChildren<CanvasGroup>();
+        usernameBillboardText.text = maskedName;
+        usernameBillboardAlpha.alpha = 1;
+        usernameBillboard.gameObject.SetActive(true);
     }
 
     [ImpAttributes.HostOnly]

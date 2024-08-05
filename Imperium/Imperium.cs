@@ -212,9 +212,6 @@ public class Imperium : BaseUnityPlugin
         Harmony.PatchAll();
         UnityExplorerIntegration.PatchFunctions(Harmony);
 
-        WasImperiumAccessGranted = true;
-        IsImperiumLaunched = true;
-
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
         {
@@ -243,6 +240,9 @@ public class Imperium : BaseUnityPlugin
             InputBindings.FreecamMap.Disable();
             InputBindings.InterfaceMap.Disable();
         }
+
+        WasImperiumAccessGranted = true;
+        IsImperiumLaunched = true;
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
