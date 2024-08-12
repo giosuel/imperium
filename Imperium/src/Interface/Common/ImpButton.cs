@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Linq;
 using Imperium.Core;
 using Imperium.Types;
@@ -41,13 +42,12 @@ public abstract class ImpButton
     )
     {
         var buttonObject = container.Find(path);
-        if (!buttonObject)
+        if (!buttonObject || !buttonObject.TryGetComponent<Button>(out var button))
         {
             Imperium.IO.LogInfo($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
-        var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(onClick);
         if (playClickSound) button.onClick.AddListener(() => GameUtils.PlayClip(ImpAssets.GrassClick));
 
@@ -150,6 +150,7 @@ public abstract class ImpButton
     /// <param name="collapseArea"></param>
     /// <param name="theme">The theme the button will use</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
+    /// <param name="updateFunction">Optional update function that is executed when the button is pressed</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the button is interactable</param>
     internal static void CreateCollapse(
         string path,
@@ -157,6 +158,7 @@ public abstract class ImpButton
         Transform collapseArea,
         IBinding<ImpTheme> theme = null,
         bool interactableInvert = false,
+        Action updateFunction = null,
         params IBinding<bool>[] interactableBindings
     )
     {
@@ -166,8 +168,9 @@ public abstract class ImpButton
         {
             collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
             button.transform.Rotate(0, 0, 180);
+            GameUtils.PlayClip(ImpAssets.GrassClick);
+            updateFunction?.Invoke();
         });
-        button.onClick.AddListener(() => GameUtils.PlayClip(ImpAssets.GrassClick));
 
         if (interactableBindings.Length > 0)
         {

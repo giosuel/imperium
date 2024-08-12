@@ -1,18 +1,30 @@
 # Changelog
 
-## Imperium v0.2.2 [Beta] - Fixes Patch
+## Imperium v0.2.2 [Beta] - The Event Log
 
-This update is mainly focused at QoL changes, bug fixes and compatibility changes. I decided to postpone the lobby access control features I am also working on to the future, as this will be quite a big change and I want Imperium in a somewhat stable state before pushing larger content updates.
+Besides a load of QoL changes, bug fixes and compatibility changes, this update is aimed at the implementation of the event log. The event log is a tool that allows you to track in-game events such as entity behaviour, targeting and noise detection more easily.
 
-Probably the biggest change is, that Imperium is now usable even if clients don't have it installed. There is currently no desync guarding, meaning it is possible to cause desync issues when clients don't have it installed, so use with caution! I will be working on automatically deactivating certain functionality based on the lobby to avoid these issues in the future.
+Another change is that Imperium is now usable even if not everyone in the lobby has it installed. There is currently no desync guarding, meaning it is possible to cause desync issues when clients don't have it installed, so use with caution! I will be working on automatically deactivating certain functionality based on the lobby to avoid these issues in the future.
 
 ### Added Stuff
 
-- 
+- Added the event log to track specific game events.
+- Added teleportation to fire exits to the teleportation window.
+- Added an option to make the player untargetable for entities.
+- Added an option to disable all UI tooltips.
+- Added visualizers for the Roaming Locusts detection ranges.
+- Added visualizers for the Coil-Head detection radius.
 
 ### Changes
 
 - 
+
+### QoL Improvements
+
+- Min and max zoom icons are now clickable in the map zoom slider.
+- Replaced the icon of the preferences window with a more suitable one.
+- Reordered the dock buttons to improve intiution.
+- Added various tooltips to help simplify the navigation of the UI.
 
 ### Internal Fixes
 
@@ -23,6 +35,14 @@ Probably the biggest change is, that Imperium is now usable even if clients don'
 - Upgraded [LethalNetworkAPI](<https://thunderstore.io/c/lethal-company/p/xilophor/LethalNetworkAPI/>) from v2 to v3.
 - Fixed a bug where scrolling would result in error spam in the logs.
 - Added fallback to Imperium startup if errors occur.
+- Added interval timing to Insight generator functions to greatly increase performance.
+- Fixed a problem with the zoom slider in the map interface.
+- Fixed problems with the factory reset functionality.
+- Fixed a bug where items would fall through the ground when spawned via freecam.
+- Imperium's assets are now bundled with the DLL, simplifying debugging.
+- Fixed the spawn report to actually log spawned entities.
+- Fixed the Baboon Hawk's LoS visualizers.
+- Fixed an Oracle problem related to the spawning of weed entities.
 
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 
@@ -311,4 +331,4 @@ This version is compatible with the [v50 rev.3](https://steamdb.info/changelist/
 ### Buxfixes
 
 - Adjusted Oracle predictions as the daytime entity bug was fixed.
-- Updated README with new images.
+- Updated README with new images. 

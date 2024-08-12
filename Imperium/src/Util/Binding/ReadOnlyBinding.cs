@@ -6,6 +6,10 @@ using System;
 
 namespace Imperium.Util.Binding;
 
+/// <summary>
+/// A binding that canot be updated. Used by the API to make sure clients can't update the internal values.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class ReadOnlyBinding<T>
 {
     private readonly IBinding<T> parentWritableBinding;
@@ -31,28 +35,3 @@ public class ReadOnlyBinding<T>
 
     public static ReadOnlyBinding<T> Wrap(IBinding<T> parent) => new(parent);
 }
-
-// public class ReadOnlyCollectionBinding<R>
-// {
-//     private readonly IBinding<ICollection<R>> parentWritableBinding;
-//
-//     public IReadOnlyCollection<R> Value => parentWritableBinding.Value.ToList().AsReadOnly();
-//
-//     public event Action<IReadOnlyCollection<R>> onUpdate;
-//     public event Action onTrigger;
-//
-//     public event Action<IReadOnlyCollection<R>> onUpdateFromLocal;
-//     public event Action onTriggerFromLocal;
-//
-//     private ReadOnlyCollectionBinding(IBinding<ICollection<R>> parentWritableBinding)
-//     {
-//         this.parentWritableBinding = parentWritableBinding;
-//         parentWritableBinding.onTrigger += () => onTrigger?.Invoke();
-//         parentWritableBinding.onUpdate += value => onUpdate?.Invoke(value.ToList().AsReadOnly());
-//
-//         parentWritableBinding.onTriggerFromLocal += () => onTriggerFromLocal?.Invoke();
-//         parentWritableBinding.onUpdateFromLocal += value => onUpdateFromLocal?.Invoke(value.ToList().AsReadOnly());
-//     }
-//
-//     public static ReadOnlyCollectionBinding<R> Wrap(IBinding<HashSet<R>> parent) => new(parent);
-// }

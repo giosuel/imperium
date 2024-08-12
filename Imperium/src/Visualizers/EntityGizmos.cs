@@ -80,7 +80,7 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entityGizmo))
         {
             entityGizmo.SphereVisualizerUpdate(
-                eye,
+                eye ?? instance.transform,
                 size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
                 relativepositionOverride,

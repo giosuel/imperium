@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Imperium.Extensions;
 using Imperium.Interface.Common;
 using Imperium.Types;
@@ -33,10 +34,13 @@ internal class ObjectEntry : MonoBehaviour
 
     protected ImpTooltip tooltip;
 
-    internal void Init(Component objectComponent, ImpBinding<ImpTheme> theme, ImpTooltip tooltipObj)
+    protected Action layoutRebuildCallback;
+
+    internal void Init(Component objectComponent, ImpBinding<ImpTheme> theme, ImpTooltip tooltipObj, Action layoutRebuild)
     {
         component = objectComponent;
         tooltip = tooltipObj;
+        layoutRebuildCallback = layoutRebuild;
 
         objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
         objectName = GetObjectName();
@@ -123,12 +127,10 @@ internal class ObjectEntry : MonoBehaviour
     public virtual void Destroy()
     {
         Destroy(gameObject);
+        layoutRebuildCallback.Invoke();
     }
 
-    private void SetName(string text)
-    {
-        objectNameText.text = text;
-    }
+    private void SetName(string text) => objectNameText.text = text;
 
     protected virtual string GetObjectName() => component.name;
     protected virtual GameObject GetContainerObject() => component.gameObject;

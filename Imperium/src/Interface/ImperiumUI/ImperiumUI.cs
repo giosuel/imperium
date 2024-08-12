@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ControlCenter;
+using Imperium.Interface.ImperiumUI.Windows.EventLog;
 using Imperium.Interface.ImperiumUI.Windows.Info;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
@@ -37,61 +38,68 @@ public class ImperiumUI : BaseUI
 
     protected override void InitUI()
     {
-        RegisterImperiumWindow<VisualizationWindow>(
-            ImpAssets.VisualizationWindowObject,
-            "Left/Visualization",
-            "Visualization"
-        );
-        RegisterImperiumWindow<TeleportationWindow>(
-            ImpAssets.TeleportationWindowObject,
-            "Left/Teleportation",
-            "Teleportation",
-            keybind: Imperium.InputBindings.InterfaceMap.TeleportWindow
-        );
-        RegisterImperiumWindow<RenderingWindow>(
-            ImpAssets.RenderingWindowObject,
-            "Left/Rendering",
-            "Render Settings"
-        );
-        RegisterImperiumWindow<SaveEditorWindow>(
-            ImpAssets.SaveEditorWindowObject,
-            "Left/SaveEditor",
-            "Save File Editor"
-        );
-        RegisterImperiumWindow<PreferencesWindow>(
-            ImpAssets.PreferencesWindowObject,
-            "Left/Preferences",
-            "Imperium Preferences"
-        );
         RegisterImperiumWindow<ControlCenterWindow>(
             ImpAssets.ControlCenterWindowObject,
-            "Center/ControlCenter",
+            "Left/ControlCenter",
             "Imperium Control Center"
         );
         RegisterImperiumWindow<ObjectExplorerWindow>(
             ImpAssets.ObjectExplorerWindowObject,
-            "Center/ObjectExplorer",
+            "Left/ObjectExplorer",
             "Object Explorer"
         );
-        RegisterImperiumWindow<MoonControlWindow>(
-            ImpAssets.MoonControlWindowObject,
-            "Right/MoonControl",
-            "Moon Control"
+
+        RegisterImperiumWindow<VisualizationWindow>(
+            ImpAssets.VisualizationWindowObject,
+            "Center/Visualization",
+            "Visualization"
+        );
+        RegisterImperiumWindow<TeleportationWindow>(
+            ImpAssets.TeleportationWindowObject,
+            "Center/Teleportation",
+            "Teleportation",
+            keybind: Imperium.InputBindings.InterfaceMap.TeleportWindow
         );
         RegisterImperiumWindow<ShipControlWindow>(
             ImpAssets.ShipControlWindowObject,
-            "Right/ShipControl",
+            "Center/ShipControl",
             "Ship Control"
         );
+        RegisterImperiumWindow<MoonControlWindow>(
+            ImpAssets.MoonControlWindowObject,
+            "Center/MoonControl",
+            "Moon Control"
+        );
+        RegisterImperiumWindow<InfoWindow>(
+            ImpAssets.InfoWindowObject,
+            "Center/Info",
+            "Info"
+        );
+
         RegisterImperiumWindow<ObjectSettingsWindow>(
             ImpAssets.ObjectSettingsWindowObject,
             "Right/ObjectSettings",
             "Object Settings"
         );
-        RegisterImperiumWindow<InfoWindow>(
-            ImpAssets.InfoWindowObject,
-            "Right/Info",
-            "Info"
+        RegisterImperiumWindow<RenderingWindow>(
+            ImpAssets.RenderingWindowObject,
+            "Right/Rendering",
+            "Render Settings"
+        );
+        RegisterImperiumWindow<SaveEditorWindow>(
+            ImpAssets.SaveEditorWindowObject,
+            "Right/SaveEditor",
+            "Save File Editor"
+        );
+        RegisterImperiumWindow<EventLogWindow>(
+            ImpAssets.EventLogWindowObject,
+            "Right/EventLog",
+            "Event Log"
+        );
+        RegisterImperiumWindow<PreferencesWindow>(
+            ImpAssets.PreferencesWindowObject,
+            "Right/Preferences",
+            "Imperium Preferences"
         );
 
         LoadLayout();

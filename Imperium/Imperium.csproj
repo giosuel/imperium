@@ -86,12 +86,20 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="resources\" />
       <Folder Include="src\Integration\InputUtils\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="res\entity-names.txt" />
+      <EmbeddedResource Include="resources\entityNames.txt" />
+      <None Remove="res\imperium_assets" />
+      <EmbeddedResource Include="resources\imperium_assets" />
+    </ItemGroup>
+
     <!--  Ignore this - Unity is a great software that always works, especially on Linux :]  -->
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="cp /run/user/1000/gvfs/sftp:host=192.168.1.69/home/giosuel/Projects/imperium/imperium-assets/AssetBundles/StandaloneWindows/imperium_assets /home/giosuel/.config/r2modmanPlus-local/LethalCompany/profiles/playground/BepInEx/plugins/giosuel-Imperium\ \(Local\)/imperium_assets" />
+    <Target Name="PreBuild" AfterTargets="PreBuildEvent">
+        <Exec Command="cp /run/user/1000/gvfs/sftp:host=192.168.1.169/home/giosuel/Projects/imperium/imperium-assets/AssetBundles/StandaloneWindows/imperium_assets $(ProjectDir)resources/imperium_assets" />
     </Target>
 
     <!-- MinVer Set Mod Version from Git -->

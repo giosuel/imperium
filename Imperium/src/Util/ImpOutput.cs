@@ -54,7 +54,6 @@ internal class ImpOutput(ManualLogSource logger)
     {
         if (!Imperium.Settings.Preferences.GeneralLogging.Value) return;
 
-        var output = "[MON] Imperium message block :)\n";
         title = "< " + title + " >";
         var width = Mathf.Max(lines.Max(line => line.Length) + 4, 20);
         var fullWidth = string.Concat(Enumerable.Repeat("\u2550", width - 2));
@@ -63,15 +62,17 @@ internal class ImpOutput(ManualLogSource logger)
 
         var titlePadding = string.Concat(Enumerable.Repeat(" ", titlePaddingCount));
 
-
-        output += "\u2552" + fullWidth + "\u2555\n";
+        var output = "\u2552" + fullWidth + "\u2555\n";
         output += "\u2502" + titlePadding + title + titlePadding + "\u2502\n";
         output += "\u255e" + fullWidth + "\u2561\n";
         output = lines.Aggregate(output,
             (current, line) => current + $"\u2502 {line}".PadRight(width - 2) + " \u2502\n");
         output += "\u2558" + fullWidth + "\u255b";
 
-        Log(LogLevel.Message, output);
+        foreach (var se in output.Split("\n"))
+        {
+            Log(LogLevel.Message, se.Trim());
+        }
     }
 
     internal void Log(LogLevel level, string text) => logger.Log(level, text);

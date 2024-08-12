@@ -61,9 +61,12 @@ public static class Visualization
     )
     {
         Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
-            instance, eye, radius * 2, material,
+            instance, eye,
+            radius,
+            material,
             gizmoType == GizmoType.Custom,
-            relativepositionOverride, absolutePositionOverride
+            relativepositionOverride,
+            absolutePositionOverride
         );
     }
 

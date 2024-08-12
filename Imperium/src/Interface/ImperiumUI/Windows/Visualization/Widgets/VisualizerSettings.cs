@@ -18,6 +18,19 @@ internal class VisualizerSettings : ImpWidget
             theme
         );
         ImpToggle.Bind(
+            "General/RealtimeUpdates",
+            transform,
+            Imperium.Settings.Visualization.RealtimeUpdates,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Caution!",
+                Description = "Can cause performance issues!",
+                Tooltip = tooltip,
+                HasAccess = true
+            }
+        );
+        ImpToggle.Bind(
             "SSOverlays/AlwaysOnTop",
             transform,
             Imperium.Settings.Visualization.SSAlwaysOnTop,

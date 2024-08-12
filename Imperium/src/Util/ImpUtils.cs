@@ -133,17 +133,20 @@ public abstract class ImpUtils
                     : "Outdoors";
     }
 
+    public static bool RunSafe(Action action, string logTitle = null)
+    {
+        return RunSafe(action, out _, logTitle);
+    }
+
     /// <summary>
-    /// Runs a function, catches all exceptions and returns a boolean with the status if the mod is executed in prod mode.
-    ///
-    /// In debugging mode, the function is executed as-is, without any error handling.
-    /// </summary>
+    /// Runs a function, catches all exceptions and returns a boolean with the status.
+    /// /// </summary>
     /// <param name="action"></param>
     /// <param name="exception"></param>
+    /// <param name="logTitle"></param>
     /// <returns></returns>
-    public static bool RunSafeInProd(Action action, out Exception exception)
+    public static bool RunSafe(Action action, out Exception exception, string logTitle = null)
     {
-#if DEBUG
         try
         {
             action.Invoke();
@@ -153,13 +156,15 @@ public abstract class ImpUtils
         catch (Exception e)
         {
             exception = e;
+            if (logTitle != null)
+            {
+                Imperium.IO.LogBlock(
+                    exception.StackTrace.Split('\n').Select(line => line.Trim()).ToList(),
+                    title: $"[ERR] {logTitle}: {exception.Message}"
+                );
+            }
             return false;
         }
-#else
-        action.Invoke();
-        exception = null;
-        return true;
-#endif
     }
 
     /// <summary>
@@ -238,12 +243,12 @@ public abstract class ImpUtils
             return color;
         }
 
-        internal static void ToggleCursorState(bool uiOpen)
+        internal static void ToggleCursorState(bool isShown)
         {
-            Imperium.Player.quickMenuManager.isMenuOpen = uiOpen;
-            Cursor.lockState = uiOpen ? CursorLockMode.None : CursorLockMode.Locked;
-
-            if (uiOpen) Cursor.visible = true;
+            Imperium.Player.quickMenuManager.isMenuOpen = isShown;
+            
+            Cursor.lockState = isShown ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = isShown;
         }
     }
 

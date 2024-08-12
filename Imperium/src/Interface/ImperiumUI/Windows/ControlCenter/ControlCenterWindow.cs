@@ -115,7 +115,6 @@ internal class ControlCenterWindow : ImperiumWindow
     private void InitPlayerSettings()
     {
         ImpToggle.Bind("Right/PlayerSettings/GodMode", content, Imperium.Settings.Player.GodMode, theme);
-        ImpToggle.Bind("Right/PlayerSettings/Muted", content, Imperium.Settings.Player.Muted, theme);
 
         ImpToggle.Bind(
             "Right/PlayerSettings/InfiniteSprint",
@@ -127,14 +126,51 @@ internal class ControlCenterWindow : ImperiumWindow
         ImpToggle.Bind(
             "Right/PlayerSettings/Invisibility",
             content,
-            Imperium.Settings.Player.Invisibility, theme
+            Imperium.Settings.Player.Invisibility, theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Invisibility",
+                Description = "Makes the local player invisible to entities.",
+                Tooltip = tooltip
+            }
+        );
+
+        ImpToggle.Bind(
+            "Right/PlayerSettings/Untargetable",
+            content,
+            Imperium.Settings.Player.Untargetable, theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Untargetable",
+                Description = "Makes the local player untargetable by entities.",
+                Tooltip = tooltip
+            }
+        );
+
+        ImpToggle.Bind(
+            "Right/PlayerSettings/Muted",
+            content,
+            Imperium.Settings.Player.Muted,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Muted",
+                Description = "Surpresses movement noises made by the local player.",
+                Tooltip = tooltip
+            }
         );
 
         ImpToggle.Bind(
             "Right/PlayerSettings/DisableLocking",
             content,
             Imperium.Settings.Player.DisableLocking,
-            theme
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Disable Locking",
+                Description = "Disables entity and ladder locking for the local player.",
+                Tooltip = tooltip
+            }
         );
 
         ImpToggle.Bind(
@@ -148,14 +184,26 @@ internal class ControlCenterWindow : ImperiumWindow
             "Right/PlayerSettings/PickupOverwrite",
             content,
             Imperium.Settings.Player.PickupOverwrite,
-            theme
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Pickup Overwrite",
+                Description = "Disables entity and ladder locking for the local player.",
+                Tooltip = tooltip
+            }
         );
 
         ImpToggle.Bind(
             "Right/PlayerSettings/DisableOOB",
             content,
             Imperium.Settings.Player.DisableOOB,
-            theme
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Disables OOB",
+                Description = "Stops the game from teleporting the local player back when going out-of-bounds.",
+                Tooltip = tooltip
+            }
         );
 
         ImpToggle.Bind(

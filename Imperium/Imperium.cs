@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Core.EventLogging;
 using Imperium.Core.Input;
 using Imperium.Core.Lifecycle;
 using Imperium.Core.Scripts;
@@ -42,7 +43,7 @@ public class Imperium : BaseUnityPlugin
     private static Harmony Harmony;
 
     /*
-     * Relays to vanilla singletons
+     * Relays to vanilla singletons.
      */
     internal static Terminal Terminal { get; private set; }
     internal static HUDManager HUDManager { get; private set; }
@@ -70,6 +71,7 @@ public class Imperium : BaseUnityPlugin
     internal static ShipManager ShipManager { get; private set; }
     internal static Visualization Visualization { get; private set; }
     internal static Oracle Oracle { get; private set; }
+    internal static ImpEventLog EventLog { get; private set; }
 
     /*
      * GameObjects and world-space managers. Instantiated when Imperium is launched.
@@ -136,7 +138,7 @@ public class Imperium : BaseUnityPlugin
 
         IsImperiumEnabled = false;
 
-        Interface.Close();
+        Interface.Destroy();
         PlayerManager.IsFlying.SetFalse();
 
         InputBindings.BaseMap.Disable();
@@ -183,6 +185,7 @@ public class Imperium : BaseUnityPlugin
         ImpPositionIndicator = ImpPositionIndicator.Create();
 
         Oracle = new Oracle();
+        EventLog = new ImpEventLog();
 
         GameManager = new GameManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         MoonManager = new MoonManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);

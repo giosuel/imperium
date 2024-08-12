@@ -65,8 +65,8 @@ public class ImpTooltip : ImpWidget
 
 public record TooltipDefinition
 {
-    public ImpTooltip Tooltip { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public bool HasAccess { get; set; }
+    public ImpTooltip Tooltip { get; init; }
+    public string Title { get; init; }
+    public string Description { get; init; }
+    public bool HasAccess { get; init; } = true;
 }

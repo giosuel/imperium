@@ -39,12 +39,12 @@ internal class ImpInteractable : MonoBehaviour, IPointerEnterHandler, IPointerEx
     /// <summary>
     ///     OnPointerMove
     /// </summary>
-    internal event Action<Vector3> onOver;
+    internal event Action<Vector2> onOver;
 
     /// <summary>
     ///     OnPointerUp
     /// </summary>
-    internal event Action<Vector3, Vector3> onDrag;
+    internal event Action<Vector2, Vector2> onDrag;
 
     public void OnPointerEnter(PointerEventData eventData) => onEnter?.Invoke();
     public void OnPointerExit(PointerEventData eventData) => onExit?.Invoke();

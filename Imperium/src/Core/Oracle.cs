@@ -20,9 +20,14 @@ internal class Oracle
     internal readonly ImpBinding<OracleState> State = new(new OracleState());
 
     internal void Simulate() => Simulate(false, null);
-    internal void Simulate(string reason) => Simulate(false, reason);
+    internal void Resimulate(string reason) => Simulate(false, reason);
 
     internal void Simulate(bool initial, string reason)
+    {
+        ImpUtils.RunSafe(() => SimulateUnsafe(initial, reason), "Oracle simulation failed");
+    }
+
+    private void SimulateUnsafe(bool initial, string reason)
     {
         if (!Imperium.IsSceneLoaded.Value) return;
 
@@ -387,7 +392,7 @@ internal class Oracle
             var totalProbability = 0;
             for (var j = 0; j < roundManager.WeedEnemies.Count; j++)
             {
-                var enemyType = roundManager.currentLevel.OutsideEnemies[j].enemyType;
+                var enemyType = roundManager.WeedEnemies[j].enemyType;
 
                 if (firstTimeSpawning)
                 {

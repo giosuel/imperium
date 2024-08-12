@@ -29,7 +29,7 @@ public static class NutcrackerPatch
             Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
                 __instance,
                 null,
-                proximityAwareness * 2,
+                proximityAwareness,
                 material: ImpAssets.WireframePurple
             );
         }

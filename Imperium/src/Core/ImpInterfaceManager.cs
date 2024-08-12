@@ -137,6 +137,18 @@ internal class ImpInterfaceManager : MonoBehaviour
 
     public void Close() => Close(true);
 
+    public void Destroy()
+    {
+        Close();
+        Destroy(gameObject);
+    }
+
+    public void ResetUI()
+    {
+        Close();
+        Imperium.Settings.Preferences.ImperiumWindowLayout.Reset();
+    }
+
     public void Close(bool toggleCursorState)
     {
         if (!OpenInterface.Value) return;
@@ -186,6 +198,7 @@ internal class ImpInterfaceManager : MonoBehaviour
 
         controller.OnUIOpen();
         imperiumDock.OnUIOpen();
+        tooltip.Deactivate();
 
         OpenInterface.Set(controller);
 

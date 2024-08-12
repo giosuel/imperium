@@ -57,7 +57,8 @@ internal class ObjectEntryEntity : ObjectEntry
     protected override string GetObjectName()
     {
         var entity = (EnemyAI)component;
-        var entityName = entity.enemyType.enemyName;
+        var personalName = $"({Imperium.ObjectManager.GetEntityName(entity)})";
+        var entityName = $"{entity.enemyType.enemyName} {RichText.Size(personalName, 10)}";
         return entity.isEnemyDead ? RichText.Strikethrough(entityName) : entityName;
     }
 }

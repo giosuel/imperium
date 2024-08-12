@@ -6,6 +6,7 @@ using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
 using Imperium.Netcode;
+using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using LethalNetworkAPI;
@@ -22,6 +23,13 @@ namespace Imperium.Core.Lifecycle;
 
 internal class ObjectManager : ImpLifecycleObject
 {
+    /*
+     * Entity name system.
+     */
+    private readonly List<string> AvailableEntityNames = ImpAssets.EntityNames.Select(name => name).ToList();
+    private readonly Dictionary<int, string> EntityNameMap = [];
+    private bool JohnExists;
+
     /*
      * Lists of globally loaded objects.
      *
@@ -314,6 +322,9 @@ internal class ObjectManager : ImpLifecycleObject
                 case "CompanyCruiser":
                     allStaticPrefabs["Company Cruiser"] = obj;
                     break;
+                case "CompanyCruiserManual":
+                    allStaticPrefabs["Company Cruiser Manual"] = obj;
+                    break;
             }
         }
 
@@ -342,6 +353,34 @@ internal class ObjectManager : ImpLifecycleObject
     internal string GetStaticPrefabName(string objectName)
     {
         return LoadedStaticPrefabs.Value.TryGetValue(objectName, out var prefab) ? prefab.name : objectName;
+    }
+
+    internal string GetEntityName(EnemyAI instance)
+    {
+        var instanceId = instance.GetInstanceID();
+        if (!JohnExists && instance.enemyType.enemyName == "Bush Wolf")
+        {
+            JohnExists = true;
+            EntityNameMap[instanceId] = "John";
+            return "John";
+        }
+
+        if (!EntityNameMap.TryGetValue(instanceId, out var entityName))
+        {
+            if (AvailableEntityNames.Count == 0)
+            {
+                Imperium.IO.LogInfo("[OBJ] Somehow Imperium is out of entity names. Falling back to instance ID.");
+                return instanceId.ToString();
+            }
+            var newNameIndex = Random.Range(0, AvailableEntityNames.Count);
+
+            entityName = AvailableEntityNames[newNameIndex];
+            EntityNameMap[instanceId] = entityName;
+            
+            AvailableEntityNames.RemoveAt(newNameIndex);
+        }
+
+        return entityName;
     }
 
     internal void RefreshLevelItems()
@@ -689,6 +728,7 @@ internal class ObjectManager : ImpLifecycleObject
             CurrentLevelObjects[netObject.NetworkObjectId] = itemObj;
 
             // If player has free slot, place it in hand, otherwise leave it on the ground and play sound
+            var spawnedInInventory = false;
             if (request.SpawnInInventory)
             {
                 var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[clientId];
@@ -697,20 +737,26 @@ internal class ObjectManager : ImpLifecycleObject
                 {
                     grabbableItem.InteractItem();
                     PlayerManager.GrabObject(grabbableItem, invokingPlayer);
+                    spawnedInInventory = true;
                 }
-                else if (grabbableItem.itemProperties.dropSFX)
-                {
-                    var itemTransform = grabbableItem.transform;
-                    itemTransform.position = request.SpawnPosition + Vector3.up;
-                    grabbableItem.startFallingPosition = itemTransform.position;
-                    if (grabbableItem.transform.parent)
-                    {
-                        grabbableItem.startFallingPosition = grabbableItem.transform.parent.InverseTransformPoint(
-                            grabbableItem.startFallingPosition
-                        );
-                    }
+            }
 
-                    grabbableItem.FallToGround();
+            if (!spawnedInInventory)
+            {
+                var itemTransform = grabbableItem.transform;
+                itemTransform.position = request.SpawnPosition + Vector3.up;
+                grabbableItem.startFallingPosition = itemTransform.position;
+                if (grabbableItem.transform.parent)
+                {
+                    grabbableItem.startFallingPosition = grabbableItem.transform.parent.InverseTransformPoint(
+                        grabbableItem.startFallingPosition
+                    );
+                }
+
+                grabbableItem.FallToGround();
+
+                if (grabbableItem.itemProperties.dropSFX)
+                {
                     Imperium.Player.itemAudio.PlayOneShot(grabbableItem.itemProperties.dropSFX);
                 }
             }
@@ -839,12 +885,22 @@ internal class ObjectManager : ImpLifecycleObject
             RoundManager.Instance.VehiclesContainer
         );
         var vehicleController = cruiserObj.GetComponent<VehicleController>();
-        vehicleController.mainRigidbody.MovePosition(actualSpawnPosition);
-        vehicleController.hasBeenSpawned = true;
+        // vehicleController.mainRigidbody.MovePosition(actualSpawnPosition);
+        // vehicleController.hasBeenSpawned = true;
 
-        var netObject = cruiserObj.gameObject.GetComponentInChildren<NetworkObject>();
-        netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = cruiserObj;
+        var vehicleNetObject = cruiserObj.gameObject.GetComponentInChildren<NetworkObject>();
+        vehicleNetObject.Spawn();
+        CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = cruiserObj;
+
+        var cruiserManualObj = Object.Instantiate(
+            LoadedStaticPrefabs.Value["Company Cruiser Manual"],
+            actualSpawnPosition + Vector3.up * 2.5f,
+            Quaternion.identity,
+            RoundManager.Instance.VehiclesContainer
+        );
+        var manualNetObject = cruiserManualObj.gameObject.GetComponentInChildren<NetworkObject>();
+        manualNetObject.Spawn();
+        CurrentLevelObjects[manualNetObject.NetworkObjectId] = cruiserObj;
 
         if (request.SendNotification)
         {
@@ -917,7 +973,7 @@ internal class ObjectManager : ImpLifecycleObject
     {
         if (!CurrentLevelObjects.TryGetValue(request.NetworkId, out var obj) || !obj)
         {
-            Imperium.IO.LogError($"Failed to teleport object item with net ID {request.NetworkId}");
+            Imperium.IO.LogError($"[NET] Failed to teleport object item with net ID {request.NetworkId}");
             return;
         }
 

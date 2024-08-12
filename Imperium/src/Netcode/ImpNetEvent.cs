@@ -32,22 +32,13 @@ public class ImpNetEvent : INetworkSubscribable
 
         networkEvent.OnServerReceived += clientId =>
         {
-            Imperium.IO.LogInfo("ImpNetEvent::OnServerReceived");
             if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
             {
                 OnServerReceive?.Invoke(clientId);
             }
         };
-        networkEvent.OnClientReceived += () =>
-        {
-            Imperium.IO.LogInfo("ImpNetEvent::OnClientReceived");
-            OnClientRecive?.Invoke();
-        };
-        networkEvent.OnClientReceivedFromClient += clientId =>
-        {
-            Imperium.IO.LogInfo("ImpNetEvent::OnClientReceivedFromClient");
-            OnClientReciveFromClient?.Invoke(clientId);
-        };
+        networkEvent.OnClientReceived += () => OnClientRecive?.Invoke();
+        networkEvent.OnClientReceivedFromClient += clientId => OnClientReciveFromClient?.Invoke(clientId);
 
         networking.RegisterSubscriber(this);
     }

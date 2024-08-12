@@ -26,6 +26,8 @@ internal class PreferencesWindow : ImperiumWindow
         ImpToggle.Bind("LeftHandedToggle", general, Imperium.Settings.Preferences.LeftHandedMode, theme);
         ImpToggle.Bind("CustomWelcome", general, Imperium.Settings.Preferences.CustomWelcome, theme);
         ImpToggle.Bind("OptimizeLogsToggle", general, Imperium.Settings.Preferences.OptimizeLogs, theme);
+        ImpToggle.Bind("TooltipsToggle", general, Imperium.Settings.Preferences.ShowTooltips, theme);
+
         ImpToggle.Bind(
             "UEMouseFixToggle",
             general,
@@ -33,7 +35,6 @@ internal class PreferencesWindow : ImperiumWindow
             theme,
             interactableBindings: new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer"))
         );
-        ImpToggle.Bind("TooltipsToggle", general, Imperium.Settings.Preferences.ShowTooltips, theme);
 
         var hosting = content.Find("Grid/Hosting/Hosting");
         ImpToggle.Bind(
@@ -68,6 +69,7 @@ internal class PreferencesWindow : ImperiumWindow
         );
 
         ImpButton.Bind("Buttons/FactoryReset", content, Imperium.Settings.FactoryReset, theme);
+        ImpButton.Bind("Buttons/ResetUI", content, Imperium.Interface.ResetUI, theme);
 
         InitThemes();
     }

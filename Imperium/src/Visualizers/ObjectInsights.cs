@@ -121,8 +121,11 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .RegisterInsight("Health", player => $"{player.health} HP")
             .RegisterInsight("Stamina", player => $"{player.sprintTime:0.0}s")
             .RegisterInsight("Visibility", player => $"{((IVisibleThreat)player).GetVisibility():0.0}")
+            .RegisterInsight("Interest Level", player => $"{((IVisibleThreat)player).GetInterestLevel():0.0}")
+            .RegisterInsight("Insanity", player => $"{player.insanityLevel:0.0}")
+            .RegisterInsight("Fear Level", player => $"{Imperium.StartOfRound.fearLevel:0.0}")
             .RegisterInsight("Location", ImpUtils.GetPlayerLocationText)
-            .SetPositionOverride(entity => DefaultPositionOverride(entity) + Vector3.up * 2f)
+            .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Players");
 
         InsightsFor<GrabbableObject>()
@@ -137,6 +140,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
 
         InsightsFor<EnemyAI>()
             .SetNameGenerator(entity => entity.enemyType.enemyName)
+            .SetPersonalNameGenerator(Imperium.ObjectManager.GetEntityName)
             .SetIsDeadGenerator(entity => entity.isEnemyDead)
             .RegisterInsight("Health", entity => $"{entity.enemyHP} HP")
             .RegisterInsight("Behaviour State", entity => entity.currentBehaviourStateIndex.ToString())
@@ -165,6 +169,12 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .RegisterInsight("Has Exploded", landmine => landmine.hasExploded ? "Yes" : "No")
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Landmines");
+
+        InsightsFor<MaskedPlayerEnemy>()
+            .RegisterInsight("Ship Interest", masked => $"{masked.interestInShipCooldown:0.0}")
+            .RegisterInsight("Stop and Stare", masked => $"{masked.stopAndStareTimer:0.0}s")
+            .RegisterInsight("Stamina", masked => $"{masked.staminaTimer:0.0}")
+            .RegisterInsight("Random Tick Timer", masked => $"{masked.randomLookTimer:0.0}");
 
         InsightsFor<SteamValveHazard>()
             .SetNameGenerator(steamValve => $"Steam Valve #{steamValve.GetInstanceID()}")

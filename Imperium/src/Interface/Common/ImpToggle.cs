@@ -77,6 +77,14 @@ public abstract class ImpToggle
 
         if (tooltipDefinition != null)
         {
+            if (!tooltipDefinition.Tooltip)
+            {
+                var togglePath = $"{Debugging.GetTransformPath(container)}/{path}";
+                Imperium.IO.LogWarning(
+                    $"[UI] Failed to initialize tooltip for '{togglePath}'. No tooltip provided."
+                );
+            }
+
             interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
                 tooltipDefinition.Title,
                 tooltipDefinition.Description,

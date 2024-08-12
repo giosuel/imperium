@@ -25,6 +25,7 @@ public class ImpSettings(ConfigFile config)
     internal readonly ShotgunSettings Shotgun = new(config);
     internal readonly ShovelSettings Shovel = new(config);
     internal readonly TimeSettings Time = new(config);
+    internal readonly EventLogSettings EventLog = new(config);
     internal readonly ShipSettings Ship = new(config);
     internal readonly AnimationSkippingSettings AnimationSkipping = new(config);
     internal readonly VisualizationSettings Visualization = new(config);
@@ -39,6 +40,7 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> DisableLocking = new(config, "Player", "DisableLocking", false);
         internal readonly ImpConfig<bool> InfiniteBattery = new(config, "Player", "InfiniteBattery", false);
         internal readonly ImpConfig<bool> Invisibility = new(config, "Player", "Invisibility", false);
+        internal readonly ImpConfig<bool> Untargetable = new(config, "Player", "Untargetable", false);
         internal readonly ImpConfig<bool> Muted = new(config, "Player", "Muted", false);
         internal readonly ImpConfig<bool> PickupOverwrite = new(config, "Player", "PickupOverwrite", false);
         internal readonly ImpConfig<bool> DisableOOB = new(config, "Player", "DisableOOB", false);
@@ -122,6 +124,14 @@ public class ImpSettings(ConfigFile config)
     {
         internal readonly ImpConfig<bool> RealtimeClock = new(config, "Game.Time", "RealtimeClock", true);
         internal readonly ImpConfig<bool> PermanentClock = new(config, "Game.Time", "PermanentClock", true);
+    }
+
+    internal class EventLogSettings(ConfigFile config) : SettingBase(config)
+    {
+        internal readonly ImpConfig<bool> EntityLogs = new(config, "EventLog", "Entity", true);
+        internal readonly ImpConfig<bool> PlayerLogs = new(config, "EventLog", "Player", true);
+        internal readonly ImpConfig<bool> GameLogs = new(config, "EventLog", "Game", true);
+        internal readonly ImpConfig<bool> CustomLogs = new(config, "EventLog", "Custom", true);
     }
 
     internal class ShipSettings(ConfigFile config) : SettingBase(config)
@@ -218,6 +228,13 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Visualizers",
             "SmoothAnimations",
             true
+        );
+
+        internal readonly ImpConfig<bool> RealtimeUpdates = new(
+            config,
+            "Visualization.Visualizers",
+            "RealtimeUpdates",
+            false
         );
 
         internal readonly ImpConfig<bool> SSAlwaysOnTop = new(
@@ -1080,6 +1097,7 @@ public class ImpSettings(ConfigFile config)
         Load(Shovel);
         Load(Time);
         Load(Ship);
+        Load(EventLog);
         Load(AnimationSkipping);
         Load(Visualization);
         Load(Rendering);
@@ -1095,6 +1113,7 @@ public class ImpSettings(ConfigFile config)
         Reset(Shovel);
         Reset(Time);
         Reset(Ship);
+        Reset(EventLog);
         Reset(AnimationSkipping);
         Reset(Visualization);
         Reset(Rendering);

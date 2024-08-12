@@ -142,11 +142,7 @@ public class ImpNetworking
         Imperium.IO.Send("Imperium access was granted!", type: NotificationType.AccessControl);
         Imperium.IO.LogInfo("[NET] Imperium access was granted! Launching Imperium...");
 
-        if (!ImpUtils.RunSafeInProd(Imperium.Launch, out var exception))
-        {
-            Imperium.DisableImperium();
-            Imperium.IO.LogError($"[ERR] Imperium startup failed: {exception.Message}");
-        }
+        if (!ImpUtils.RunSafe(Imperium.Launch,"Imperium startup failed")) Imperium.DisableImperium();
 
         // Request network values update from server if client is not host
         if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();
@@ -175,11 +171,7 @@ public class ImpNetworking
         }
         else
         {
-            if (!ImpUtils.RunSafeInProd(Imperium.Launch, out var exception))
-            {
-                Imperium.DisableImperium();
-                Imperium.IO.LogError($"[ERR] Imperium startup failed: {exception.Message}");
-            }
+            if (!ImpUtils.RunSafe(Imperium.Launch,"Imperium startup failed")) Imperium.DisableImperium();
 
             // Request network values update from server if client is not host
             if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();

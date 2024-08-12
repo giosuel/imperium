@@ -17,8 +17,6 @@ namespace Imperium.Patches.Systems;
 [HarmonyPatch(typeof(RoundManager))]
 internal static class RoundManagerPatch
 {
-    internal static readonly Dictionary<string, List<Vector3>> spawnedEntitiesInCycle = new();
-
     [HarmonyPrefix]
     [HarmonyPatch("SpawnScrapInLevel")]
     private static void SpawnScrapInLevelPrefixPatch(RoundManager __instance)
@@ -27,6 +25,14 @@ internal static class RoundManagerPatch
         Imperium.MoonManager.ScrapAmount = (int)(random.Next(
             __instance.currentLevel.minScrap, __instance.currentLevel.maxScrap) * __instance.scrapAmountMultiplier);
         Imperium.MoonManager.ChallengeScrapAmount = Imperium.MoonManager.ScrapAmount + random.Next(10, 30);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnEnemyGameObject")]
+    private static void SpawnEnemyGameObjectPostfixPatch(RoundManager __instance)
+    {
+        // Refresh entities when the game spawns entities via this function
+        Imperium.ObjectManager.RefreshLevelEntities();
     }
 
     [HarmonyPrefix]
@@ -111,6 +117,8 @@ internal static class RoundManagerPatch
     {
         Imperium.Oracle.Simulate(initial: true, null);
 
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPrefix(true);
+
         ImpSpawnTracker.StartCycle(__instance);
     }
 
@@ -118,6 +126,8 @@ internal static class RoundManagerPatch
     [HarmonyPatch("BeginEnemySpawning")]
     private static void BeginEnemySpawningPostfixPatch(RoundManager __instance)
     {
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPostfix(true);
+
         ImpSpawnTracker.EndCycle(__instance);
     }
 
@@ -126,6 +136,8 @@ internal static class RoundManagerPatch
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPrefixPatch(RoundManager __instance)
     {
         ImpSpawnTracker.StartCycle(__instance);
+
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPrefix(false);
 
         Imperium.Oracle.Simulate();
     }
@@ -137,6 +149,8 @@ internal static class RoundManagerPatch
         Imperium.ObjectManager.RefreshLevelEntities();
 
         ImpSpawnTracker.EndCycle(__instance);
+
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPostfix(false);
     }
 
     [HarmonyPrefix]
