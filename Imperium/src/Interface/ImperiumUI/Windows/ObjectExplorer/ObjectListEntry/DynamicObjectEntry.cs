@@ -2,6 +2,7 @@ using System;
 using Imperium.Extensions;
 using Imperium.Interface.Common;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using Unity.Netcode;
@@ -35,13 +36,16 @@ internal class DynamicObjectEntry : MonoBehaviour
 
     internal ObjectEntryType entryType { get; private set; }
 
-    internal Action layoutRebuildCallback;
-
     private RectTransform rect;
 
-    internal void InitItem(ImpBinding<ImpTheme> theme)
+    internal Action forceDelayedUpdate { get; private set; }
+
+    private readonly ImpTimer intervalUpdateTimer = ImpTimer.ForInterval(0.2f);
+
+    internal void InitItem(ImpBinding<ImpTheme> theme, Action forceDelayedUpdateCallback)
     {
         rect = gameObject.GetComponent<RectTransform>();
+        forceDelayedUpdate = forceDelayedUpdateCallback;
 
         IsObjectActive = new ImpBinding<bool>(true);
         Imperium.ObjectManager.DisabledObjects.onUpdate += disabledObjects =>
@@ -80,7 +84,7 @@ internal class DynamicObjectEntry : MonoBehaviour
         destroyButton = ImpButton.Bind(
             "Destroy",
             transform,
-            () => DynamicObjectEntryTypeHelper.Destroy(this)
+            () => DynamicObjectEntryTypeHelper.DestroyObject(this)
         );
 
         // Respawn button
@@ -132,15 +136,12 @@ internal class DynamicObjectEntry : MonoBehaviour
         rect.anchoredPosition = new Vector2(0, -positionY);
     }
 
-    internal void SetItem(
-        Component entryComponent, ObjectEntryType type, ImpTooltip tooltipObj, Action layoutRebuild, float positionY
-    )
+    internal void SetItem(Component entryComponent, ObjectEntryType type, ImpTooltip tooltipObj, float positionY)
     {
         entryType = type;
         component = entryComponent;
 
         tooltip = tooltipObj;
-        layoutRebuildCallback = layoutRebuild;
 
         rect.anchoredPosition = new Vector2(0, -positionY);
 
@@ -173,6 +174,13 @@ internal class DynamicObjectEntry : MonoBehaviour
 
     private void Update()
     {
-        DynamicObjectEntryTypeHelper.Update(this);
+        if (intervalUpdateTimer.Tick() && component)
+        {
+            // Update kill and revive buttons since they switch based on the player's alive status
+            killButton.gameObject.SetActive(DynamicObjectEntryTypeHelper.CanKill(this));
+            reviveButton.gameObject.SetActive(DynamicObjectEntryTypeHelper.CanRevive(this));
+
+            DynamicObjectEntryTypeHelper.IntervalUpdate(this);
+        }
     }
 }

@@ -6,6 +6,7 @@ using Imperium.Interface.Common;
 using Imperium.Util;
 using Unity.Netcode;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
@@ -57,7 +58,7 @@ internal static class DynamicObjectEntryTypeHelper
         _ => true
     };
 
-    internal static void Destroy(DynamicObjectEntry entry)
+    internal static void DestroyObject(DynamicObjectEntry entry)
     {
         switch (entry.entryType)
         {
@@ -89,6 +90,8 @@ internal static class DynamicObjectEntryTypeHelper
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        entry.forceDelayedUpdate.Invoke();
     }
 
     internal static void Respawn(DynamicObjectEntry entry)
@@ -96,14 +99,14 @@ internal static class DynamicObjectEntryTypeHelper
         switch (entry.entryType)
         {
             case ObjectEntryType.CompanyCruiser:
-                Destroy(entry);
+                DestroyObject(entry);
                 Imperium.ObjectManager.SpawmCompanyCruiser(new CompanyCruiserSpawnRequest
                 {
                     SpawnPosition = entry.containerObject.transform.position
                 });
                 break;
             case ObjectEntryType.Landmine:
-                Destroy(entry);
+                DestroyObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "Landmine",
@@ -111,7 +114,7 @@ internal static class DynamicObjectEntryTypeHelper
                 });
                 break;
             case ObjectEntryType.Turret:
-                Destroy(entry);
+                DestroyObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "Turret",
@@ -119,7 +122,7 @@ internal static class DynamicObjectEntryTypeHelper
                 });
                 break;
             case ObjectEntryType.SpiderWeb:
-                Destroy(entry);
+                DestroyObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "SpiderWeb",
@@ -127,7 +130,7 @@ internal static class DynamicObjectEntryTypeHelper
                 });
                 break;
             case ObjectEntryType.SpikeTrap:
-                Destroy(entry);
+                DestroyObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "Spike Trap",
@@ -135,11 +138,12 @@ internal static class DynamicObjectEntryTypeHelper
                 });
                 break;
             case ObjectEntryType.Entity:
-                Destroy(entry);
+                DestroyObject(entry);
+                var entity = (EnemyAI)entry.component;
                 Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
                 {
-                    Name = entry.objectName,
-                    PrefabName = ((EnemyAI)entry.component).enemyType.enemyPrefab.name,
+                    Name = entity.enemyType.enemyName,
+                    PrefabName = entity.enemyType.enemyPrefab.name,
                     SpawnPosition = entry.containerObject.transform.position
                 });
                 break;
@@ -207,6 +211,8 @@ internal static class DynamicObjectEntryTypeHelper
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        entry.forceDelayedUpdate.Invoke();
     }
 
     internal static void Revive(DynamicObjectEntry entry)
@@ -231,6 +237,8 @@ internal static class DynamicObjectEntryTypeHelper
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        entry.forceDelayedUpdate.Invoke();
     }
 
     internal static void ToggleObject(DynamicObjectEntry entry, bool isActive)
@@ -244,7 +252,6 @@ internal static class DynamicObjectEntryTypeHelper
             case ObjectEntryType.SteamValve:
                 if (!isActive)
                 {
-                    // Reflection.Invoke(steamValve, "BurstValve");
                     Imperium.ObjectManager.BurstSteamValve(entry.objectNetId!.Value);
                 }
                 else
@@ -327,12 +334,12 @@ internal static class DynamicObjectEntryTypeHelper
         }
     }
 
-    internal static void Update(DynamicObjectEntry entry)
+    internal static void IntervalUpdate(DynamicObjectEntry entry)
     {
         switch (entry.entryType)
         {
             case ObjectEntryType.SteamValve:
-                var steamValve = ((SteamValveHazard)entry.component);
+                var steamValve = (SteamValveHazard)entry.component;
                 if (!steamValve.valveHasBeenRepaired && steamValve.valveHasBurst && entry.IsObjectActive.Value)
                 {
                     entry.IsObjectActive.Set(false);
@@ -342,6 +349,10 @@ internal static class DynamicObjectEntryTypeHelper
                     entry.IsObjectActive.Set(true);
                 }
 
+                break;
+            case ObjectEntryType.Item:
+                var item = (GrabbableObject)entry.component;
+                entry.dropButton.interactable = item.isHeld || item.heldByPlayerOnServer;
                 break;
             case ObjectEntryType.Landmine:
             case ObjectEntryType.Turret:
@@ -353,7 +364,6 @@ internal static class DynamicObjectEntryTypeHelper
             case ObjectEntryType.MoldSpore:
             case ObjectEntryType.Player:
             case ObjectEntryType.CompanyCruiser:
-            case ObjectEntryType.Item:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -378,6 +388,18 @@ internal static class DynamicObjectEntryTypeHelper
             case ObjectEntryType.Player:
             case ObjectEntryType.CompanyCruiser:
             case ObjectEntryType.Item:
+                entry.destroyButton.interactable = true;
+                entry.teleportHereButton.interactable = true;
+                if (entry.destroyButton.TryGetComponent<ImpInteractable>(out var destroyInteractable))
+                {
+                    Object.Destroy(destroyInteractable);
+                }
+
+                if (entry.teleportHereButton.TryGetComponent<ImpInteractable>(out var teleportInteractable))
+                {
+                    Object.Destroy(teleportInteractable);
+                }
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

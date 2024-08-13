@@ -17,7 +17,7 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 
 ### Changes
 
-- 
+- Rewrote the object explorer lists to use object pooling to support basically an infinite amount of objects on the map with minimal performance impact.
 
 ### QoL Improvements
 

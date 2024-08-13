@@ -1,11 +1,13 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -99,61 +101,45 @@ internal class ObjectExplorerWindow : ImperiumWindow
         CompanyCruisersCollapsed.onTrigger += RefreshEntries;
         OtherCollapsed.onTrigger += RefreshEntries;
 
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "PlayerListTitle/Arrow",
             contentRect,
-            PlayersCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: PlayersCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "EntityListTitle/Arrow",
             contentRect,
-            EntitiesCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: EntitiesCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "CruiserListTitle/Arrow",
             contentRect,
-            CompanyCruisersCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: CompanyCruisersCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "ItemListTitle/Arrow",
             contentRect,
-            ItemsCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: ItemsCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "HazardListTitle/Arrow",
             contentRect,
-            HazardsCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: HazardsCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "VentListTitle/Arrow",
             contentRect,
-            VentsCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: VentsCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "OtherListTitle/Arrow",
             contentRect,
-            OtherCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: OtherCollapsed
         );
-        ImpButton.Bind(
+        ImpButton.CreateCollapse(
             "VainShroudListTitle/Arrow",
             contentRect,
-            MoldSporesCollapsed,
-            theme: theme,
-            isIconButton: true
+            stateBinding: MoldSporesCollapsed
         );
 
         Imperium.ObjectManager.CurrentLevelDoors.onTrigger += RefreshEntries;
@@ -264,7 +250,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             var obj = Instantiate(entryTemplate, contentRect);
             obj.gameObject.SetActive(true);
             var entry = obj.AddComponent<DynamicObjectEntry>();
-            entry.InitItem(theme);
+            entry.InitItem(theme, OnDestroyObject);
             entryInstances.Add(entry);
         }
 
@@ -285,6 +271,13 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ];
 
         RefreshEntries();
+    }
+
+    private bool performRefreshNextFrame = true;
+
+    private void OnDestroyObject()
+    {
+        performRefreshNextFrame = true;
     }
 
     public void RefreshEntries()
@@ -352,8 +345,38 @@ internal class ObjectExplorerWindow : ImperiumWindow
             else
             {
                 var entryObject = visibleObjects[index];
-                entryInstances[i].SetItem(entryObject.Value, entryObject.Key, tooltip, null, entryPositionAbsolute);
+                entryInstances[i].SetItem(entryObject.Value, entryObject.Key, tooltip, entryPositionAbsolute);
             }
+        }
+
+        playerCount.text = $"({categoryEntryCounts.GetValueOrDefault(ObjectEntryType.Player, 0).ToString()})";
+        entityCount.text = $"({categoryEntryCounts.GetValueOrDefault(ObjectEntryType.Entity, 0).ToString()})";
+        cruiserCount.text = $"({categoryEntryCounts.GetValueOrDefault(ObjectEntryType.CompanyCruiser, 0).ToString()})";
+        itemCount.text = $"({categoryEntryCounts.GetValueOrDefault(ObjectEntryType.Item, 0).ToString()})";
+        otherCount.text = "(" + categories
+            .Where(category => category.Item2 == otherTitle)
+            .Select(type => categoryEntryCounts.GetValueOrDefault(type.Item1, 0))
+            .Sum() + ")";
+        hazardCount.text = "(" + categories
+            .Where(category => category.Item2 == hazardTitle)
+            .Select(type => categoryEntryCounts.GetValueOrDefault(type.Item1, 0))
+            .Sum() + ")";
+        ventCount.text = $"({categoryEntryCounts.GetValueOrDefault(ObjectEntryType.Vent, 0).ToString()})";
+        moldSporeCount.text = $"({categoryEntryCounts.GetValueOrDefault(ObjectEntryType.MoldSpore, 0).ToString()})";
+    }
+
+    private IEnumerator waitForRefresh()
+    {
+        yield return 0;
+        RefreshEntries();
+    }
+
+    private void Update()
+    {
+        if (performRefreshNextFrame)
+        {
+            StartCoroutine(waitForRefresh());
+            performRefreshNextFrame = false;
         }
     }
 

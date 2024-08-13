@@ -148,6 +148,7 @@ public abstract class ImpButton
     /// <param name="path"></param>
     /// <param name="container"></param>
     /// <param name="collapseArea"></param>
+    /// <param name="stateBinding"></param>
     /// <param name="theme">The theme the button will use</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
     /// <param name="updateFunction">Optional update function that is executed when the button is pressed</param>
@@ -155,7 +156,8 @@ public abstract class ImpButton
     internal static void CreateCollapse(
         string path,
         Transform container,
-        Transform collapseArea,
+        Transform collapseArea = null,
+        IBinding<bool> stateBinding = null,
         IBinding<ImpTheme> theme = null,
         bool interactableInvert = false,
         Action updateFunction = null,
@@ -166,11 +168,25 @@ public abstract class ImpButton
         var button = buttonObject.GetComponent<Button>();
         button.onClick.AddListener(() =>
         {
-            collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
+            stateBinding?.Set(!stateBinding.Value);
+            if (collapseArea) collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
             button.transform.Rotate(0, 0, 180);
             GameUtils.PlayClip(ImpAssets.GrassClick);
             updateFunction?.Invoke();
         });
+
+        if (stateBinding != null && collapseArea)
+        {
+            stateBinding.onUpdate += isOn =>
+            {
+                collapseArea.gameObject.SetActive(isOn);
+                button.transform.rotation = Quaternion.Euler(
+                    button.transform.rotation.x,
+                    button.transform.rotation.y,
+                    isOn ? 180 : 0
+                );
+            };
+        }
 
         if (interactableBindings.Length > 0)
         {
