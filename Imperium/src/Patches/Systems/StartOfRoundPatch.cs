@@ -1,9 +1,11 @@
 #region
 
+using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
 using Imperium.API.Types.Networking;
 using Imperium.Util;
+using UnityEngine;
 
 #endregion
 
@@ -16,6 +18,8 @@ public class StartOfRoundPatch
     [HarmonyPatch("StartGame")]
     private static void StartGamePrefixPatch(StartOfRound __instance)
     {
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
         __instance.shipAnimator.speed = Imperium.ShipManager.InstantLanding.Value ? 1000f : 1;
     }
 
@@ -23,7 +27,19 @@ public class StartOfRoundPatch
     [HarmonyPatch("ShipLeave")]
     private static void ShipLeavePrefixPatch(StartOfRound __instance)
     {
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
         __instance.shipAnimator.speed = Imperium.ShipManager.InstantTakeoff.Value ? 1000f : 1;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("openingDoorsSequence")]
+    private static void openingDoorsSequencePostfixPatch(StartOfRound __instance)
+    {
+        // Reset ship animator
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
+        __instance.shipAnimator.speed = 1;
     }
 
     [HarmonyPrefix]

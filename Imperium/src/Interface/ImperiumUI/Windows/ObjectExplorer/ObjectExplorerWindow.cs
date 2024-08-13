@@ -3,16 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameNetcodeStuff;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
-using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
 using Imperium.Types;
-using Imperium.Util;
+using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 #endregion
 
@@ -20,158 +17,168 @@ namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 
 internal class ObjectExplorerWindow : ImperiumWindow
 {
-    private RectTransform explorerTransformRect;
-    private GameObject listTemplate;
-
-    private RectTransform playerList;
     private RectTransform playerTitle;
     private TMP_Text playerCount;
-    private RectTransform entityList;
+
     private RectTransform entityTitle;
     private TMP_Text entityCount;
-    private RectTransform cruiserList;
+
     private RectTransform cruiserTitle;
     private TMP_Text cruiserCount;
-    private RectTransform itemList;
+
     private RectTransform itemTitle;
     private TMP_Text itemCount;
-    private RectTransform hazardList;
+
     private RectTransform hazardTitle;
     private TMP_Text hazardCount;
-    private RectTransform ventList;
+
     private RectTransform ventTitle;
     private TMP_Text ventCount;
-    private RectTransform otherList;
+
     private RectTransform otherTitle;
     private TMP_Text otherCount;
-    private RectTransform moldSporeList;
+
     private RectTransform moldSporeTitle;
     private TMP_Text moldSporeCount;
 
-    private List<RectTransform> titleRects = [];
-    private List<RectTransform> listRects = [];
+    private GameObject entryTemplate;
 
-    private readonly ImpTimer refreshTimer = ImpTimer.ForInterval(0.08f);
+    private ScrollRect scrollRect;
+    private RectTransform contentRect;
 
-    private Dictionary<int, ObjectEntry> objectEntries = [];
+    private readonly ImpBinding<bool> PlayersCollapsed = new(false);
+    private readonly ImpBinding<bool> EntitiesCollapsed = new(false);
+    private readonly ImpBinding<bool> HazardsCollapsed = new(false);
+    private readonly ImpBinding<bool> VentsCollapsed = new(false);
+    private readonly ImpBinding<bool> ItemsCollapsed = new(false);
+    private readonly ImpBinding<bool> MoldSporesCollapsed = new(false);
+    private readonly ImpBinding<bool> CompanyCruisersCollapsed = new(false);
+    private readonly ImpBinding<bool> OtherCollapsed = new(false);
 
-    private RectTransform content;
+    private float viewHeight;
+    private float contentHeight;
+    private int entryCount;
+    private const float entryHeight = 19;
+    private const float titleCount = 8;
+    private float originalViewHeight;
+
+    private readonly List<DynamicObjectEntry> entryInstances = [];
 
     protected override void InitWindow()
     {
-        content = transform.Find("Content/Viewport/Content").GetComponent<RectTransform>();
+        contentRect = transform.Find("Content/Viewport/Content").GetComponent<RectTransform>();
+        scrollRect = transform.Find("Content").GetComponent<ScrollRect>();
+        scrollRect.onValueChanged.AddListener(OnScroll);
 
-        explorerTransformRect = content.GetComponent<RectTransform>();
-        listTemplate = content.Find("EntityList/Item").gameObject;
-        listTemplate.SetActive(false);
+        entryTemplate = contentRect.Find("Template").gameObject;
+        entryTemplate.SetActive(false);
 
-        playerList = content.Find("PlayerList").GetComponent<RectTransform>();
-        playerTitle = content.Find("PlayerListTitle").GetComponent<RectTransform>();
-        playerCount = content.Find("PlayerListTitle/Count").GetComponent<TMP_Text>();
-        entityList = content.Find("EntityList").GetComponent<RectTransform>();
-        entityTitle = content.Find("EntityListTitle").GetComponent<RectTransform>();
-        entityCount = content.Find("EntityListTitle/Count").GetComponent<TMP_Text>();
-        cruiserList = content.Find("CruiserList").GetComponent<RectTransform>();
-        cruiserTitle = content.Find("CruiserListTitle").GetComponent<RectTransform>();
-        cruiserCount = content.Find("CruiserListTitle/Count").GetComponent<TMP_Text>();
-        itemList = content.Find("ItemList").GetComponent<RectTransform>();
-        itemTitle = content.Find("ItemListTitle").GetComponent<RectTransform>();
-        itemCount = content.Find("ItemListTitle/Count").GetComponent<TMP_Text>();
-        hazardList = content.Find("HazardList").GetComponent<RectTransform>();
-        hazardTitle = content.Find("HazardListTitle").GetComponent<RectTransform>();
-        hazardCount = content.Find("HazardListTitle/Count").GetComponent<TMP_Text>();
-        ventList = content.Find("VentList").GetComponent<RectTransform>();
-        ventTitle = content.Find("VentListTitle").GetComponent<RectTransform>();
-        ventCount = content.Find("VentListTitle/Count").GetComponent<TMP_Text>();
-        otherList = content.Find("OtherList").GetComponent<RectTransform>();
-        otherTitle = content.Find("OtherListTitle").GetComponent<RectTransform>();
-        otherCount = content.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
-        moldSporeList = content.Find("VainShroudList").GetComponent<RectTransform>();
-        moldSporeTitle = content.Find("VainShroudListTitle").GetComponent<RectTransform>();
-        moldSporeCount = content.Find("VainShroudListTitle/Count").GetComponent<TMP_Text>();
+        playerTitle = contentRect.Find("PlayerListTitle").GetComponent<RectTransform>();
+        playerCount = contentRect.Find("PlayerListTitle/Count").GetComponent<TMP_Text>();
+        entityTitle = contentRect.Find("EntityListTitle").GetComponent<RectTransform>();
+        entityCount = contentRect.Find("EntityListTitle/Count").GetComponent<TMP_Text>();
+        cruiserTitle = contentRect.Find("CruiserListTitle").GetComponent<RectTransform>();
+        cruiserCount = contentRect.Find("CruiserListTitle/Count").GetComponent<TMP_Text>();
+        itemTitle = contentRect.Find("ItemListTitle").GetComponent<RectTransform>();
+        itemCount = contentRect.Find("ItemListTitle/Count").GetComponent<TMP_Text>();
+        hazardTitle = contentRect.Find("HazardListTitle").GetComponent<RectTransform>();
+        hazardCount = contentRect.Find("HazardListTitle/Count").GetComponent<TMP_Text>();
+        ventTitle = contentRect.Find("VentListTitle").GetComponent<RectTransform>();
+        ventCount = contentRect.Find("VentListTitle/Count").GetComponent<TMP_Text>();
+        otherTitle = contentRect.Find("OtherListTitle").GetComponent<RectTransform>();
+        otherCount = contentRect.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
+        moldSporeTitle = contentRect.Find("VainShroudListTitle").GetComponent<RectTransform>();
+        moldSporeCount = contentRect.Find("VainShroudListTitle/Count").GetComponent<TMP_Text>();
 
-        listRects =
-        [
-            playerList, entityList, cruiserList, hazardList, itemList, ventList, otherList, moldSporeList
-        ];
+        PlayersCollapsed.onTrigger += RefreshEntries;
+        EntitiesCollapsed.onTrigger += RefreshEntries;
+        HazardsCollapsed.onTrigger += RefreshEntries;
+        VentsCollapsed.onTrigger += RefreshEntries;
+        ItemsCollapsed.onTrigger += RefreshEntries;
+        MoldSporesCollapsed.onTrigger += RefreshEntries;
+        CompanyCruisersCollapsed.onTrigger += RefreshEntries;
+        OtherCollapsed.onTrigger += RefreshEntries;
 
-        titleRects =
-        [
-            playerTitle, entityTitle, cruiserTitle, hazardTitle, itemTitle, ventTitle, otherTitle, moldSporeTitle
-        ];
-
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "PlayerListTitle/Arrow",
-            content,
-            playerList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            PlayersCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "EntityListTitle/Arrow",
-            content,
-            entityList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            EntitiesCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "CruiserListTitle/Arrow",
-            content,
-            cruiserList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            CompanyCruisersCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "ItemListTitle/Arrow",
-            content,
-            itemList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            ItemsCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "HazardListTitle/Arrow",
-            content,
-            hazardList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            HazardsCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "VentListTitle/Arrow",
-            content,
-            ventList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            VentsCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "OtherListTitle/Arrow",
-            content,
-            otherList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            OtherCollapsed,
+            theme: theme,
+            isIconButton: true
         );
-        ImpButton.CreateCollapse(
+        ImpButton.Bind(
             "VainShroudListTitle/Arrow",
-            content,
-            moldSporeList,
-            updateFunction: CalculateListLayout
+            contentRect,
+            MoldSporesCollapsed,
+            theme: theme,
+            isIconButton: true
         );
 
-        Imperium.ObjectManager.CurrentLevelDoors.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelSecurityDoors.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelSpikeTraps.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelVents.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelSteamValves.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelItems.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentPlayers.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelMoldSpores.onTrigger += Refresh;
-        Imperium.ObjectManager.CurrentLevelCompanyCruisers.onTrigger += Refresh;
+        Imperium.ObjectManager.CurrentLevelDoors.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelSecurityDoors.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelSpikeTraps.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelVents.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelSteamValves.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelItems.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentPlayers.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelMoldSpores.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelCompanyCruisers.onTrigger += RefreshEntries;
 
-        if (Random.Range(0, 100) >= 99) titleBox.Find("Title").GetComponent<TMP_Text>().text = "Emporium Control Panel";
+        InitLogList();
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
     {
         ImpThemeManager.Style(
             themeUpdate,
-            content,
+            contentRect,
             new StyleOverride("PlayerListTitle", Variant.DARKER),
             new StyleOverride("EntityListTitle", Variant.DARKER),
             new StyleOverride("CruiserListTitle", Variant.DARKER),
@@ -191,7 +198,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
         ImpThemeManager.StyleText(
             themeUpdate,
-            content,
+            contentRect,
             new StyleOverride("PlayerListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("EntityListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("CruiserListTitle/Count", Variant.FADED_TEXT),
@@ -203,194 +210,152 @@ internal class ObjectExplorerWindow : ImperiumWindow
         );
     }
 
-    protected override void OnOpen() => Refresh();
+    protected override void OnOpen() => RefreshEntries();
 
-    private void Update()
-    {
-        if (refreshTimer.Tick()) LayoutRebuilder.ForceRebuildLayoutImmediate(explorerTransformRect);
-    }
+    private List<(ObjectEntryType, RectTransform)> categories;
 
-    private static IEnumerable<KeyValuePair<Type, Component>> Objects =>
-        Imperium.ObjectManager.CurrentLevelEntities.Value
-            .Where(obj => obj != null)
-            .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryEntity), entry))
-            .Concat(Imperium.ObjectManager.CurrentLevelTurrets.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryTurret), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryBreakerBox), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelVents.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryVent), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelSteamValves.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntrySteamValve), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelLandmines.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryLandmine), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelSpikeTraps.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntrySpikeTrap), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelSpiderWebs.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntrySpiderWeb), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelItems.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryItem), entry)))
-            .Concat(Imperium.ObjectManager.CurrentLevelMoldSpores.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryMoldSpore), entry.transform)))
+    private List<KeyValuePair<ObjectEntryType, Component>> GetVisibleObjects() =>
+        Imperium.ObjectManager.CurrentPlayers.Value
+            .Where(obj => obj && !PlayersCollapsed.Value)
+            .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.Player, entry))
+            .Concat(Imperium.ObjectManager.CurrentLevelEntities.Value
+                .Where(obj => obj && !EntitiesCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.Entity, entry)))
             .Concat(Imperium.ObjectManager.CurrentLevelCompanyCruisers.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectCompanyCruiser), entry)))
-            .Concat(Imperium.ObjectManager.CurrentPlayers.Value
-                .Where(obj => obj != null)
-                .Select(entry => new KeyValuePair<Type, Component>(typeof(ObjectEntryPlayer), entry)));
+                .Where(obj => obj && !CompanyCruisersCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.CompanyCruiser, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelTurrets.Value
+                .Where(obj => obj && !HazardsCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.Turret, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelLandmines.Value
+                .Where(obj => obj && !HazardsCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.Landmine, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelSpikeTraps.Value
+                .Where(obj => obj && !HazardsCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.SpikeTrap, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelSpiderWebs.Value
+                .Where(obj => obj && !HazardsCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.SpiderWeb, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelItems.Value
+                .Where(obj => obj && !ItemsCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.Item, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelVents.Value
+                .Where(obj => obj && !VentsCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.Vent, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
+                .Where(obj => obj && !OtherCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.BreakerBox, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelSteamValves.Value
+                .Where(obj => obj && !OtherCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.SteamValve, entry)))
+            .Concat(Imperium.ObjectManager.CurrentLevelMoldSpores.Value
+                .Where(obj => obj && !MoldSporesCollapsed.Value)
+                .Select(entry => new KeyValuePair<ObjectEntryType, Component>(ObjectEntryType.MoldSpore, entry.transform)))
+            .ToList();
 
-    private void CalculateListLayout()
+    private void InitLogList()
     {
-        var globalPosition = 0;
+        originalViewHeight = Math.Abs(scrollRect.GetComponent<RectTransform>().sizeDelta.y);
+        entryCount = Mathf.CeilToInt(originalViewHeight / entryHeight) + 2;
+        viewHeight = entryHeight * entryCount;
 
-        for (var i = 0; i < listRects.Count; i++)
+        for (var i = 0; i < entryCount; i++)
         {
-            titleRects[i].anchoredPosition = new Vector2(0, -globalPosition);
-            globalPosition += 22;
-
-            var localPosition = 0;
-            listRects[i].anchoredPosition = new Vector2(0, -globalPosition);
-
-            if (!listRects[i].gameObject.activeSelf) continue;
-
-            listRects[i].sizeDelta = new Vector2(listRects[i].sizeDelta.x, listRects[i].childCount * 19);
-            for (var j = 0; j < listRects[i].childCount; j++)
-            {
-                if (listRects[i].GetChild(j) == null) continue;
-
-                listRects[i].GetChild(j).GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -localPosition);
-                localPosition += 19;
-                globalPosition += 19;
-            }
+            var obj = Instantiate(entryTemplate, contentRect);
+            obj.gameObject.SetActive(true);
+            var entry = obj.AddComponent<DynamicObjectEntry>();
+            entry.InitItem(theme);
+            entryInstances.Add(entry);
         }
 
-        content.sizeDelta = new Vector2(content.sizeDelta.x, globalPosition);
+        categories =
+        [
+            (ObjectEntryType.Player, playerTitle),
+            (ObjectEntryType.Entity, entityTitle),
+            (ObjectEntryType.CompanyCruiser, cruiserTitle),
+            (ObjectEntryType.Turret, hazardTitle),
+            (ObjectEntryType.Landmine, hazardTitle),
+            (ObjectEntryType.SpikeTrap, hazardTitle),
+            (ObjectEntryType.SpiderWeb, hazardTitle),
+            (ObjectEntryType.Item, itemTitle),
+            (ObjectEntryType.Vent, ventTitle),
+            (ObjectEntryType.BreakerBox, otherTitle),
+            (ObjectEntryType.SteamValve, otherTitle),
+            (ObjectEntryType.MoldSpore, moldSporeTitle)
+        ];
+
+        RefreshEntries();
     }
 
-    public void Refresh()
+    public void RefreshEntries()
     {
-        // Create a list of key value pairs where the key is the type of object entry that will be added to the
-        // instantiated list entry of each object (ObjectEntryXXX, Component)
-        var instanceIdSet = new HashSet<int>();
+        var visibleObjects = GetVisibleObjects();
+        var categoryEntryCounts = new Dictionary<ObjectEntryType, int>();
+        var titlePositions = new Dictionary<RectTransform, float>();
 
-        foreach (var (type, component) in Objects)
+        // Count the items in each category
+        foreach (var (type, _) in visibleObjects)
         {
-            if (!objectEntries.TryGetValue(component.GetInstanceID(), out var objectEntry))
+            if (!categoryEntryCounts.TryAdd(type, 1)) categoryEntryCounts[type]++;
+        }
+
+        // Position the titles based to the items present in the list
+        var titleOffset = 0f;
+        for (var i = 0; i < categories.Count; i++)
+        {
+            if (titlePositions.TryAdd(categories[i].Item2, titleOffset))
             {
-                var entryList = component switch
+                categories[i].Item2.anchoredPosition = new Vector2(0, -titleOffset);
+                titleOffset += entryHeight;
+            }
+
+            var categoryEntryCount = categoryEntryCounts.GetValueOrDefault(categories[i].Item1, 0);
+            titleOffset += categoryEntryCount * entryHeight;
+        }
+
+        var titlePositionValues = titlePositions.Values.ToList();
+
+        contentHeight = entryHeight * visibleObjects.Count + titleCount * entryHeight;
+        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentHeight);
+
+        var position = Math.Max((1 - scrollRect.verticalNormalizedPosition) * (contentHeight - originalViewHeight), 0);
+
+        for (var i = 0; i < entryInstances.Count; i++)
+        {
+            var pageOffset = i * entryHeight;
+            var titlesBeforePage = titlePositionValues.Count(titlePosition => titlePosition <= pageOffset + position);
+
+            var page = (int)(
+                (position + (entryInstances.Count - i - 1) * entryHeight - titlesBeforePage * entryHeight) / viewHeight
+            );
+            var entryPosition = page * viewHeight + pageOffset;
+
+            var currentPosition = entryPosition;
+            var titlesBefore = 0;
+            foreach (var titlePosition in titlePositionValues)
+            {
+                if (titlePosition < currentPosition || Mathf.Approximately(titlePosition, currentPosition))
                 {
-                    EnemyAI => entityList,
-                    GrabbableObject => itemList,
-                    PlayerControllerB => playerList,
-                    EnemyVent => ventList,
-                    // Make this more clear, MoldSpores is the only thing using transform as component right now
-                    Transform => moldSporeList,
-                    VehicleController => cruiserList,
-                    Turret or Landmine or SpikeRoofTrap or SandSpiderWebTrap or SteamValveHazard => hazardList,
-                    _ => otherList
-                };
+                    titlesBefore++;
+                    currentPosition += entryHeight;
+                }
+            }
 
-                var entryObj = Instantiate(listTemplate, entryList.transform);
-                entryObj.SetActive(true);
-                objectEntry = (ObjectEntry)entryObj.AddComponent(type);
-                objectEntry.Init(component, theme, tooltip, CalculateListLayout);
+            var entryPositionAbsolute = entryPosition + titlesBefore * entryHeight;
 
-                objectEntries[component.GetInstanceID()] = objectEntry;
+            var index = (int)(entryPosition / entryHeight);
+
+            if (index >= visibleObjects.Count)
+            {
+                entryInstances[i].ClearItem(index, entryPositionAbsolute);
             }
             else
             {
-                objectEntry.UpdateEntry();
+                var entryObject = visibleObjects[index];
+                entryInstances[i].SetItem(entryObject.Value, entryObject.Key, tooltip, null, entryPositionAbsolute);
             }
-
-            instanceIdSet.Add(component.GetInstanceID());
         }
-
-        // Generate new object map based on what objects were missing in the last check
-        objectEntries = objectEntries
-            .Where(entry => entry.Value)
-            .Where(entry =>
-            {
-                if (!instanceIdSet.Contains(entry.Key))
-                {
-                    Destroy(entry.Value.gameObject);
-                    return false;
-                }
-
-                return true;
-            })
-            .ToDictionary(entry => entry.Key, entry => entry.Value);
-
-        var players = Imperium.StartOfRound.allPlayerScripts;
-        playerCount.text = Formatting.FormatFraction(players.Count(p => !p.isPlayerDead), players.Length);
-
-        var entities = Imperium.ObjectManager.CurrentLevelEntities.Value.Where(obj => obj).ToList();
-        entityCount.text = Formatting.FormatFraction(
-            entities.Count(p => p.gameObject.activeSelf),
-            entities.Count
-        );
-
-        var companyCruisers = Objects
-            .Where(entry => entry.Key == typeof(ObjectCompanyCruiser))
-            .Select(entry => entry.Value)
-            .ToList();
-        cruiserCount.text = Formatting.FormatFraction(
-            companyCruisers.Count(p => p.gameObject.activeInHierarchy),
-            companyCruisers.Count
-        );
-
-        var items = Imperium.ObjectManager.CurrentLevelItems.Value.Where(obj => obj).ToList();
-        itemCount.text = Formatting.FormatFraction(
-            items.Count(p => p.gameObject.activeSelf),
-            items.Count
-        );
-        var hazards = Objects
-            .Where(entry =>
-                entry.Key == typeof(ObjectEntryTurret)
-                || entry.Key == typeof(ObjectEntryLandmine)
-                || entry.Key == typeof(ObjectEntrySpiderWeb)
-                || entry.Key == typeof(ObjectEntrySpikeTrap)
-            )
-            .Select(entry => entry.Value).ToList();
-        hazardCount.text = Formatting.FormatFraction(
-            hazards.Count(p => p.gameObject.activeInHierarchy),
-            hazards.Count
-        );
-
-        var vents = Imperium.ObjectManager.CurrentLevelVents.Value.Where(obj => obj).ToList();
-        ventCount.text = Formatting.FormatFraction(
-            vents.Count(p => p.gameObject.activeInHierarchy),
-            vents.Count
-        );
-
-        var other = Objects
-            .Where(entry => entry.Key == typeof(ObjectEntryBreakerBox))
-            .Select(entry => entry.Value)
-            .ToList();
-        otherCount.text = Formatting.FormatFraction(
-            other.Count(p => p.gameObject.activeInHierarchy),
-            other.Count
-        );
-
-        var moldSpores = Objects
-            .Where(entry => entry.Key == typeof(ObjectEntryMoldSpore))
-            .Select(entry => entry.Value)
-            .ToList();
-        moldSporeCount.text = Formatting.FormatFraction(
-            moldSpores.Count(p => p.gameObject.activeInHierarchy),
-            moldSpores.Count
-        );
-
-        CalculateListLayout();
     }
 
-    private static void OpenObjectsUI() => Imperium.Interface.Open<ObjectSettingsWindow>();
+    private void OnScroll(Vector2 _) => RefreshEntries();
 }

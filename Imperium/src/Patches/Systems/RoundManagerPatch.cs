@@ -35,6 +35,16 @@ internal static class RoundManagerPatch
         Imperium.ObjectManager.RefreshLevelEntities();
     }
 
+    [HarmonyPostfix]
+    [HarmonyPatch("DetectElevatorRunning")]
+    private static void DetectElevatorRunningPostfixPatch(RoundManager __instance)
+    {
+        // Reset ship animator
+        Imperium.StartOfRound.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
+        Imperium.StartOfRound.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
+        Imperium.StartOfRound.shipAnimator.speed = 1;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch("PlayAudibleNoise")]
     private static void PlayAudibleNoisePatch(

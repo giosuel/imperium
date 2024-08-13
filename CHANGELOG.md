@@ -43,6 +43,7 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 - Fixed the spawn report to actually log spawned entities.
 - Fixed the Baboon Hawk's LoS visualizers.
 - Fixed an Oracle problem related to the spawning of weed entities.
+- Fixed a bug where the ship ambience noise would be sped up.
 
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 

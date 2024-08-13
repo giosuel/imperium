@@ -3,6 +3,7 @@
 using Imperium.Core;
 using Imperium.Interface.Common;
 using Imperium.Types;
+using TMPro;
 using UnityEngine;
 
 #endregion
@@ -21,6 +22,8 @@ internal class ControlCenterWindow : ImperiumWindow
         InitPlayerSettings();
         InitGameSettings();
         InitAnimationSkipping();
+
+        if (Random.Range(0, 100) >= 99) titleBox.Find("Title").GetComponent<TMP_Text>().text = "Emporium Control Panel";
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)

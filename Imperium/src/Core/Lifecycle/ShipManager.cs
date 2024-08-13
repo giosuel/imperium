@@ -46,7 +46,7 @@ public class ShipManager : ImpLifecycleObject
             if (value)
             {
                 StartOfRoundPatch.InstantTakeoffHarmony.PatchAll(typeof(StartOfRoundPatch.InstantTakeoffPatches));
-                Imperium.StartOfRound.shipAnimator.speed = 1000f;
+                if (!Imperium.StartOfRound.inShipPhase) Imperium.StartOfRound.shipAnimator.speed = 1000f;
             }
             else
             {
@@ -64,7 +64,7 @@ public class ShipManager : ImpLifecycleObject
             if (value)
             {
                 StartOfRoundPatch.InstantLandingHarmony.PatchAll(typeof(StartOfRoundPatch.InstantLandingPatches));
-                Imperium.StartOfRound.shipAnimator.speed = 1000f;
+                if (!Imperium.StartOfRound.inShipPhase) Imperium.StartOfRound.shipAnimator.speed = 1000f;
             }
             else
             {

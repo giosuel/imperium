@@ -67,13 +67,6 @@ internal class ObjectEntrySteamValve : ObjectEntry
 
     private void Update()
     {
-        if (!steamValve.valveHasBeenRepaired && steamValve.valveHasBurst && IsObjectActive.Value)
-        {
-            IsObjectActive.Set(false);
-        }
-        else if (steamValve.valveHasBeenRepaired && !IsObjectActive.Value)
-        {
-            IsObjectActive.Set(true);
-        }
+
     }
 }
