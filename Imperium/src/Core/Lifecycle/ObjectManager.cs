@@ -244,19 +244,6 @@ internal class ObjectManager : ImpLifecycleObject
         if (obj) obj.SetActive(isOn);
     }
 
-    internal static void TeleportItem(GrabbableObject item, Vector3 position)
-    {
-        var itemTransform = item.transform;
-        itemTransform.position = position + Vector3.up;
-        item.startFallingPosition = itemTransform.position;
-        if (item.transform.parent != null)
-        {
-            item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
-        }
-
-        item.FallToGround();
-    }
-
     /// <summary>
     ///     Fetches all game objects from resources to be used later for spawning
     ///     - Entities (Indoor, Outdoor, Daytime)
@@ -401,7 +388,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal void RefreshLevelEntities()
     {
         HashSet<EnemyAI> currentLevelEntities = [];
-        foreach (var obj in Resources.FindObjectsOfTypeAll<EnemyAI>())
+        foreach (var obj in Object.FindObjectsOfType<EnemyAI>())
         {
             // Ignore objects that are hidden
             if (obj.gameObject.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
@@ -428,7 +415,7 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<VehicleController> currentLevelCompanyCruisers = [];
         HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
 
-        foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
+        foreach (var obj in Object.FindObjectsOfType<GameObject>())
         {
             // Ignore objects that are hidden
             if (obj.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
@@ -988,6 +975,7 @@ internal class ObjectManager : ImpLifecycleObject
             }
 
             item.FallToGround();
+            item.PlayDropSFX();
         }
         else if (obj.TryGetComponent<Landmine>(out _))
         {

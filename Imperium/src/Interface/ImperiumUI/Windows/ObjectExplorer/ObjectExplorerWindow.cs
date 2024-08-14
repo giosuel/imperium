@@ -60,7 +60,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private float contentHeight;
     private int entryCount;
     private const float entryHeight = 19;
-    private const float titleCount = 8;
     private float originalViewHeight;
 
     private ObjectEntryEngine objectEntryEngine;
@@ -236,7 +235,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         }
 
         // Calculate the total content height
-        contentHeight = entryHeight * objects.Count + titleCount * entryHeight;
+        contentHeight = entryHeight * objects.Count + categoryOrder.Count * entryHeight;
         contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentHeight);
 
         // Current absolute scroll value

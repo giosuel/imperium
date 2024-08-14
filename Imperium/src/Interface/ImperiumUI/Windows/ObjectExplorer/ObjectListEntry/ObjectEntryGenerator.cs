@@ -352,7 +352,9 @@ internal static class ObjectEntryGenerator
                 break;
             case ObjectType.Item:
                 var item = (GrabbableObject)entry.component;
-                entry.dropButton.interactable = item.isHeld || item.heldByPlayerOnServer;
+                var isHeld = item.isHeld || item.heldByPlayerOnServer;
+                entry.dropButton.interactable = isHeld;
+                entry.teleportHereButton.interactable = !isHeld;
                 break;
             case ObjectType.Landmine:
             case ObjectType.Turret:
