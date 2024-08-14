@@ -60,12 +60,12 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<Landmine>> CurrentLevelLandmines = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<PlayerControllerB>> CurrentPlayers = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<GrabbableObject>> CurrentLevelItems = new([]);
-    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelMoldSpores = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<BreakerBox>> CurrentLevelBreakerBoxes = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SpikeRoofTrap>> CurrentLevelSpikeTraps = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCruisers = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SteamValveHazard>> CurrentLevelSteamValves = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
-    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCompanyCruisers = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
 
     /*
@@ -416,17 +416,17 @@ internal class ObjectManager : ImpLifecycleObject
     internal void RefreshLevelObstacles()
     {
         HashSet<DoorLock> currentLevelDoors = [];
-        HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
         HashSet<Turret> currentLevelTurrets = [];
-        HashSet<Landmine> currentLevelLandmines = [];
-        HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
-        HashSet<BreakerBox> currentLevelBreakerBoxes = [];
         HashSet<EnemyVent> currentLevelVents = [];
+        HashSet<GameObject> currentVainShrouds = [];
+        HashSet<Landmine> currentLevelLandmines = [];
+        HashSet<BreakerBox> currentLevelBreakerBoxes = [];
+        HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
         HashSet<SteamValveHazard> currentLevelSteamValves = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
         HashSet<RandomScrapSpawn> currentScrapSpawnPoints = [];
-        HashSet<GameObject> currentMoldSpores = [];
         HashSet<VehicleController> currentLevelCompanyCruisers = [];
+        HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
 
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
         {
@@ -434,7 +434,7 @@ internal class ObjectManager : ImpLifecycleObject
             if (obj.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
             if (obj.name.Contains("MoldSpore"))
             {
-                currentMoldSpores.Add(obj);
+                currentVainShrouds.Add(obj);
                 continue;
             }
 
@@ -534,13 +534,13 @@ internal class ObjectManager : ImpLifecycleObject
 
         if (currentLevelCompanyCruisers.Count > 0)
         {
-            CurrentLevelCompanyCruisers.Set(
-                CurrentLevelCompanyCruisers.Value.Union(currentLevelCompanyCruisers).ToHashSet());
+            CurrentLevelCruisers.Set(
+                CurrentLevelCruisers.Value.Union(currentLevelCompanyCruisers).ToHashSet());
         }
 
-        if (currentMoldSpores.Count > 0)
+        if (currentVainShrouds.Count > 0)
         {
-            CurrentLevelMoldSpores.Set(CurrentLevelMoldSpores.Value.Union(currentMoldSpores).ToHashSet());
+            CurrentLevelVainShrouds.Set(CurrentLevelVainShrouds.Value.Union(currentVainShrouds).ToHashSet());
         }
     }
 

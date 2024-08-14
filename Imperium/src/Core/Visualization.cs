@@ -107,8 +107,8 @@ internal class Visualization
         Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += RefreshOverlays;
         Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += RefreshOverlays;
         Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelMoldSpores.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelCompanyCruisers.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelVainShrouds.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelCruisers.onTrigger += RefreshOverlays;
     }
 
     /// <summary>

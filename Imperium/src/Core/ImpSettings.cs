@@ -316,10 +316,10 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.Visualization.Collider(value, "InteractTrigger", IdentifierType.TAG)
         );
 
-        internal readonly ImpConfig<bool> MoldSpores = new(
+        internal readonly ImpConfig<bool> VainShrouds = new(
             config,
             "Visualization.Colliders",
-            "MoldSpores",
+            "VainShrouds",
             false,
             value => Imperium.Visualization.Collider(value, "MoldSpore", IdentifierType.TAG)
         );
