@@ -29,6 +29,11 @@ internal class LayerSelector : BaseUI
     private ImpBinding<bool> isEnabledBinding = new(false);
     private ImpBinding<int> layerMaskBinding = new(0);
 
+    private Transform fovSlider;
+    private Transform movementSpeedSlider;
+
+    private const float toggleHeight = 12f;
+
     protected override void InitUI()
     {
         // This needs to work standalone and as a widget (with and without scroll)
@@ -36,6 +41,11 @@ internal class LayerSelector : BaseUI
 
         layerTemplate = layerList.Find("Template").gameObject;
         layerTemplate.SetActive(false);
+
+        var listRect = layerList.GetComponent<RectTransform>();
+        listRect.sizeDelta = new Vector2(listRect.sizeDelta.x, layerToggles.Length * toggleHeight);
+
+        var positionY = 0f;
 
         for (var i = 0; i < layerToggles.Length; i++)
         {
@@ -51,6 +61,9 @@ internal class LayerSelector : BaseUI
                 layerToggles[selectedLayer].SetSelected(true);
             };
             layerToggles[i].GetComponent<Button>().onClick.AddListener(OnLayerSelect);
+            layerToggles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -positionY);
+
+            positionY += toggleHeight;
         }
 
         layerToggles[0].SetSelected(true);
@@ -58,6 +71,21 @@ internal class LayerSelector : BaseUI
         Imperium.InputBindings.FreecamMap.NextLayer.performed += OnLayerDown;
         Imperium.InputBindings.FreecamMap.PreviousLayer.performed += OnLayerUp;
         Imperium.InputBindings.FreecamMap.ToggleLayer.performed += OnLayerToggleLayer;
+
+        fovSlider = transform.Find("FovSlider");
+        movementSpeedSlider = transform.Find("MovementSpeedSlider");
+
+        if (fovSlider)
+        {
+            fovSlider.gameObject.SetActive(false);
+            ImpSlider.Bind("FovSlider", transform, Imperium.Settings.Freecam.FreecamFieldOfView, theme: theme);
+        }
+
+        if (movementSpeedSlider)
+        {
+            movementSpeedSlider.gameObject.SetActive(false);
+            ImpSlider.Bind("MovementSpeedSlider", transform, Imperium.Settings.Freecam.FreecamMovementSpeed, theme: theme);
+        }
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -152,11 +180,21 @@ internal class LayerSelector : BaseUI
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen)
         {
-            if (IsOpen) Close();
+            if (IsOpen)
+            {
+                Close();
+                if (fovSlider) fovSlider.gameObject.SetActive(false);
+                if (movementSpeedSlider) movementSpeedSlider.gameObject.SetActive(false);
+            }
         }
         else if (isEnabledBinding is { Value: true } && Imperium.Player.isFreeCamera)
         {
-            if (!IsOpen) Open();
+            if (!IsOpen)
+            {
+                Open();
+                if (fovSlider) fovSlider.gameObject.SetActive(true);
+                if (movementSpeedSlider) movementSpeedSlider.gameObject.SetActive(true);
+            }
         }
     }
 }

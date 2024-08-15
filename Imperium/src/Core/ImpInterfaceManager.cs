@@ -140,6 +140,7 @@ internal class ImpInterfaceManager : MonoBehaviour
     public void Destroy()
     {
         Close();
+        foreach (var controller in interfaceControllers.Values) Destroy(controller);
         Destroy(gameObject);
     }
 

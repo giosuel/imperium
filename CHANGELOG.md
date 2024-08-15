@@ -23,6 +23,7 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
   - Instant ignition option ,allows you to always start the cruiser on first try.
   - Sliders for push force and acceleration.
 - Added various new default insights to the player and selected entities.
+- Added sliders to indicate the current field of view and movement speed when using the freecam.
 
 
 ### Changes
@@ -57,6 +58,7 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 - Fixed a bug where the ship ambience noise would be sped up.
 - Fixed a bug where spider webs would be indestructible after the spider has died.
 - Fixed a bug where mods that add entities with special characters in their name would interfere with Imperium's launch.
+- Fixed a bug where the freecam's field of view would get stuck.
 
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 

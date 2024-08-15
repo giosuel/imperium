@@ -135,8 +135,6 @@ public class Imperium : BaseUnityPlugin
 
     internal static void DisableImperium()
     {
-        if (!IsImperiumLaunched) return;
-
         IsImperiumEnabled = false;
 
         Interface.Destroy();

@@ -188,7 +188,7 @@ public class ImpFreecam : MonoBehaviour
 
         Imperium.Settings.Freecam.FreecamMovementSpeed.Set(scrollValue switch
         {
-            > 0 => Mathf.Min(Imperium.Settings.Freecam.FreecamMovementSpeed.Value + 1f, 200),
+            > 0 => Mathf.Min(Imperium.Settings.Freecam.FreecamMovementSpeed.Value + 1f, 100),
             < 0 => Mathf.Max(Imperium.Settings.Freecam.FreecamMovementSpeed.Value - 1f, 1f),
             _ => Imperium.Settings.Freecam.FreecamMovementSpeed.Value
         });
@@ -196,14 +196,14 @@ public class ImpFreecam : MonoBehaviour
         if (Imperium.InputBindings.FreecamMap.IncreaseFOV.IsPressed())
         {
             Imperium.Settings.Freecam.FreecamFieldOfView.Set(
-                Mathf.Max(-360, Imperium.Settings.Freecam.FreecamFieldOfView.Value - 1)
+                Mathf.Min(300, Imperium.Settings.Freecam.FreecamFieldOfView.Value + 1)
             );
         }
 
         if (Imperium.InputBindings.FreecamMap.DecreaseFOV.IsPressed())
         {
             Imperium.Settings.Freecam.FreecamFieldOfView.Set(
-                Mathf.Min(360, Imperium.Settings.Freecam.FreecamFieldOfView.Value + 1)
+                Mathf.Max(1, Imperium.Settings.Freecam.FreecamFieldOfView.Value - 1)
             );
         }
 
