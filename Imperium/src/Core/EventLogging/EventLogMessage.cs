@@ -6,11 +6,12 @@ public struct EventLogMessage
     public string ObjectName { get; init; }
     public string Message { get; init; }
     public EventLogType Type { get; init; }
-    public int Count { get; set; }
-    public int Day { get; set; }
 
     public string DetailsTitle { get; init; }
     public EventLogDetail[] Details { get; init; }
+
+    internal int Count { get; set; }
+    internal int Day { get; set; }
 }
 
 public readonly struct EventLogDetail

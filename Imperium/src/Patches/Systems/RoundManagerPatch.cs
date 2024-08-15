@@ -76,7 +76,14 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnScrapInLevel")]
     private static void SpawnScrapInLevelPostfixPatch()
     {
-        Imperium.ObjectManager.RefreshLevelItems();
+        Imperium.ObjectManager.RefreshLevelObjects();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnOutsideHazards")]
+    private static void SpawnOutsideHazardsPostfixPatch()
+    {
+        Imperium.ObjectManager.RefreshLevelObjects();
     }
 
     internal static readonly ImpBinding<HashSet<HazardIndicator>> MapHazardPositions = new([]);
@@ -116,9 +123,17 @@ internal static class RoundManagerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch("SpawnEnemyFromVent")]
-    private static void SpawnEnemyFromVentPatch(RoundManager __instance)
+    private static void SpawnEnemyFromVentPatch(RoundManager __instance, EnemyVent vent)
     {
         Imperium.ObjectManager.RefreshLevelEntities();
+        Imperium.EventLog.GameEvents.SpawnEnemyFromVent(vent);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SwitchPower")]
+    private static void SwitchPowerPatch(RoundManager __instance, bool on)
+    {
+        Imperium.EventLog.GameEvents.SwitchPower(on);
     }
 
     [HarmonyPrefix]
@@ -156,7 +171,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPostfixPatch(RoundManager __instance)
     {
-        Imperium.ObjectManager.RefreshLevelEntities();
+        Imperium.ObjectManager.RefreshLevelObjects();
 
         ImpSpawnTracker.EndCycle(__instance);
 

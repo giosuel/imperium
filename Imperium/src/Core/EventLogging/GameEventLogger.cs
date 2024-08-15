@@ -16,6 +16,44 @@ internal class GameEventLogger(ImpEventLog log)
         });
     }
 
+    internal void SpawnEnemyFromVent(EnemyVent vent)
+    {
+        LogGameEvent(
+            "Spawning entity from vent",
+            "Entity Spawning",
+            new EventLogDetail
+            {
+                Title = "Vent ID",
+                Text = vent.GetInstanceID().ToString()
+            },
+            new EventLogDetail
+            {
+                Title = "Vent Position",
+                Text = Formatting.FormatVector(vent.floorNode.position, 1)
+            },
+            new EventLogDetail
+            {
+                Title = "Entity",
+                Text = Imperium.ObjectManager.GetDisplayName(
+                    Imperium.RoundManager.currentLevel.Enemies[vent.enemyTypeIndex].enemyType.enemyName
+                )
+            }
+        );
+    }
+
+    internal void SwitchPower(bool isOn)
+    {
+        LogGameEvent(
+            $"Power has been switched {(isOn ? "on" : "off")}",
+            "Power",
+            new EventLogDetail
+            {
+                Title = "Power State",
+                Text = isOn ? "On" : "Off"
+            }
+        );
+    }
+
     internal void AdvanceHourAndSpawnNewBatchOfEnemiesPrefix(bool isInitial)
     {
         LogGameEvent(
@@ -55,7 +93,7 @@ internal class GameEventLogger(ImpEventLog log)
     internal void AdvanceHourAndSpawnNewBatchOfEnemiesPostfix(bool isInitial)
     {
         var spawnedEntities = ImpSpawnTracker.GetSpawnedEntitiesThisCycle();
-        
+
         LogGameEvent(
             isInitial ? "Finished executing initial spawn cycle." : "Finished executing spawn cycle.",
             "Entity Spawning",

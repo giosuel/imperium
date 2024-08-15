@@ -34,6 +34,7 @@ public abstract class ImpConstants
     internal const int DefaultMapCameraNearClipFreeLook = -20;
 
     internal const float DefaultCarPushForceMultiplier = 27;
+    internal const float DefaultCarAccelerationMultiplier = 250;
 
     internal const string GeneralSaveFile = "LCGeneralSaveData";
 

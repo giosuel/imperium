@@ -169,10 +169,12 @@ internal static class PlayerControllerPatch
                     ? IngamePlayerSettings.Instance.playerInput.actions.FindAction("Crouch").ReadValue<float>()
                     : 0;
 
-                upInput *= 15f;
-                downInput *= 15f;
+                var flyingSpeed = Imperium.Settings.Player.FlyingSpeed.Value;
 
-                var forceVector = new Vector3(moveVector.x * 10f, upInput - downInput, moveVector.y * 10f);
+                upInput *= flyingSpeed * 1.5f;
+                downInput *= flyingSpeed * 1.5f;
+
+                var forceVector = new Vector3(moveVector.x * flyingSpeed, upInput - downInput, moveVector.y * flyingSpeed);
                 forceVector = Quaternion.AngleAxis(Imperium.Player.transform.eulerAngles.y, Vector3.up) * forceVector;
                 __instance.externalForces += forceVector;
             }

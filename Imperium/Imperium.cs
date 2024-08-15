@@ -69,6 +69,7 @@ public class Imperium : BaseUnityPlugin
     internal static PlayerManager PlayerManager { get; private set; }
     internal static MoonManager MoonManager { get; private set; }
     internal static ShipManager ShipManager { get; private set; }
+    internal static CruiserManager CruiserManager { get; private set; }
     internal static Visualization Visualization { get; private set; }
     internal static Oracle Oracle { get; private set; }
     internal static ImpEventLog EventLog { get; private set; }
@@ -140,6 +141,7 @@ public class Imperium : BaseUnityPlugin
 
         Interface.Destroy();
         PlayerManager.IsFlying.SetFalse();
+        Freecam.IsFreecamEnabled.SetFalse();
 
         InputBindings.BaseMap.Disable();
         InputBindings.StaticMap.Disable();
@@ -155,6 +157,11 @@ public class Imperium : BaseUnityPlugin
         InputBindings.StaticMap.Enable();
         InputBindings.FreecamMap.Enable();
         InputBindings.InterfaceMap.Enable();
+
+        Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
+        StartUI();
+        
+        Settings.LoadAll();
 
         IsImperiumEnabled = true;
     }
@@ -190,6 +197,7 @@ public class Imperium : BaseUnityPlugin
         GameManager = new GameManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         MoonManager = new MoonManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         ShipManager = new ShipManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        CruiserManager = new CruiserManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
@@ -204,11 +212,6 @@ public class Imperium : BaseUnityPlugin
         MoonManager.MaxDaytimePower.onTrigger += Oracle.Simulate;
         MoonManager.MinIndoorSpawns.onTrigger += Oracle.Simulate;
         MoonManager.MinOutdoorSpawns.onTrigger += Oracle.Simulate;
-
-        Interface.OpenInterface.onUpdate += openInterface =>
-        {
-            if (openInterface) ImpPositionIndicator.Deactivate();
-        };
 
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
@@ -229,7 +232,7 @@ public class Imperium : BaseUnityPlugin
 
             Settings.LoadAll();
 
-            SpawnUI();
+            StartUI();
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
@@ -282,8 +285,13 @@ public class Imperium : BaseUnityPlugin
         Launch();
     }
 
-    private static void SpawnUI()
+    private static void StartUI()
     {
+        Interface.OpenInterface.onUpdate += openInterface =>
+        {
+            if (openInterface) ImpPositionIndicator.Deactivate();
+        };
+
         Interface.RegisterInterface<ImperiumUI>(
             ImpAssets.ImperiumUIObject,
             "ImperiumUI",

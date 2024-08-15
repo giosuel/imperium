@@ -35,6 +35,7 @@ internal abstract class ImpAssets
     internal static GameObject EventLogWindowObject;
     internal static GameObject MoonControlWindowObject;
     internal static GameObject ShipControlWindowObject;
+    internal static GameObject CruiserControlWindowObject;
     internal static GameObject RenderingWindowObject;
     internal static GameObject SaveEditorWindowObject;
     internal static GameObject TeleportationWindowObject;
@@ -150,6 +151,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/rendering.prefab", out RenderingWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/save_editor.prefab", out SaveEditorWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/ship_control.prefab", out ShipControlWindowObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/cruiser_control.prefab", out CruiserControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/teleportation.prefab", out TeleportationWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/visualization.prefab", out VisualizationWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),

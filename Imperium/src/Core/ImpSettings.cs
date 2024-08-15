@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
 using Imperium.Core.Lifecycle;
+using Imperium.Patches.Objects;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -27,6 +28,7 @@ public class ImpSettings(ConfigFile config)
     internal readonly TimeSettings Time = new(config);
     internal readonly EventLogSettings EventLog = new(config);
     internal readonly ShipSettings Ship = new(config);
+    internal readonly CruiserSettings Cruiser = new(config);
     internal readonly AnimationSkippingSettings AnimationSkipping = new(config);
     internal readonly VisualizationSettings Visualization = new(config);
     internal readonly RenderSettings Rendering = new(config);
@@ -94,18 +96,18 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.Player.jumpForce = value
         );
 
+        internal readonly ImpConfig<float> FlyingSpeed = new(
+            config,
+            "Player",
+            "FlyingSpeed",
+            10
+        );
+
         internal readonly ImpConfig<float> NightVision = new(
             config,
             "Player",
             "NightVision",
             0
-        );
-
-        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<float> PushForce = new(
-            config,
-            "Player",
-            "PushForce",
-            ImpConstants.DefaultCarPushForceMultiplier
         );
     }
 
@@ -184,6 +186,65 @@ public class ImpSettings(ConfigFile config)
             "Game.Terminal",
             "UnlockShop",
             false
+        );
+    }
+
+    internal class CruiserSettings(ConfigFile config) : SettingBase(config)
+    {
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> Indestructible = new(
+            config,
+            "Game.Cruiser",
+            "Indestructible",
+            false
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> InfiniteTurbo = new(
+            config,
+            "Game.Cruiser",
+            "InfiniteTurbo",
+            false
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> SpawnFullTurbo = new(
+            config,
+            "Game.Cruiser",
+            "SpawnFullTurbo",
+            false
+        );
+
+
+        internal readonly ImpConfig<bool> InstantIgnite = new(
+            config,
+            "Game.Cruiser",
+            "InstantIgnite",
+            false,
+            onUpdate: value =>
+            {
+                if (value)
+                {
+                    VehicleControllerPatch.InstantIgnitionHarmony.PatchAll(
+                        typeof(VehicleControllerPatch.InstantIgnitionPatches)
+                    );
+                }
+                else
+                {
+                    VehicleControllerPatch.InstantIgnitionHarmony.UnpatchSelf();
+                }
+            }
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<float> PushForce = new(
+            config,
+            "Game.Cruiser",
+            "PushForce",
+            ImpConstants.DefaultCarPushForceMultiplier
+        );
+
+        [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<float> Acceleration = new(
+            config,
+            "Game.Cruiser",
+            "Acceleration",
+            ImpConstants.DefaultCarAccelerationMultiplier
         );
     }
 
@@ -1097,6 +1158,7 @@ public class ImpSettings(ConfigFile config)
         Load(Shovel);
         Load(Time);
         Load(Ship);
+        Load(Cruiser);
         Load(EventLog);
         Load(AnimationSkipping);
         Load(Visualization);
@@ -1113,6 +1175,7 @@ public class ImpSettings(ConfigFile config)
         Reset(Shovel);
         Reset(Time);
         Reset(Ship);
+        Reset(Cruiser);
         Reset(EventLog);
         Reset(AnimationSkipping);
         Reset(Visualization);

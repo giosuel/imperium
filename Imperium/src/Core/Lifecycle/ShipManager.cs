@@ -10,11 +10,11 @@ using Unity.Netcode;
 
 namespace Imperium.Core.Lifecycle;
 
-public class ShipManager : ImpLifecycleObject
+internal class ShipManager : ImpLifecycleObject
 {
     private readonly ImpNetMessage<int> navigateShipMessage = new("NavigateShip", Imperium.Networking);
 
-    public ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) : base(sceneLoaded, playersConnected)
+    internal ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) : base(sceneLoaded, playersConnected)
     {
         if (NetworkManager.Singleton.IsHost) navigateShipMessage.OnServerReceive += OnNavigateToServer;
         navigateShipMessage.OnClientRecive += OnNavigateToClient;

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Imperium.API.Types.Networking;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using LethalNetworkAPI;
 using Unity.Netcode;
@@ -23,9 +24,6 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
     public T DefaultValue { get; }
 
     public T Value { get; private set; }
-
-    // private readonly LethalServerMessage<BindingUpdateRequest<T>> serverMessage;
-    // private readonly LethalClientMessage<BindingUpdateRequest<T>> clientMessage;
 
     private readonly LNetworkMessage<BindingUpdateRequest<T>> networkMessage;
 
@@ -58,12 +56,6 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
         this.masterBinding = masterBinding;
 
         networkMessage = LNetworkMessage<BindingUpdateRequest<T>>.Connect($"{identifier}_binding");
-
-        // serverMessage = new LethalServerMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
-        // clientMessage = new LethalClientMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
-
-        // serverMessage.OnReceived += OnServerReceived;
-        // clientMessage.OnReceived += OnClientReceived;
 
         networkMessage.OnServerReceived += OnServerReceived;
         networkMessage.OnClientReceived += OnClientReceived;
@@ -131,6 +123,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
         networkMessage.ClearSubscriptions();
     }
 
+    [ImpAttributes.HostOnly]
     public void BroadcastToClient(ulong clientId)
     {
         if (!NetworkManager.Singleton.IsHost) return;

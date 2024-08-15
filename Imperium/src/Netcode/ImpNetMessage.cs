@@ -54,7 +54,7 @@ public class ImpNetMessage<T> : INetworkSubscribable
         else
         {
             Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to clients");
-            networkMessage.SendClients(data);
+            networkMessage.SendOtherClients(data);
         }
     }
 

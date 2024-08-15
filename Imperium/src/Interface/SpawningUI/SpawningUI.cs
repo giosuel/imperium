@@ -71,9 +71,8 @@ internal class SpawningUI : BaseUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.Entty,
+                SpawningObjectEntry.SpawnObjectType.Entity,
                 entity.enemyName,
-                entity.enemyPrefab?.name,
                 () => Spawn(spawningEntry, 1, -1),
                 () => SelectItemAndDeselectOthers(currentIndex),
                 theme
@@ -89,7 +88,6 @@ internal class SpawningUI : BaseUI
             spawningEntry.Init(
                 SpawningObjectEntry.SpawnObjectType.Item,
                 item.itemName,
-                item.spawnPrefab?.name ?? Imperium.ObjectManager.GetStaticPrefabName(item.itemName),
                 () => Spawn(spawningEntry, 1, -1),
                 () => SelectItemAndDeselectOthers(currentIndex),
                 theme
@@ -97,7 +95,7 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
-        foreach (var (hazardName, hazard) in Imperium.ObjectManager.LoadedMapHazards.Value)
+        foreach (var hazardName in Imperium.ObjectManager.LoadedMapHazards.Value.Keys)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
@@ -105,7 +103,6 @@ internal class SpawningUI : BaseUI
             spawningEntry.Init(
                 SpawningObjectEntry.SpawnObjectType.MapHazard,
                 hazardName,
-                hazard.name,
                 () => Spawn(spawningEntry, 1, -1),
                 () => SelectItemAndDeselectOthers(currentIndex),
                 theme
@@ -113,18 +110,48 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
-        foreach (var (staticPrefabName, staticPrefab) in Imperium.ObjectManager.LoadedStaticPrefabs.Value)
+        foreach (var prefabName in Imperium.ObjectManager.LoadedStaticPrefabs.Value.Keys)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
-            var spawnType = staticPrefabName == "Company Cruiser"
+            // Since the company cruiser requires a different spawn function, we have to assign it its own type
+            var spawnType = prefabName == "CompanyCruiser"
                 ? SpawningObjectEntry.SpawnObjectType.CompanyCruiser
                 : SpawningObjectEntry.SpawnObjectType.StaticPrefab;
             spawningEntry.Init(
                 spawnType,
-                staticPrefabName,
-                staticPrefab.name,
+                prefabName,
+                () => Spawn(spawningEntry, 1, -1),
+                () => SelectItemAndDeselectOthers(currentIndex),
+                theme
+            );
+            entries.Add(spawningEntry);
+        }
+
+        foreach (var prefabName in Imperium.ObjectManager.LoadedLocalStaticPrefabs.Value.Keys)
+        {
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            spawningEntry.Init(
+                SpawningObjectEntry.SpawnObjectType.LocalStaticPrefab,
+                prefabName,
+                () => Spawn(spawningEntry, 1, -1),
+                () => SelectItemAndDeselectOthers(currentIndex),
+                theme
+            );
+            entries.Add(spawningEntry);
+        }
+
+        foreach (var prefabName in Imperium.ObjectManager.LoadedOutsideObjects.Value.Keys)
+        {
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            spawningEntry.Init(
+                SpawningObjectEntry.SpawnObjectType.OutsideObject,
+                prefabName,
                 () => Spawn(spawningEntry, 1, -1),
                 () => SelectItemAndDeselectOthers(currentIndex),
                 theme
@@ -245,7 +272,10 @@ internal class SpawningUI : BaseUI
         var useIndicator = spawningObjectEntry.SpawnType is
             SpawningObjectEntry.SpawnObjectType.MapHazard or
             SpawningObjectEntry.SpawnObjectType.StaticPrefab or
-            SpawningObjectEntry.SpawnObjectType.CompanyCruiser;
+            SpawningObjectEntry.SpawnObjectType.CompanyCruiser or
+            SpawningObjectEntry.SpawnObjectType.LocalStaticPrefab or
+            SpawningObjectEntry.SpawnObjectType.OutsideObject;
+
         if (Imperium.Freecam.IsFreecamEnabled.Value || Imperium.PlayerManager.IsFlying.Value || useIndicator)
         {
             var originTransform = Imperium.Freecam.IsFreecamEnabled.Value

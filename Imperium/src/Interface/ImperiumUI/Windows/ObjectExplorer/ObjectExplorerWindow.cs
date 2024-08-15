@@ -39,8 +39,11 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private RectTransform othersTitle;
     private TMP_Text othersCount;
 
+    private RectTransform outsideObjectsTitle;
+    private TMP_Text outsideObjectsCount;
+
     private RectTransform vainsTitle;
-    private TMP_Text vainShroudCount;
+    private TMP_Text vainsCount;
 
     private GameObject entryTemplate;
 
@@ -49,12 +52,13 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
     private readonly ImpBinding<bool> PlayersCollapsed = new(false);
     private readonly ImpBinding<bool> EntitiesCollapsed = new(false);
+    private readonly ImpBinding<bool> CruisersCollapsed = new(false);
     private readonly ImpBinding<bool> HazardsCollapsed = new(false);
     private readonly ImpBinding<bool> VentsCollapsed = new(false);
     private readonly ImpBinding<bool> ItemsCollapsed = new(false);
-    private readonly ImpBinding<bool> VainsCollapsed = new(false);
-    private readonly ImpBinding<bool> CruisersCollapsed = new(false);
     private readonly ImpBinding<bool> OtherCollapsed = new(false);
+    private readonly ImpBinding<bool> OutsideObjectsCollapsed = new(false);
+    private readonly ImpBinding<bool> VainsCollapsed = new(false);
 
     private float viewHeight;
     private float contentHeight;
@@ -94,8 +98,10 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ventsCount = contentRect.Find("VentListTitle/Count").GetComponent<TMP_Text>();
         othersTitle = contentRect.Find("OtherListTitle").GetComponent<RectTransform>();
         othersCount = contentRect.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
+        outsideObjectsTitle = contentRect.Find("OutsideObjectsListTitle").GetComponent<RectTransform>();
+        outsideObjectsCount = contentRect.Find("OutsideObjectsListTitle/Count").GetComponent<TMP_Text>();
         vainsTitle = contentRect.Find("VainShroudListTitle").GetComponent<RectTransform>();
-        vainShroudCount = contentRect.Find("VainShroudListTitle/Count").GetComponent<TMP_Text>();
+        vainsCount = contentRect.Find("VainShroudListTitle/Count").GetComponent<TMP_Text>();
 
         ImpButton.CreateCollapse("PlayerListTitle/Arrow", contentRect, stateBinding: PlayersCollapsed);
         ImpButton.CreateCollapse("EntityListTitle/Arrow", contentRect, stateBinding: EntitiesCollapsed);
@@ -104,31 +110,20 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ImpButton.CreateCollapse("HazardListTitle/Arrow", contentRect, stateBinding: HazardsCollapsed);
         ImpButton.CreateCollapse("VentListTitle/Arrow", contentRect, stateBinding: VentsCollapsed);
         ImpButton.CreateCollapse("OtherListTitle/Arrow", contentRect, stateBinding: OtherCollapsed);
+        ImpButton.CreateCollapse("OutsideObjectsListTitle/Arrow", contentRect, stateBinding: OutsideObjectsCollapsed);
         ImpButton.CreateCollapse("VainShroudListTitle/Arrow", contentRect, stateBinding: VainsCollapsed);
 
         PlayersCollapsed.onTrigger += RefreshEntries;
         EntitiesCollapsed.onTrigger += RefreshEntries;
+        CruisersCollapsed.onTrigger += RefreshEntries;
         HazardsCollapsed.onTrigger += RefreshEntries;
         VentsCollapsed.onTrigger += RefreshEntries;
         ItemsCollapsed.onTrigger += RefreshEntries;
-        VainsCollapsed.onTrigger += RefreshEntries;
-        CruisersCollapsed.onTrigger += RefreshEntries;
         OtherCollapsed.onTrigger += RefreshEntries;
+        OutsideObjectsCollapsed.onTrigger += RefreshEntries;
+        VainsCollapsed.onTrigger += RefreshEntries;
 
-        Imperium.ObjectManager.CurrentLevelDoors.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelSecurityDoors.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelSpikeTraps.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelVents.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelSteamValves.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelItems.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentPlayers.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelVainShrouds.onTrigger += RefreshEntries;
-        Imperium.ObjectManager.CurrentLevelCruisers.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelObjectsChanged.onTrigger += RefreshEntries;
 
         objectCategories = new Dictionary<ObjectCategory, CategoryDefinition>
         {
@@ -139,6 +134,10 @@ internal class ObjectExplorerWindow : ImperiumWindow
             { ObjectCategory.Items, new CategoryDefinition { TitleRect = itemsTitle, Binding = ItemsCollapsed } },
             { ObjectCategory.Vents, new CategoryDefinition { TitleRect = ventsTitle, Binding = VentsCollapsed } },
             { ObjectCategory.Other, new CategoryDefinition { TitleRect = othersTitle, Binding = OtherCollapsed } },
+            {
+                ObjectCategory.OutsideObjects,
+                new CategoryDefinition { TitleRect = outsideObjectsTitle, Binding = OutsideObjectsCollapsed }
+            },
             { ObjectCategory.Vains, new CategoryDefinition { TitleRect = vainsTitle, Binding = VainsCollapsed } },
         };
 
@@ -151,6 +150,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             ObjectCategory.Items,
             ObjectCategory.Vents,
             ObjectCategory.Other,
+            ObjectCategory.OutsideObjects,
             ObjectCategory.Vains,
         ];
 
@@ -169,6 +169,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             new StyleOverride("ItemListTitle", Variant.DARKER),
             new StyleOverride("VentListTitle", Variant.DARKER),
             new StyleOverride("OtherListTitle", Variant.DARKER),
+            new StyleOverride("OutsideObjectsListTitle", Variant.DARKER),
             new StyleOverride("VainShroudListTitle", Variant.DARKER)
         );
 
@@ -189,6 +190,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             new StyleOverride("ItemListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VentListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("OtherListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("OutsideObjectsListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VainShroudListTitle/Count", Variant.FADED_TEXT)
         );
     }
@@ -272,7 +274,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
             if (index >= objects.Count)
             {
-                entryInstances[i].ClearItem(index, entryPositionAbsolute);
+                entryInstances[i].ClearItem(entryPositionAbsolute);
             }
             else
             {
@@ -288,7 +290,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
         itemsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Items, 0).ToString()})";
         ventsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vents, 0).ToString()})";
         othersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Other, 0).ToString()})";
-        vainShroudCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0).ToString()})";
+        outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0).ToString()})";
+        vainsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0).ToString()})";
     }
 
     private IEnumerator waitForRefresh()

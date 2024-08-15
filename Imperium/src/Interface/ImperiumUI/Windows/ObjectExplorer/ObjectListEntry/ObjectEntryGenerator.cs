@@ -1,12 +1,11 @@
 using System;
+using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
-using Imperium.Interface.Common;
 using Imperium.Util;
 using Unity.Netcode;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
@@ -23,9 +22,10 @@ internal static class ObjectEntryGenerator
         ObjectType.BreakerBox => false,
         ObjectType.Item => false,
         ObjectType.Vent => false,
-        ObjectType.VainShroud => false,
         ObjectType.Player => false,
         ObjectType.SteamValve => false,
+        ObjectType.VainShroud => false,
+        ObjectType.OutsideObject => false,
         _ => true
     };
 
@@ -52,16 +52,39 @@ internal static class ObjectEntryGenerator
         ObjectType.Cruiser => false,
         ObjectType.Player => false,
         ObjectType.Item => false,
-        ObjectType.VainShroud => false,
         ObjectType.SpiderWeb => false,
         ObjectType.SpikeTrap => false,
+        ObjectType.VainShroud => false,
+        ObjectType.OutsideObject => false,
         _ => true
     };
 
-    internal static void DestroyObject(ObjectEntry entry)
+    internal static void DespawnObject(ObjectEntry entry)
     {
         switch (entry.Type)
         {
+            case ObjectType.Entity:
+                Imperium.ObjectManager.DespawnEntity(entry.objectNetId!.Value);
+                break;
+            case ObjectType.Item:
+                Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
+                break;
+            case ObjectType.VainShroud:
+                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                {
+                    Type = LocalObjectType.VainShroud,
+                    Position = entry.containerObject.transform.position
+                });
+                break;
+            case ObjectType.OutsideObject:
+                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                {
+                    Type = LocalObjectType.OutsideObject,
+                    Position = entry.containerObject.transform.position
+                });
+                break;
+            case ObjectType.Player:
+                break;
             case ObjectType.BreakerBox:
             case ObjectType.Cruiser:
             case ObjectType.Landmine:
@@ -71,21 +94,6 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
             case ObjectType.Vent:
                 Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
-                break;
-            case ObjectType.Entity:
-                Imperium.ObjectManager.DespawnEntity(entry.objectNetId!.Value);
-                break;
-            case ObjectType.Item:
-                Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
-                break;
-            case ObjectType.VainShroud:
-                if (Imperium.ObjectManager.StaticPrefabLookupMap.TryGetValue(entry.containerObject, out var moldObject))
-                {
-                    Imperium.ObjectManager.DespawnObstacle(moldObject);
-                }
-
-                break;
-            case ObjectType.Player:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -99,14 +107,14 @@ internal static class ObjectEntryGenerator
         switch (entry.Type)
         {
             case ObjectType.Cruiser:
-                DestroyObject(entry);
-                Imperium.ObjectManager.SpawmCompanyCruiser(new CompanyCruiserSpawnRequest
+                DespawnObject(entry);
+                Imperium.ObjectManager.SpawnCompanyCruiser(new CompanyCruiserSpawnRequest
                 {
                     SpawnPosition = entry.containerObject.transform.position
                 });
                 break;
             case ObjectType.Landmine:
-                DestroyObject(entry);
+                DespawnObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "Landmine",
@@ -114,7 +122,7 @@ internal static class ObjectEntryGenerator
                 });
                 break;
             case ObjectType.Turret:
-                DestroyObject(entry);
+                DespawnObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "Turret",
@@ -122,7 +130,7 @@ internal static class ObjectEntryGenerator
                 });
                 break;
             case ObjectType.SpiderWeb:
-                DestroyObject(entry);
+                DespawnObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "SpiderWeb",
@@ -130,7 +138,7 @@ internal static class ObjectEntryGenerator
                 });
                 break;
             case ObjectType.SpikeTrap:
-                DestroyObject(entry);
+                DespawnObject(entry);
                 Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                 {
                     Name = "Spike Trap",
@@ -138,21 +146,21 @@ internal static class ObjectEntryGenerator
                 });
                 break;
             case ObjectType.Entity:
-                DestroyObject(entry);
+                DespawnObject(entry);
                 var entity = (EnemyAI)entry.component;
                 Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
                 {
                     Name = entity.enemyType.enemyName,
-                    PrefabName = entity.enemyType.enemyPrefab.name,
                     SpawnPosition = entry.containerObject.transform.position
                 });
                 break;
             case ObjectType.Vent:
             case ObjectType.SteamValve:
             case ObjectType.Player:
-            case ObjectType.VainShroud:
             case ObjectType.BreakerBox:
             case ObjectType.Item:
+            case ObjectType.VainShroud:
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -183,6 +191,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.VainShroud:
             case ObjectType.Player:
             case ObjectType.BreakerBox:
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -207,6 +216,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.VainShroud:
             case ObjectType.Item:
             case ObjectType.BreakerBox:
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -233,6 +243,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.VainShroud:
             case ObjectType.Item:
             case ObjectType.BreakerBox:
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -276,6 +287,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.Item:
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -296,7 +308,7 @@ internal static class ObjectEntryGenerator
                         Destination = position + Vector3.up * 5f,
                         NetworkId = entry.objectNetId!.Value
                     });
-                }, origin);
+                }, origin, castGround: true);
                 break;
             case ObjectType.Player:
                 Imperium.ImpPositionIndicator.Activate(position =>
@@ -306,14 +318,35 @@ internal static class ObjectEntryGenerator
                         PlayerId = ((PlayerControllerB)entry.component).playerClientId,
                         Destination = position
                     });
-                }, Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null);
+                }, Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null, castGround: true);
                 Imperium.Interface.Close();
+                break;
+            case ObjectType.VainShroud:
+                Imperium.ImpPositionIndicator.Activate(position =>
+                {
+                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    {
+                        Type = LocalObjectType.VainShroud,
+                        Position = entry.containerObject.transform.position,
+                        Destination = position
+                    });
+                }, origin, castGround: true);
+                break;
+            case ObjectType.OutsideObject:
+                Imperium.ImpPositionIndicator.Activate(position =>
+                {
+                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    {
+                        Type = LocalObjectType.OutsideObject,
+                        Position = entry.containerObject.transform.position,
+                        Destination = position
+                    });
+                }, origin, castGround: true);
                 break;
             case ObjectType.Entity:
             case ObjectType.BreakerBox:
             case ObjectType.Item:
             case ObjectType.Landmine:
-            case ObjectType.VainShroud:
             case ObjectType.SpikeTrap:
             case ObjectType.SpiderWeb:
             case ObjectType.Turret:
@@ -366,6 +399,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.VainShroud:
             case ObjectType.Player:
             case ObjectType.Cruiser:
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -377,8 +411,6 @@ internal static class ObjectEntryGenerator
         switch (entry.Type)
         {
             case ObjectType.VainShroud:
-                InitVainShroud(entry);
-                break;
             case ObjectType.SteamValve:
             case ObjectType.Landmine:
             case ObjectType.Turret:
@@ -390,18 +422,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.Item:
-                entry.destroyButton.interactable = true;
-                entry.teleportHereButton.interactable = true;
-                if (entry.destroyButton.TryGetComponent<ImpInteractable>(out var destroyInteractable))
-                {
-                    Object.Destroy(destroyInteractable);
-                }
-
-                if (entry.teleportHereButton.TryGetComponent<ImpInteractable>(out var teleportInteractable))
-                {
-                    Object.Destroy(teleportInteractable);
-                }
-
+            case ObjectType.OutsideObject:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -410,17 +431,18 @@ internal static class ObjectEntryGenerator
 
     internal static string GetObjectName(ObjectEntry entry) => entry.Type switch
     {
-        ObjectType.BreakerBox => $"Breaker Box <i>{entry.component.GetInstanceID()}</i>",
-        ObjectType.Cruiser => $"Cruiser <i>{entry.component.GetInstanceID()}</i>",
+        ObjectType.BreakerBox => $"Breaker Box (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.Cruiser => $"Cruiser (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.Entity => GetEntityName((EnemyAI)entry.component),
         ObjectType.Item => ((GrabbableObject)entry.component).itemProperties.itemName,
-        ObjectType.Landmine => $"Landmine <i>{entry.component.GetInstanceID()}</i>",
-        ObjectType.VainShroud => $"Mold Spore <i>{entry.component.GetInstanceID()}</i>",
+        ObjectType.Landmine => $"Landmine (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.VainShroud => $"Mold Spore (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.Player => GetPlayerName((PlayerControllerB)entry.component),
-        ObjectType.SpiderWeb => $"Spider Web <i>{entry.component.GetInstanceID()}</i>",
-        ObjectType.SpikeTrap => $"Spike Trap <i>{entry.component.GetInstanceID()}</i>",
-        ObjectType.SteamValve => $"Steam Valve <i>{entry.component.GetInstanceID()}</i>",
-        ObjectType.Turret => $"Turret <i>{entry.component.GetInstanceID()}</i>",
+        ObjectType.SpiderWeb => $"Spider Web (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.SpikeTrap => $"Spike Trap (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.SteamValve => $"Steam Valve (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.Turret => $"Turret (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.OutsideObject => GetOutsideObjectName(entry.component.gameObject),
         ObjectType.Vent => GetVentName((EnemyVent)entry.component),
         _ => throw new ArgumentOutOfRangeException()
     };
@@ -437,6 +459,11 @@ internal static class ObjectEntryGenerator
         ObjectType.Turret => entry.component.transform.parent.gameObject,
         _ => entry.component.gameObject
     };
+
+    private static string GetOutsideObjectName(GameObject obj)
+    {
+        return Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name;
+    }
 
     private static string GetVentName(EnemyVent vent)
     {
@@ -488,38 +515,5 @@ internal static class ObjectEntryGenerator
         }
 
         return player.isPlayerDead ? RichText.Strikethrough(playerName) : playerName;
-    }
-
-    private static void InitVainShroud(ObjectEntry entry)
-    {
-        var canModify = Imperium.ObjectManager.StaticPrefabLookupMap.ContainsKey(entry.containerObject);
-
-        if (!canModify && entry.tooltip)
-        {
-            entry.destroyButton.interactable = false;
-            entry.teleportHereButton.interactable = false;
-
-            if (!entry.destroyButton.TryGetComponent<ImpInteractable>(out _))
-            {
-                var interactable = entry.destroyButton.gameObject.AddComponent<ImpInteractable>();
-                interactable.onEnter += () => entry.tooltip.Activate(
-                    "Local Object",
-                    "Unable to destroy local objects instantiated by the game."
-                );
-                interactable.onExit += () => entry.tooltip.Deactivate();
-                interactable.onOver += position => entry.tooltip.UpdatePosition(position);
-            }
-
-            if (!entry.teleportHereButton.TryGetComponent<ImpInteractable>(out _))
-            {
-                var interactable = entry.teleportHereButton.gameObject.AddComponent<ImpInteractable>();
-                interactable.onEnter += () => entry.tooltip.Activate(
-                    "Local Object",
-                    "Unable to teleport local objects instantiated by the game."
-                );
-                interactable.onExit += () => entry.tooltip.Deactivate();
-                interactable.onOver += position => entry.tooltip.UpdatePosition(position);
-            }
-        }
     }
 }

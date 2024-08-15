@@ -42,12 +42,6 @@ internal class PlayerManager : ImpLifecycleObject
         () => GameObject.Find("LungApparatus(Clone)")?.transform.position
     );
 
-    internal readonly ImpNetworkBinding<float> CarPushForceBinding = new(
-        "CarPushForce",
-        Imperium.Networking,
-        masterBinding: Imperium.Settings.Player.PushForce
-    );
-
     internal bool AllowPlayerDeathOverride;
     internal bool FlyIsAscending;
     internal bool FlyIsDescending;

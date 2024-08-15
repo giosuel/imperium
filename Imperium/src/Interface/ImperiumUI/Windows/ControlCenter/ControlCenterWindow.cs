@@ -255,19 +255,19 @@ internal class ControlCenterWindow : ImperiumWindow
         );
 
         ImpSlider.Bind(
+            path: "Right/FlyingSpeed",
+            container: content,
+            theme: theme,
+            valueBinding: Imperium.Settings.Player.FlyingSpeed,
+            interactableBindings: Imperium.Settings.Player.EnableFlying
+        );
+
+        ImpSlider.Bind(
             path: "Right/NightVision",
             container: content,
             theme: theme,
             valueBinding: Imperium.Settings.Player.NightVision,
             indicatorUnit: "%"
-        );
-
-        ImpSlider.Bind(
-            path: "Right/PushForce",
-            container: content,
-            theme: theme,
-            debounceTime: 0.1f,
-            valueBinding: Imperium.PlayerManager.CarPushForceBinding
         );
     }
 }

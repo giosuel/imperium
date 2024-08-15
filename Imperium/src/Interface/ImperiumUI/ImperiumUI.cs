@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ControlCenter;
+using Imperium.Interface.ImperiumUI.Windows.CruiserControl;
 using Imperium.Interface.ImperiumUI.Windows.EventLog;
 using Imperium.Interface.ImperiumUI.Windows.Info;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl;
@@ -64,6 +66,11 @@ public class ImperiumUI : BaseUI
             ImpAssets.ShipControlWindowObject,
             "Center/ShipControl",
             "Ship Control"
+        );
+        RegisterImperiumWindow<CruiserControlWindow>(
+            ImpAssets.CruiserControlWindowObject,
+            "Center/CruiserControl",
+            "Cruiser Control"
         );
         RegisterImperiumWindow<MoonControlWindow>(
             ImpAssets.MoonControlWindowObject,

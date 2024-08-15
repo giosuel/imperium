@@ -159,7 +159,7 @@ public class ObjectInsight : MonoBehaviour
             : Imperium.Player.hasBegunSpectating
                 ? Imperium.StartOfRound.spectateCamera
                 : Imperium.Player.gameplayCamera;
-        var activeCameraTexture = camera.activeTexture;
+        var activeCameraTexture = camera?.activeTexture;
 
         if (!InsightDefinition.VisibilityBinding.Value || !activeCameraTexture)
         {

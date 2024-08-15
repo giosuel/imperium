@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Imperium.API.Types.Networking;
 using Imperium.Util.Binding;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -47,11 +48,18 @@ internal class ObjectEntryEngine
         AddType(Imperium.ObjectManager.CurrentLevelVents, ObjectType.Vent, ObjectCategory.Vents);
         AddType(Imperium.ObjectManager.CurrentLevelBreakerBoxes, ObjectType.BreakerBox, ObjectCategory.Other);
         AddType(Imperium.ObjectManager.CurrentLevelSteamValves, ObjectType.SteamValve, ObjectCategory.Other);
+        // As the entry requires a component to function and these object's don't use a script, we use their transform.
+        AddType(
+            Imperium.ObjectManager.CurrentLevelOutsideObjects,
+            ObjectType.OutsideObject,
+            ObjectCategory.OutsideObjects,
+            componentGetter: obj => obj.transform
+        );
         AddType(
             Imperium.ObjectManager.CurrentLevelVainShrouds,
             ObjectType.VainShroud,
             ObjectCategory.Vains,
-            objectGetter: obj => obj.transform
+            componentGetter: obj => obj.transform
         );
 
         incrementalCategoryCounts = GetIncrementalCategoryCounts();
@@ -76,10 +84,11 @@ internal class ObjectEntryEngine
         ImpBinding<IReadOnlyCollection<T>> list,
         ObjectType type,
         ObjectCategory category,
-        Func<T, Component> objectGetter = null
+        Func<T, Component> componentGetter = null
     ) where T : Object
     {
-        var typeCount = list.Value.Count;
+        var objectList = list.Value.Where(obj => obj).ToList();
+        var typeCount = objectList.Count;
         if (!categoryCounts.TryAdd(category, typeCount)) categoryCounts[category] += typeCount;
 
         var categoryHidden = categories[category].Binding.Value;
@@ -91,12 +100,12 @@ internal class ObjectEntryEngine
 
         if (!categoryHidden)
         {
-            foreach (var entry in list.Value.Where(obj => obj))
+            foreach (var entry in objectList)
             {
                 entries.Add(new ObjectEntryDefinition
                 {
                     Type = type,
-                    Component = objectGetter?.Invoke(entry) ?? entry as Component
+                    Component = componentGetter?.Invoke(entry) ?? entry as Component
                 });
             }
         }

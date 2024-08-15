@@ -94,21 +94,8 @@ internal class Visualization
 
         ObjectInsights = new ObjectInsights(config);
         Imperium.IsSceneLoaded.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentPlayers.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentLevelItems.onTrigger += ObjectInsights.Refresh;
-
-        Imperium.ObjectManager.CurrentPlayers.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelEntities.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelItems.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelLandmines.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelTurrets.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelSpiderWebs.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelVainShrouds.onTrigger += RefreshOverlays;
-        Imperium.ObjectManager.CurrentLevelCruisers.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelObjectsChanged.onTrigger += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentLevelObjectsChanged.onTrigger += RefreshOverlays;
     }
 
     /// <summary>

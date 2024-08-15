@@ -11,10 +11,6 @@ namespace Imperium.Netcode;
 public class ImpNetEvent : INetworkSubscribable
 {
     private readonly LNetworkEvent networkEvent;
-
-    // private readonly LethalClientEvent clientEvent;
-    // private readonly LethalServerEvent serverEvent;
-
     internal event Action<ulong> OnServerReceive;
     internal event Action OnClientRecive;
     internal event Action<ulong> OnClientReciveFromClient;
@@ -24,10 +20,6 @@ public class ImpNetEvent : INetworkSubscribable
     public ImpNetEvent(string identifier, ImpNetworking networking)
     {
         this.identifier = identifier;
-
-        // clientEvent = new LethalClientEvent($"{identifier}_event");
-        // serverEvent = new LethalServerEvent($"{identifier}_event");
-
         networkEvent = LNetworkEvent.Connect($"{identifier}_event");
 
         networkEvent.OnServerReceived += clientId =>
@@ -59,7 +51,7 @@ public class ImpNetEvent : INetworkSubscribable
         else
         {
             Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to clients");
-            networkEvent.InvokeClients();
+            networkEvent.InvokeOtherClients();
         }
     }
 

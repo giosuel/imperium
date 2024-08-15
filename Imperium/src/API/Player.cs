@@ -140,6 +140,20 @@ public static class Player
     }
 
     /// <summary>
+    ///     Controls the current flying speed of the player.
+    ///     Default: <see cref="ImpConstants.DefaultJumpForce" />
+    /// </summary>
+    public static IBinding<float> FlyingSpeed
+    {
+        get
+        {
+            APIHelpers.AssertImperiumReady();
+
+            return Imperium.Settings.Player.FlyingSpeed;
+        }
+    }
+
+    /// <summary>
     ///     Controls the FOV of the player. If set to -1, the game's default FoV will ve applied.
     ///     Default: -1
     /// </summary>

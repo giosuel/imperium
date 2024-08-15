@@ -91,7 +91,8 @@ public class StartOfRoundPatch
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(StartOfRound), "openingDoorsSequence", MethodType.Enumerator)]
         private static IEnumerable<CodeInstruction> openingDoorsSequenceTranspiler(
-            IEnumerable<CodeInstruction> instructions)
+            IEnumerable<CodeInstruction> instructions
+        )
         {
             return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
         }

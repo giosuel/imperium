@@ -9,11 +9,21 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 ### Added Stuff
 
 - Added the event log to track specific game events.
+- Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.
+- Vain shrouds can now be teleported around and removed from the map.
 - Added teleportation to fire exits to the teleportation window.
 - Added an option to make the player untargetable for entities.
 - Added an option to disable all UI tooltips.
 - Added visualizers for the Roaming Locusts detection ranges.
 - Added visualizers for the Coil-Head detection radius.
+- Added an option to control the player's flying speed.
+- Added various debug options for the Company Cruiser.
+  - Cruiser god-mode option makes the cruiser invincible to damage.
+  - Infinite turbo option makes the cruiser have turbo permanently.
+  - Instant ignition option ,allows you to always start the cruiser on first try.
+  - Sliders for push force and acceleration.
+- Added various new default insights to the player and selected entities.
+
 
 ### Changes
 

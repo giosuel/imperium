@@ -1,4 +1,5 @@
 using System;
+using Imperium.API.Types.Networking;
 using Imperium.Extensions;
 using Imperium.Interface.Common;
 using Imperium.Types;
@@ -84,7 +85,7 @@ internal class ObjectEntry : MonoBehaviour
         destroyButton = ImpButton.Bind(
             "Destroy",
             transform,
-            () => ObjectEntryGenerator.DestroyObject(this)
+            () => ObjectEntryGenerator.DespawnObject(this)
         );
 
         // Respawn button
@@ -110,6 +111,8 @@ internal class ObjectEntry : MonoBehaviour
 
         // Revive button (Unthemed, as it is blue in every theme)
         reviveButton = ImpButton.Bind("Revive", transform, () => ObjectEntryGenerator.ReviveObject(this));
+
+        forceDelayedUpdate += ClearItem;
     }
 
     private void ToggleDisabledObject()
@@ -118,7 +121,9 @@ internal class ObjectEntry : MonoBehaviour
         Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value.Toggle(objectNetId.Value));
     }
 
-    internal void ClearItem(int index, float positionY)
+    internal void ClearItem() => ClearItem(0);
+
+    internal void ClearItem(float positionY)
     {
         component = null;
         tooltip = null;

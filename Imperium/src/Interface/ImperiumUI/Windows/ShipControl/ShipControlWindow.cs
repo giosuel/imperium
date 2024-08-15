@@ -16,12 +16,12 @@ internal class ShipControlWindow : ImperiumWindow
     {
         content = transform.Find("Content");
 
-        InitShipSettings();
+        InitSettings();
 
         RegisterWidget<Destinations>(content, "Destinations");
     }
 
-    private void InitShipSettings()
+    private void InitSettings()
     {
         ImpToggle.Bind(
             "ShipSettings/InstantLanding",
