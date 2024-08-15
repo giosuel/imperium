@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using BepInEx.Configuration;
 using Imperium.Core;
 using Imperium.Util;
@@ -277,11 +278,20 @@ internal class EntityGizmoConfig
     {
         this.entityName = entityName;
 
-        Info = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Info", entityName, false);
-        Pathfinding = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Pathfinding", entityName, false);
-        Targeting = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Targeting", entityName, false);
-        LineOfSight = new ImpConfig<bool>(config, "Visualization.EntityGizmos.LineOfSight", entityName, false);
-        Hearing = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Hearing", entityName, false);
-        Custom = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Custom", entityName, false);
+        var escapedEntityName = entityName
+            .Replace("\"", "")
+            .Replace("\'", "")
+            .Replace("[", "")
+            .Replace("]", "")
+            .Replace("\n", "")
+            .Replace("\t", "")
+            .Replace("\\", "");
+
+        Info = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Info", escapedEntityName, false);
+        Pathfinding = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Pathfinding", escapedEntityName, false);
+        Targeting = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Targeting", escapedEntityName, false);
+        LineOfSight = new ImpConfig<bool>(config, "Visualization.EntityGizmos.LineOfSight", escapedEntityName, false);
+        Hearing = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Hearing", escapedEntityName, false);
+        Custom = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Custom", escapedEntityName, false);
     }
 }

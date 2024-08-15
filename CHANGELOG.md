@@ -55,6 +55,8 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 - Fixed the Baboon Hawk's LoS visualizers.
 - Fixed an Oracle problem related to the spawning of weed entities.
 - Fixed a bug where the ship ambience noise would be sped up.
+- Fixed a bug where spider webs would be indestructible after the spider has died.
+- Fixed a bug where mods that add entities with special characters in their name would interfere with Imperium's launch.
 
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 
