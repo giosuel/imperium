@@ -67,7 +67,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     private void OnServerReceived(BindingUpdateRequest<T> request, ulong clientId)
     {
-        Imperium.IO.LogInfo($"[NET] Server received binding update for {identifier}");
+        Imperium.IO.LogInfo($"[NET] Server received binding update for {identifier}.");
         if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
         {
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
@@ -79,7 +79,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     private void OnClientReceived(BindingUpdateRequest<T> updatedValue)
     {
-        Imperium.IO.LogInfo($"[NET] Client received binding update for {identifier}");
+        Imperium.IO.LogInfo($"[NET] Client received binding update for {identifier}.");
         Value = updatedValue.Payload;
 
         if (updatedValue.InvokeUpdate)

@@ -40,6 +40,10 @@ public abstract class ImpConstants
 
     internal static readonly LayerMask IndicatorMask = LayerMask.GetMask("Room", "Terrain", "Railing");
 
+    internal static readonly LayerMask TapeIndicatorMask = LayerMask.GetMask(
+        "Default", "Room", "Terrain", "Railing", "Colliders", "DecalStickableSurface", "InteractableObject"
+    );
+
     /*
      * Maps the class names of default insights to more recognizable names.
      */

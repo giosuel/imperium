@@ -21,6 +21,8 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Built-in minimap and full-screen map with layer selection, zoom and more.
 - Visualization of game object hitboxes, spawn locations, tile borders and much more.
 - Eight different interface themes to pick from.
+- Tape measure to measure in-game distances with custom layer selection support.
+- Event log that logs in-game events related to entity spawning, targeting and more.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Instant ship landing and takeoff and various other animation skips.
 - Ability to kill and revive players including the yourself.

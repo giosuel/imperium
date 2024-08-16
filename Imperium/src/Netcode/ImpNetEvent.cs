@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Imperium.Util;
 using LethalNetworkAPI;
 using Unity.Netcode;
 
@@ -13,13 +14,13 @@ public class ImpNetEvent : INetworkSubscribable
     private readonly LNetworkEvent networkEvent;
     internal event Action<ulong> OnServerReceive;
     internal event Action OnClientRecive;
-    internal event Action<ulong> OnClientReciveFromClient;
 
     private readonly string identifier;
 
     public ImpNetEvent(string identifier, ImpNetworking networking)
     {
         this.identifier = identifier;
+
         networkEvent = LNetworkEvent.Connect($"{identifier}_event");
 
         networkEvent.OnServerReceived += clientId =>
@@ -30,34 +31,39 @@ public class ImpNetEvent : INetworkSubscribable
             }
         };
         networkEvent.OnClientReceived += () => OnClientRecive?.Invoke();
-        networkEvent.OnClientReceivedFromClient += clientId => OnClientReciveFromClient?.Invoke(clientId);
+        networkEvent.OnClientReceivedFromClient += _ => OnClientRecive?.Invoke();
 
         networking.RegisterSubscriber(this);
     }
 
+    [ImpAttributes.RemoteMethod]
     internal void DispatchToServer()
     {
-        Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to server");
+        Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to server.");
         networkEvent.InvokeServer();
     }
 
+    [ImpAttributes.RemoteMethod]
     internal void DispatchToClients()
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients");
+            Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients.");
             networkEvent.InvokeClients();
         }
         else
         {
-            Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to clients");
+            Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to other clients.");
             networkEvent.InvokeOtherClients();
+
+            OnClientRecive?.Invoke();
         }
     }
 
+    [ImpAttributes.HostOnly]
     internal void DispatchToClients(params ulong[] clientIds)
     {
-        Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients");
+        Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients ({string.Join(",", clientIds)}).");
         networkEvent.InvokeClients(clientIds);
     }
 

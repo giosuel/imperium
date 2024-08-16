@@ -72,7 +72,7 @@ internal class TeleportationWindow : ImperiumWindow
 
         RegisterWidget<Waypoints>(content, "Waypoints");
 
-        Imperium.InputBindings.BaseMap.Teleport.performed += OnTeleport;
+        Imperium.InputBindings.BaseMap.Teleport.performed += OnInteractiveTeleport;
 
         Imperium.IsSceneLoaded.onTrigger += OnOpen;
 
@@ -192,7 +192,7 @@ internal class TeleportationWindow : ImperiumWindow
         }
     }
 
-    private static void OnTeleport(InputAction.CallbackContext callbackContext)
+    private static void OnInteractiveTeleport(InputAction.CallbackContext callbackContext)
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen ||
             Imperium.Player.inTerminalMenu ||

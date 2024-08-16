@@ -81,6 +81,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpFreecam Freecam { get; private set; }
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
+    internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
@@ -186,6 +187,7 @@ public class Imperium : BaseUnityPlugin
         Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();
         NightVision = ImpNightVision.Create();
+        ImpTapeMeasure = ImpTapeMeasure.Create();
         NoiseListener = ImpNoiseListener.Create();
         ImpPositionIndicator = ImpPositionIndicator.Create();
 

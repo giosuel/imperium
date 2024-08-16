@@ -176,25 +176,27 @@ internal class LayerSelector : BaseUI
         layerToggles[selectedLayer].UpdateIsOn(newMask);
     }
 
+    protected override void OnClose()
+    {
+        if (fovSlider) fovSlider.gameObject.SetActive(false);
+        if (movementSpeedSlider) movementSpeedSlider.gameObject.SetActive(false);
+    }
+
+    protected override void OnOpen()
+    {
+        if (fovSlider) fovSlider.gameObject.SetActive(true);
+        if (movementSpeedSlider) movementSpeedSlider.gameObject.SetActive(true);
+    }
+
     private void Update()
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen)
         {
-            if (IsOpen)
-            {
-                Close();
-                if (fovSlider) fovSlider.gameObject.SetActive(false);
-                if (movementSpeedSlider) movementSpeedSlider.gameObject.SetActive(false);
-            }
+            if (IsOpen) Close();
         }
         else if (isEnabledBinding is { Value: true } && Imperium.Player.isFreeCamera)
         {
-            if (!IsOpen)
-            {
-                Open();
-                if (fovSlider) fovSlider.gameObject.SetActive(true);
-                if (movementSpeedSlider) movementSpeedSlider.gameObject.SetActive(true);
-            }
+            if (!IsOpen) Open();
         }
     }
 }

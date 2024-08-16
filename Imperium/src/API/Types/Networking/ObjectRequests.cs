@@ -2,8 +2,6 @@
 
 #region
 
-using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
-using JetBrains.Annotations;
 using UnityEngine;
 
 #endregion

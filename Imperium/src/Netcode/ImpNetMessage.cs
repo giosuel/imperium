@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Imperium.Util;
 using LethalNetworkAPI;
 using Unity.Netcode;
 
@@ -15,7 +16,6 @@ public class ImpNetMessage<T> : INetworkSubscribable
     internal event Action<T, ulong> OnServerReceive;
 
     internal event Action<T> OnClientRecive;
-    internal event Action<T, ulong> OnClientReciveFromClient;
 
     private readonly string identifier;
 
@@ -33,32 +33,41 @@ public class ImpNetMessage<T> : INetworkSubscribable
             }
         };
         networkMessage.OnClientReceived += data => OnClientRecive?.Invoke(data);
-        networkMessage.OnClientReceivedFromClient += (data, clientId) => OnClientReciveFromClient?.Invoke(data, clientId);
+        networkMessage.OnClientReceivedFromClient += (data, _) => OnClientRecive?.Invoke(data);
 
         networking.RegisterSubscriber(this);
     }
 
+    [ImpAttributes.RemoteMethod]
     internal void DispatchToServer(T data)
     {
-        Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to server");
+        Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to server.");
         networkMessage.SendServer(data);
     }
 
+    [ImpAttributes.RemoteMethod]
     internal void DispatchToClients(T data)
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Imperium.IO.LogInfo($"[NET] Server sends {identifier} data to clients");
+            Imperium.IO.LogInfo($"[NET] Server sends {identifier} data to clients.");
             networkMessage.SendClients(data);
         }
         else
         {
-            Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to clients");
+            Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to other clients.");
             networkMessage.SendOtherClients(data);
+
+            OnClientRecive?.Invoke(data);
         }
     }
 
-    internal void DispatchToClients(T data, params ulong[] clientIds) => networkMessage.SendClients(data, clientIds);
+    [ImpAttributes.HostOnly]
+    internal void DispatchToClients(T data, params ulong[] clientIds)
+    {
+        Imperium.IO.LogInfo($"[NET] Server sends {identifier} data to clients ({string.Join(",", clientIds)}).");
+        networkMessage.SendClients(data, clientIds);
+    }
 
     public void Clear()
     {

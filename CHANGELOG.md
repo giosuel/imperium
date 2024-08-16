@@ -6,12 +6,23 @@ Besides a load of QoL changes, bug fixes and compatibility changes, this update 
 
 Another change is that Imperium is now usable even if not everyone in the lobby has it installed. There is currently no desync guarding, meaning it is possible to cause desync issues when clients don't have it installed, so use with caution! I will be working on automatically deactivating certain functionality based on the lobby to avoid these issues in the future.
 
+### Highlights
+
+#### Event Log
+
+#### Tape Measure
+
+#### Cruiser Control
+
+
+
 ### Added Stuff
 
 - Added the event log to track specific game events.
 - Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.
 - Vain shrouds can now be teleported around and removed from the map.
 - Added teleportation to fire exits to the teleportation window.
+- Added a virtual tape measure to measure distances in Unity units and meters. 
 - Added an option to make the player untargetable for entities.
 - Added an option to disable all UI tooltips.
 - Added visualizers for the Roaming Locusts detection ranges.
@@ -37,6 +48,7 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 - Replaced the icon of the preferences window with a more suitable one.
 - Reordered the dock buttons to improve intiution.
 - Added various tooltips to help simplify the navigation of the UI.
+- Improved teleport indicator navigation.
 
 ### Internal Fixes
 
