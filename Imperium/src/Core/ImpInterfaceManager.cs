@@ -63,7 +63,11 @@ internal class ImpInterfaceManager : MonoBehaviour
     {
         if (!OpenInterface.Value) return;
 
-        if (escShortcut.IsDown() || !OpenInterface.Value.IgnoreTab && tabShortcut.IsDown()) Close();
+        if (escShortcut.IsDown() || !OpenInterface.Value.IgnoreTab && tabShortcut.IsDown())
+        {
+            UnityExplorerIntegration.CloseUI();
+            Close();
+        }
     }
 
     internal void RegisterInterface<T>(GameObject obj) where T : BaseUI

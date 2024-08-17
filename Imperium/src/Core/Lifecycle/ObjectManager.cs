@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using DunGen;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
@@ -353,6 +354,15 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
+        foreach (var tileSet in Resources.FindObjectsOfTypeAll<TileSet>())
+        {
+            Imperium.IO.LogInfo($"Tile Set {tileSet.name}");
+            foreach (var tileWeightsWeight in tileSet.TileWeights.Weights)
+            {
+                Imperium.IO.LogInfo($" - Tile: {tileWeightsWeight.Value}");
+            }
+        }
+
         // Instantiate shiggy type if not already exists and if redpill has been found
         if (redPillType && !shiggyExists) allEntities.Add(CreateShiggyType(redPillType));
 
@@ -493,6 +503,7 @@ internal class ObjectManager : ImpLifecycleObject
             if (obj.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
 
             if (obj.name.Contains("MoldSpore") && currentLevelVainShrouds.Add(obj)) continue;
+
             if (OutsideObjectPrefabNameMap.Contains(obj.name) && currentLevelOutsideObjects.Add(obj))
             {
                 continue;
@@ -597,7 +608,8 @@ internal class ObjectManager : ImpLifecycleObject
         overrideDisplayNameMap["GreyRockGrouping2"] = "Grey Rock Grouping 2";
         overrideDisplayNameMap["GreyRockGrouping4"] = "Grey Rock Grouping 4";
         overrideDisplayNameMap["tree"] = "Tree";
-        overrideDisplayNameMap["treeLeaflessBrown.001 Variant"] = "Tree Leafless 1";
+        overrideDisplayNameMap["treeLeafless"] = "Tree Leafless";
+        overrideDisplayNameMap["treeLeaflessBrown.001 Variant"] = "Tree Leafless Brown";
         overrideDisplayNameMap["treeLeafless.002_LOD0"] = "Tree Leafless 2 (Snowy)";
         overrideDisplayNameMap["treeLeafless.003_LOD0"] = "Tree Leafless 3 (Snowy)";
 
