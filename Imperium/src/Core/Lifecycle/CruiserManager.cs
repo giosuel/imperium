@@ -1,10 +1,7 @@
 #region
 
 using Imperium.Netcode;
-using Imperium.Patches.Systems;
-using Imperium.Util;
 using Imperium.Util.Binding;
-using Unity.Netcode;
 
 #endregion
 
@@ -36,6 +33,7 @@ internal class CruiserManager(ImpBinaryBinding sceneLoaded, IBinding<int> player
         Imperium.Networking,
         masterBinding: Imperium.Settings.Cruiser.PushForce
     );
+
     internal readonly ImpNetworkBinding<float> Acceleration = new(
         "Speed",
         Imperium.Networking,

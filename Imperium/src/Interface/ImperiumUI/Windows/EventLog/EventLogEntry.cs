@@ -1,10 +1,13 @@
-using System;
+#region
+
 using System.Linq;
 using Imperium.Core.EventLogging;
 using Imperium.Interface.Common;
 using Imperium.Util;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Interface.ImperiumUI.Windows.EventLog;
 

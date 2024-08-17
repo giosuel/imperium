@@ -7,7 +7,7 @@ using System;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-/// A binding that canot be updated. Used by the API to make sure clients can't update the internal values.
+///     A binding that canot be updated. Used by the API to make sure clients can't update the internal values.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class ReadOnlyBinding<T>

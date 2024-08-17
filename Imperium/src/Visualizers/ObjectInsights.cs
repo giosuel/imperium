@@ -159,7 +159,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .RegisterInsight("Location", ImpUtils.GetEntityLocationText)
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Entities");
-        
+
         InsightsFor<ClaySurgeonAI>()
             .RegisterInsight("Is Master", barber => barber.isMaster ? "Yes" : "No")
             .RegisterInsight("Beat Timer", barber => $"{barber.beatTimer:0.0}s")

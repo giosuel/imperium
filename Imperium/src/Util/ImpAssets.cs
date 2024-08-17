@@ -125,7 +125,7 @@ internal abstract class ImpAssets
 
         if (ImperiumAssets == null)
         {
-            Imperium.IO.LogError($"[PRELOAD] Failed to load assets from assembly, aborting!");
+            Imperium.IO.LogError("[PRELOAD] Failed to load assets from assembly, aborting!");
             return false;
         }
 

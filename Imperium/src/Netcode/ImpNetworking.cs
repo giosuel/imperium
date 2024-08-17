@@ -1,6 +1,5 @@
 #region
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -175,7 +174,7 @@ public class ImpNetworking
         }
         else
         {
-            if (!ImpUtils.RunSafe(Imperium.Launch,"Imperium startup failed")) Imperium.DisableImperium();
+            if (!ImpUtils.RunSafe(Imperium.Launch, "Imperium startup failed")) Imperium.DisableImperium();
 
             // Request network values update from server if client is not host
             if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();

@@ -1,16 +1,21 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UIS {
+#endregion
 
+namespace UIS
+{
     /// <summary>
-    /// Load direction
+    ///     Load direction
     /// </summary>
-    public enum ScrollerDirection {
+    public enum ScrollerDirection
+    {
         Top = 0,
         Bottom = 1,
         Left = 2,
@@ -18,55 +23,59 @@ namespace UIS {
     }
 
     /// <summary>
-    /// Infinite scroller
+    ///     Infinite scroller
     /// </summary>
-    public class Scroller : MonoBehaviour, IDropHandler {
-
+    public class Scroller : MonoBehaviour, IDropHandler
+    {
         /// <summary>
-        /// Addon count views
+        ///     Addon count views
         /// </summary>
         const int ADDON_VIEWS_COUNT = 4;
 
         /// <summary>
-        /// Velocity for scroll to function
+        ///     Velocity for scroll to function
         /// </summary>
-        Vector2 SCROLL_VELOCITY = new Vector2(0f, 50f);
+        readonly Vector2 SCROLL_VELOCITY = new Vector2(0f, 50f);
 
         /// <summary>
-        /// Delegate for heights
+        ///     Delegate for heights
         /// </summary>
         public delegate int HeightItem(int index);
 
         /// <summary>
-        /// Event for get item height
+        ///     Event for get item height
         /// </summary>
         public event HeightItem OnHeight;
 
         /// <summary>
-        /// Delegate for widths
+        ///     Delegate for widths
         /// </summary>
         public delegate int WidthtItem(int index);
 
         /// <summary>
-        /// Event for get item width
+        ///     Event for get item width
         /// </summary>
         public event HeightItem OnWidth;
 
         /// <summary>
-        /// Callback on item fill
+        ///     Callback on item fill
         /// </summary>
-        public Action<int, GameObject> OnFill = delegate { };
+        public Action<int, GameObject> OnFill = delegate
+        {
+        };
 
         /// <summary>
-        /// Callback on pull action
+        ///     Callback on pull action
         /// </summary>
-        public Action<ScrollerDirection> OnPull = delegate { };
+        public Action<ScrollerDirection> OnPull = delegate
+        {
+        };
 
         [Header("Item settings")]
         /// <summary>
         /// Item list prefab
         /// </summary>
-        public GameObject Prefab = null;
+        public GameObject Prefab;
 
         [Header("Padding")]
         /// <summary>
@@ -75,7 +84,7 @@ namespace UIS {
         public int TopPadding = 10;
 
         /// <summary>
-        /// Bottom padding
+        ///     Bottom padding
         /// </summary>
         public int BottomPadding = 10;
 
@@ -86,12 +95,12 @@ namespace UIS {
         public int LeftPadding = 10;
 
         /// <summary>
-        /// Right padding
+        ///     Right padding
         /// </summary>
         public int RightPadding = 10;
 
         /// <summary>
-        /// Spacing between items
+        ///     Spacing between items
         /// </summary>
         public int ItemSpacing = 10;
 
@@ -99,55 +108,55 @@ namespace UIS {
         /// <summary>
         /// Label font asset
         /// </summary>
-        public TMP_FontAsset LabelsFont = null;
+        public TMP_FontAsset LabelsFont;
 
         /// <summary>
-        /// Label font size
+        ///     Label font size
         /// </summary>
         public int FontSize = 30;
 
         /// <summary>
-        /// Label color
+        ///     Label color
         /// </summary>
         public Color FontColor = Color.white;
 
         /// <summary>
-        /// Pull top text label
+        ///     Pull top text label
         /// </summary>
         public string TopPullLabel = "Pull to refresh";
 
         /// <summary>
-        /// Release top text label
+        ///     Release top text label
         /// </summary>
         public string TopReleaseLabel = "Release to load";
 
         /// <summary>
-        /// Pull bottom text label
+        ///     Pull bottom text label
         /// </summary>
         public string BottomPullLabel = "Pull to refresh";
 
         /// <summary>
-        /// Release bottom text label
+        ///     Release bottom text label
         /// </summary>
         public string BottomReleaseLabel = "Release to load";
 
         /// <summary>
-        /// Pull left text label
+        ///     Pull left text label
         /// </summary>
         public string LeftPullLabel = "Pull to refresh";
 
         /// <summary>
-        /// Release left text label
+        ///     Release left text label
         /// </summary>
         public string LeftReleaseLabel = "Release to load";
 
         /// <summary>
-        /// Pull right text label
+        ///     Pull right text label
         /// </summary>
         public string RightPullLabel = "Pull to refresh";
 
         /// <summary>
-        /// Release right text label
+        ///     Release right text label
         /// </summary>
         public string RightReleaseLabel = "Release to load";
 
@@ -158,7 +167,7 @@ namespace UIS {
         public bool IsPullTop = true;
 
         /// <summary>
-        /// Can we pull from bottom
+        ///     Can we pull from bottom
         /// </summary>
         public bool IsPullBottom = true;
 
@@ -169,7 +178,7 @@ namespace UIS {
         public bool IsPullLeft = true;
 
         /// <summary>
-        /// Can we pull from right
+        ///     Can we pull from right
         /// </summary>
         public bool IsPullRight = true;
 
@@ -180,7 +189,7 @@ namespace UIS {
         public float PullValue = 1.5f;
 
         /// <summary>
-        /// Label position offset
+        ///     Label position offset
         /// </summary>
         public float LabelOffset = 85f;
 
@@ -188,137 +197,137 @@ namespace UIS {
         /// <summary>
         /// Container for calc width/height if anchors exists
         /// </summary>
-        public RectTransform ParentContainer = null;
+        public RectTransform ParentContainer;
 
         [HideInInspector]
         /// <summary>
         /// Top label
         /// </summary>
-        public TextMeshProUGUI TopLabel = null;
+        public TextMeshProUGUI TopLabel;
 
         [HideInInspector]
         /// <summary>
         /// Bottom label
         /// </summary>
-        public TextMeshProUGUI BottomLabel = null;
+        public TextMeshProUGUI BottomLabel;
 
         [HideInInspector]
         /// <summary>
         /// Left label
         /// </summary>
-        public TextMeshProUGUI LeftLabel = null;
+        public TextMeshProUGUI LeftLabel;
 
         [HideInInspector]
         /// <summary>
         /// Right label
         /// </summary>
-        public TextMeshProUGUI RightLabel = null;
+        public TextMeshProUGUI RightLabel;
 
         /// <summary>
-        /// Type of scroller
+        ///     Type of scroller
         /// </summary>
-        [HideInInspector]
-        public int Type = 0;
+        [HideInInspector] public int Type;
 
         /// <summary>
-        /// Scrollrect cache
+        ///     Scrollrect cache
         /// </summary>
-        ScrollRect _scroll = null;
+        ScrollRect _scroll;
 
         /// <summary>
-        /// Content rect cache
+        ///     Content rect cache
         /// </summary>
-        RectTransform _content = null;
+        RectTransform _content;
 
         /// <summary>
-        /// Container rect cache
+        ///     Container rect cache
         /// </summary>
-        Rect _container = new Rect();
+        Rect _container;
 
         /// <summary>
-        /// All rects cache
+        ///     All rects cache
         /// </summary>
-        RectTransform[] _rects = null;
+        RectTransform[] _rects;
 
         /// <summary>
-        /// All objects cache
+        ///     All objects cache
         /// </summary>
-        GameObject[] _views = null;
+        GameObject[] _views;
 
         /// <summary>
-        /// State is can we pull from top
+        ///     State is can we pull from top
         /// </summary>
-        bool _isCanLoadUp = false;
+        bool _isCanLoadUp;
 
         /// <summary>
-        /// State is can we pull from bottom
+        ///     State is can we pull from bottom
         /// </summary>
-        bool _isCanLoadDown = false;
+        bool _isCanLoadDown;
 
         /// <summary>
-        /// State is can we pull from left
+        ///     State is can we pull from left
         /// </summary>
-        bool _isCanLoadLeft = false;
+        bool _isCanLoadLeft;
 
         /// <summary>
-        /// State is can we pull from right
+        ///     State is can we pull from right
         /// </summary>
-        bool _isCanLoadRight = false;
+        bool _isCanLoadRight;
 
         /// <summary>
-        /// Previous position
+        ///     Previous position
         /// </summary>
         int _previousPosition = -1;
 
         /// <summary>
-        /// List items count
+        ///     List items count
         /// </summary>
-        int _count = 0;
+        int _count;
 
         /// <summary>
-        /// Items heights cache
+        ///     Items heights cache
         /// </summary>
-        Dictionary<int, int> _heights = null;
+        Dictionary<int, int> _heights;
 
         /// <summary>
-        /// Items widths cache
+        ///     Items widths cache
         /// </summary>
-        Dictionary<int, int> _widths = null;
+        Dictionary<int, int> _widths;
 
         /// <summary>
-        /// Items positions cache
+        ///     Items positions cache
         /// </summary>
-        Dictionary<int, float> _positions = null;
+        Dictionary<int, float> _positions;
 
         /// <summary>
-        /// Cache for scroll position
+        ///     Cache for scroll position
         /// </summary>
         float _previousScrollPosition = -1;
 
         /// <summary>
-        /// Cache with item indexes
+        ///     Cache with item indexes
         /// </summary>
-        int[] _indexes = null;
+        int[] _indexes;
 
         /// <summary>
-        /// Item height or width for non-different lists
+        ///     Item height or width for non-different lists
         /// </summary>
-        float _offsetData = 0f;
+        float _offsetData;
 
         /// <summary>
-        /// Check if items has different heights/widths
+        ///     Check if items has different heights/widths
         /// </summary>
-        bool _isComplexList = false;
+        bool _isComplexList;
 
         /// <summary>
-        /// Init list flag
+        ///     Init list flag
         /// </summary>
-        bool _isInited = false;
+        bool _isInited;
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
-        void Awake() {
+        void Awake()
+        {
             _container = (ParentContainer != null) ? ParentContainer.rect : GetComponent<RectTransform>().rect;
             _container.width = Mathf.Abs(_container.width);
             _container.height = Mathf.Abs(_container.height);
@@ -332,78 +341,97 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Is list has been inited
+        ///     Is list has been inited
         /// </summary>
-        public bool IsInited {
-            get {
-                return _isInited;
-            }
+        public bool IsInited
+        {
+            get { return _isInited; }
         }
 
         /// <summary>
-        /// Return list views count
+        ///     Return list views count
         /// </summary>
-        public int ViewsCount {
-            get {
-                return (_views == null) ? 0 : _views.Length;
-            }
+        public int ViewsCount
+        {
+            get { return (_views == null) ? 0 : _views.Length; }
         }
 
         /// <summary>
-        /// Current normalized position 0..1
+        ///     Current normalized position 0..1
         /// </summary>
-        public float NormalizedPosition {
-            get {
-                return (Type == 0) ? _scroll.verticalNormalizedPosition : _scroll.horizontalNormalizedPosition;
-            }
+        public float NormalizedPosition
+        {
+            get { return (Type == 0) ? _scroll.verticalNormalizedPosition : _scroll.horizontalNormalizedPosition; }
         }
 
         /// <summary>
-        /// Main loop to check items positions and heights
+        ///     Main loop to check items positions and heights
         /// </summary>
-        void Update() {
-            if (Type == 0) {
+        void Update()
+        {
+            if (Type == 0)
+            {
                 UpdateVertical();
-            } else {
+            }
+            else
+            {
                 UpdateHorizontal();
             }
         }
 
         /// <summary>
-        /// Main loop for vertical
+        ///     Main loop for vertical
         /// </summary>
-        void UpdateVertical() {
-            if (_count == 0 || !_isInited) {
+        void UpdateVertical()
+        {
+            if (_count == 0 || !_isInited)
+            {
                 return;
             }
-            if (_isComplexList) {
+
+            if (_isComplexList)
+            {
                 var topPosition = _content.anchoredPosition.y - ItemSpacing;
-                if (topPosition <= 0f && _rects[0].anchoredPosition.y < -TopPadding) {
+                if (topPosition <= 0f && _rects[0].anchoredPosition.y < -TopPadding)
+                {
                     InitData(_count);
                     return;
                 }
-                if (topPosition < 0f) {
+
+                if (topPosition < 0f)
+                {
                     return;
                 }
-                if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition)) {
+
+                if (!_positions.ContainsKey(_previousPosition) || !_heights.ContainsKey(_previousPosition))
+                {
                     return;
                 }
+
                 var itemPosition = Mathf.Abs(_positions[_previousPosition]) + _heights[_previousPosition];
                 var position = (topPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
-                if (position < 0 || _scroll.velocity.y == 0.0f) {
+                if (position < 0 || _scroll.velocity.y == 0.0f)
+                {
                     return;
                 }
-                if (position > _previousPosition) {
-                    if (position - _previousPosition > 1) {
+
+                if (position > _previousPosition)
+                {
+                    if (position - _previousPosition > 1)
+                    {
                         position = _previousPosition + 1;
                     }
+
                     var newPosition = position % _views.Length;
                     newPosition--;
-                    if (newPosition < 0) {
+                    if (newPosition < 0)
+                    {
                         newPosition = _views.Length - 1;
                     }
+
                     var index = position + _views.Length - 1;
-                    if (index < _count) {
+                    if (index < _count)
+                    {
                         var pos = _rects[newPosition].anchoredPosition;
                         pos.y = _positions[index];
                         _rects[newPosition].anchoredPosition = pos;
@@ -413,10 +441,14 @@ namespace UIS {
                         _views[newPosition].name = index.ToString();
                         OnFill(index, _views[newPosition]);
                     }
-                } else {
-                    if (_previousPosition - position > 1) {
+                }
+                else
+                {
+                    if (_previousPosition - position > 1)
+                    {
                         position = _previousPosition - 1;
                     }
+
                     var newIndex = position % _views.Length;
                     var pos = _rects[newIndex].anchoredPosition;
                     pos.y = _positions[position];
@@ -427,20 +459,27 @@ namespace UIS {
                     _views[newIndex].name = position.ToString();
                     OnFill(position, _views[newIndex]);
                 }
+
                 _previousPosition = position;
-            } else {
+            }
+            else
+            {
                 var topPosition = _content.anchoredPosition.y - ItemSpacing;
                 var offset = Mathf.FloorToInt(topPosition / (_offsetData + ItemSpacing));
-                for (var i = offset; i < offset + _views.Length; i++) {
+                for (var i = offset; i < offset + _views.Length; i++)
+                {
                     var index = i % _views.Length;
-                    if (i < 0 || i > _count - 1 || _rects == null || !_isInited) {
+                    if (i < 0 || i > _count - 1 || _rects == null || !_isInited)
+                    {
                         continue;
                     }
+
                     var position = _rects[index].anchoredPosition;
                     var size = _rects[index].sizeDelta;
                     position.y = _positions[i];
                     _rects[index].anchoredPosition = position;
-                    if (_indexes[index] != i) {
+                    if (_indexes[index] != i)
+                    {
                         _indexes[index] = i;
                         size.y = _heights[i];
                         _rects[index].sizeDelta = size;
@@ -452,40 +491,58 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Main loop for horizontal
+        ///     Main loop for horizontal
         /// </summary>
-        void UpdateHorizontal() {
-            if (_count == 0 || !_isInited) {
+        void UpdateHorizontal()
+        {
+            if (_count == 0 || !_isInited)
+            {
                 return;
             }
-            if (_isComplexList) {
+
+            if (_isComplexList)
+            {
                 var _leftPosition = _content.anchoredPosition.x * -1f - ItemSpacing;
-                if (_leftPosition <= 0f && _rects[0].anchoredPosition.x < -LeftPadding) {
+                if (_leftPosition <= 0f && _rects[0].anchoredPosition.x < -LeftPadding)
+                {
                     InitData(_count);
                     return;
                 }
-                if (_leftPosition < 0f) {
+
+                if (_leftPosition < 0f)
+                {
                     return;
                 }
-                if (!_positions.ContainsKey(_previousPosition) || !_widths.ContainsKey(_previousPosition)) {
+
+                if (!_positions.ContainsKey(_previousPosition) || !_widths.ContainsKey(_previousPosition))
+                {
                     return;
                 }
+
                 var itemPosition = Mathf.Abs(_positions[_previousPosition]) + _widths[_previousPosition];
                 var position = (_leftPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
-                if (position < 0 || _scroll.velocity.x == 0.0f) {
+                if (position < 0 || _scroll.velocity.x == 0.0f)
+                {
                     return;
                 }
-                if (position > _previousPosition) {
-                    if (position - _previousPosition > 1) {
+
+                if (position > _previousPosition)
+                {
+                    if (position - _previousPosition > 1)
+                    {
                         position = _previousPosition + 1;
                     }
+
                     var newPosition = position % _views.Length;
                     newPosition--;
-                    if (newPosition < 0) {
+                    if (newPosition < 0)
+                    {
                         newPosition = _views.Length - 1;
                     }
+
                     var index = position + _views.Length - 1;
-                    if (index < _count) {
+                    if (index < _count)
+                    {
                         var pos = _rects[newPosition].anchoredPosition;
                         pos.x = _positions[index];
                         _rects[newPosition].anchoredPosition = pos;
@@ -495,10 +552,14 @@ namespace UIS {
                         _views[newPosition].name = index.ToString();
                         OnFill(index, _views[newPosition]);
                     }
-                } else {
-                    if (_previousPosition - position > 1) {
+                }
+                else
+                {
+                    if (_previousPosition - position > 1)
+                    {
                         position = _previousPosition - 1;
                     }
+
                     var newIndex = position % _views.Length;
                     var pos = _rects[newIndex].anchoredPosition;
                     pos.x = _positions[position];
@@ -509,20 +570,27 @@ namespace UIS {
                     _views[newIndex].name = position.ToString();
                     OnFill(position, _views[newIndex]);
                 }
+
                 _previousPosition = position;
-            } else {
+            }
+            else
+            {
                 var _leftPosition = _content.anchoredPosition.x * -1f - ItemSpacing;
                 var offset = Mathf.FloorToInt(_leftPosition / (_offsetData + ItemSpacing));
-                for (var i = offset; i < offset + _views.Length; i++) {
+                for (var i = offset; i < offset + _views.Length; i++)
+                {
                     var index = i % _views.Length;
-                    if (i < 0 || i > _count - 1 || _rects == null || !_isInited) {
+                    if (i < 0 || i > _count - 1 || _rects == null || !_isInited)
+                    {
                         continue;
                     }
+
                     var position = _rects[index].anchoredPosition;
                     var size = _rects[index].sizeDelta;
                     position.x = _positions[i];
                     _rects[index].anchoredPosition = position;
-                    if (_indexes[index] != i) {
+                    if (_indexes[index] != i)
+                    {
                         _indexes[index] = i;
                         size.x = _widths[i];
                         _rects[index].sizeDelta = size;
@@ -534,163 +602,226 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Handler on scroller
+        ///     Handler on scroller
         /// </summary>
-        void OnScrollChange(Vector2 vector) {
-            if (Type == 0) {
+        void OnScrollChange(Vector2 vector)
+        {
+            if (Type == 0)
+            {
                 ScrollChangeVertical();
-            } else {
+            }
+            else
+            {
                 ScrollChangeHorizontal();
             }
         }
 
         /// <summary>
-        /// Handler on vertical scroll change
+        ///     Handler on vertical scroll change
         /// </summary>
-        void ScrollChangeVertical() {
+        void ScrollChangeVertical()
+        {
             _isCanLoadUp = false;
             _isCanLoadDown = false;
-            if (_views == null) {
+            if (_views == null)
+            {
                 return;
             }
+
             var z = 0f;
             var isScrollable = _scroll.verticalNormalizedPosition != 1f && _scroll.verticalNormalizedPosition != 0f;
             var y = _content.anchoredPosition.y;
-            if (isScrollable) {
-                if (_scroll.verticalNormalizedPosition < 0f) {
+            if (isScrollable)
+            {
+                if (_scroll.verticalNormalizedPosition < 0f)
+                {
                     z = y - _previousScrollPosition;
-                } else {
+                }
+                else
+                {
                     _previousScrollPosition = y;
                 }
-            } else {
+            }
+            else
+            {
                 z = y;
             }
-            if (y < -LabelOffset && IsPullTop) {
+
+            if (y < -LabelOffset && IsPullTop)
+            {
                 TopLabel.gameObject.SetActive(true);
                 TopLabel.text = TopPullLabel;
-                if (y < -LabelOffset * PullValue) {
+                if (y < -LabelOffset * PullValue)
+                {
                     TopLabel.text = TopReleaseLabel;
                     _isCanLoadUp = true;
                 }
-            } else {
+            }
+            else
+            {
                 TopLabel.gameObject.SetActive(false);
             }
-            if (z > LabelOffset && IsPullBottom) {
+
+            if (z > LabelOffset && IsPullBottom)
+            {
                 BottomLabel.gameObject.SetActive(true);
                 BottomLabel.text = BottomPullLabel;
-                if (z > LabelOffset * PullValue) {
+                if (z > LabelOffset * PullValue)
+                {
                     BottomLabel.text = BottomReleaseLabel;
                     _isCanLoadDown = true;
                 }
-            } else {
+            }
+            else
+            {
                 BottomLabel.gameObject.SetActive(false);
             }
         }
 
         /// <summary>
-        /// Handler on horizontal scroll change
+        ///     Handler on horizontal scroll change
         /// </summary>
-        void ScrollChangeHorizontal() {
+        void ScrollChangeHorizontal()
+        {
             _isCanLoadLeft = false;
             _isCanLoadRight = false;
-            if (_views == null) {
+            if (_views == null)
+            {
                 return;
             }
+
             var z = 0f;
             var isScrollable = _scroll.horizontalNormalizedPosition != 1f && _scroll.horizontalNormalizedPosition != 0f;
             var x = _content.anchoredPosition.x;
-            if (isScrollable) {
-                if (_scroll.horizontalNormalizedPosition > 1f) {
+            if (isScrollable)
+            {
+                if (_scroll.horizontalNormalizedPosition > 1f)
+                {
                     z = x - _previousScrollPosition;
-                } else {
+                }
+                else
+                {
                     _previousScrollPosition = x;
                 }
-            } else {
+            }
+            else
+            {
                 z = x;
             }
-            if (x > LabelOffset && IsPullLeft) {
+
+            if (x > LabelOffset && IsPullLeft)
+            {
                 LeftLabel.gameObject.SetActive(true);
                 LeftLabel.text = LeftPullLabel;
-                if (x > LabelOffset * PullValue) {
+                if (x > LabelOffset * PullValue)
+                {
                     LeftLabel.text = LeftReleaseLabel;
                     _isCanLoadLeft = true;
                 }
-            } else {
+            }
+            else
+            {
                 LeftLabel.gameObject.SetActive(false);
             }
-            if (z < -LabelOffset && IsPullRight) {
+
+            if (z < -LabelOffset && IsPullRight)
+            {
                 RightLabel.gameObject.SetActive(true);
                 RightLabel.text = RightPullLabel;
-                if (z < -LabelOffset * PullValue) {
+                if (z < -LabelOffset * PullValue)
+                {
                     RightLabel.text = RightReleaseLabel;
                     _isCanLoadRight = true;
                 }
-            } else {
+            }
+            else
+            {
                 RightLabel.gameObject.SetActive(false);
             }
         }
 
         /// <summary>
-        /// Hander on scroller drop pull
+        ///     Hander on scroller drop pull
         /// </summary>
-        public void OnDrop(PointerEventData eventData) {
-            if (Type == 0) {
+        public void OnDrop(PointerEventData eventData)
+        {
+            if (Type == 0)
+            {
                 DropVertical();
-            } else {
+            }
+            else
+            {
                 DropHorizontal();
             }
         }
 
         /// <summary>
-        /// Handler on scroller vertical drop
+        ///     Handler on scroller vertical drop
         /// </summary>
-        void DropVertical() {
-            if (_isCanLoadUp) {
+        void DropVertical()
+        {
+            if (_isCanLoadUp)
+            {
                 OnPull(ScrollerDirection.Top);
-            } else if (_isCanLoadDown) {
+            }
+            else if (_isCanLoadDown)
+            {
                 OnPull(ScrollerDirection.Bottom);
             }
+
             _isCanLoadUp = false;
             _isCanLoadDown = false;
         }
 
         /// <summary>
-        /// Handler on scroller horizontal drop
+        ///     Handler on scroller horizontal drop
         /// </summary>
-        void DropHorizontal() {
-            if (_isCanLoadLeft) {
+        void DropHorizontal()
+        {
+            if (_isCanLoadLeft)
+            {
                 OnPull(ScrollerDirection.Left);
-            } else if (_isCanLoadRight) {
+            }
+            else if (_isCanLoadRight)
+            {
                 OnPull(ScrollerDirection.Right);
             }
+
             _isCanLoadLeft = false;
             _isCanLoadRight = false;
         }
 
         /// <summary>
-        /// Init list
+        ///     Init list
         /// </summary>
         /// <param name="count">Items count</param>
         /// <param name="isOtherSide">Go to bottom or right on init</param>
-        public void InitData(int count, bool isOtherSide = false) {
-            if (count <= 0) {
+        public void InitData(int count, bool isOtherSide = false)
+        {
+            if (count <= 0)
+            {
                 Debug.LogWarning("Can't init empty list!");
                 return;
             }
+
             _isInited = true;
-            if (Type == 0) {
+            if (Type == 0)
+            {
                 InitVertical(count, isOtherSide);
-            } else {
+            }
+            else
+            {
                 InitHorizontal(count, isOtherSide);
             }
         }
 
         /// <summary>
-        /// Init vertical list
+        ///     Init vertical list
         /// </summary>
         /// <param name="count">Item count</param>
         /// <param name="isOtherSide">Go to bottom on init</param>
-        void InitVertical(int count, bool isOtherSide = false) {
+        void InitVertical(int count, bool isOtherSide = false)
+        {
             var height = CalcSizesPositions(count);
             CreateViews();
             _previousPosition = 0;
@@ -699,16 +830,21 @@ namespace UIS {
             var pos = _content.anchoredPosition;
             pos.y = isOtherSide ? height : 0f;
             _content.anchoredPosition = pos;
-            for (var i = 0; i < _views.Length; i++) {
+            for (var i = 0; i < _views.Length; i++)
+            {
                 var showed = i < count;
                 _views[i].SetActive(showed);
-                if (i + 1 > _count) {
+                if (i + 1 > _count)
+                {
                     continue;
                 }
+
                 var index = i;
-                if (isOtherSide) {
+                if (isOtherSide)
+                {
                     index = (count >= _views.Length) ? count - _views.Length + i : i;
                 }
+
                 pos = _rects[i].anchoredPosition;
                 pos.y = _positions[index];
                 pos.x = 0f;
@@ -722,11 +858,12 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Init horizontal list
+        ///     Init horizontal list
         /// </summary>
         /// <param name="count">Item count</param>
         /// <param name="isOtherSide">Go to right on init</param>
-        void InitHorizontal(int count, bool isOtherSide = false) {
+        void InitHorizontal(int count, bool isOtherSide = false)
+        {
             var width = CalcSizesPositions(count);
             CreateViews();
             _previousPosition = 0;
@@ -735,16 +872,21 @@ namespace UIS {
             var pos = _content.anchoredPosition;
             pos.x = isOtherSide ? width : 0f;
             _content.anchoredPosition = pos;
-            for (var i = 0; i < _views.Length; i++) {
+            for (var i = 0; i < _views.Length; i++)
+            {
                 var showed = i < count;
                 _views[i].SetActive(showed);
-                if (i + 1 > _count) {
+                if (i + 1 > _count)
+                {
                     continue;
                 }
+
                 var index = i;
-                if (isOtherSide) {
+                if (isOtherSide)
+                {
                     index = (count >= _views.Length) ? count - _views.Length + i : i;
                 }
+
                 pos = _rects[i].anchoredPosition;
                 pos.x = _positions[index];
                 pos.y = 0f;
@@ -758,28 +900,32 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Calc all items height and positions
+        ///     Calc all items height and positions
         /// </summary>
         /// <returns>Common content height</returns>
-        float CalcSizesPositions(int count) {
+        float CalcSizesPositions(int count)
+        {
             return (Type == 0) ? CalcSizesPositionsVertical(count) : CalcSizesPositionsHorizontal(count);
         }
 
         /// <summary>
-        /// Calc all items height and positions
+        ///     Calc all items height and positions
         /// </summary>
         /// <returns>Common content height</returns>
-        float CalcSizesPositionsVertical(int count) {
+        float CalcSizesPositionsVertical(int count)
+        {
             _heights.Clear();
             _positions.Clear();
             _offsetData = 0f;
             var result = 0f;
-            for (var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++)
+            {
                 _heights[i] = OnHeight(i);
                 _offsetData += _heights[i];
                 _positions[i] = -(TopPadding + i * ItemSpacing + result);
                 result += _heights[i];
             }
+
             _offsetData /= count;
             _isComplexList = _offsetData != _heights[0];
             result += TopPadding + BottomPadding + (count == 0 ? 0 : ((count - 1) * ItemSpacing));
@@ -787,19 +933,22 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Calc all items width and positions
+        ///     Calc all items width and positions
         /// </summary>
         /// <returns>Common content width</returns>
-        float CalcSizesPositionsHorizontal(int count) {
+        float CalcSizesPositionsHorizontal(int count)
+        {
             _widths.Clear();
             _positions.Clear();
             var result = 0f;
-            for (var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++)
+            {
                 _widths[i] = OnWidth(i);
                 _offsetData += _widths[i];
                 _positions[i] = LeftPadding + i * ItemSpacing + result;
                 result += _widths[i];
             }
+
             _offsetData /= count;
             _isComplexList = _offsetData != _widths[0];
             result += LeftPadding + RightPadding + (count == 0 ? 0 : ((count - 1) * ItemSpacing));
@@ -807,63 +956,84 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Update list after load new items
+        ///     Update list after load new items
         /// </summary>
         /// <param name="count">Total items count</param>
         /// <param name="newCount">Added items count</param>
         /// <param name="direction">Direction to add</param>
-        public void ApplyDataTo(int count, int newCount, ScrollerDirection direction) {
-            if (!_isInited) {
+        public void ApplyDataTo(int count, int newCount, ScrollerDirection direction)
+        {
+            if (!_isInited)
+            {
                 return;
             }
-            if (Type == 0) {
+
+            if (Type == 0)
+            {
                 ApplyDataToVertical(count, newCount, direction);
-            } else {
+            }
+            else
+            {
                 ApplyDataToHorizontal(count, newCount, direction);
             }
         }
 
         /// <summary>
-        /// Update list after load new items for vertical scroller
+        ///     Update list after load new items for vertical scroller
         /// </summary>
         /// <param name="count">Total items count</param>
         /// <param name="newCount">Added items count</param>
         /// <param name="direction">Direction to add</param>
-        void ApplyDataToVertical(int count, int newCount, ScrollerDirection direction) {
-            if (_count == 0 || count <= _views.Length) {
+        void ApplyDataToVertical(int count, int newCount, ScrollerDirection direction)
+        {
+            if (_count == 0 || count <= _views.Length)
+            {
                 InitData(count);
                 return;
             }
+
             _count = count;
             var height = CalcSizesPositions(count);
             _content.sizeDelta = new Vector2(_content.sizeDelta.x, height);
             var pos = _content.anchoredPosition;
-            if (direction == ScrollerDirection.Top) {
+            if (direction == ScrollerDirection.Top)
+            {
                 var y = 0f;
-                for (var i = 0; i < newCount; i++) {
+                for (var i = 0; i < newCount; i++)
+                {
                     y += _heights[i] + ItemSpacing;
                 }
+
                 pos.y = y;
                 _previousPosition = newCount;
             }
+
             _content.anchoredPosition = pos;
             var topPosition = _content.anchoredPosition.y - ItemSpacing;
             var itemPosition = Mathf.Abs(_positions[_previousPosition]) + _heights[_previousPosition];
             var position = (topPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
-            if (position < 0) {
+            if (position < 0)
+            {
                 _previousPosition = 0;
                 position = 1;
             }
-            if (!_isComplexList) {
-                for (var i = 0; i < _indexes.Length; i++) {
+
+            if (!_isComplexList)
+            {
+                for (var i = 0; i < _indexes.Length; i++)
+                {
                     _indexes[i] = -1;
                 }
             }
-            for (var i = 0; i < _views.Length; i++) {
+
+            for (var i = 0; i < _views.Length; i++)
+            {
                 var newIndex = position % _views.Length;
-                if (newIndex < 0) {
+                if (newIndex < 0)
+                {
                     continue;
                 }
+
                 _views[newIndex].SetActive(true);
                 _views[newIndex].name = position.ToString();
                 OnFill(position, _views[newIndex]);
@@ -874,59 +1044,79 @@ namespace UIS {
                 size.y = _heights[position];
                 _rects[newIndex].sizeDelta = size;
                 position++;
-                if (position == _count) {
+                if (position == _count)
+                {
                     break;
                 }
             }
         }
 
         /// <summary>
-        /// Update list after load new items for horizontal scroller
+        ///     Update list after load new items for horizontal scroller
         /// </summary>
         /// <param name="count">Total items count</param>
         /// <param name="newCount">Added items count</param>
         /// <param name="direction">Direction to add</param>
-        void ApplyDataToHorizontal(int count, int newCount, ScrollerDirection direction) {
-            if (_count == 0 || count <= _views.Length) {
+        void ApplyDataToHorizontal(int count, int newCount, ScrollerDirection direction)
+        {
+            if (_count == 0 || count <= _views.Length)
+            {
                 InitData(count);
                 return;
             }
+
             _count = count;
             var width = CalcSizesPositions(count);
             _content.sizeDelta = new Vector2(width, _content.sizeDelta.y);
             var pos = _content.anchoredPosition;
-            if (direction == ScrollerDirection.Left) {
+            if (direction == ScrollerDirection.Left)
+            {
                 var x = 0f;
-                for (var i = 0; i < newCount; i++) {
+                for (var i = 0; i < newCount; i++)
+                {
                     x -= _widths[i] + ItemSpacing;
                 }
+
                 pos.x = x;
                 _previousPosition = newCount;
-            } else {
+            }
+            else
+            {
                 var w = 0f;
-                for (var i = _widths.Count - 1; i >= _widths.Count - newCount; i--) {
+                for (var i = _widths.Count - 1; i >= _widths.Count - newCount; i--)
+                {
                     w += _widths[i] + ItemSpacing;
                 }
+
                 pos.x = -width + w + _container.width;
             }
+
             _content.anchoredPosition = pos;
             var _leftPosition = _content.anchoredPosition.x - ItemSpacing;
             var itemPosition = Mathf.Abs(_positions[_previousPosition]) + _widths[_previousPosition];
             var position = (_leftPosition > itemPosition) ? _previousPosition + 1 : _previousPosition - 1;
-            if (position < 0) {
+            if (position < 0)
+            {
                 _previousPosition = 0;
                 position = 1;
             }
-            if (!_isComplexList) {
-                for (var i = 0; i < _indexes.Length; i++) {
+
+            if (!_isComplexList)
+            {
+                for (var i = 0; i < _indexes.Length; i++)
+                {
                     _indexes[i] = -1;
                 }
             }
-            for (var i = 0; i < _views.Length; i++) {
+
+            for (var i = 0; i < _views.Length; i++)
+            {
                 var newIndex = position % _views.Length;
-                if (newIndex < 0) {
+                if (newIndex < 0)
+                {
                     continue;
                 }
+
                 _views[newIndex].SetActive(true);
                 _views[newIndex].name = position.ToString();
                 OnFill(position, _views[newIndex]);
@@ -937,94 +1127,130 @@ namespace UIS {
                 size.x = _widths[position];
                 _rects[newIndex].sizeDelta = size;
                 position++;
-                if (position == _count) {
+                if (position == _count)
+                {
                     break;
                 }
             }
         }
 
         /// <summary>
-        /// Scroll to show item by index
+        ///     Scroll to show item by index
         /// </summary>
         /// <param name="index">Item index</param>
-        public void ScrollTo(int index) {
+        public void ScrollTo(int index)
+        {
             var gap = 2;
-            if (index > _count) {
+            if (index > _count)
+            {
                 index = _count;
-            } else if (index < 0) {
+            }
+            else if (index < 0)
+            {
                 index = 0;
             }
-            if (index + _views.Length >= _count) {
+
+            if (index + _views.Length >= _count)
+            {
                 index = _count - _views.Length + ADDON_VIEWS_COUNT;
             }
-            for (var i = 0; i < _views.Length; i++) {
+
+            for (var i = 0; i < _views.Length; i++)
+            {
                 var position = (index < gap) ? index : index + i - gap;
-                if (i + 1 > _count || position >= _count) {
+                if (i + 1 > _count || position >= _count)
+                {
                     continue;
                 }
+
                 var pos = _rects[i].anchoredPosition;
                 pos.y = _positions[position];
                 _rects[i].anchoredPosition = pos;
                 var size = _rects[i].sizeDelta;
-                if (Type == 0) {
+                if (Type == 0)
+                {
                     size.y = _heights[position];
-                } else {
+                }
+                else
+                {
                     size.x = _widths[position];
                 }
+
                 _rects[i].sizeDelta = size;
                 _views[i].SetActive(true);
                 _views[i].name = position.ToString();
                 OnFill(position, _views[i]);
             }
+
             var offset = 0f;
-            for (var i = 0; i < index; i++) {
-                if (Type == 0) {
+            for (var i = 0; i < index; i++)
+            {
+                if (Type == 0)
+                {
                     offset += _heights[i] + ItemSpacing;
-                } else {
+                }
+                else
+                {
                     offset -= _widths[i] + ItemSpacing;
                 }
             }
+
             _previousPosition = index - _views.Length;
-            if (_previousPosition <= 0) {
+            if (_previousPosition <= 0)
+            {
                 InitData(_count);
             }
+
             var top = _content.anchoredPosition;
-            if (Type == 0) {
+            if (Type == 0)
+            {
                 top.y = offset;
-            } else {
+            }
+            else
+            {
                 top.x = offset;
             }
+
             _content.anchoredPosition = top;
             _scroll.velocity = SCROLL_VELOCITY;
         }
 
         /// <summary>
-        /// Disable all items in list
+        ///     Disable all items in list
         /// </summary>
-        public void RecycleAll() {
+        public void RecycleAll()
+        {
             _count = 0;
-            if (_views == null || !_isInited) {
+            if (_views == null || !_isInited)
+            {
                 return;
             }
-            for (var i = 0; i < _views.Length; i++) {
+
+            for (var i = 0; i < _views.Length; i++)
+            {
                 _views[i].SetActive(false);
             }
         }
 
         /// <summary>
-        /// Disable item
+        ///     Disable item
         /// </summary>
         /// <param name="index">Index in list data</param>
-        public void Recycle(int index) {
+        public void Recycle(int index)
+        {
             _count--;
             var name = index.ToString();
-            if (_count == 0 || !_isInited) {
+            if (_count == 0 || !_isInited)
+            {
                 RecycleAll();
                 return;
             }
+
             var height = CalcSizesPositions(_count);
-            for (var i = 0; i < _views.Length; i++) {
-                if (string.CompareOrdinal(_views[i].name, name) == 0) {
+            for (var i = 0; i < _views.Length; i++)
+            {
+                if (string.CompareOrdinal(_views[i].name, name) == 0)
+                {
                     _views[i].SetActive(false);
                     _content.sizeDelta = new Vector2(_content.sizeDelta.x, height);
                     UpdateVisible();
@@ -1035,65 +1261,86 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Update positions for visible items
+        ///     Update positions for visible items
         /// </summary>
-        void UpdatePositions() {
+        void UpdatePositions()
+        {
             var pos = Vector2.zero;
             pos.y = 0f;
-            for (var i = 0; i < _views.Length; i++) {
-                if (i + 1 > _count) {
+            for (var i = 0; i < _views.Length; i++)
+            {
+                if (i + 1 > _count)
+                {
                     continue;
                 }
+
                 var index = int.Parse(_views[i].name);
-                if (index < _count) {
+                if (index < _count)
+                {
                     pos = _rects[i].anchoredPosition;
                     pos.y = _positions[i];
                     pos.x = 0f;
                     _rects[i].anchoredPosition = pos;
                     var size = _rects[i].sizeDelta;
-                    if (Type == 0) {
+                    if (Type == 0)
+                    {
                         size.y = _heights[i];
-                    } else {
+                    }
+                    else
+                    {
                         size.x = _widths[i];
                     }
+
                     _rects[i].sizeDelta = size;
                 }
             }
         }
 
         /// <summary>
-        /// Update visible items with new data
+        ///     Update visible items with new data
         /// </summary>
-        public void UpdateVisible() {
-            if (!_isInited) {
+        public void UpdateVisible()
+        {
+            if (!_isInited)
+            {
                 return;
             }
-            for (var i = 0; i < _views.Length; i++) {
+
+            for (var i = 0; i < _views.Length; i++)
+            {
                 var showed = i < _count;
                 _views[i].SetActive(showed);
-                if (i + 1 > _count) {
+                if (i + 1 > _count)
+                {
                     continue;
                 }
+
                 var index = int.Parse(_views[i].name);
-                if (index < _count) {
+                if (index < _count)
+                {
                     OnFill(index, _views[i]);
                 }
             }
         }
 
         /// <summary>
-        /// Clear views cache
-        /// Needed to recreate views after Prefab change
+        ///     Clear views cache
+        ///     Needed to recreate views after Prefab change
         /// </summary>
         /// <param name="count">Items count</param>
-        public void RefreshViews(int count) {
-            if (_views == null) {
+        public void RefreshViews(int count)
+        {
+            if (_views == null)
+            {
                 return;
             }
+
             _isInited = false;
-            for (var i = _views.Length - 1; i >= 0; i--) {
+            for (var i = _views.Length - 1; i >= 0; i--)
+            {
                 Destroy(_views[i]);
             }
+
             _rects = null;
             _views = null;
             _indexes = null;
@@ -1102,51 +1349,66 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Get all views in list
+        ///     Get all views in list
         /// </summary>
         /// <returns>Array of views</returns>
-        public GameObject[] GetAllViews() {
+        public GameObject[] GetAllViews()
+        {
             return _views;
         }
 
         /// <summary>
-        /// Create views
+        ///     Create views
         /// </summary>
         /// <param name="isForceCreate">Create views anyway</param>
-        void CreateViews(bool isForceCreate = false) {
-            if (Type == 0) {
+        void CreateViews(bool isForceCreate = false)
+        {
+            if (Type == 0)
+            {
                 CreateViewsVertical(isForceCreate);
-            } else {
+            }
+            else
+            {
                 CreateViewsHorizontal(isForceCreate);
             }
         }
 
         /// <summary>
-        /// Create view for vertical scroller
+        ///     Create view for vertical scroller
         /// </summary>
         /// <param name="isForceCreate">Create views anyway</param>
-        void CreateViewsVertical(bool isForceCreate = false) {
-            if (_views != null) {
+        void CreateViewsVertical(bool isForceCreate = false)
+        {
+            if (_views != null)
+            {
                 return;
             }
+
             var childs = _content.transform.childCount;
-            if (childs > 0 && !isForceCreate) {
+            if (childs > 0 && !isForceCreate)
+            {
                 _views = new GameObject[childs];
-                for (var i = 0; i < childs; i++) {
+                for (var i = 0; i < childs; i++)
+                {
                     var item = _content.transform.GetChild(i);
                     _views[i] = item.gameObject;
                 }
-            } else {
+            }
+            else
+            {
                 GameObject clone;
                 RectTransform rect;
                 var height = 0;
-                foreach (var item in _heights.Values) {
+                foreach (var item in _heights.Values)
+                {
                     height += item + ItemSpacing;
                 }
+
                 height /= _heights.Count;
                 var fillCount = Mathf.RoundToInt(_container.height / height) + ADDON_VIEWS_COUNT;
                 _views = new GameObject[fillCount];
-                for (var i = 0; i < fillCount; i++) {
+                for (var i = 0; i < fillCount; i++)
+                {
                     clone = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
                     clone.transform.SetParent(_content);
                     clone.transform.localScale = Vector3.one;
@@ -1160,39 +1422,51 @@ namespace UIS {
                     _views[i] = clone;
                 }
             }
+
             _indexes = new int[_views.Length];
             _rects = new RectTransform[_views.Length];
-            for (var i = 0; i < _views.Length; i++) {
+            for (var i = 0; i < _views.Length; i++)
+            {
                 _rects[i] = _views[i].GetComponent<RectTransform>();
             }
         }
 
         /// <summary>
-        /// Create view for horizontal scroller
+        ///     Create view for horizontal scroller
         /// </summary>
         /// <param name="isForceCreate">Create views anyway</param>
-        void CreateViewsHorizontal(bool isForceCreate = false) {
-            if (_views != null) {
+        void CreateViewsHorizontal(bool isForceCreate = false)
+        {
+            if (_views != null)
+            {
                 return;
             }
+
             var childs = _content.transform.childCount;
-            if (childs > 0 && !isForceCreate) {
+            if (childs > 0 && !isForceCreate)
+            {
                 _views = new GameObject[childs];
-                for (var i = 0; i < childs; i++) {
+                for (var i = 0; i < childs; i++)
+                {
                     var item = _content.transform.GetChild(i);
                     _views[i] = item.gameObject;
                 }
-            } else {
+            }
+            else
+            {
                 GameObject clone;
                 RectTransform rect;
                 var width = 0;
-                foreach (var item in _widths.Values) {
+                foreach (var item in _widths.Values)
+                {
                     width += item + ItemSpacing;
                 }
+
                 width /= _widths.Count;
                 var fillCount = Mathf.RoundToInt(_container.width / width) + ADDON_VIEWS_COUNT;
                 _views = new GameObject[fillCount];
-                for (var i = 0; i < fillCount; i++) {
+                for (var i = 0; i < fillCount; i++)
+                {
                     clone = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
                     clone.transform.SetParent(_content);
                     clone.transform.localScale = Vector3.one;
@@ -1206,28 +1480,35 @@ namespace UIS {
                     _views[i] = clone;
                 }
             }
+
             _indexes = new int[_views.Length];
             _rects = new RectTransform[_views.Length];
-            for (var i = 0; i < _views.Length; i++) {
+            for (var i = 0; i < _views.Length; i++)
+            {
                 _rects[i] = _views[i].GetComponent<RectTransform>();
             }
         }
 
         /// <summary>
-        /// Create labels
+        ///     Create labels
         /// </summary>
-        void CreateLabels() {
-            if (Type == 0) {
+        void CreateLabels()
+        {
+            if (Type == 0)
+            {
                 CreateLabelsVertical();
-            } else {
+            }
+            else
+            {
                 CreateLabelsHorizontal();
             }
         }
 
         /// <summary>
-        /// Create labels for vertical scroller
+        ///     Create labels for vertical scroller
         /// </summary>
-        void CreateLabelsVertical() {
+        void CreateLabelsVertical()
+        {
             var topText = new GameObject("TopLabel");
             topText.transform.SetParent(_scroll.viewport.transform);
             TopLabel = topText.AddComponent<TextMeshProUGUI>();
@@ -1266,9 +1547,10 @@ namespace UIS {
         }
 
         /// <summary>
-        /// Create labels for horizontal scroller
+        ///     Create labels for horizontal scroller
         /// </summary>
-        void CreateLabelsHorizontal() {
+        void CreateLabelsHorizontal()
+        {
             var leftText = new GameObject("LeftLabel");
             leftText.transform.SetParent(_scroll.viewport.transform);
             LeftLabel = leftText.AddComponent<TextMeshProUGUI>();

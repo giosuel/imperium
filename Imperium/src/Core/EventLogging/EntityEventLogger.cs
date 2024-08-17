@@ -1,8 +1,11 @@
+#region
+
 using System.Linq;
 using GameNetcodeStuff;
-using Imperium.Types;
 using Imperium.Util;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Core.EventLogging;
 

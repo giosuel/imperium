@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.API;
-using Imperium.Types;
 using Imperium.Util;
 using UnityEngine;
 
@@ -270,7 +268,6 @@ internal static class EnemyAIPatch
         if (Imperium.Settings.Player.Invisibility.Value && __result == Imperium.Player) __result = null;
 
         if (__result != null) Imperium.EventLog.EntityEvents.CheckLineOfSightForPlayer(__instance, __result);
-
     }
 
     [HarmonyPostfix]

@@ -1,11 +1,14 @@
+#region
+
 using System;
-using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
 using Imperium.Util;
 using Unity.Netcode;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 

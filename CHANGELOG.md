@@ -2,7 +2,7 @@
 
 ## Imperium v0.2.2 [Beta] - The Event Log
 
-**Note:** *This version of Imperium is  compatible with the [Version 60](<https://steamdb.info/changelist/24827461/>) of Lethal Company.*
+**Note:** *This version of Imperium is compatible with the [Version 60](<https://steamdb.info/changelist/24827461/>) of Lethal Company.*
 
 Besides a load of QoL changes, bug fixes and compatibility changes, this update is aimed at the implementation of the event log and the tape measure. The event log is a tool that allows you to track in-game events such as entity behaviour, targeting and noise detection more easily.
 
@@ -22,7 +22,7 @@ The tape measure is a virtual tool to measure distances in the game. The tape me
 
 ![tape-measure](https://github.com/giosuel/imperium/blob/main/assets/tape-measure.png?raw=true)
 
-### Added StuffThe event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
+### Added Stuff
 
 - Added the event log to track specific game events.
 - Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.

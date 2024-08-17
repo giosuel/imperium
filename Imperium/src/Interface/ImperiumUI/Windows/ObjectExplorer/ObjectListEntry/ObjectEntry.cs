@@ -1,3 +1,5 @@
+#region
+
 using System;
 using Imperium.API.Types.Networking;
 using Imperium.Extensions;
@@ -9,6 +11,8 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 

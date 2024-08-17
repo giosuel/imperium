@@ -1,6 +1,10 @@
+#region
+
 using System.Collections.Generic;
 using Imperium.Util;
 using Imperium.Util.Binding;
+
+#endregion
 
 namespace Imperium.Core.EventLogging;
 

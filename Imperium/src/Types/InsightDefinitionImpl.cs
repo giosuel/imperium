@@ -46,7 +46,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
         PropagateTypeNameGenerator(obj => generator((T)obj));
         return this;
     }
-    
+
     public InsightDefinition<T> SetPersonalNameGenerator(Func<T, string> generator)
     {
         PersonalNameGenerator = obj => generator((T)obj);
@@ -231,7 +231,10 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     public void SetNameGeneratorFromParent(Func<T, string> generator) => NameGenerator ??= obj => generator((T)obj);
-    public void SetPersonalNameGeneratorFromParent(Func<T, string> generator) => PersonalNameGenerator ??= obj => generator((T)obj);
+
+    public void SetPersonalNameGeneratorFromParent(Func<T, string> generator) =>
+        PersonalNameGenerator ??= obj => generator((T)obj);
+
     public void SetIsDeadGeneratorFromParent(Func<T, bool> generator) => IsDeadGenerator ??= obj => generator((T)obj);
     public void SetPositionOverrideFromParent(Func<T, Vector3> @override) => PositionOverride ??= obj => @override((T)obj);
 }

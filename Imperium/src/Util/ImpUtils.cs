@@ -139,8 +139,9 @@ public abstract class ImpUtils
     }
 
     /// <summary>
-    /// Runs a function, catches all exceptions and returns a boolean with the status.
-    /// /// </summary>
+    ///     Runs a function, catches all exceptions and returns a boolean with the status.
+    ///     ///
+    /// </summary>
     /// <param name="action"></param>
     /// <param name="exception"></param>
     /// <param name="logTitle"></param>
@@ -163,6 +164,7 @@ public abstract class ImpUtils
                     title: $"[ERR] {logTitle}: {exception.Message}"
                 );
             }
+
             return false;
         }
     }
@@ -246,7 +248,7 @@ public abstract class ImpUtils
         internal static void ToggleCursorState(bool isShown)
         {
             Imperium.Player.quickMenuManager.isMenuOpen = isShown;
-            
+
             Cursor.lockState = isShown ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = isShown;
         }

@@ -110,11 +110,10 @@ public class ObjectInsight : MonoBehaviour
     }
 
     /// <summary>
-    /// Executes the <see cref="InsightDefinition{T}.NameGenerator"/> and <see cref="InsightDefinition.IsDeadGenerator"/>
-    /// functions.
-    ///
-    /// Since these functions are provided by the client, they are only executed every so often
-    /// (<see cref="overlayUpdateTimer"/>) for performance reasons.
+    ///     Executes the <see cref="InsightDefinition{T}.NameGenerator" /> and <see cref="InsightDefinition.IsDeadGenerator" />
+    ///     functions.
+    ///     Since these functions are provided by the client, they are only executed every so often
+    ///     (<see cref="overlayUpdateTimer" />) for performance reasons.
     /// </summary>
     private void UpdateInsightOverlay()
     {

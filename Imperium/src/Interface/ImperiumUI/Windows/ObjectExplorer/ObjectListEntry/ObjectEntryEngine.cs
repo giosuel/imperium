@@ -1,3 +1,5 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +7,8 @@ using Imperium.API.Types.Networking;
 using Imperium.Util.Binding;
 using UnityEngine;
 using Object = UnityEngine.Object;
+
+#endregion
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
