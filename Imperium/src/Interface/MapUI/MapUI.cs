@@ -176,11 +176,14 @@ internal class MapUI : BaseUI
             path: "ZoomSlider",
             container: container,
             valueBinding: Imperium.Settings.Map.CameraZoom,
-            useLogarithmicScale: true,
             indicatorUnit: "x",
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
             theme: theme
         );
+        container.Find("ZoomSlider/MinIcon").gameObject.AddComponent<ImpInteractable>()
+            .onClick += () => Imperium.Settings.Map.CameraZoom.Set(1);
+        container.Find("ZoomSlider/MaxIcon").gameObject.AddComponent<ImpInteractable>()
+            .onClick += () => Imperium.Settings.Map.CameraZoom.Set(100);
 
         farClipSlider = ImpSlider.Bind(
             path: "NearClip",
@@ -345,7 +348,7 @@ internal class MapUI : BaseUI
                     .Concat(Imperium.ObjectManager.CurrentLevelSpiderWebs.Value
                         .Where(obj => obj)
                         .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Spider Web")))
-                    .Concat(Imperium.ObjectManager.CurrentLevelMoldSpores.Value
+                    .Concat(Imperium.ObjectManager.CurrentLevelVainShrouds.Value
                         .Where(obj => obj)
                         .Select(entry => new KeyValuePair<GameObject, string>(entry, "Mold Spore")))
                     .ToHashSet(),

@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Core.EventLogging;
 using Imperium.Core.Input;
 using Imperium.Core.Lifecycle;
 using Imperium.Core.Scripts;
@@ -36,13 +37,13 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.2.1";
+    public const string PLUGIN_VERSION = "0.2.2";
 
     private static ConfigFile configFile;
     private static Harmony Harmony;
 
     /*
-     * Relays to vanilla singletons
+     * Relays to vanilla singletons.
      */
     internal static Terminal Terminal { get; private set; }
     internal static HUDManager HUDManager { get; private set; }
@@ -68,8 +69,10 @@ public class Imperium : BaseUnityPlugin
     internal static PlayerManager PlayerManager { get; private set; }
     internal static MoonManager MoonManager { get; private set; }
     internal static ShipManager ShipManager { get; private set; }
+    internal static CruiserManager CruiserManager { get; private set; }
     internal static Visualization Visualization { get; private set; }
     internal static Oracle Oracle { get; private set; }
+    internal static ImpEventLog EventLog { get; private set; }
 
     /*
      * GameObjects and world-space managers. Instantiated when Imperium is launched.
@@ -78,6 +81,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpFreecam Freecam { get; private set; }
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
+    internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
@@ -132,12 +136,11 @@ public class Imperium : BaseUnityPlugin
 
     internal static void DisableImperium()
     {
-        if (!IsImperiumLaunched) return;
-
         IsImperiumEnabled = false;
 
-        Interface.Close();
+        Interface.Destroy();
         PlayerManager.IsFlying.SetFalse();
+        Freecam.IsFreecamEnabled.SetFalse();
 
         InputBindings.BaseMap.Disable();
         InputBindings.StaticMap.Disable();
@@ -153,6 +156,11 @@ public class Imperium : BaseUnityPlugin
         InputBindings.StaticMap.Enable();
         InputBindings.FreecamMap.Enable();
         InputBindings.InterfaceMap.Enable();
+
+        Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
+        StartUI();
+
+        Settings.LoadAll();
 
         IsImperiumEnabled = true;
     }
@@ -179,14 +187,17 @@ public class Imperium : BaseUnityPlugin
         Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();
         NightVision = ImpNightVision.Create();
+        ImpTapeMeasure = ImpTapeMeasure.Create();
         NoiseListener = ImpNoiseListener.Create();
         ImpPositionIndicator = ImpPositionIndicator.Create();
 
         Oracle = new Oracle();
+        EventLog = new ImpEventLog();
 
         GameManager = new GameManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         MoonManager = new MoonManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         ShipManager = new ShipManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        CruiserManager = new CruiserManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
@@ -202,18 +213,10 @@ public class Imperium : BaseUnityPlugin
         MoonManager.MinIndoorSpawns.onTrigger += Oracle.Simulate;
         MoonManager.MinOutdoorSpawns.onTrigger += Oracle.Simulate;
 
-        Interface.OpenInterface.onUpdate += openInterface =>
-        {
-            if (openInterface) ImpPositionIndicator.Deactivate();
-        };
-
         // Patch the rest of the functionality at the end to make sure all the dependencies of the static patch
         // functions are loaded
         Harmony.PatchAll();
         UnityExplorerIntegration.PatchFunctions(Harmony);
-
-        WasImperiumAccessGranted = true;
-        IsImperiumLaunched = true;
 
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
@@ -229,7 +232,7 @@ public class Imperium : BaseUnityPlugin
 
             Settings.LoadAll();
 
-            SpawnUI();
+            StartUI();
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
@@ -243,6 +246,9 @@ public class Imperium : BaseUnityPlugin
             InputBindings.FreecamMap.Disable();
             InputBindings.InterfaceMap.Disable();
         }
+
+        WasImperiumAccessGranted = true;
+        IsImperiumLaunched = true;
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
@@ -257,6 +263,10 @@ public class Imperium : BaseUnityPlugin
 
     internal static void Unload()
     {
+        if (!IsImperiumLaunched) return;
+
+        PreInitPatches.ReturnedFromGame = true;
+
         Harmony.UnpatchSelf();
 
         DisableImperium();
@@ -275,8 +285,13 @@ public class Imperium : BaseUnityPlugin
         Launch();
     }
 
-    private static void SpawnUI()
+    private static void StartUI()
     {
+        Interface.OpenInterface.onUpdate += openInterface =>
+        {
+            if (openInterface) ImpPositionIndicator.Deactivate();
+        };
+
         Interface.RegisterInterface<ImperiumUI>(
             ImpAssets.ImperiumUIObject,
             "ImperiumUI",

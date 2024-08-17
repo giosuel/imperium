@@ -19,6 +19,9 @@ public class ImpInputBindings
     internal ImpInputBindings()
     {
         StaticMap.AddAction("Alt", binding: "<Keyboard>/alt");
+        StaticMap.AddAction("Shift", binding: "<Keyboard>/shift");
+        StaticMap.AddAction("RightClick", binding: "<Mouse>/rightButton");
+        StaticMap.AddAction("Escape", binding: "<Keyboard>/escape");
         StaticMap.Enable();
 
         BaseMap.ToggleFlight.performed += OnToggleFlight;

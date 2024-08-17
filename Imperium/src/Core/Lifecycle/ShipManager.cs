@@ -10,11 +10,11 @@ using Unity.Netcode;
 
 namespace Imperium.Core.Lifecycle;
 
-public class ShipManager : ImpLifecycleObject
+internal class ShipManager : ImpLifecycleObject
 {
     private readonly ImpNetMessage<int> navigateShipMessage = new("NavigateShip", Imperium.Networking);
 
-    public ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) : base(sceneLoaded, playersConnected)
+    internal ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) : base(sceneLoaded, playersConnected)
     {
         if (NetworkManager.Singleton.IsHost) navigateShipMessage.OnServerReceive += OnNavigateToServer;
         navigateShipMessage.OnClientRecive += OnNavigateToClient;
@@ -46,7 +46,7 @@ public class ShipManager : ImpLifecycleObject
             if (value)
             {
                 StartOfRoundPatch.InstantTakeoffHarmony.PatchAll(typeof(StartOfRoundPatch.InstantTakeoffPatches));
-                Imperium.StartOfRound.shipAnimator.speed = 1000f;
+                if (!Imperium.StartOfRound.inShipPhase) Imperium.StartOfRound.shipAnimator.speed = 1000f;
             }
             else
             {
@@ -64,7 +64,7 @@ public class ShipManager : ImpLifecycleObject
             if (value)
             {
                 StartOfRoundPatch.InstantLandingHarmony.PatchAll(typeof(StartOfRoundPatch.InstantLandingPatches));
-                Imperium.StartOfRound.shipAnimator.speed = 1000f;
+                if (!Imperium.StartOfRound.inShipPhase) Imperium.StartOfRound.shipAnimator.speed = 1000f;
             }
             else
             {

@@ -59,7 +59,15 @@ public abstract class ImpInput
             // Set binding to default value if input value is empty
             input.onSubmit.AddListener(value =>
             {
-                valueBinding.Set(string.IsNullOrEmpty(value) ? valueBinding.DefaultValue : int.Parse(value));
+                if (string.IsNullOrEmpty(value))
+                {
+                    valueBinding.Set(valueBinding.DefaultValue);
+                    input.text = valueBinding.DefaultValue.ToString();
+                }
+                else
+                {
+                    valueBinding.Set(int.Parse(value));
+                }
             });
 
             valueBinding.onUpdate += value => input.text = value.ToString();
@@ -114,7 +122,18 @@ public abstract class ImpInput
         if (valueBinding != null)
         {
             input.text = valueBinding.Value.ToString(CultureInfo.InvariantCulture);
-            input.onSubmit.AddListener(value => valueBinding.Set(float.Parse(value)));
+            input.onSubmit.AddListener(value =>
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    valueBinding.Set(valueBinding.DefaultValue);
+                    input.text = valueBinding.DefaultValue.ToString(CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    valueBinding.Set(float.Parse(value));
+                }
+            });
             valueBinding.onUpdate += value => input.text = value.ToString(CultureInfo.InvariantCulture);
         }
 
@@ -222,11 +241,7 @@ public abstract class ImpInput
         int max = int.MaxValue
     )
     {
-        if (string.IsNullOrEmpty(text))
-        {
-            field.text = min.ToString();
-            return;
-        }
+        if (string.IsNullOrEmpty(text)) return;
 
         if (!int.TryParse(text, out var value))
         {
@@ -256,11 +271,7 @@ public abstract class ImpInput
         float max = float.MaxValue
     )
     {
-        if (string.IsNullOrEmpty(text))
-        {
-            field.text = min.ToString(CultureInfo.InvariantCulture);
-            return;
-        }
+        if (string.IsNullOrEmpty(text)) return;
 
         var value = float.Parse(text);
         if (value > max)

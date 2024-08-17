@@ -123,12 +123,31 @@ internal class ImpInterfaceManager : MonoBehaviour
         return (T)interfaceControllers.FirstOrDefault(controller => controller.Value is T).Value;
     }
 
+    public bool IsOpen<T>() where T : BaseUI
+    {
+        var controller = (T)interfaceControllers.FirstOrDefault(controller => controller.Value is T).Value;
+        return controller && controller.IsOpen;
+    }
+
     public void Open<T>(bool toggleCursorState = true, bool closeOthers = true)
     {
         Open(typeof(T), toggleCursorState, closeOthers);
     }
 
     public void Close() => Close(true);
+
+    public void Destroy()
+    {
+        Close();
+        foreach (var controller in interfaceControllers.Values) Destroy(controller);
+        Destroy(gameObject);
+    }
+
+    public void ResetUI()
+    {
+        Close();
+        Imperium.Settings.Preferences.ImperiumWindowLayout.Reset();
+    }
 
     public void Close(bool toggleCursorState)
     {
@@ -179,6 +198,7 @@ internal class ImpInterfaceManager : MonoBehaviour
 
         controller.OnUIOpen();
         imperiumDock.OnUIOpen();
+        tooltip.Deactivate();
 
         OpenInterface.Set(controller);
 

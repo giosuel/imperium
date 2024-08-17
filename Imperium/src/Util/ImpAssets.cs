@@ -32,8 +32,10 @@ internal abstract class ImpAssets
     internal static GameObject ObjectSettingsWindowObject;
     internal static GameObject ConfirmationWindowObject;
     internal static GameObject InfoWindowObject;
+    internal static GameObject EventLogWindowObject;
     internal static GameObject MoonControlWindowObject;
     internal static GameObject ShipControlWindowObject;
+    internal static GameObject CruiserControlWindowObject;
     internal static GameObject RenderingWindowObject;
     internal static GameObject SaveEditorWindowObject;
     internal static GameObject TeleportationWindowObject;
@@ -60,7 +62,8 @@ internal abstract class ImpAssets
     /*
      * Other Prefabs
      */
-    internal static GameObject IndicatorObject;
+    internal static GameObject PositionIndicatorObject;
+    internal static GameObject TapeIndicatorObject;
     internal static GameObject NoiseOverlay;
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
@@ -79,18 +82,50 @@ internal abstract class ImpAssets
     public static Material ShiggyMaterial;
     public static Material TriggerMaterial;
 
+    /*
+     * Other
+     */
+    public static IReadOnlyCollection<string> EntityNames;
+
     internal static AssetBundle ImperiumAssets;
 
     internal static bool Load()
     {
-        var assetFile = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
-            "imperium_assets"
-        );
-        ImperiumAssets = AssetBundle.LoadFromFile(assetFile);
+        if (!LoadEntityNames())
+        {
+            Imperium.IO.LogError("[PRELOAD] Failed to load entity names from assembly, aborting!");
+            return false;
+        }
+
+        if (!LoadAssets())
+        {
+            Imperium.IO.LogInfo("[PRELOAD] Failed to load one or more assets from assembly, aborting!");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool LoadEntityNames()
+    {
+        using (var entityNamesStream = LoadResource("Imperium.resources.entityNames.txt"))
+        {
+            EntityNames = new StreamReader(entityNamesStream).ReadToEnd().Split("\n").Select(name => name.Trim()).ToList();
+        }
+
+        return EntityNames != null && EntityNames.Count != 0;
+    }
+
+    private static bool LoadAssets()
+    {
+        using (var assetBundleStream = LoadResource("Imperium.resources.imperium_assets"))
+        {
+            ImperiumAssets = AssetBundle.LoadFromStream(assetBundleStream);
+        }
+
         if (ImperiumAssets == null)
         {
-            Imperium.IO.LogInfo($"[PRELOAD] Failed to load assets from {assetFile}, aborting!");
+            Imperium.IO.LogError("[PRELOAD] Failed to load assets from assembly, aborting!");
             return false;
         }
 
@@ -109,6 +144,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/confirmation.prefab", out ConfirmationWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/control_center.prefab", out ControlCenterWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/info.prefab", out InfoWindowObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/event_log.prefab", out EventLogWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/moon_control.prefab", out MoonControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_explorer.prefab", out ObjectExplorerWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_settings.prefab", out ObjectSettingsWindowObject),
@@ -116,9 +152,11 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/rendering.prefab", out RenderingWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/save_editor.prefab", out SaveEditorWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/ship_control.prefab", out ShipControlWindowObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/cruiser_control.prefab", out CruiserControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/teleportation.prefab", out TeleportationWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/visualization.prefab", out VisualizationWindowObject),
-            LoadAsset(ImperiumAssets, "Assets/Prefabs/indicator.prefab", out IndicatorObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/tape_indicator.prefab", out TapeIndicatorObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/position_indicator.prefab", out PositionIndicatorObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
@@ -147,16 +185,9 @@ internal abstract class ImpAssets
             if (material.name == "testTriggerRed") TriggerMaterial = material;
         }
 
-
-        if (loadResults.Any(result => result == false))
-        {
-            Imperium.IO.LogInfo($"[PRELOAD] Failed to load one or more assets from {assetFile}, aborting!");
-            return false;
-        }
-
         Imperium.IO.LogBlock(logBuffer, "Imperium Resource Loader");
 
-        return true;
+        return loadResults.All(result => result);
     }
 
     private static List<string> logBuffer = [];
@@ -174,4 +205,6 @@ internal abstract class ImpAssets
 
         return true;
     }
+
+    private static Stream LoadResource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
 }

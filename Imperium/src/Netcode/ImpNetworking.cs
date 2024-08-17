@@ -138,13 +138,14 @@ public class ImpNetworking
     [ImpAttributes.LocalMethod]
     private void OnAuthenticateResponse()
     {
-        // actually authenticated client ID
-        Imperium.IO.Send(
-            "Imperium access was granted!",
-            type: NotificationType.AccessControl
-        );
-        Imperium.IO.LogInfo("[NET] Imperium access was granted!");
-        Imperium.Launch();
+        Imperium.IO.Send("Imperium access was granted!", type: NotificationType.AccessControl);
+        Imperium.IO.LogInfo("[NET] Imperium access was granted! Launching Imperium...");
+
+        if (!ImpUtils.RunSafe(Imperium.Launch, "Imperium startup failed"))
+        {
+            Imperium.IO.Send("Imperium launch failed! Shutting down.", type: NotificationType.Required);
+            Imperium.DisableImperium();
+        }
 
         // Request network values update from server if client is not host
         if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();
@@ -155,11 +156,7 @@ public class ImpNetworking
     {
         if (NetworkManager.Singleton.IsHost) return;
 
-        Imperium.IO.Send(
-            "Imperium access was revoked!",
-            type: NotificationType.AccessControl,
-            isWarning: true
-        );
+        Imperium.IO.Send("Imperium access was revoked!", type: NotificationType.AccessControl, isWarning: true);
         Imperium.IO.LogInfo("[NET] Imperium access was revoked!");
         Imperium.DisableImperium();
     }
@@ -169,18 +166,15 @@ public class ImpNetworking
     {
         if (NetworkManager.Singleton.IsHost) return;
 
-        Imperium.IO.Send(
-            "Imperium access was granted!",
-            type: NotificationType.AccessControl
-        );
-        Imperium.IO.LogInfo("[NET] Imperium access was granted!");
+        Imperium.IO.Send("Imperium access was granted!", type: NotificationType.AccessControl);
+        Imperium.IO.LogInfo("[NET] Imperium access was granted! Launching Imperium...");
         if (Imperium.WasImperiumAccessGranted)
         {
             Imperium.EnableImperium();
         }
         else
         {
-            Imperium.Launch();
+            if (!ImpUtils.RunSafe(Imperium.Launch, "Imperium startup failed")) Imperium.DisableImperium();
 
             // Request network values update from server if client is not host
             if (!NetworkManager.Singleton.IsHost) clientRequestValues.DispatchToServer();

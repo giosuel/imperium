@@ -34,10 +34,15 @@ public abstract class ImpConstants
     internal const int DefaultMapCameraNearClipFreeLook = -20;
 
     internal const float DefaultCarPushForceMultiplier = 27;
+    internal const float DefaultCarAccelerationMultiplier = 250;
 
     internal const string GeneralSaveFile = "LCGeneralSaveData";
 
     internal static readonly LayerMask IndicatorMask = LayerMask.GetMask("Room", "Terrain", "Railing");
+
+    internal static readonly LayerMask TapeIndicatorMask = LayerMask.GetMask(
+        "Default", "Room", "Terrain", "Railing", "Colliders", "DecalStickableSurface", "InteractableObject"
+    );
 
     /*
      * Maps the class names of default insights to more recognizable names.

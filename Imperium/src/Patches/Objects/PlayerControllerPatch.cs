@@ -32,7 +32,9 @@ internal static class PlayerControllerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch("DamagePlayer")]
-    private static void DamagePlayerPatch(PlayerControllerB __instance, int damageNumber, CauseOfDeath causeOfDeath)
+    private static void DamagePlayerPostfixPatch(
+        PlayerControllerB __instance, int damageNumber, CauseOfDeath causeOfDeath, bool fallDamage, Vector3 force
+    )
     {
         if (Imperium.Settings.Player.GodMode.Value)
         {
@@ -46,11 +48,19 @@ internal static class PlayerControllerPatch
                 type: NotificationType.GodMode
             );
         }
+
+        Imperium.EventLog.PlayerEvents.DamagePlayer(__instance, damageNumber, causeOfDeath, fallDamage, force);
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("KillPlayer")]
-    private static void KillPlayerPatch(PlayerControllerB __instance, CauseOfDeath causeOfDeath)
+    private static void KillPlayerPostfixPatch(
+        PlayerControllerB __instance,
+        bool spawnBody,
+        CauseOfDeath causeOfDeath,
+        Vector3 bodyVelocity,
+        Vector3 positionOffset
+    )
     {
         if (Imperium.Settings.Player.GodMode.Value)
         {
@@ -59,6 +69,8 @@ internal static class PlayerControllerPatch
                 type: NotificationType.GodMode
             );
         }
+
+        Imperium.EventLog.PlayerEvents.KillPlayer(__instance, causeOfDeath, spawnBody, bodyVelocity, positionOffset);
     }
 
     [HarmonyPostfix]
@@ -157,10 +169,12 @@ internal static class PlayerControllerPatch
                     ? IngamePlayerSettings.Instance.playerInput.actions.FindAction("Crouch").ReadValue<float>()
                     : 0;
 
-                upInput *= 15f;
-                downInput *= 15f;
+                var flyingSpeed = Imperium.Settings.Player.FlyingSpeed.Value;
 
-                var forceVector = new Vector3(moveVector.x * 10f, upInput - downInput, moveVector.y * 10f);
+                upInput *= flyingSpeed * 1.5f;
+                downInput *= flyingSpeed * 1.5f;
+
+                var forceVector = new Vector3(moveVector.x * flyingSpeed, upInput - downInput, moveVector.y * flyingSpeed);
                 forceVector = Quaternion.AngleAxis(Imperium.Player.transform.eulerAngles.y, Vector3.up) * forceVector;
                 __instance.externalForces += forceVector;
             }

@@ -9,6 +9,9 @@ namespace Imperium.Core.Input;
 
 internal sealed class ImpInputBaseMap : LcInputActions
 {
+    [InputAction("<Keyboard>/o", Name = "Tape Measure")]
+    internal InputAction TapeMeasure { get; set; }
+
     [InputAction("<Keyboard>/t", Name = "Teleport")]
     internal InputAction Teleport { get; set; }
 

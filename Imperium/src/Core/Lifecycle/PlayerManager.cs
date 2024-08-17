@@ -42,15 +42,11 @@ internal class PlayerManager : ImpLifecycleObject
         () => GameObject.Find("LungApparatus(Clone)")?.transform.position
     );
 
-    internal readonly ImpNetworkBinding<float> CarPushForceBinding = new(
-        "CarPushForce",
-        Imperium.Networking,
-        masterBinding: Imperium.Settings.Player.PushForce
-    );
-
     internal bool AllowPlayerDeathOverride;
     internal bool FlyIsAscending;
     internal bool FlyIsDescending;
+
+    private static readonly int GasEmitting = Animator.StringToHash("gasEmitting");
 
     public PlayerManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
         : base(sceneLoaded, playersConnected)
@@ -124,6 +120,10 @@ internal class PlayerManager : ImpLifecycleObject
     {
         player.health = 100;
         HUDManager.Instance.UpdateHealthUI(100, hurtPlayer: false);
+        HUDManager.Instance.gasHelmetAnimator.SetBool(GasEmitting, value: false);
+
+        player.bleedingHeavily = false;
+        player.criticallyInjured = false;
     }
 
     internal static void UpdateCameras(bool _) => UpdateCameras();

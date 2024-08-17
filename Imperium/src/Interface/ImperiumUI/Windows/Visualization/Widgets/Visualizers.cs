@@ -77,9 +77,9 @@ internal class Visualizers : ImpWidget
             theme
         );
         ImpToggle.Bind(
-            "Colliders/MoldSpores",
+            "Colliders/VainShrouds",
             transform,
-            Imperium.Settings.Visualization.MoldSpores,
+            Imperium.Settings.Visualization.VainShrouds,
             theme
         );
         ImpToggle.Bind(

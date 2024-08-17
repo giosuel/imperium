@@ -34,6 +34,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
 
     public ImpBinding<Dictionary<string, Func<Component, string>>> Insights { get; } = new([]);
     public Func<Component, string> NameGenerator { get; private set; }
+    public Func<Component, string> PersonalNameGenerator { get; private set; }
     public Func<Component, bool> IsDeadGenerator { get; private set; }
     public Func<Component, Vector3> PositionOverride { get; private set; }
     public ImpBinding<bool> VisibilityBinding { get; private set; }
@@ -42,7 +43,14 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     public InsightDefinition<T> SetNameGenerator(Func<T, string> generator)
     {
         NameGenerator = obj => generator((T)obj);
-        PropagateNameGenerator(obj => generator((T)obj));
+        PropagateTypeNameGenerator(obj => generator((T)obj));
+        return this;
+    }
+
+    public InsightDefinition<T> SetPersonalNameGenerator(Func<T, string> generator)
+    {
+        PersonalNameGenerator = obj => generator((T)obj);
+        PropagatePersonalNameGenerator(obj => generator((T)obj));
         return this;
     }
 
@@ -115,6 +123,7 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
                 }
 
                 NameGenerator ??= parentDefinition.NameGenerator;
+                PersonalNameGenerator ??= parentDefinition.PersonalNameGenerator;
                 IsDeadGenerator ??= parentDefinition.IsDeadGenerator;
                 PositionOverride ??= parentDefinition.PositionOverride;
 
@@ -154,13 +163,27 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     /// <summary>
     ///     Propagates the name generator to child types that don't have their own.
     /// </summary>
-    private void PropagateNameGenerator(Func<Component, string> generator)
+    private void PropagateTypeNameGenerator(Func<Component, string> generator)
     {
         foreach (var (type, typeInsights) in globalInsights)
         {
             if (type.IsSubclassOf(typeof(T)))
             {
                 typeInsights.SetNameGeneratorFromParent(generator);
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Propagates the personal name generator to child types that don't have their own.
+    /// </summary>
+    private void PropagatePersonalNameGenerator(Func<Component, string> generator)
+    {
+        foreach (var (type, typeInsights) in globalInsights)
+        {
+            if (type.IsSubclassOf(typeof(T)))
+            {
+                typeInsights.SetPersonalNameGeneratorFromParent(generator);
             }
         }
     }
@@ -208,6 +231,10 @@ internal class InsightDefinitionImpl<T> : InsightDefinition<T> where T : Compone
     }
 
     public void SetNameGeneratorFromParent(Func<T, string> generator) => NameGenerator ??= obj => generator((T)obj);
+
+    public void SetPersonalNameGeneratorFromParent(Func<T, string> generator) =>
+        PersonalNameGenerator ??= obj => generator((T)obj);
+
     public void SetIsDeadGeneratorFromParent(Func<T, bool> generator) => IsDeadGenerator ??= obj => generator((T)obj);
     public void SetPositionOverrideFromParent(Func<T, Vector3> @override) => PositionOverride ??= obj => @override((T)obj);
 }

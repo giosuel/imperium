@@ -21,6 +21,8 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Built-in minimap and full-screen map with layer selection, zoom and more.
 - Visualization of game object hitboxes, spawn locations, tile borders and much more.
 - Eight different interface themes to pick from.
+- Tape measure to measure in-game distances with custom layer selection support.
+- Event log that logs in-game events related to entity spawning, targeting and more.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Instant ship landing and takeoff and various other animation skips.
 - Ability to kill and revive players including the yourself.
@@ -82,9 +84,21 @@ Tha spawning console allows you to spawn entities, scrap and map hazards into th
 
 ![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
 
+## The Tape Measure
+
+The tape measure is a virtual tool to measure distances in the game. The tape measure supports axis snapping when holding down the `Alt` key. It also tries to snap to surfaces as well as possible.
+
+![tape-measure](https://github.com/giosuel/imperium/blob/main/assets/tape-measure.png?raw=true)
+
 ## Ship and Moon Control
 
 ![ship-moon-control](https://github.com/giosuel/imperium/blob/main/assets/ship-moon-control.png?raw=true)
+
+## The Event Log
+
+The event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
+
+![event-log](https://github.com/giosuel/imperium/blob/main/assets/event-log.png?raw=true)
 
 ## Moon / Challenge Moon Information
 
@@ -143,4 +157,4 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 - [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shaders for the collider visualizations!
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!
-- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for writing the [Unity Netcode Patcher](https://github.com/EvaisaDev/UnityNetcodePatcher) and [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/)!
+- [Evaisa](https://thunderstore.io/c/lethal-company/p/Evaisa/) for writing the [Unity Netcode Patcher](https://github.com/EvaisaDev/UnityNetcodePatcher) and [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/)! 

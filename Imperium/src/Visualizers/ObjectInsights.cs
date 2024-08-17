@@ -115,15 +115,25 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
 
     private void RegisterDefaultInsights()
     {
+        /*
+         * Players
+         */
         InsightsFor<PlayerControllerB>()
             .SetNameGenerator(player => player.playerUsername ?? player.GetInstanceID().ToString())
             .SetIsDeadGenerator(player => player.isPlayerDead)
             .RegisterInsight("Health", player => $"{player.health} HP")
             .RegisterInsight("Stamina", player => $"{player.sprintTime:0.0}s")
             .RegisterInsight("Visibility", player => $"{((IVisibleThreat)player).GetVisibility():0.0}")
+            .RegisterInsight("Interest Level", player => $"{((IVisibleThreat)player).GetInterestLevel():0.0}")
+            .RegisterInsight("Insanity", player => $"{player.insanityLevel:0.0}")
+            .RegisterInsight("Fear Level", player => $"{Imperium.StartOfRound.fearLevel:0.0}")
             .RegisterInsight("Location", ImpUtils.GetPlayerLocationText)
+            .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Players");
 
+        /*
+         * Items
+         */
         InsightsFor<GrabbableObject>()
             .SetNameGenerator(item => item.itemProperties.itemName)
             .RegisterInsight("Value", item => $"{item.scrapValue}$")
@@ -134,8 +144,12 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Items");
 
+        /*
+         * Entities
+         */
         InsightsFor<EnemyAI>()
             .SetNameGenerator(entity => entity.enemyType.enemyName)
+            .SetPersonalNameGenerator(Imperium.ObjectManager.GetEntityName)
             .SetIsDeadGenerator(entity => entity.isEnemyDead)
             .RegisterInsight("Health", entity => $"{entity.enemyHP} HP")
             .RegisterInsight("Behaviour State", entity => entity.currentBehaviourStateIndex.ToString())
@@ -146,9 +160,41 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Entities");
 
+        InsightsFor<ClaySurgeonAI>()
+            .RegisterInsight("Is Master", barber => barber.isMaster ? "Yes" : "No")
+            .RegisterInsight("Beat Timer", barber => $"{barber.beatTimer:0.0}s")
+            .RegisterInsight("Jump Timer", barber => $"{barber.jumpTimer:0.0}s")
+            .RegisterInsight("Current Interval", barber => $"{barber.currentInterval:0.0}s");
+
+        InsightsFor<FlowermanAI>()
+            .RegisterInsight("Anger Meter", flowerman => $"{flowerman.angerMeter:0.0}")
+            .RegisterInsight("Anger Check Timer", flowerman => $"{flowerman.angerCheckInterval:0.0}s")
+            .RegisterInsight("Times Threatened", flowerman => $"{flowerman.timesThreatened}x")
+            .RegisterInsight("Times Found", flowerman => $"{flowerman.timesFoundSneaking}x");
+
+        InsightsFor<SandSpiderAI>()
+            .RegisterInsight("On Wall", spider => spider.onWall ? "Yes" : "No")
+            .RegisterInsight("Web Count", spider => $"({spider.webTraps.Count}/{spider.maxWebTrapsToPlace})")
+            .RegisterInsight("Chase Timer", spider => $"{spider.chaseTimer:0.0}s")
+            .RegisterInsight("Wall Timer", spider => $"{spider.waitOnWallTimer:0.0}s");
+
+        InsightsFor<JesterAI>()
+            .RegisterInsight("Idle Timer", jester => $"{jester.beginCrankingTimer:0.0}s")
+            .RegisterInsight("Crank Timer", jester => $"{jester.popUpTimer:0.0}s")
+            .RegisterInsight("No Targets Timer", jester => $"{jester.noPlayersToChaseTimer:0.0}s");
+
         InsightsFor<NutcrackerEnemyAI>()
             .SetPositionOverride(entity => DefaultPositionOverride(entity) + Vector3.down * 7f);
 
+        InsightsFor<MaskedPlayerEnemy>()
+            .RegisterInsight("Ship Interest", masked => $"{masked.interestInShipCooldown:0.0}")
+            .RegisterInsight("Stop and Stare", masked => $"{masked.stopAndStareTimer:0.0}s")
+            .RegisterInsight("Stamina", masked => $"{masked.staminaTimer:0.0}")
+            .RegisterInsight("Random Tick Timer", masked => $"{masked.randomLookTimer:0.0}");
+
+        /*
+         * Map Hazards
+         */
         InsightsFor<Turret>()
             .SetNameGenerator(turret => $"Turret #{turret.GetInstanceID()}")
             .SetIsDeadGenerator(turret => !turret.turretActive)
@@ -175,6 +221,9 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("SteamValves");
 
+        /*
+         * Company cruiser
+         */
         InsightsFor<VehicleController>()
             .SetNameGenerator(_ => "Company Cruiser")
             .SetIsDeadGenerator(cruiser => cruiser.carDestroyed)
@@ -187,6 +236,9 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("CompanyCruiser");
 
+        /*
+         * Misc objects
+         */
         InsightsFor<BridgeTrigger>()
             .SetNameGenerator(bridge => $"Bridge #{bridge.GetInstanceID()}")
             .SetIsDeadGenerator(bridge => bridge.hasBridgeFallen)

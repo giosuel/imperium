@@ -28,6 +28,6 @@ public static class ItemDropshipPatch
     [HarmonyPatch("DeliverVehicleClientRpc")]
     internal static void DeliverVehicleClientRpcPostfixPatch(ItemDropship __instance)
     {
-        Imperium.ObjectManager.RefreshLevelObstacles();
+        Imperium.ObjectManager.RefreshLevelObjects();
     }
 }

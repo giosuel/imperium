@@ -17,8 +17,6 @@ namespace Imperium.Patches.Systems;
 [HarmonyPatch(typeof(RoundManager))]
 internal static class RoundManagerPatch
 {
-    internal static readonly Dictionary<string, List<Vector3>> spawnedEntitiesInCycle = new();
-
     [HarmonyPrefix]
     [HarmonyPatch("SpawnScrapInLevel")]
     private static void SpawnScrapInLevelPrefixPatch(RoundManager __instance)
@@ -27,6 +25,24 @@ internal static class RoundManagerPatch
         Imperium.MoonManager.ScrapAmount = (int)(random.Next(
             __instance.currentLevel.minScrap, __instance.currentLevel.maxScrap) * __instance.scrapAmountMultiplier);
         Imperium.MoonManager.ChallengeScrapAmount = Imperium.MoonManager.ScrapAmount + random.Next(10, 30);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnEnemyGameObject")]
+    private static void SpawnEnemyGameObjectPostfixPatch(RoundManager __instance)
+    {
+        // Refresh entities when the game spawns entities via this function
+        Imperium.ObjectManager.RefreshLevelEntities();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("DetectElevatorRunning")]
+    private static void DetectElevatorRunningPostfixPatch(RoundManager __instance)
+    {
+        // Reset ship animator
+        Imperium.StartOfRound.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
+        Imperium.StartOfRound.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
+        Imperium.StartOfRound.shipAnimator.speed = 1;
     }
 
     [HarmonyPrefix]
@@ -60,7 +76,14 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnScrapInLevel")]
     private static void SpawnScrapInLevelPostfixPatch()
     {
-        Imperium.ObjectManager.RefreshLevelItems();
+        Imperium.ObjectManager.RefreshLevelObjects();
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SpawnOutsideHazards")]
+    private static void SpawnOutsideHazardsPostfixPatch()
+    {
+        Imperium.ObjectManager.RefreshLevelObjects();
     }
 
     internal static readonly ImpBinding<HashSet<HazardIndicator>> MapHazardPositions = new([]);
@@ -100,9 +123,17 @@ internal static class RoundManagerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch("SpawnEnemyFromVent")]
-    private static void SpawnEnemyFromVentPatch(RoundManager __instance)
+    private static void SpawnEnemyFromVentPatch(RoundManager __instance, EnemyVent vent)
     {
         Imperium.ObjectManager.RefreshLevelEntities();
+        Imperium.EventLog.GameEvents.SpawnEnemyFromVent(vent);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SwitchPower")]
+    private static void SwitchPowerPatch(RoundManager __instance, bool on)
+    {
+        Imperium.EventLog.GameEvents.SwitchPower(on);
     }
 
     [HarmonyPrefix]
@@ -111,6 +142,8 @@ internal static class RoundManagerPatch
     {
         Imperium.Oracle.Simulate(initial: true, null);
 
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPrefix(true);
+
         ImpSpawnTracker.StartCycle(__instance);
     }
 
@@ -118,6 +151,8 @@ internal static class RoundManagerPatch
     [HarmonyPatch("BeginEnemySpawning")]
     private static void BeginEnemySpawningPostfixPatch(RoundManager __instance)
     {
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPostfix(true);
+
         ImpSpawnTracker.EndCycle(__instance);
     }
 
@@ -127,6 +162,8 @@ internal static class RoundManagerPatch
     {
         ImpSpawnTracker.StartCycle(__instance);
 
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPrefix(false);
+
         Imperium.Oracle.Simulate();
     }
 
@@ -134,9 +171,11 @@ internal static class RoundManagerPatch
     [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPostfixPatch(RoundManager __instance)
     {
-        Imperium.ObjectManager.RefreshLevelEntities();
+        Imperium.ObjectManager.RefreshLevelObjects();
 
         ImpSpawnTracker.EndCycle(__instance);
+
+        Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPostfix(false);
     }
 
     [HarmonyPrefix]

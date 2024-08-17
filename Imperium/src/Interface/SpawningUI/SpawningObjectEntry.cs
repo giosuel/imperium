@@ -20,35 +20,44 @@ public class SpawningObjectEntry : MonoBehaviour
     internal SpawnObjectType SpawnType { get; private set; }
     private string displayName;
     private string spawnObjectName;
-    private string spawnObjectPrefabName;
 
     private string displayNameNormalized;
-    private string spawnObjectNamNormalized;
-    private string spawnObjectPrefabNameNormalized;
+    private string objectNameNormalized;
 
     internal void Init(
         SpawnObjectType type,
         string objectName,
-        string prefabName,
         Action onClick,
         Action onHover,
         ImpBinding<ImpTheme> themeBinding
     )
     {
         SpawnType = type;
-        displayName = Imperium.ObjectManager.GetDisplayName(objectName);
-        spawnObjectName = objectName ?? "";
-        spawnObjectPrefabName = prefabName ?? "";
+        spawnObjectName = objectName;
+
+        var overrideName = Imperium.ObjectManager.GetOverrideDisplayName(objectName);
+        string labelText;
+
+        // If override name exists, use that for full label
+        if (overrideName != null)
+        {
+            displayName = overrideName;
+            labelText = overrideName;
+        }
+        else
+        {
+            displayName = Imperium.ObjectManager.GetDisplayName(objectName);
+            labelText = $"{displayName} ({objectName})";
+        }
 
         displayNameNormalized = NormalizeName(displayName);
-        spawnObjectNamNormalized = NormalizeName(spawnObjectName);
-        spawnObjectPrefabNameNormalized = NormalizeName(spawnObjectPrefabName);
+        objectNameNormalized = NormalizeName(objectName);
 
         ImpButton.Bind("", transform, () => onClick?.Invoke(), themeBinding);
 
         selectedCover = transform.Find("Selected").gameObject;
         selectedCover.SetActive(false);
-        transform.Find("Label").GetComponent<TMP_Text>().text = $"{displayName} ({objectName})";
+        transform.Find("Label").GetComponent<TMP_Text>().text = labelText;
 
         gameObject.AddComponent<ImpInteractable>().onEnter += onHover;
         themeBinding.onUpdate += OnThemeUpdate;
@@ -68,11 +77,10 @@ public class SpawningObjectEntry : MonoBehaviour
     {
         switch (SpawnType)
         {
-            case SpawnObjectType.Entty:
+            case SpawnObjectType.Entity:
                 Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
                 {
                     Name = spawnObjectName,
-                    PrefabName = spawnObjectPrefabName,
                     SpawnPosition = position,
                     Amount = amount,
                     Health = value,
@@ -83,7 +91,6 @@ public class SpawningObjectEntry : MonoBehaviour
                 Imperium.ObjectManager.SpawnItem(new ItemSpawnRequest
                 {
                     Name = spawnObjectName,
-                    PrefabName = spawnObjectPrefabName,
                     SpawnPosition = position,
                     Amount = amount,
                     Value = value,
@@ -100,6 +107,13 @@ public class SpawningObjectEntry : MonoBehaviour
                     SendNotification = true
                 });
                 break;
+            case SpawnObjectType.CompanyCruiser:
+                Imperium.ObjectManager.SpawnCompanyCruiser(new CompanyCruiserSpawnRequest
+                {
+                    SpawnPosition = position + Vector3.up * 5f,
+                    SendNotification = true
+                });
+                break;
             case SpawnObjectType.StaticPrefab:
                 Imperium.ObjectManager.SpawnStaticPrefab(new StaticPrefabSpawnRequest
                 {
@@ -109,10 +123,21 @@ public class SpawningObjectEntry : MonoBehaviour
                     SendNotification = true
                 });
                 break;
-            case SpawnObjectType.CompanyCruiser:
-                Imperium.ObjectManager.SpawmCompanyCruiser(new CompanyCruiserSpawnRequest
+            case SpawnObjectType.LocalStaticPrefab:
+                Imperium.ObjectManager.SpawnLocalStaticPrefab(new StaticPrefabSpawnRequest
                 {
-                    SpawnPosition = position + Vector3.up * 5f,
+                    Name = spawnObjectName,
+                    SpawnPosition = position,
+                    Amount = amount,
+                    SendNotification = true
+                });
+                break;
+            case SpawnObjectType.OutsideObject:
+                Imperium.ObjectManager.SpawnOutsideObject(new StaticPrefabSpawnRequest
+                {
+                    Name = spawnObjectName,
+                    SpawnPosition = position,
+                    Amount = amount,
                     SendNotification = true
                 });
                 break;
@@ -131,9 +156,7 @@ public class SpawningObjectEntry : MonoBehaviour
         inputText = NormalizeName(inputText);
 
         var isInList = !string.IsNullOrEmpty(inputText) && (
-            spawnObjectNamNormalized.Contains(inputText)
-            || spawnObjectPrefabNameNormalized.Contains(inputText)
-            || displayNameNormalized.Contains(inputText)
+            objectNameNormalized.Contains(inputText) || displayNameNormalized.Contains(inputText)
         );
 
         gameObject.SetActive(isInList);
@@ -147,10 +170,12 @@ public class SpawningObjectEntry : MonoBehaviour
 
     internal enum SpawnObjectType
     {
-        Entty,
+        Entity,
         Item,
         MapHazard,
         StaticPrefab,
+        LocalStaticPrefab,
+        OutsideObject,
         CompanyCruiser
     }
 }

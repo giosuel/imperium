@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Imperium.Util;
 using LethalNetworkAPI;
 using Unity.Netcode;
 
@@ -10,12 +11,9 @@ namespace Imperium.Netcode;
 
 public class ImpNetEvent : INetworkSubscribable
 {
-    private readonly LethalClientEvent clientEvent;
-    private readonly LethalServerEvent serverEvent;
-
+    private readonly LNetworkEvent networkEvent;
     internal event Action<ulong> OnServerReceive;
     internal event Action OnClientRecive;
-    internal event Action<ulong> OnClientReciveFromClient;
 
     private readonly string identifier;
 
@@ -23,48 +21,55 @@ public class ImpNetEvent : INetworkSubscribable
     {
         this.identifier = identifier;
 
-        clientEvent = new LethalClientEvent($"{identifier}_event");
-        serverEvent = new LethalServerEvent($"{identifier}_event");
+        networkEvent = LNetworkEvent.Connect($"{identifier}_event");
 
-        serverEvent.OnReceived += clientId =>
+        networkEvent.OnServerReceived += clientId =>
         {
             if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
             {
                 OnServerReceive?.Invoke(clientId);
             }
         };
-        clientEvent.OnReceived += () => OnClientRecive?.Invoke();
-        clientEvent.OnReceivedFromClient += clientId => OnClientReciveFromClient?.Invoke(clientId);
+        networkEvent.OnClientReceived += () => OnClientRecive?.Invoke();
+        networkEvent.OnClientReceivedFromClient += _ => OnClientRecive?.Invoke();
 
         networking.RegisterSubscriber(this);
     }
 
+    [ImpAttributes.RemoteMethod]
     internal void DispatchToServer()
     {
-        Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to server");
-        clientEvent.InvokeServer();
+        Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to server.");
+        networkEvent.InvokeServer();
     }
 
+    [ImpAttributes.RemoteMethod]
     internal void DispatchToClients()
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients");
-            serverEvent.InvokeAllClients();
+            Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients.");
+            networkEvent.InvokeClients();
         }
         else
         {
-            Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to clients");
-            clientEvent.InvokeAllClients();
+            Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to other clients.");
+            networkEvent.InvokeOtherClients();
+
+            OnClientRecive?.Invoke();
         }
     }
 
-    internal void DispatchToClients(params ulong[] clientIds) => serverEvent.InvokeClients(clientIds);
+    [ImpAttributes.HostOnly]
+    internal void DispatchToClients(params ulong[] clientIds)
+    {
+        Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients ({string.Join(",", clientIds)}).");
+        networkEvent.InvokeClients(clientIds);
+    }
 
     public void Clear()
     {
-        clientEvent.ClearSubscriptions();
-        serverEvent.ClearSubscriptions();
+        networkEvent.ClearSubscriptions();
     }
 
     public void BroadcastToClient(ulong clientId)

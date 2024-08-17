@@ -51,6 +51,7 @@ public class ImpSlider : MonoBehaviour
     /// <param name="options">Override options with provided labels</param>
     /// <param name="clickAudio">The audio clip that is played when the slider value is changed.</param>
     /// <param name="playClickSound">Whether the click sound playes when the slider value is changed.</param>
+    /// <param name="tooltipDefinition">The tooltip definition of the toggle tooltip.</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the slider is interactable</param>
     internal static ImpSlider Bind(
         string path,
@@ -66,6 +67,7 @@ public class ImpSlider : MonoBehaviour
         IBinding<List<string>> options = null,
         AudioClip clickAudio = null,
         bool playClickSound = true,
+        TooltipDefinition tooltipDefinition = null,
         params IBinding<bool>[] interactableBindings
     )
     {
@@ -164,6 +166,27 @@ public class ImpSlider : MonoBehaviour
             interactableInvert: interactableInvert,
             interactableBindings: interactableBindings
         );
+
+        if (tooltipDefinition != null)
+        {
+            var interactable = sliderObject.gameObject.AddComponent<ImpInteractable>();
+
+            if (!tooltipDefinition.Tooltip)
+            {
+                var togglePath = $"{Debugging.GetTransformPath(container)}/{path}";
+                Imperium.IO.LogWarning(
+                    $"[UI] Failed to initialize tooltip for '{togglePath}'. No tooltip provided."
+                );
+            }
+
+            interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
+                tooltipDefinition.Title,
+                tooltipDefinition.Description,
+                tooltipDefinition.HasAccess
+            );
+            interactable.onExit += () => tooltipDefinition.Tooltip.Deactivate();
+            interactable.onOver += position => tooltipDefinition.Tooltip.UpdatePosition(position);
+        }
 
         if (interactableBindings.Length > 0)
         {

@@ -42,6 +42,9 @@ public enum Variant
     // Selection
     FADED,
 
+    // Darker background for highlights within a window
+    BACKGROUND_DARKER,
+
     // Faded text
     FADED_TEXT
 }
@@ -108,6 +111,7 @@ public static class ImpThemeManager
     private static Color GetColor(ImpTheme theme, Variant variant)
     {
         Color.RGBToHSV(theme.primaryColor, out var primaryHue, out var primarySaturation, out var primaryValue);
+        Color.RGBToHSV(theme.backgroundColor, out var backgroundHue, out var backgroundSaturation, out var backgroundValue);
         float secondaryHue = 0;
         float secondarySaturation = 0;
         float secondaryValue = 0;
@@ -120,6 +124,7 @@ public static class ImpThemeManager
         return variant switch
         {
             Variant.BACKGROUND => theme.backgroundColor,
+            Variant.BACKGROUND_DARKER => Color.HSVToRGB(backgroundHue, backgroundSaturation, backgroundValue * 0.9f),
             Variant.FOREGROUND => theme.secondaryColor ?? theme.primaryColor,
             Variant.LIGHTEST => Color.HSVToRGB(primarySaturation, primarySaturation, primaryValue * 1.6f),
             Variant.LIGHTER => theme.secondaryColor.HasValue

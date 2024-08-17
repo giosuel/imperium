@@ -14,8 +14,8 @@ namespace Imperium.Core.Scripts;
 public class ImpPositionIndicator : MonoBehaviour
 {
     private Transform origin;
-    private GameObject indicatorObject;
-    private LineRenderer indicatorLineRenderer;
+    private GameObject indicator;
+    private LineRenderer arcLine;
     private bool castToGround;
 
     private Action<Vector3> registeredCallback;
@@ -23,13 +23,13 @@ public class ImpPositionIndicator : MonoBehaviour
     internal bool IsActive { get; private set; }
 
     internal static ImpPositionIndicator Create() => Instantiate(
-        ImpAssets.IndicatorObject
+        ImpAssets.PositionIndicatorObject
     ).AddComponent<ImpPositionIndicator>();
 
     private void Awake()
     {
-        indicatorObject = transform.Find("IndicatorObject").gameObject;
-        indicatorLineRenderer = indicatorObject.GetComponent<LineRenderer>();
+        indicator = transform.Find("Indicator").gameObject;
+        arcLine = indicator.GetComponent<LineRenderer>();
 
         Deactivate();
     }
@@ -39,18 +39,35 @@ public class ImpPositionIndicator : MonoBehaviour
         castToGround = castGround;
         registeredCallback = callback;
         origin = originTransform ? originTransform : Imperium.Player.gameplayCamera.transform;
-        ShowIndicator();
+
+        IsActive = true;
+        indicator.SetActive(true);
+
+        Imperium.Interface.Close();
+
+        Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed += OnLeftClick;
+        Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Disable();
+        Imperium.IngamePlayerSettings.playerInput.actions["PingScan"].Disable();
+        Imperium.InputBindings.StaticMap["RightClick"].performed += OnExitAction;
+        Imperium.InputBindings.StaticMap["Escape"].performed += OnExitAction;
+        Imperium.InputBindings.BaseMap.TapeMeasure.Disable();
     }
 
     internal void Deactivate()
     {
         IsActive = false;
-        indicatorObject.SetActive(false);
+        indicator.SetActive(false);
         registeredCallback = null;
 
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed -= OnLeftClick;
         Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Enable();
+        Imperium.IngamePlayerSettings.playerInput.actions["PingScan"].Enable();
+        Imperium.InputBindings.StaticMap["RightClick"].performed -= OnExitAction;
+        Imperium.InputBindings.StaticMap["Escape"].performed -= OnExitAction;
+        Imperium.InputBindings.BaseMap.TapeMeasure.Enable();
     }
+
+    private void OnExitAction(InputAction.CallbackContext context) => Deactivate();
 
     private void OnLeftClick(InputAction.CallbackContext context)
     {
@@ -59,19 +76,8 @@ public class ImpPositionIndicator : MonoBehaviour
 
     private void SubmitIndicator()
     {
-        registeredCallback?.Invoke(indicatorObject.transform.position);
+        registeredCallback?.Invoke(indicator.transform.position);
         Deactivate();
-    }
-
-    private void ShowIndicator()
-    {
-        IsActive = true;
-        indicatorObject.SetActive(true);
-
-        Imperium.Interface.Close();
-
-        Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed += OnLeftClick;
-        Imperium.IngamePlayerSettings.playerInput.actions["OpenMenu"].Disable();
     }
 
     private void Update()
@@ -87,7 +93,6 @@ public class ImpPositionIndicator : MonoBehaviour
         Physics.Raycast(ray, out var hitInfo, 1000, ImpConstants.IndicatorMask);
 
         var endPosition = hitInfo.point;
-        var endNormal = Vector3.zero;
 
         if (castToGround)
         {
@@ -98,26 +103,22 @@ public class ImpPositionIndicator : MonoBehaviour
             );
 
             endPosition = hitInfo.normal.y > 0 ? hitInfo.point : groundInfo.point;
-            endNormal = hitInfo.normal;
         }
 
-        indicatorObject.transform.position = endPosition;
-        if (endNormal != Vector3.zero)
-        {
-            indicatorObject.transform.rotation = Quaternion.LookRotation(-endNormal, Vector3.up);
-        }
+        indicator.transform.position = endPosition;
+        arcLine.transform.RotateAround(endPosition, Vector3.up, 80 * Time.deltaTime);
 
-        indicatorLineRenderer.positionCount = 100;
-        indicatorLineRenderer.startWidth = 0.08f;
-        indicatorLineRenderer.endWidth = 0.08f;
+        arcLine.positionCount = 100;
+        arcLine.startWidth = 0.08f;
+        arcLine.endWidth = 0.08f;
 
         if (endPosition == Vector3.zero)
         {
-            indicatorLineRenderer.gameObject.SetActive(false);
+            arcLine.gameObject.SetActive(false);
             return;
         }
 
-        indicatorLineRenderer.gameObject.SetActive(true);
+        arcLine.gameObject.SetActive(true);
 
         for (var i = 0; i < 100; i++)
         {
@@ -127,7 +128,7 @@ public class ImpPositionIndicator : MonoBehaviour
                 startPosition.y + Math.Clamp(Math.Abs(forward.y * 20), 0, 10),
                 i / 100f
             );
-            indicatorLineRenderer.SetPosition(i, new Vector3(
+            arcLine.SetPosition(i, new Vector3(
                 Mathf.Lerp(startPosition.x, endPosition.x, i / 100f),
                 position2D,
                 Mathf.Lerp(startPosition.z, endPosition.z, i / 100f))

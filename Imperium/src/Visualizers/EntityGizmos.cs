@@ -20,9 +20,7 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
 {
     internal readonly Dictionary<EnemyType, EntityGizmoConfig> EntityInfoConfigs = [];
 
-    internal EntityGizmos(
-        IBinding<IReadOnlyCollection<EnemyAI>> objectsBinding, ConfigFile config
-    ) : base(objectsBinding)
+    internal EntityGizmos(IBinding<IReadOnlyCollection<EnemyAI>> objectsBinding, ConfigFile config) : base(objectsBinding)
     {
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
@@ -38,7 +36,7 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         {
             if (!visualizerObjects.ContainsKey(entity.GetInstanceID()))
             {
-                var entityGizmoObject = new GameObject($"Imp_EntityInfo_{entity.GetInstanceID()}");
+                var entityGizmoObject = new GameObject($"Imp_EntityGizmo_{entity.GetInstanceID()}");
                 var entityGizmo = entityGizmoObject.AddComponent<EntityGizmo>();
                 entityGizmo.Init(EntityInfoConfigs[entity.enemyType], Imperium.Visualization, entity);
 
@@ -49,9 +47,9 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
 
     internal void NoiseVisualizerUpdate(EnemyAI instance, Vector3 origin)
     {
-        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entityGizmo))
         {
-            entity.NoiseVisualizerUpdate(origin);
+            entityGizmo.NoiseVisualizerUpdate(origin);
         }
     }
 
@@ -61,10 +59,9 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
-        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entityGizmo))
         {
-            entity.ConeVisualizerUpdate(
-                instance,
+            entityGizmo.ConeVisualizerUpdate(
                 eye ?? instance.transform,
                 angle, size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
@@ -80,11 +77,10 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
-        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entity))
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entityGizmo))
         {
-            entity.SphereVisualizerUpdate(
-                instance,
-                eye,
+            entityGizmo.SphereVisualizerUpdate(
+                eye ?? instance.transform,
                 size, material,
                 config => isCustom ? config.Custom : config.LineOfSight,
                 relativepositionOverride,

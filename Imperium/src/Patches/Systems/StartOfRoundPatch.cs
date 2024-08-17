@@ -16,6 +16,8 @@ public class StartOfRoundPatch
     [HarmonyPatch("StartGame")]
     private static void StartGamePrefixPatch(StartOfRound __instance)
     {
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
         __instance.shipAnimator.speed = Imperium.ShipManager.InstantLanding.Value ? 1000f : 1;
     }
 
@@ -23,7 +25,19 @@ public class StartOfRoundPatch
     [HarmonyPatch("ShipLeave")]
     private static void ShipLeavePrefixPatch(StartOfRound __instance)
     {
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
         __instance.shipAnimator.speed = Imperium.ShipManager.InstantTakeoff.Value ? 1000f : 1;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("openingDoorsSequence")]
+    private static void openingDoorsSequencePostfixPatch(StartOfRound __instance)
+    {
+        // Reset ship animator
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
+        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
+        __instance.shipAnimator.speed = 1;
     }
 
     [HarmonyPrefix]
@@ -75,7 +89,8 @@ public class StartOfRoundPatch
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(StartOfRound), "openingDoorsSequence", MethodType.Enumerator)]
         private static IEnumerable<CodeInstruction> openingDoorsSequenceTranspiler(
-            IEnumerable<CodeInstruction> instructions)
+            IEnumerable<CodeInstruction> instructions
+        )
         {
             return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
         }

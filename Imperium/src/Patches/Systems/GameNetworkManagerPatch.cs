@@ -24,4 +24,8 @@ internal static class GameNetworkManagerPatch
             hasSubscribedToConnectionCallbacks = true;
         }
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("Disconnect")]
+    private static void DisconnectPatch() => Imperium.Unload();
 }

@@ -1,5 +1,83 @@
 # Changelog
 
+## Imperium v0.2.2 [Beta] - The Event Log
+
+Besides a load of QoL changes, bug fixes and compatibility changes, this update is aimed at the implementation of the event log and the tape measure. The event log is a tool that allows you to track in-game events such as entity behaviour, targeting and noise detection more easily.
+
+Another change is that Imperium is now usable even if not everyone in the lobby has it installed. There is currently no desync guarding, meaning it is possible to cause desync issues when clients don't have it installed, so use with caution! I will be working on automatically deactivating certain functionality based on the lobby to avoid these issues in the future.
+
+**Note:** *This version of Imperium is compatible with the [Version 60](<https://steamdb.info/changelist/24827461/>) of Lethal Company.*
+
+### Highlights
+
+#### Event Log
+
+The event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
+
+![event-log](https://github.com/giosuel/imperium/blob/main/assets/event-log.png?raw=true)
+
+#### Tape Measure
+
+The tape measure is a virtual tool to measure distances in the game. The tape measure supports axis snapping when holding down the `Alt` key. It also tries to snap to surfaces as well as possible.
+
+![tape-measure](https://github.com/giosuel/imperium/blob/main/assets/tape-measure.png?raw=true)
+
+### Added Stuff
+
+- Added the event log to track specific game events.
+- Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.
+- Vain shrouds can now be teleported around and removed from the map.
+- Added teleportation to fire exits to the teleportation window.
+- Added a virtual tape measure to measure distances in Unity units and meters. 
+- Added an option to make the player untargetable for entities.
+- Added an option to disable all UI tooltips.
+- Added visualizers for the Roaming Locusts detection ranges.
+- Added visualizers for the Coil-Head detection radius.
+- Added an option to control the player's flying speed.
+- Added various debug options for the Company Cruiser.
+  - Cruiser god-mode option makes the cruiser invincible to damage.
+  - Infinite turbo option makes the cruiser have turbo permanently.
+  - Instant ignition option ,allows you to always start the cruiser on first try.
+  - Sliders for push force and acceleration.
+- Added various new default insights to the player and selected entities.
+- Added sliders to indicate the current field of view and movement speed when using the freecam.
+
+
+### Changes
+
+- Rewrote the object explorer lists to use object pooling to support basically an infinite amount of objects on the map with minimal performance impact.
+- Teleporting an item now causes it to play the drop SFX which can be detected by entities.
+
+### QoL Improvements
+
+- Min and max zoom icons are now clickable in the map zoom slider.
+- Replaced the icon of the preferences window with a more suitable one.
+- Reordered the dock buttons to improve intiution.
+- Added various tooltips to help simplify the navigation of the UI.
+- Improved teleport indicator navigation.
+
+### Internal Fixes
+
+- Fixed a bug where the weather wouldn't update on the ship's screen when in orbit.
+- Fixed a bug where the player would keep bleeding when activating god mode.
+- Fixed a bug where the damage UI overlay wouldn't go away when activating god mode.
+- Improved the first-person visualizer tracking of the shotgun visualizer by digger1213.
+- Upgraded [LethalNetworkAPI](<https://thunderstore.io/c/lethal-company/p/xilophor/LethalNetworkAPI/>) from v2 to v3.
+- Fixed a bug where scrolling would result in error spam in the logs.
+- Added fallback to Imperium startup if errors occur.
+- Added interval timing to Insight generator functions to greatly increase performance.
+- Fixed a problem with the zoom slider in the map interface.
+- Fixed problems with the factory reset functionality.
+- Fixed a bug where items would fall through the ground when spawned via freecam.
+- Imperium's assets are now bundled with the DLL, simplifying debugging.
+- Fixed the spawn report to actually log spawned entities.
+- Fixed the Baboon Hawk's LoS visualizers.
+- Fixed an Oracle problem related to the spawning of weed entities.
+- Fixed a bug where the ship ambience noise would be sped up.
+- Fixed a bug where spider webs would be indestructible after the spider has died.
+- Fixed a bug where mods that add entities with special characters in their name would interfere with Imperium's launch.
+- Fixed a bug where the freecam's field of view would get stuck.
+
 ## Imperium v0.2.1 [Beta] - V56 Compatibility Patch
 
 A hotfix to allow support for the released v56 version of Lethal Company.
@@ -287,4 +365,4 @@ This version is compatible with the [v50 rev.3](https://steamdb.info/changelist/
 ### Buxfixes
 
 - Adjusted Oracle predictions as the daytime entity bug was fixed.
-- Updated README with new images.
+- Updated README with new images. 

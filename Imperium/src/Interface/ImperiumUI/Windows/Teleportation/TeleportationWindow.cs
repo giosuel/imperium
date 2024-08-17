@@ -1,8 +1,10 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.Teleportation.Widgets;
+using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -18,9 +20,11 @@ internal class TeleportationWindow : ImperiumWindow
     private Button tpMainEntrance;
     private Button tpShip;
     private Button tpApparatus;
-    private TMP_Dropdown fireExitsDropdown;
 
-    private readonly List<Vector3> fireExits = [];
+    private Transform fireExitContainer;
+    private GameObject fireExitTemplate;
+    private TMP_Text fireExitsPlaceholder;
+    private readonly List<Button> fireExits = [];
 
     private ImpBinding<float> coordinateX;
     private ImpBinding<float> coordinateY;
@@ -64,14 +68,15 @@ internal class TeleportationWindow : ImperiumWindow
         ImpInput.Bind("Coords/CoordsY", content, coordinateY, theme, max: 999f, min: -999f);
         ImpInput.Bind("Coords/CoordsZ", content, coordinateZ, theme, max: 10000f, min: -10000f);
 
-        fireExitsDropdown = content.Find("FireExits").GetComponent<TMP_Dropdown>();
-        fireExitsDropdown.onValueChanged.AddListener(_ => TeleportTo(fireExits[fireExitsDropdown.value]));
-
         ImpButton.Bind("Buttons/Interactive", content, OnInteractive, theme);
 
         RegisterWidget<Waypoints>(content, "Waypoints");
 
-        Imperium.InputBindings.BaseMap.Teleport.performed += OnTeleport;
+        Imperium.InputBindings.BaseMap.Teleport.performed += OnInteractiveTeleport;
+
+        Imperium.IsSceneLoaded.onTrigger += OnOpen;
+
+        InitFireExits();
     }
 
     protected override void OnOpen()
@@ -83,11 +88,11 @@ internal class TeleportationWindow : ImperiumWindow
                                    && Imperium.IsSceneLoaded.Value;
 
         var position = Imperium.Player.transform.position;
-        // coordinateX.Set(MathF.Round(position.x, 2));
-        // coordinateY.Set(MathF.Round(position.y, 2));
-        // coordinateZ.Set(MathF.Round(position.z, 2));
+        coordinateX.Set(MathF.Round(position.x, 2));
+        coordinateY.Set(MathF.Round(position.y, 2));
+        coordinateZ.Set(MathF.Round(position.z, 2));
 
-        FillFireExitDropdown();
+        InitFireExits();
     }
 
     private static void OnInteractive()
@@ -116,26 +121,78 @@ internal class TeleportationWindow : ImperiumWindow
         coordinateZ.Set(playerPosition.z);
     }
 
-    private void FillFireExitDropdown()
+    private void InitFireExits()
     {
-        fireExitsDropdown.options.Clear();
-        fireExits.Clear();
+        fireExitContainer = content.Find("FireExits/ScrollView/Viewport/Content");
+        fireExitsPlaceholder = content.Find("FireExits/Placeholder").GetComponent<TMP_Text>();
+        fireExitTemplate = fireExitContainer.Find("Template").gameObject;
+        fireExitTemplate.gameObject.SetActive(false);
+
+        Imperium.IsSceneLoaded.onTrigger += SetFireExits;
+        SetFireExits();
+    }
+
+    protected override void OnThemeUpdate(ImpTheme themeUpdated)
+    {
+        ImpThemeManager.Style(
+            themeUpdated,
+            content,
+            new StyleOverride("FireExits", Variant.DARKER)
+        );
+
+        foreach (var fireExit in fireExits)
+        {
+            ImpThemeManager.Style(
+                themeUpdated,
+                fireExit.transform,
+                new StyleOverride("", Variant.DARKER)
+            );
+        }
+    }
+
+    private void SetFireExits()
+    {
         var objs = FindObjectsOfType<GameObject>();
+        var fireExitCounter = 0;
+
+        foreach (var fireExit in fireExits) Destroy(fireExit.gameObject);
+        fireExits.Clear();
+
         foreach (var obj in objs)
         {
             if (obj.name != "FireExitDoor" || obj.transform.position.y > -100) continue;
 
-            var location = obj.transform.position.y > -100 ? "Outdoor" : "Indoor";
+            var newFireExit = Instantiate(fireExitTemplate, fireExitContainer);
+            var newFireExitText = newFireExit.transform.Find("Text").GetComponent<TMP_Text>();
+            newFireExitText.text = $"Exit #{fireExitCounter + 1}";
 
-            fireExitsDropdown.options.Add(
-                new TMP_Dropdown.OptionData($"Fire Exit #{fireExits.Count + 1} ({location})"));
-            fireExits.Add(obj.transform.position);
+            var newFireExitButton = newFireExit.transform.GetComponent<Button>();
+            newFireExitButton.onClick.AddListener(() => TeleportTo(obj.transform.position));
+            ImpThemeManager.Style(
+                theme.Value,
+                newFireExitButton.transform,
+                new StyleOverride("", Variant.DARKER)
+            );
+
+            newFireExit.gameObject.SetActive(true);
+
+            fireExits.Add(newFireExit.GetComponent<Button>());
+            fireExitCounter++;
         }
 
-        fireExitsDropdown.interactable = fireExits.Count != 0;
+        if (fireExitCounter > 0)
+        {
+            fireExitsPlaceholder.gameObject.SetActive(false);
+            fireExitContainer.gameObject.SetActive(true);
+        }
+        else
+        {
+            fireExitsPlaceholder.gameObject.SetActive(true);
+            fireExitContainer.gameObject.SetActive(false);
+        }
     }
 
-    private static void OnTeleport(InputAction.CallbackContext callbackContext)
+    private static void OnInteractiveTeleport(InputAction.CallbackContext callbackContext)
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen ||
             Imperium.Player.inTerminalMenu ||

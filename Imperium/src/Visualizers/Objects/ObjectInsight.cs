@@ -24,10 +24,13 @@ public class ObjectInsight : MonoBehaviour
     private RectTransform insightPanelCanvasRect;
 
     private TMP_Text panelObjectName;
+    private TMP_Text panelObjectPersonalName;
     private GameObject panelEntryTemplate;
     private Image deathOverlay;
 
     private readonly Dictionary<string, ObjectInsightEntry> targetInsightEntries = [];
+
+    private readonly ImpTimer overlayUpdateTimer = ImpTimer.ForInterval(1);
 
     internal InsightDefinition<Component> InsightDefinition { get; private set; }
 
@@ -46,12 +49,15 @@ public class ObjectInsight : MonoBehaviour
         insightPanelCanvasRect = insightPanelObject.GetComponent<RectTransform>();
 
         panelObjectName = insightPanel.Find("Name").GetComponent<TMP_Text>();
+        panelObjectPersonalName = insightPanel.Find("PersonalName").GetComponent<TMP_Text>();
         deathOverlay = insightPanel.Find("Death").GetComponent<Image>();
         panelEntryTemplate = insightPanel.Find("Template").gameObject;
         panelEntryTemplate.SetActive(false);
 
         InsightDefinition.Insights.onUpdate += OnInsightsUpdate;
         OnInsightsUpdate(InsightDefinition.Insights.Value);
+
+        UpdateInsightOverlay();
     }
 
     /// <summary>
@@ -103,18 +109,28 @@ public class ObjectInsight : MonoBehaviour
         return insightEntry;
     }
 
-    private void LateUpdate()
+    /// <summary>
+    ///     Executes the <see cref="InsightDefinition{T}.NameGenerator" /> and <see cref="InsightDefinition.IsDeadGenerator" />
+    ///     functions.
+    ///     Since these functions are provided by the client, they are only executed every so often
+    ///     (<see cref="overlayUpdateTimer" />) for performance reasons.
+    /// </summary>
+    private void UpdateInsightOverlay()
     {
-        if (!targetObject || !insightPanelCanvasRect)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        // Insight panel type name
+        panelObjectName.text = InsightDefinition.NameGenerator != null
+            ? InsightDefinition.NameGenerator(targetObject)
+            : targetObject.GetInstanceID().ToString();
 
-        if (!InsightDefinition.VisibilityBinding.Value)
+        // Insight panel name
+        if (InsightDefinition.PersonalNameGenerator == null)
         {
-            insightPanelObject.SetActive(false);
-            return;
+            panelObjectPersonalName.gameObject.SetActive(false);
+        }
+        else
+        {
+            panelObjectPersonalName.text = InsightDefinition.PersonalNameGenerator(targetObject);
+            panelObjectPersonalName.gameObject.SetActive(true);
         }
 
         // Death overlay / disable on death
@@ -127,23 +143,40 @@ public class ObjectInsight : MonoBehaviour
         {
             deathOverlay.gameObject.SetActive(false);
         }
+    }
+
+    private void LateUpdate()
+    {
+        if (!targetObject || !insightPanelCanvasRect)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         var camera = Imperium.Freecam.IsFreecamEnabled.Value
             ? Imperium.Freecam.FreecamCamera
             : Imperium.Player.hasBegunSpectating
                 ? Imperium.StartOfRound.spectateCamera
                 : Imperium.Player.gameplayCamera;
+        var activeCameraTexture = camera?.activeTexture;
 
-        // Panel placement
+        if (!InsightDefinition.VisibilityBinding.Value || !activeCameraTexture)
+        {
+            insightPanelObject.SetActive(false);
+            return;
+        }
+
         var worldPosition = InsightDefinition.PositionOverride?.Invoke(targetObject) ?? targetObject.transform.position;
         var screenPosition = camera.WorldToScreenPoint(worldPosition);
 
+        // Disable rendering if panel is outside of camera view
         if (Imperium.Map.Minimap.CameraRect.Contains(screenPosition))
         {
             insightPanelObject.SetActive(false);
             return;
         }
 
+        // Disable rendering if player doesn't have LOS and LOS is required
         var playerHasLOS = !Physics.Linecast(
             camera.transform.position, worldPosition,
             StartOfRound.Instance.collidersAndRoomMaskAndDefault
@@ -155,9 +188,12 @@ public class ObjectInsight : MonoBehaviour
             return;
         }
 
-        var activeTexture = camera.activeTexture;
-        var scaleFactorX = activeTexture.width / insightPanelCanvasRect.sizeDelta.x;
-        var scaleFactorY = activeTexture.height / insightPanelCanvasRect.sizeDelta.y;
+        // Update insight overlay values if timer is up
+        if (overlayUpdateTimer.Tick()) UpdateInsightOverlay();
+
+        // Insight overlay panel placement
+        var scaleFactorX = activeCameraTexture.width / insightPanelCanvasRect.sizeDelta.x;
+        var scaleFactorY = activeCameraTexture.height / insightPanelCanvasRect.sizeDelta.y;
 
         var positionX = screenPosition.x / scaleFactorX;
         var positionY = screenPosition.y / scaleFactorY;
@@ -175,11 +211,6 @@ public class ObjectInsight : MonoBehaviour
 
         transform.localScale = Vector3.one;
         insightPanelRect.localScale = panelScaleFactor * Vector3.one;
-
-        panelObjectName.text = InsightDefinition.NameGenerator != null
-            ? InsightDefinition.NameGenerator(targetObject)
-            : targetObject.GetInstanceID().ToString();
-
         insightPanelObject.SetActive(true);
     }
 }

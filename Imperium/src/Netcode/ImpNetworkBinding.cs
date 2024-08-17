@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Imperium.API.Types.Networking;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using LethalNetworkAPI;
 using Unity.Netcode;
@@ -24,8 +25,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     public T Value { get; private set; }
 
-    private readonly LethalServerMessage<BindingUpdateRequest<T>> serverMessage;
-    private readonly LethalClientMessage<BindingUpdateRequest<T>> clientMessage;
+    private readonly LNetworkMessage<BindingUpdateRequest<T>> networkMessage;
 
     // This optional binding provides the initial value and is changed only when the local client updates the state.
     private readonly IBinding<T> masterBinding;
@@ -55,11 +55,10 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
         this.onUpdateServer = onUpdateServer;
         this.masterBinding = masterBinding;
 
-        serverMessage = new LethalServerMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
-        clientMessage = new LethalClientMessage<BindingUpdateRequest<T>>($"{identifier}_binding");
+        networkMessage = LNetworkMessage<BindingUpdateRequest<T>>.Connect($"{identifier}_binding");
 
-        serverMessage.OnReceived += OnServerReceived;
-        clientMessage.OnReceived += OnClientReceived;
+        networkMessage.OnServerReceived += OnServerReceived;
+        networkMessage.OnClientReceived += OnClientReceived;
 
         if (masterBinding != null && NetworkManager.Singleton.IsHost) Set(masterBinding.Value);
 
@@ -68,19 +67,19 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     private void OnServerReceived(BindingUpdateRequest<T> request, ulong clientId)
     {
-        Imperium.IO.LogInfo($"[NET] Server received binding update for {identifier}");
+        Imperium.IO.LogInfo($"[NET] Server received binding update for {identifier}.");
         if (clientId == NetworkManager.ServerClientId || Imperium.Settings.Preferences.AllowClients.Value)
         {
             // Invoke optional custom binding (e.g. Calls to vanilla client RPCs)
             // if (request.InvokeServerUpdate) onUpdateServer?.Invoke(request.Payload);
 
-            serverMessage.SendAllClients(request);
+            networkMessage.SendClients(request);
         }
     }
 
     private void OnClientReceived(BindingUpdateRequest<T> updatedValue)
     {
-        Imperium.IO.LogInfo($"[NET] Client received binding update for {identifier}");
+        Imperium.IO.LogInfo($"[NET] Client received binding update for {identifier}.");
         Value = updatedValue.Payload;
 
         if (updatedValue.InvokeUpdate)
@@ -105,7 +104,7 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
             onTriggerFromLocal?.Invoke();
         }
 
-        clientMessage.SendServer(new BindingUpdateRequest<T>
+        networkMessage.SendServer(new BindingUpdateRequest<T>
         {
             Payload = updatedValue,
             InvokeUpdate = invokeUpdate,
@@ -121,15 +120,15 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     public void Clear()
     {
-        serverMessage.ClearSubscriptions();
-        clientMessage.ClearSubscriptions();
+        networkMessage.ClearSubscriptions();
     }
 
+    [ImpAttributes.HostOnly]
     public void BroadcastToClient(ulong clientId)
     {
         if (!NetworkManager.Singleton.IsHost) return;
 
-        serverMessage.SendClient(new BindingUpdateRequest<T>
+        networkMessage.SendClient(new BindingUpdateRequest<T>
         {
             Payload = Value,
             InvokeUpdate = true

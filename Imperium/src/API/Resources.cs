@@ -245,14 +245,14 @@ public static class Resources
     ///     List of all the company cruisers in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ReadOnlyBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCompanyCruisers
+    public static ReadOnlyBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCruisers
     {
         get
         {
             APIHelpers.AssertImperiumReady();
 
             return ReadOnlyBinding<IReadOnlyCollection<VehicleController>>.Wrap(
-                Imperium.ObjectManager.CurrentLevelCompanyCruisers
+                Imperium.ObjectManager.CurrentLevelCruisers
             );
         }
     }
@@ -261,14 +261,14 @@ public static class Resources
     ///     List of all the mold spores in the current level.
     /// </summary>
     /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ReadOnlyBinding<IReadOnlyCollection<GameObject>> CurrentLevelMoldSpores
+    public static ReadOnlyBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds
     {
         get
         {
             APIHelpers.AssertImperiumReady();
 
             return ReadOnlyBinding<IReadOnlyCollection<GameObject>>.Wrap(
-                Imperium.ObjectManager.CurrentLevelMoldSpores
+                Imperium.ObjectManager.CurrentLevelVainShrouds
             );
         }
     }
