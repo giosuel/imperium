@@ -238,6 +238,12 @@ internal class Oracle
                             )
                         );
 
+                if (enemyType.increasedChanceInterior != -1 &&
+                    roundManager.currentDungeonType != enemyType.increasedChanceInterior)
+                {
+                    probability = (int)Mathf.Min(probability * 1.7f, 100);
+                }
+
                 probabilities.Add(probability);
             }
 

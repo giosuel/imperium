@@ -84,9 +84,21 @@ Tha spawning console allows you to spawn entities, scrap and map hazards into th
 
 ![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
 
+## The Tape Measure
+
+The tape measure is a virtual tool to measure distances in the game. The tape measure supports axis snapping when holding down the `Alt` key. It also tries to snap to surfaces as well as possible.
+
+![tape-measure](https://github.com/giosuel/imperium/blob/main/assets/tape-measure.png?raw=true)
+
 ## Ship and Moon Control
 
 ![ship-moon-control](https://github.com/giosuel/imperium/blob/main/assets/ship-moon-control.png?raw=true)
+
+## The Event Log
+
+The event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
+
+![event-log](https://github.com/giosuel/imperium/blob/main/assets/event-log.png?raw=true)
 
 ## Moon / Challenge Moon Information
 

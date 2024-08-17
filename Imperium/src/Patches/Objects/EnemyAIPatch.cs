@@ -102,12 +102,13 @@ internal static class EnemyAIPatch
     [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSight")]
     private static void CheckLineOfSightPostfixPatch(
-        EnemyAI __instance, List<GameObject> objectsToLookFor, float width, int range, float proximityAwareness
+        EnemyAI __instance, List<GameObject> objectsToLookFor, float width, int range, float proximityAwareness,
+        Transform useEye
     )
     {
         Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
             __instance,
-            __instance.eye,
+            useEye,
             width,
             range,
             material: ImpAssets.WireframeRed

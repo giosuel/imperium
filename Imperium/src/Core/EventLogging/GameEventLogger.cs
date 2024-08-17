@@ -1,3 +1,4 @@
+using System.Linq;
 using Imperium.Util;
 
 namespace Imperium.Core.EventLogging;
@@ -128,7 +129,9 @@ internal class GameEventLogger(ImpEventLog log)
             new EventLogDetail
             {
                 Title = "Spawned Entities",
-                Text = spawnedEntities.Count > 0 ? "\n" + string.Join("\n", spawnedEntities) : "-"
+                Text = spawnedEntities.Count > 0
+                    ? "\n" + string.Join("\n", spawnedEntities.Select(entity => $" - {entity}"))
+                    : "-"
             }
         );
     }

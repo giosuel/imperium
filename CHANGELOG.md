@@ -2,7 +2,9 @@
 
 ## Imperium v0.2.2 [Beta] - The Event Log
 
-Besides a load of QoL changes, bug fixes and compatibility changes, this update is aimed at the implementation of the event log. The event log is a tool that allows you to track in-game events such as entity behaviour, targeting and noise detection more easily.
+**Note:** *This version of Imperium is  compatible with the [Version 60](<https://steamdb.info/changelist/24827461/>) of Lethal Company.*
+
+Besides a load of QoL changes, bug fixes and compatibility changes, this update is aimed at the implementation of the event log and the tape measure. The event log is a tool that allows you to track in-game events such as entity behaviour, targeting and noise detection more easily.
 
 Another change is that Imperium is now usable even if not everyone in the lobby has it installed. There is currently no desync guarding, meaning it is possible to cause desync issues when clients don't have it installed, so use with caution! I will be working on automatically deactivating certain functionality based on the lobby to avoid these issues in the future.
 
@@ -10,13 +12,17 @@ Another change is that Imperium is now usable even if not everyone in the lobby 
 
 #### Event Log
 
+The event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
+
+![event-log](https://github.com/giosuel/imperium/blob/main/assets/event-log.png?raw=true)
+
 #### Tape Measure
 
-#### Cruiser Control
+The tape measure is a virtual tool to measure distances in the game. The tape measure supports axis snapping when holding down the `Alt` key. It also tries to snap to surfaces as well as possible.
 
+![tape-measure](https://github.com/giosuel/imperium/blob/main/assets/tape-measure.png?raw=true)
 
-
-### Added Stuff
+### Added StuffThe event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
 
 - Added the event log to track specific game events.
 - Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.
