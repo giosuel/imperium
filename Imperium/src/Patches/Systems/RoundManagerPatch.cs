@@ -129,6 +129,13 @@ internal static class RoundManagerPatch
         Imperium.EventLog.GameEvents.SpawnEnemyFromVent(vent);
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("GenerateNewFloor")]
+    private static void GenerateNewFloorPrefixPatch(RoundManager __instance)
+    {
+        __instance.mapSizeMultiplier = 0.1f;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("SwitchPower")]
     private static void SwitchPowerPatch(RoundManager __instance, bool on)

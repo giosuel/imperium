@@ -169,9 +169,11 @@ public static class ImpGeometry
                     break;
                 case PrimitiveType.Cylinder:
                 case PrimitiveType.Cube:
-                case PrimitiveType.Plane:
-                case PrimitiveType.Quad:
                     Object.Destroy(primitive.GetComponent<BoxCollider>());
+                    break;
+                case PrimitiveType.Quad:
+                case PrimitiveType.Plane:
+                    Object.Destroy(primitive.GetComponent<MeshCollider>());
                     break;
                 case PrimitiveType.Capsule:
                     Object.Destroy(primitive.GetComponent<CapsuleCollider>());

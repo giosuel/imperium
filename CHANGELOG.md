@@ -28,7 +28,7 @@ The tape measure is a virtual tool to measure distances in the game. The tape me
 - Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.
 - Vain shrouds can now be teleported around and removed from the map.
 - Added teleportation to fire exits to the teleportation window.
-- Added a virtual tape measure to measure distances in Unity units and meters. 
+- Added a virtual tape measure to measure distances in Unity units and meters.
 - Added an option to make the player untargetable for entities.
 - Added an option to disable all UI tooltips.
 - Added visualizers for the Roaming Locusts detection ranges.

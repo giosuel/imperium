@@ -7,6 +7,7 @@ using HarmonyLib;
 using Imperium.Core;
 using Imperium.Core.EventLogging;
 using Imperium.Core.Input;
+using Imperium.Core.LevelEditor;
 using Imperium.Core.Lifecycle;
 using Imperium.Core.Scripts;
 using Imperium.Integration;
@@ -14,6 +15,7 @@ using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.MapUI;
 using Imperium.Interface.OracleUI;
 using Imperium.Interface.SpawningUI;
+using Imperium.Interface.TilePicker;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
@@ -82,6 +84,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
     internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
+    internal static ImpLevelEditor ImpLevelEditor { get; private set; }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
@@ -184,13 +187,6 @@ public class Imperium : BaseUnityPlugin
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 
-        Map = ImpMap.Create();
-        Freecam = ImpFreecam.Create();
-        NightVision = ImpNightVision.Create();
-        ImpTapeMeasure = ImpTapeMeasure.Create();
-        NoiseListener = ImpNoiseListener.Create();
-        ImpPositionIndicator = ImpPositionIndicator.Create();
-
         Oracle = new Oracle();
         EventLog = new ImpEventLog();
 
@@ -201,6 +197,13 @@ public class Imperium : BaseUnityPlugin
         ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
+
+        Map = ImpMap.Create();
+        Freecam = ImpFreecam.Create();
+        NightVision = ImpNightVision.Create();
+        ImpTapeMeasure = ImpTapeMeasure.Create();
+        NoiseListener = ImpNoiseListener.Create();
+        ImpPositionIndicator = ImpPositionIndicator.Create();
 
         MoonManager.IndoorSpawningPaused.onTrigger += Oracle.Simulate;
         MoonManager.OutdoorSpawningPaused.onTrigger += Oracle.Simulate;
@@ -233,6 +236,9 @@ public class Imperium : BaseUnityPlugin
             Settings.LoadAll();
 
             StartUI();
+
+            // This needs to be here as it depends on the UI
+            ImpLevelEditor = ImpLevelEditor.Create();
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
@@ -322,6 +328,7 @@ public class Imperium : BaseUnityPlugin
             IsSceneLoaded
         );
         Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
+        Interface.RegisterInterface<TilePicker>(ImpAssets.TilePickerObject);
 
         Interface.RefreshTheme();
 
