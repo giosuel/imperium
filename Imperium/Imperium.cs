@@ -39,7 +39,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.2.2";
+    public const string PLUGIN_VERSION = "0.2.3";
 
     private static ConfigFile configFile;
     private static Harmony Harmony;
@@ -238,7 +238,7 @@ public class Imperium : BaseUnityPlugin
             StartUI();
 
             // This needs to be here as it depends on the UI
-            ImpLevelEditor = ImpLevelEditor.Create();
+            // ImpLevelEditor = ImpLevelEditor.Create();
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();

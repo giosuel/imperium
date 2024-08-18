@@ -88,9 +88,9 @@ internal class TeleportationWindow : ImperiumWindow
                                    && Imperium.IsSceneLoaded.Value;
 
         var position = Imperium.Player.transform.position;
-        coordinateX.Set(MathF.Round(position.x, 2));
-        coordinateY.Set(MathF.Round(position.y, 2));
-        coordinateZ.Set(MathF.Round(position.z, 2));
+        coordinateX.Set(MathF.Round(position.x, 2), invokeLocal: false);
+        coordinateY.Set(MathF.Round(position.y, 2), invokeLocal: false);
+        coordinateZ.Set(MathF.Round(position.z, 2), invokeLocal: false);
 
         InitFireExits();
     }
@@ -115,10 +115,6 @@ internal class TeleportationWindow : ImperiumWindow
             coordinateY.Value,
             coordinateZ.Value
         ));
-        var playerPosition = Imperium.Player.transform.position;
-        coordinateX.Set(playerPosition.x);
-        coordinateY.Set(playerPosition.y);
-        coordinateZ.Set(playerPosition.z);
     }
 
     private void InitFireExits()

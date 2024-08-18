@@ -91,9 +91,12 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     public void Sync(T updatedValue) => Set(updatedValue, false, false);
 
-    public void Set(T updatedValue, bool invokeUpdate = true) => Set(updatedValue, invokeUpdate, true);
+    public void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
+    {
+        SyncedSet(updatedValue, invokeUpdate, true);
+    }
 
-    private void Set(T updatedValue, bool invokeUpdate, bool invokeServerUpdate)
+    private void SyncedSet(T updatedValue, bool invokeUpdate, bool invokeServerUpdate)
     {
         Value = updatedValue;
         masterBinding?.Set(updatedValue);

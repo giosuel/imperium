@@ -1253,28 +1253,6 @@ internal class ObjectManager : ImpLifecycleObject
                 });
             }
         }
-        else if (gameObject.TryGetComponent<VehicleController>(out var companyCruiser))
-        {
-            if (companyCruiser.currentPassenger)
-            {
-                companyCruiser.currentPassenger.transform.SetParent(Imperium.StartOfRound.playersContainer);
-                Imperium.PlayerManager.TeleportPlayer(new TeleportPlayerRequest
-                {
-                    PlayerId = companyCruiser.currentPassenger.playerClientId,
-                    Destination = companyCruiser.currentPassenger.transform.position
-                });
-            }
-
-            if (companyCruiser.currentDriver)
-            {
-                companyCruiser.currentDriver.transform.SetParent(Imperium.StartOfRound.playersContainer);
-                Imperium.PlayerManager.TeleportPlayer(new TeleportPlayerRequest
-                {
-                    PlayerId = companyCruiser.currentDriver.playerClientId,
-                    Destination = companyCruiser.currentDriver.transform.position
-                });
-            }
-        }
         else if (gameObject.TryGetComponent<SandSpiderAI>(out var sandSpider))
         {
             for (var i = 0; i < sandSpider.webTraps.Count; i++)

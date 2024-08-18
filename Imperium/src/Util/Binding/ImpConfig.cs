@@ -38,10 +38,10 @@ public sealed class ImpConfig<T> : ImpBinding<T>
         base.Value = config.Value;
     }
 
-    public override void Set(T updatedValue, bool invokeUpdate = true)
+    public override void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
     {
         config.Value = updatedValue;
-        base.Set(updatedValue, invokeUpdate);
+        base.Set(updatedValue, invokeUpdate, invokeLocal);
     }
 
     /// <summary>

@@ -133,7 +133,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("GenerateNewFloor")]
     private static void GenerateNewFloorPrefixPatch(RoundManager __instance)
     {
-        __instance.mapSizeMultiplier = 0.1f;
+        // __instance.mapSizeMultiplier = 0.1f;
     }
 
     [HarmonyPostfix]

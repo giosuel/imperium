@@ -38,7 +38,8 @@ public interface IBinding<T> : IResettable, IRefreshable
     /// </summary>
     /// <param name="updatedValue">The new state</param>
     /// <param name="invokeUpdate">Whether the update callbacks should be called</param>
-    public void Set(T updatedValue, bool invokeUpdate = true);
+    /// <param name="invokeLocal">Whether the local update callbacks should be called</param>
+    public void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true);
 
     /// <summary>
     ///     Invokes the callbacks with the current state.

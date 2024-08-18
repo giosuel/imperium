@@ -37,8 +37,8 @@ public class ImpExternalBinding<T, R> : ImpBinding<T>
         if (refresher != null) refresher.onUpdate += _ => Set(ImpUtils.InvokeDefaultOnNull(valueGetter));
     }
 
-    public override void Set(T updatedValue, bool invokeUpdate = true)
+    public override void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
     {
-        base.Set(ImpUtils.InvokeDefaultOnNull(valueGetter), invokeUpdate);
+        base.Set(ImpUtils.InvokeDefaultOnNull(valueGetter), invokeUpdate, invokeLocal);
     }
 }

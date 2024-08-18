@@ -50,23 +50,27 @@ public abstract class ImpInput
 
         var input = inputObject.gameObject.GetComponent<TMP_InputField>();
         input.contentType = TMP_InputField.ContentType.IntegerNumber;
-        input.onValueChanged.AddListener(value => OnIntFieldInput(input, value, min, max));
 
         if (valueBinding != null)
         {
+            input.onValueChanged.AddListener(value =>
+            {
+                OnIntFieldInput(input, value, valueBinding.DefaultValue, min, max);
+            });
+
             input.text = valueBinding.Value.ToString();
 
             // Set binding to default value if input value is empty
             input.onSubmit.AddListener(value =>
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value) || !int.TryParse(value, out var parsed))
                 {
                     valueBinding.Set(valueBinding.DefaultValue);
                     input.text = valueBinding.DefaultValue.ToString();
                 }
                 else
                 {
-                    valueBinding.Set(int.Parse(value));
+                    valueBinding.Set(parsed);
                 }
             });
 
@@ -117,21 +121,25 @@ public abstract class ImpInput
 
         var input = inputObject.gameObject.GetComponent<TMP_InputField>();
         input.contentType = TMP_InputField.ContentType.DecimalNumber;
-        input.onValueChanged.AddListener(value => OnFloatFieldInput(input, value, min, max));
 
         if (valueBinding != null)
         {
+            input.onValueChanged.AddListener(value =>
+            {
+                OnFloatFieldInput(input, value, valueBinding.DefaultValue, min, max);
+            });
+
             input.text = valueBinding.Value.ToString(CultureInfo.InvariantCulture);
             input.onSubmit.AddListener(value =>
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value) || !float.TryParse(value, out var parsed))
                 {
                     valueBinding.Set(valueBinding.DefaultValue);
                     input.text = valueBinding.DefaultValue.ToString(CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    valueBinding.Set(float.Parse(value));
+                    valueBinding.Set(parsed);
                 }
             });
             valueBinding.onUpdate += value => input.text = value.ToString(CultureInfo.InvariantCulture);
@@ -237,6 +245,7 @@ public abstract class ImpInput
     private static void OnIntFieldInput(
         TMP_InputField field,
         string text,
+        int defaultValue,
         int min = int.MinValue,
         int max = int.MaxValue
     )
@@ -245,7 +254,7 @@ public abstract class ImpInput
 
         if (!int.TryParse(text, out var value))
         {
-            field.text = min.ToString();
+            field.text = defaultValue.ToString();
             return;
         }
 
@@ -267,13 +276,19 @@ public abstract class ImpInput
     private static void OnFloatFieldInput(
         TMP_InputField field,
         string text,
+        float defaultValue,
         float min = float.MinValue,
         float max = float.MaxValue
     )
     {
         if (string.IsNullOrEmpty(text)) return;
 
-        var value = float.Parse(text);
+        if (!float.TryParse(text, out var value))
+        {
+            field.text = defaultValue.ToString(CultureInfo.InvariantCulture);
+            return;
+        }
+
         if (value > max)
         {
             field.text = max.ToString(CultureInfo.InvariantCulture);
