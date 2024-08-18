@@ -53,7 +53,7 @@ public class ImpBinding<T> : IBinding<T>
 
     public void Reset(bool invokeUpdate = true) => Set(DefaultValue, invokeUpdate);
 
-    public virtual void Set(T updatedValue, bool invokeUpdate = true)
+    public virtual void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
     {
         var isSame = EqualityComparer<T>.Default.Equals(updatedValue, Value);
         Value = updatedValue;
@@ -62,12 +62,12 @@ public class ImpBinding<T> : IBinding<T>
         {
             onUpdate?.Invoke(Value);
             onTrigger?.Invoke();
+        }
 
-            if (!isSame)
-            {
-                onUpdateFromLocal?.Invoke(updatedValue);
-                onTriggerFromLocal?.Invoke();
-            }
+        if (invokeLocal && !isSame)
+        {
+            onUpdateFromLocal?.Invoke(updatedValue);
+            onTriggerFromLocal?.Invoke();
         }
     }
 }

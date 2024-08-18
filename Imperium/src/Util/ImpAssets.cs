@@ -24,6 +24,7 @@ internal abstract class ImpAssets
     internal static GameObject SpawningUIObject;
 
     internal static GameObject LayerSelectorObject;
+    internal static GameObject TilePickerObject;
     internal static GameObject MinimapOverlayObject;
     internal static GameObject MinimapSettingsObject;
 
@@ -45,6 +46,9 @@ internal abstract class ImpAssets
     /*
      * Materials
      */
+    internal static Material HologramOkay;
+    internal static Material HologramOkayDark;
+    internal static Material HologramError;
     internal static Material FresnelWhite;
     internal static Material FresnelBlue;
     internal static Material FresnelYellow;
@@ -64,6 +68,7 @@ internal abstract class ImpAssets
      */
     internal static GameObject PositionIndicatorObject;
     internal static GameObject TapeIndicatorObject;
+    internal static GameObject DoorMarkerObject;
     internal static GameObject NoiseOverlay;
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
@@ -136,6 +141,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/tooltip.prefab", out ImperiumTooltipObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/imperium_ui.prefab", out ImperiumUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/layer_selector.prefab", out LayerSelectorObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/tile_picker.prefab", out TilePickerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/map_ui.prefab", out MapUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/minimap.prefab", out MinimapOverlayObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/minimap_settings.prefab", out MinimapSettingsObject),
@@ -157,12 +163,16 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/visualization.prefab", out VisualizationWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/tape_indicator.prefab", out TapeIndicatorObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/position_indicator.prefab", out PositionIndicatorObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/door_marker.prefab", out DoorMarkerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XRay),
+            LoadAsset(ImperiumAssets, "Assets/Materials/hologram_okay.mat", out HologramOkay),
+            LoadAsset(ImperiumAssets, "Assets/Materials/hologram_okay_dark.mat", out HologramOkayDark),
+            LoadAsset(ImperiumAssets, "Assets/Materials/hologram_error.mat", out HologramError),
             LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_white.mat", out FresnelWhite),
             LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_blue.mat", out FresnelBlue),
             LoadAsset(ImperiumAssets, "Assets/Materials/fresnel_red.mat", out FresnelRed),

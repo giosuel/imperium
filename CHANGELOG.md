@@ -1,5 +1,14 @@
 # Changelog
 
+## Imperium v0.2.3 [Beta] - Bug Fixes
+
+### Internal Fixes
+
+- Fixed a bug where opening the UI while being moved by the game would crash the game.
+- Fixed a bug where despawning the cruiser would break the game for the driver.
+- Fixed a bug where incorrect parsing of some input fields would break Imperium startup.
+- Fixed a bug where opening the teleport window would teleport you in place.
+
 ## Imperium v0.2.2 [Beta] - The Event Log
 
 Besides a load of QoL changes, bug fixes and compatibility changes, this update is aimed at the implementation of the event log and the tape measure. The event log is a tool that allows you to track in-game events such as entity behaviour, targeting and noise detection more easily.
@@ -28,7 +37,7 @@ The tape measure is a virtual tool to measure distances in the game. The tape me
 - Outdoor map objects (e.g. trees, rocks, pumpkins) can now be spawned, teleported and removed.
 - Vain shrouds can now be teleported around and removed from the map.
 - Added teleportation to fire exits to the teleportation window.
-- Added a virtual tape measure to measure distances in Unity units and meters. 
+- Added a virtual tape measure to measure distances in Unity units and meters.
 - Added an option to make the player untargetable for entities.
 - Added an option to disable all UI tooltips.
 - Added visualizers for the Roaming Locusts detection ranges.

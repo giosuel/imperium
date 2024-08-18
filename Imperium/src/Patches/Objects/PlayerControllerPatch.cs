@@ -156,6 +156,7 @@ internal static class PlayerControllerPatch
         {
             if (!Imperium.Player.quickMenuManager.isMenuOpen
                 && !Imperium.Player.inTerminalMenu
+                && !Imperium.Freecam.IsFreecamEnabled.Value
                 && !Imperium.Player.isTypingChat
                 && !Imperium.Player.isClimbingLadder
                 && !Imperium.Player.inSpecialInteractAnimation

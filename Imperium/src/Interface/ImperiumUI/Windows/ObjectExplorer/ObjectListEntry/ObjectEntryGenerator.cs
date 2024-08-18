@@ -17,6 +17,11 @@ internal static class ObjectEntryGenerator
     internal static bool CanDestroy(ObjectEntry entry) => entry.Type switch
     {
         ObjectType.Player => false,
+        ObjectType.Cruiser when entry.component is VehicleController
+        {
+            currentPassenger: not null,
+            currentDriver: not null
+        } => false,
         _ => true
     };
 
@@ -86,10 +91,14 @@ internal static class ObjectEntryGenerator
                     Position = entry.containerObject.transform.position
                 });
                 break;
+            case ObjectType.Cruiser:
+                var cruiser = (VehicleController)entry.component;
+                if (cruiser.currentDriver || cruiser.currentPassenger) return;
+                Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
+                break;
             case ObjectType.Player:
                 break;
             case ObjectType.BreakerBox:
-            case ObjectType.Cruiser:
             case ObjectType.Landmine:
             case ObjectType.Turret:
             case ObjectType.SpiderWeb:

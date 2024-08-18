@@ -18,6 +18,7 @@ public class ImpTapeMeasure : MonoBehaviour
     private TMP_Text distanceText;
 
     private bool isActive;
+    private bool hasAborted;
 
     private Vector3? startPosition;
     private Vector3? endPosition;
@@ -71,6 +72,7 @@ public class ImpTapeMeasure : MonoBehaviour
     internal void Activate()
     {
         isActive = true;
+        hasAborted = false;
         indicator.SetActive(true);
 
         startPosition = null;
@@ -110,6 +112,7 @@ public class ImpTapeMeasure : MonoBehaviour
         endMarker.SetActive(false);
         panelRect.gameObject.SetActive(false);
         tapeLine.gameObject.SetActive(false);
+        hasAborted = true;
 
         Deactivate();
     }
@@ -155,7 +158,7 @@ public class ImpTapeMeasure : MonoBehaviour
         originCamera = isOn ? Imperium.Freecam.FreecamCamera : Imperium.Player.gameplayCamera;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         // Indicator rotation animation values
         if (rotationZ > 360)
@@ -177,11 +180,9 @@ public class ImpTapeMeasure : MonoBehaviour
         currentLookPosition = hitInfo.point;
         currentLookNormal = hitInfo.normal;
 
-        var scale = Mathf.Clamp(hitInfo.distance / 2, 0.1f, 1);
-
         if (startPosition.HasValue)
         {
-            var directionVector = (endPosition ?? hitInfo.point) - startPosition.Value;
+            var tapeLineVector = (endPosition ?? hitInfo.point) - startPosition.Value;
 
             // Axis snapping when first position is selected and the Alt key is pressed
             if (Imperium.InputBindings.StaticMap["Alt"].IsPressed())
@@ -190,7 +191,7 @@ public class ImpTapeMeasure : MonoBehaviour
                 var minAngle = 360f;
                 foreach (var axis in Axes)
                 {
-                    var axisAngle = Vector3.Angle(directionVector, axis);
+                    var axisAngle = Vector3.Angle(tapeLineVector, axis);
                     if (axisAngle < minAngle)
                     {
                         snappingAxis = axis;
@@ -220,18 +221,26 @@ public class ImpTapeMeasure : MonoBehaviour
                     endPointHit.distance
                 );
 
-                directionVector = snappingAxis;
-                currentLookPosition = startPosition.Value + projection;
-                currentLookNormal = -player.forward;
+                /*
+                 * If the projection vector was clamped to the end point, align the indicator with the end point
+                 *  and snap the indicator to the end point. Otherwise, align the indicator with the opposite of
+                 *  the player's forward to make it face the player.
+                 */
+                if (Vector3.Distance(endPointHit.point, startPosition.Value + projection) < 0.5f)
+                {
+                    currentLookNormal = endPointHit.normal;
+                    currentLookPosition = endPointHit.point;
+                }
+                else
+                {
+                    currentLookNormal = -player.forward;
+                    currentLookPosition = startPosition.Value + projection;
+                }
 
-                // If the projection vector was clamped to the end point, align the indicator with the end point
-                // otherwise, align the indicator with the opposite of the player's forward to make it face the player
-                currentLookNormal = Vector3.Distance(endPointHit.point, currentLookPosition) < 0.5f
-                    ? endPointHit.normal
-                    : -player.forward;
+                tapeLineVector = currentLookPosition - startPosition.Value;
             }
 
-            var panelWorldPosition = startPosition.Value + directionVector / 2;
+            var panelWorldPosition = startPosition.Value + tapeLineVector / 2;
             var screenPosition = originCamera.WorldToScreenPoint(panelWorldPosition);
 
             var activeCameraTexture = originCamera.targetTexture;
@@ -245,12 +254,12 @@ public class ImpTapeMeasure : MonoBehaviour
 
             var distanceToTape = (originCamera.transform.position - panelWorldPosition).magnitude;
             panelRect.localScale = Vector3.one * Mathf.Clamp(4 / distanceToTape, 0.5f, 2);
+            panelRect.gameObject.SetActive(!hasAborted && screenPosition.z > 0);
 
             if (isActive)
             {
                 tapeLine.gameObject.SetActive(true);
-                panelRect.gameObject.SetActive(screenPosition.z > 0);
-                distanceText.text = $"{directionVector.magnitude:0.00}u ({directionVector.magnitude * 0.62:0.0}m)";
+                distanceText.text = $"{tapeLineVector.magnitude:0.00}u ({tapeLineVector.magnitude * 0.62:0.0}m)";
 
                 ImpGeometry.SetLinePositions(
                     tapeLine,
@@ -258,6 +267,7 @@ public class ImpTapeMeasure : MonoBehaviour
                     endPosition ?? currentLookPosition
                 );
             }
+
         }
         else
         {
@@ -268,6 +278,5 @@ public class ImpTapeMeasure : MonoBehaviour
         indicator.transform.position = currentLookPosition;
         indicator.transform.LookAt(currentLookPosition + currentLookNormal);
         indicator.transform.RotateAround(currentLookPosition, currentLookNormal, rotationZ);
-        indicator.transform.localScale = Vector3.one * (scale * 15);
     }
 }
