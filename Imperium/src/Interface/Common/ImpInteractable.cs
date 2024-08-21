@@ -44,7 +44,7 @@ internal class ImpInteractable : MonoBehaviour, IPointerEnterHandler, IPointerEx
     /// <summary>
     ///     OnPointerUp
     /// </summary>
-    internal event Action<Vector2, Vector2> onDrag;
+    internal event Action<Vector2, Vector2, Vector2> onDrag;
 
     public void OnPointerEnter(PointerEventData eventData) => onEnter?.Invoke();
     public void OnPointerExit(PointerEventData eventData) => onExit?.Invoke();
@@ -52,5 +52,5 @@ internal class ImpInteractable : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public void OnPointerDown(PointerEventData eventData) => onDown?.Invoke();
     public void OnPointerUp(PointerEventData eventData) => onUp?.Invoke();
     public void OnPointerMove(PointerEventData eventData) => onOver?.Invoke(eventData.position);
-    public void OnDrag(PointerEventData eventData) => onDrag?.Invoke(eventData.position, eventData.pressPosition);
+    public void OnDrag(PointerEventData eventData) => onDrag?.Invoke(eventData.position, eventData.pressPosition, eventData.delta);
 }

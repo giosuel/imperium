@@ -11,11 +11,11 @@ using Imperium.Core.LevelEditor;
 using Imperium.Core.Lifecycle;
 using Imperium.Core.Scripts;
 using Imperium.Integration;
+using Imperium.Interface.ComponentManager;
 using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.MapUI;
 using Imperium.Interface.OracleUI;
 using Imperium.Interface.SpawningUI;
-using Imperium.Interface.TilePicker;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
@@ -236,9 +236,10 @@ public class Imperium : BaseUnityPlugin
             Settings.LoadAll();
 
             StartUI();
-
+#if DEBUG
             // This needs to be here as it depends on the UI
-            // ImpLevelEditor = ImpLevelEditor.Create();
+            ImpLevelEditor = ImpLevelEditor.Create();
+#endif
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
@@ -328,7 +329,7 @@ public class Imperium : BaseUnityPlugin
             IsSceneLoaded
         );
         Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
-        Interface.RegisterInterface<TilePicker>(ImpAssets.TilePickerObject);
+        Interface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
 
         Interface.RefreshTheme();
 

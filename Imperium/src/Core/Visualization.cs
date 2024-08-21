@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using DunGen;
 using Imperium.API.Types;
 using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
@@ -116,6 +117,12 @@ internal class Visualization
         Material material = null
     ) => Visualize(identifier, isOn, VisualizeCollider, type, false, thickness, material);
 
+    internal void Objects<T>(
+        bool isOn,
+        Action<T, Material, string> generator,
+        Material material = null
+    ) where T : Object => VisualizeObjects(isOn, material, generator);
+
     /// <summary>
     ///     Visualizes a group of game objects with a sphere by tag or layer
     ///     Can display multiple visualizers per object as long as they have DIFFERENT sizes.
@@ -166,9 +173,12 @@ internal class Visualization
 
     public static List<GameObject> VisualizeColliders(GameObject obj, Material material)
     {
-        return obj.GetComponents<BoxCollider>()
+        return obj.GetComponentsInChildren<BoxCollider>()
             .Select(collider => VisualizeBoxCollider(collider, material))
-            .Concat(obj.GetComponents<CapsuleCollider>().Select(collider => VisualizeCapsuleCollider(collider, material)))
+            .Concat(obj.GetComponentsInChildren<CapsuleCollider>()
+                .Select(collider => VisualizeCapsuleCollider(collider, material)))
+            .Concat(obj.GetComponentsInChildren<SphereCollider>()
+                .Select(collider => VisualizeSphereCollider(collider, material)))
             .ToList();
     }
 
@@ -252,6 +262,45 @@ internal class Visualization
         visualizer.transform.rotation = collider.transform.rotation;
 
         return visualizer;
+    }
+
+    private void VisualizeObjects<T>(
+        bool isOn,
+        Material material,
+        Action<T, Material, string> generator
+    ) where T : Object
+    {
+        var identifier = typeof(T).Name;
+        if (isOn)
+        {
+            EnabledVisualizers.Add(identifier);
+
+            if (VisualizationObjectMap.TryGetValue(identifier, out var objectDict))
+            {
+                ImpUtils.ToggleGameObjects(objectDict.Values, true);
+            }
+            else
+            {
+                objectDict = [];
+            }
+
+            foreach (var obj in Object.FindObjectsOfType<T>())
+            {
+                if (!objectDict.ContainsKey(obj.GetInstanceID()))
+                {
+                    generator(obj, material, identifier);
+                }
+            }
+        }
+        else
+        {
+            EnabledVisualizers.Remove(identifier);
+
+            if (VisualizationObjectMap.TryGetValue(identifier, out var objectDict))
+            {
+                ImpUtils.ToggleGameObjects(objectDict.Values, false);
+            }
+        }
     }
 
     private void Visualize(
@@ -442,6 +491,26 @@ internal class Visualization
         coneMesh.SetIndices(indices.ToList(), MeshTopology.Triangles, 0);
 
         return coneMesh;
+    }
+
+    internal void VisualizeTileBounds(Tile tile, Material material, string identifier)
+    {
+        // Visualizer for object collider has already been created
+        if (ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, identifier).ContainsKey(tile.GetInstanceID())) return;
+
+        var visualizer = ImpGeometry.CreatePrimitive(
+            PrimitiveType.Cube,
+            tile.transform,
+            material ?? DefaultMaterial,
+            name: $"ImpVis_{identifier ?? tile.GetInstanceID().ToString()}"
+        );
+
+        var transform = tile.transform;
+        visualizer.transform.position = tile.Bounds.center;
+        visualizer.transform.localScale = tile.Bounds.size;
+        visualizer.transform.rotation = transform.rotation;
+
+        ImpUtils.DictionaryGetOrNew(VisualizationObjectMap, identifier)[tile.GetInstanceID()] = visualizer;
     }
 
     internal static List<Mesh> GetNavmeshSurfaces()

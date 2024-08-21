@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using DunGen;
+using Imperium.Core.LevelEditor;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
@@ -13,28 +16,45 @@ public class TilePicker : BaseUI
 {
     private Transform content;
 
-    private Transform tileList;
-    private GameObject tileTemplate;
+    private Transform buttonList;
+    private GameObject buttonTemplate;
 
-    private readonly List<GameObject> tileButtons = [];
+    private readonly List<(Tile, Button)> tileButtons = [];
+    private readonly List<(Blocker, Button)> blockerButtons = [];
+    private readonly List<(Connector, Button)> connectorButtons = [];
 
-    private Action<Tile> pickCallback;
+    private Action<Tile> onPickTile;
+    private Action<Blocker> onPickBlocker;
+    private Action<Connector> onPickConnector;
 
     protected override void InitUI()
     {
         content = container.Find("Content");
 
-        tileList = content.Find("List/ScrollView/Viewport/Content");
-        tileTemplate = content.Find("List/ScrollView/Viewport/Content/Template").gameObject;
-        tileTemplate.SetActive(false);
+        buttonList = content.Find("List/ScrollView/Viewport/Content");
+        buttonTemplate = content.Find("List/ScrollView/Viewport/Content/Template").gameObject;
+        buttonTemplate.SetActive(false);
     }
 
-    internal void BindUI(Action<Tile> onPickCallback, IBinding<List<Tile>> tiles)
+    internal void BindUI(
+        Action<Tile> onPickTileCallback,
+        Action<Blocker> onPickBlockerCallback,
+        Action<Connector> onPickConnectorCallback,
+        IBinding<List<Tile>> tiles,
+        IBinding<List<Blocker>> blockers,
+        IBinding<List<Connector>> connectors
+    )
     {
-        pickCallback = onPickCallback;
+        onPickTile = onPickTileCallback;
+        onPickBlocker = onPickBlockerCallback;
+        onPickConnector = onPickConnectorCallback;
 
         tiles.onUpdate += OnTilesUpdate;
+        blockers.onUpdate += OnBlockersUpdate;
+        connectors.onUpdate += OnConnectorsUpdate;
         OnTilesUpdate(tiles.Value);
+        OnBlockersUpdate(blockers.Value);
+        OnConnectorsUpdate(connectors.Value);
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -49,7 +69,7 @@ public class TilePicker : BaseUI
 
         ImpThemeManager.Style(
             themeUpdate,
-            tileTemplate.transform,
+            buttonTemplate.transform,
             new StyleOverride("", Variant.DARKER)
         );
 
@@ -58,26 +78,122 @@ public class TilePicker : BaseUI
         {
             ImpThemeManager.Style(
                 themeUpdate,
-                button.transform,
+                button.Item2.transform,
+                new StyleOverride("", Variant.DARKER)
+            );
+        }
+
+        foreach (var button in blockerButtons)
+        {
+            ImpThemeManager.Style(
+                themeUpdate,
+                button.Item2.transform,
+                new StyleOverride("", Variant.DARKER)
+            );
+        }
+
+        foreach (var button in connectorButtons)
+        {
+            ImpThemeManager.Style(
+                themeUpdate,
+                button.Item2.transform,
                 new StyleOverride("", Variant.DARKER)
             );
         }
     }
 
-    private void OnTilesUpdate(List<Tile> tiles)
+    internal void OpenForPrimary(DoorwaySocket socket)
     {
-        foreach (var tileButton in tileButtons) Destroy(tileButton);
-        tileButtons.Clear();
-
-        foreach (var tile in tiles) RegisterButton(tile);
+        ShowPrimaryForSocket(socket);
+        Open();
     }
 
-    private void RegisterButton(Tile tile)
+    internal void OpenForSecondary(DoorwaySocket socket)
     {
-        var tileButtonObj = Instantiate(tileTemplate, tileList);
-        tileButtonObj.SetActive(true);
-        tileButtonObj.GetComponent<Button>().onClick.AddListener(() => pickCallback?.Invoke(tile));
-        tileButtonObj.transform.Find("Text").GetComponent<TMP_Text>().text = tile.Name;
-        tileButtons.Add(tileButtonObj);
+        ShowSecondaryForSocket(socket);
+        Open();
+    }
+
+    private void ShowPrimaryForSocket(DoorwaySocket socket)
+    {
+        foreach (var (_, button) in connectorButtons) button.gameObject.SetActive(false);
+
+        foreach (var (tile, button) in tileButtons)
+        {
+            button.gameObject.SetActive(true);
+            button.interactable = tile.Doorways.Any(doorway => doorway.socket == socket);
+        }
+
+        foreach (var (blocker, button) in blockerButtons)
+        {
+            button.gameObject.SetActive(true);
+            button.interactable = blocker.Socket == socket;
+        }
+    }
+
+    private void ShowSecondaryForSocket(DoorwaySocket socket)
+    {
+        foreach (var (_, button) in tileButtons) button.gameObject.SetActive(false);
+        foreach (var (_, button) in blockerButtons) button.gameObject.SetActive(false);
+
+        foreach (var (blocker, button) in connectorButtons)
+        {
+            button.gameObject.SetActive(true);
+            button.interactable = blocker.Socket == socket;
+        }
+    }
+
+    private void OnTilesUpdate(List<Tile> tiles)
+    {
+        foreach (var (_, button) in tileButtons) Destroy(button);
+        tileButtons.Clear();
+
+        foreach (var tile in tiles) RegisterTileButton(tile);
+    }
+
+    private void OnBlockersUpdate(List<Blocker> blockers)
+    {
+        foreach (var (_, button) in blockerButtons) Destroy(button);
+        blockerButtons.Clear();
+
+        foreach (var blocker in blockers) RegisterBlockerButton(blocker);
+    }
+
+    private void OnConnectorsUpdate(List<Connector> connectors)
+    {
+        foreach (var (_, button) in connectorButtons) Destroy(button);
+        connectorButtons.Clear();
+
+        foreach (var connector in connectors) RegisterConnectorButton(connector);
+    }
+
+    private void RegisterTileButton(Tile tile)
+    {
+        var buttonObj = Instantiate(buttonTemplate, buttonList);
+        buttonObj.SetActive(true);
+        buttonObj.transform.Find("Text").GetComponent<TMP_Text>().text = tile.Name;
+        var button = buttonObj.GetComponent<Button>();
+        button.onClick.AddListener(() => onPickTile?.Invoke(tile));
+        tileButtons.Add((tile, button));
+    }
+
+    private void RegisterBlockerButton(Blocker blocker)
+    {
+        var buttonObj = Instantiate(buttonTemplate, buttonList);
+        buttonObj.SetActive(true);
+        buttonObj.transform.Find("Text").GetComponent<TMP_Text>().text = blocker.Name;
+        var button = buttonObj.GetComponent<Button>();
+        button.onClick.AddListener(() => onPickBlocker?.Invoke(blocker));
+        blockerButtons.Add((blocker, button));
+    }
+
+    private void RegisterConnectorButton(Connector connector)
+    {
+        var buttonObj = Instantiate(buttonTemplate, buttonList);
+        buttonObj.SetActive(true);
+        buttonObj.transform.Find("Text").GetComponent<TMP_Text>().text = connector.Name;
+        var button = buttonObj.GetComponent<Button>();
+        button.onClick.AddListener(() => onPickConnector?.Invoke(connector));
+        connectorButtons.Add((connector, button));
     }
 }

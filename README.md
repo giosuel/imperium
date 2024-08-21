@@ -36,7 +36,6 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Built-in save file editor for save files (Level options, Furniture location, Player XP, etc.)
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
 - Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (Including mouse look fix).
-- Fully compatible with Version 50 of Lethal Company.
 
 ## Imperium's Minimap / Map
 Imperium comes with it's own built-in map and minimap.

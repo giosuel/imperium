@@ -1,5 +1,12 @@
 # Changelog
 
+## Imperium v0.2.4 [Beta] - Bug Fixes
+
+### Internal Fixes
+
+- Fixed a bug where duplicate outside hazards would prevent Imperium from spawning.
+- Fixed a bug where the theme wouldn't apply correctly to the freecam sliders.
+
 ## Imperium v0.2.3 [Beta] - Bug Fixes
 
 ### Internal Fixes

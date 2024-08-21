@@ -68,7 +68,29 @@ public abstract class BaseUI : MonoBehaviour
         onClose += OnClose;
 
         theme = themeBinding;
-        if (theme != null) theme.onUpdate += OnThemeUpdate;
+        if (theme != null)
+        {
+            theme.onUpdate += OnThemeUpdate;
+            ImpThemeManager.Style(
+                theme.Value,
+                container,
+                // Window background color
+                new StyleOverride("", Variant.BACKGROUND),
+                // Titlebox border color
+                new StyleOverride("TitleBox", Variant.DARKER),
+                // Window border color
+                new StyleOverride("Border", Variant.DARKER),
+                new StyleOverride("Content", Variant.DARKER),
+                new StyleOverride("Content/Border", Variant.DARKER)
+            );
+
+            // Window title
+            ImpThemeManager.StyleText(
+                theme.Value,
+                container,
+                new StyleOverride("TitleBox/Title", Variant.FOREGROUND)
+            );
+        }
 
         InitUI();
 

@@ -354,15 +354,6 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        foreach (var tileSet in Resources.FindObjectsOfTypeAll<TileSet>())
-        {
-            Imperium.IO.LogInfo($"Tile Set {tileSet.name}");
-            foreach (var tileWeightsWeight in tileSet.TileWeights.Weights)
-            {
-                Imperium.IO.LogInfo($" - Tile: {tileWeightsWeight.Value}");
-            }
-        }
-
         // Instantiate shiggy type if not already exists and if redpill has been found
         if (redPillType && !shiggyExists) allEntities.Add(CreateShiggyType(redPillType));
 
@@ -375,6 +366,8 @@ internal class ObjectManager : ImpLifecycleObject
         var allStaticPrefabs = new Dictionary<string, GameObject>();
         var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
         var allOutsideObjects = Resources.FindObjectsOfTypeAll<SpawnableOutsideObject>()
+            .GroupBy(obj => obj.prefabToSpawn.name)
+            .Select(obj => obj.First())
             .ToDictionary(obj => obj.prefabToSpawn.name);
 
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())

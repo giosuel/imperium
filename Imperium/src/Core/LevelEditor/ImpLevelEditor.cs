@@ -1,26 +1,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using DunGen;
-using Imperium.Interface.TilePicker;
+using Imperium.Interface.ComponentManager;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UniverseLib;
 
 namespace Imperium.Core.LevelEditor;
 
 internal class ImpLevelEditor : MonoBehaviour
 {
-    private readonly HashSet<DoorMarker> registeredMarkers = [];
-    private readonly HashSet<Vector3> markerPositions = [];
+    private readonly List<DoorMarker> registeredMarkers = [];
+    private readonly List<Vector3> markerPositions = [];
 
     private readonly ImpBinding<List<Tile>> Tiles = new([]);
+    private readonly ImpBinding<List<Blocker>> Blockers = new([]);
+    private readonly ImpBinding<List<Connector>> Connectors = new([]);
 
     private PreviewTile selectedTile;
+    private PreviewBlocker selectedBlocker;
+    private PreviewConnector selectedConnector;
+
+    private bool previewValid;
+    private float timeSinceCycling;
 
     internal static ImpLevelEditor Create() => new GameObject("Imp_LevelEditor").AddComponent<ImpLevelEditor>();
 
-    private TilePicker tilePicker;
+    private ComponentManager componentManager;
+
+    private readonly PlacedDungeon dungeon = new();
+    private PlacedTile currentTile;
+
+    private BuildingTool buildingTool;
 
     private void Awake()
     {
@@ -29,78 +42,142 @@ internal class ImpLevelEditor : MonoBehaviour
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed += OnLeftClick;
         Imperium.IngamePlayerSettings.playerInput.actions["PingScan"].performed += OnRightClick;
 
-        tilePicker = Imperium.Interface.Get<TilePicker>();
-        tilePicker.InitUI(Imperium.Interface.Theme);
-        tilePicker.BindUI(PickTile, Tiles);
+        componentManager = Imperium.Interface.Get<ComponentManager>();
+        componentManager.InitUI(Imperium.Interface.Theme);
+        componentManager.BindUI(PickTile, PickBlocker, PickConnector, Tiles, Blockers, Connectors);
+
+        var registeredBlockers = new HashSet<GameObject>();
+        var registeredConnectors = new HashSet<GameObject>();
 
         foreach (var tileSet in Resources.FindObjectsOfTypeAll<TileSet>())
         {
             foreach (var tile in tileSet.TileWeights.Weights)
             {
+                var doorways = tile.Value.GetComponentsInChildren<Doorway>();
+                var aiNodesCount = tile.Value.GetComponentsInChildren<Transform>()
+                    .Count(comp => comp.gameObject.CompareTag("AINode"));
+                var scrapSpawnsCount = tile.Value.GetComponentsInChildren<RandomScrapSpawn>().Length;
+
                 Tiles.Value.Add(new Tile
                 {
                     Name = tile.Value.name,
                     Prefab = tile.Value,
                     OriginalRotation = tile.Value.transform.rotation,
-                    DoorwayPositions = tile.Value.GetComponentsInChildren<Doorway>()
-                        .Select(doorway => doorway.transform.localPosition)
-                        .ToArray(),
-                    DoorwayRotationsY = tile.Value.GetComponentsInChildren<Doorway>()
-                        .Select(doorway => doorway.transform.localRotation.y)
-                        .ToArray()
+                    Doorways = doorways,
+                    DoorwayOrigins = doorways.Select(doorway => doorway.transform.localPosition).ToArray(),
+                    DoorwayYRotations = doorways.Select(doorway => doorway.transform.rotation.eulerAngles.y).ToArray(),
+                    AINodesCount = aiNodesCount,
+                    ScrapSpawns = scrapSpawnsCount
                 });
+
+                foreach (var doorway in doorways)
+                {
+                    foreach (var blockerWeight in doorway.BlockerPrefabWeights)
+                    {
+                        if (!registeredBlockers.Contains(blockerWeight.GameObject))
+                        {
+                            Blockers.Value.Add(new Blocker
+                            {
+                                Name = blockerWeight.GameObject.name,
+                                Prefab = blockerWeight.GameObject,
+                                Socket = doorway.Socket,
+                                OriginalRotation = blockerWeight.GameObject.transform.rotation
+                            });
+                            registeredBlockers.Add(blockerWeight.GameObject);
+                        }
+                    }
+
+                    foreach (var connectorWeight in doorway.ConnectorPrefabWeights)
+                    {
+                        if (!registeredConnectors.Contains(connectorWeight.GameObject))
+                        {
+                            Connectors.Value.Add(new Connector
+                            {
+                                Name = connectorWeight.GameObject.name,
+                                Prefab = connectorWeight.GameObject,
+                                Socket = doorway.Socket,
+                                OriginalRotation = connectorWeight.GameObject.transform.rotation
+                            });
+                            registeredConnectors.Add(connectorWeight.GameObject);
+                        }
+                    }
+                }
             }
         }
 
+        buildingTool = gameObject.AddComponent<BuildingTool>();
+        buildingTool.Init(dungeon);
+
         Tiles.Refresh();
+        Blockers.Refresh();
+        Connectors.Refresh();
     }
 
-    private void OnCyclePreviewDoor(bool forward)
+    private void OnMouseCycle(bool forward)
     {
         if (selectedTile == null) return;
 
+        var previousIndex = selectedTile.CurrentDoorIndex;
+
+        var tempIndex = previousIndex;
+
         if (forward)
         {
-            selectedTile.CurrentDoorIndex = (selectedTile.CurrentDoorIndex + 1) % selectedTile.Tile.DoorwayPositions.Length;
+            do
+            {
+                tempIndex = (tempIndex + 1) % selectedTile.Tile.DoorwayOrigins.Length;
+
+                if (selectedTile.Tile.Doorways[tempIndex].socket.IsCompatible(currentPreviewMarker.Socket))
+                {
+                    selectedTile.CurrentDoorIndex = tempIndex;
+                    break;
+                }
+            } while (tempIndex != previousIndex);
         }
         else
         {
-            if (selectedTile.CurrentDoorIndex == 0)
+            do
             {
-                selectedTile.CurrentDoorIndex = selectedTile.Tile.DoorwayPositions.Length - 1;
-            }
-            else
-            {
-                selectedTile.CurrentDoorIndex--;
-            }
+                if (tempIndex == 0)
+                {
+                    tempIndex = selectedTile.Tile.DoorwayOrigins.Length - 1;
+                }
+                else
+                {
+                    tempIndex--;
+                }
+
+                if (selectedTile.Tile.Doorways[tempIndex].socket.IsCompatible(currentPreviewMarker.Socket))
+                {
+                    selectedTile.CurrentDoorIndex = tempIndex;
+                    break;
+                }
+            } while (tempIndex != previousIndex);
         }
 
         if (highlightedMarker)
         {
             var doorPivot = highlightedMarker.DoorwayOrigin;
             selectedTile.PreviewPrefab.transform.position =
-                doorPivot - selectedTile.Tile.DoorwayPositions[selectedTile.CurrentDoorIndex];
-            var rotationOffset = Quaternion.AngleAxis(
-                selectedTile.Tile.DoorwayRotationsY[selectedTile.CurrentDoorIndex],
-                Vector3.up
+                doorPivot - selectedTile.Tile.DoorwayOrigins[selectedTile.CurrentDoorIndex];
+            selectedTile.PreviewPrefab.transform.rotation = selectedTile.Tile.OriginalRotation;
+            selectedTile.PreviewPrefab.transform.RotateAround(
+                doorPivot,
+                Vector3.up,
+                highlightedMarker.DoorwayRotation.eulerAngles.y - 180 -
+                selectedTile.Tile.DoorwayYRotations[selectedTile.CurrentDoorIndex]
             );
-            transform.position = rotationOffset * (selectedTile.PreviewPrefab.transform.position - doorPivot) + doorPivot;
-            transform.rotation = rotationOffset * selectedTile.Tile.OriginalRotation;
         }
     }
 
-    private void OnSceneChange(bool isLoaded)
-    {
-        foreach (var registeredMarker in registeredMarkers) Destroy(registeredMarker);
-        registeredMarkers.Clear();
-
-        RegisterDoors();
-    }
+    private void OnSceneChange(bool isLoaded) => RegisterDoors();
 
     private void OnLeftClick(InputAction.CallbackContext _)
     {
         if (!highlightedMarker ||
             Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.ImpPositionIndicator.IsActive ||
+            Imperium.ImpTapeMeasure.IsActive ||
             Imperium.Player.inTerminalMenu ||
             Imperium.Player.isTypingChat ||
             Imperium.ShipBuildModeManager.InBuildMode) return;
@@ -109,19 +186,65 @@ internal class ImpLevelEditor : MonoBehaviour
 
         if (selectedTile != null)
         {
-            var newTile = Instantiate(selectedTile.Tile.Prefab);
-            newTile.transform.position = selectedTile.PreviewPrefab.transform.position;
-            newTile.transform.rotation = selectedTile.PreviewPrefab.transform.rotation;
+            if (!previewValid) return;
+
+            dungeon.Tiles.Add(GeneratePlacedTile(selectedTile));
+
+            Imperium.IO.LogInfo(
+                $"Placed tile {selectedTile.Tile.Name} at ({Formatting.FormatVector(selectedTile.PreviewPrefab.transform.position)}), rotation: {Formatting.FormatVector(selectedTile.PreviewPrefab.transform.rotation.eulerAngles)}");
+
             selectedTile.PreviewPrefab.SetActive(false);
             selectedTile = null;
 
+            highlightedMarker.IsConnected = true;
             highlightedMarker.DisableCollider();
 
             RegisterDoors();
         }
-        else
+        else if (selectedConnector != null)
         {
-            tilePicker.Open();
+            if (!previewValid) return;
+
+            var newConnector = Instantiate(selectedConnector.Connector.Prefab);
+            newConnector.transform.position = selectedConnector.PreviewPrefab.transform.position;
+            newConnector.transform.rotation = selectedConnector.PreviewPrefab.transform.rotation;
+            Utils.SpawnNetworkChildren(newConnector);
+
+            Imperium.IO.LogInfo(
+                $"Placed connector {selectedConnector.Connector.Name} at ({Formatting.FormatVector(selectedConnector.PreviewPrefab.transform.position)}), rotation: {Formatting.FormatVector(selectedConnector.PreviewPrefab.transform.rotation.eulerAngles)}");
+
+            selectedConnector.PreviewPrefab.SetActive(false);
+            selectedConnector = null;
+
+            highlightedMarker.HasDoorway = true;
+            highlightedMarker.Disable();
+        }
+        else if (selectedBlocker != null)
+        {
+            if (!previewValid) return;
+
+            var newBlocker = Instantiate(selectedBlocker.Blocker.Prefab);
+            newBlocker.transform.position = selectedBlocker.PreviewPrefab.transform.position;
+            newBlocker.transform.rotation = selectedBlocker.PreviewPrefab.transform.rotation;
+            Utils.SpawnNetworkChildren(newBlocker);
+
+            Imperium.IO.LogInfo(
+                $"Placed blocker {selectedBlocker.Blocker.Name} at ({Formatting.FormatVector(selectedBlocker.PreviewPrefab.transform.position)}), rotation: {Formatting.FormatVector(selectedBlocker.PreviewPrefab.transform.rotation.eulerAngles)}");
+
+            selectedBlocker.PreviewPrefab.SetActive(false);
+            selectedBlocker = null;
+
+            highlightedMarker.IsConnected = true;
+            highlightedMarker.HasDoorway = true;
+            highlightedMarker.Disable();
+        }
+        else if (!highlightedMarker.IsConnected)
+        {
+            componentManager.OpenForPrimary(highlightedMarker.Socket);
+        }
+        else if (!highlightedMarker.HasDoorway)
+        {
+            componentManager.OpenForSecondary(highlightedMarker.Socket);
         }
     }
 
@@ -132,11 +255,63 @@ internal class ImpLevelEditor : MonoBehaviour
             Imperium.Player.isTypingChat ||
             Imperium.ShipBuildModeManager.InBuildMode) return;
 
-        selectedTile.PreviewPrefab.SetActive(false);
+        selectedTile?.PreviewPrefab.SetActive(false);
+        selectedBlocker?.PreviewPrefab.SetActive(false);
+        selectedConnector?.PreviewPrefab.SetActive(false);
+
         selectedTile = null;
+        selectedBlocker = null;
+        selectedConnector = null;
     }
 
     private readonly Dictionary<string, GameObject> prefabPreviewCache = [];
+    private readonly Dictionary<string, List<MeshRenderer>> prefabPreviewMeshRenderers = [];
+
+    private void PickBlocker(Blocker blocker)
+    {
+        if (!prefabPreviewCache.TryGetValue(blocker.Name, out var previewPrefab))
+        {
+            previewPrefab = Instantiate(blocker.Prefab);
+            prefabPreviewCache[blocker.Name] = previewPrefab;
+        }
+
+        previewPrefab = CreatePreviewPrefab(previewPrefab);
+
+        selectedTile = null;
+        selectedConnector = null;
+
+        selectedBlocker = new PreviewBlocker
+        {
+            Blocker = blocker,
+            PreviewPrefab = previewPrefab
+        };
+
+        componentPickedThisFrame = true;
+        componentManager.Close();
+    }
+
+    private void PickConnector(Connector connector)
+    {
+        if (!prefabPreviewCache.TryGetValue(connector.Name, out var previewPrefab))
+        {
+            previewPrefab = Instantiate(connector.Prefab);
+            prefabPreviewCache[connector.Name] = previewPrefab;
+        }
+
+        previewPrefab = CreatePreviewPrefab(previewPrefab);
+
+        selectedTile = null;
+        selectedBlocker = null;
+
+        selectedConnector = new PreviewConnector
+        {
+            Connector = connector,
+            PreviewPrefab = previewPrefab
+        };
+
+        componentPickedThisFrame = true;
+        componentManager.Close();
+    }
 
     private void PickTile(Tile tile)
     {
@@ -146,14 +321,50 @@ internal class ImpLevelEditor : MonoBehaviour
             prefabPreviewCache[tile.Name] = previewPrefab;
         }
 
-        foreach (var component in previewPrefab.GetComponentsInChildren<Component>())
+        previewPrefab = CreatePreviewPrefab(previewPrefab);
+
+        selectedBlocker = null;
+        selectedConnector = null;
+
+        selectedTile = new PreviewTile
+        {
+            Tile = tile,
+            PreviewPrefab = previewPrefab,
+            CurrentDoorIndex = 0
+        };
+
+        componentPickedThisFrame = true;
+        componentManager.Close();
+
+        // Cycle to get the first valid door
+        OnMouseCycle(true);
+    }
+
+    private void SetPreviewOkay(GameObject obj) => SetObjectPreviewMaterial(obj, ImpAssets.HologramOkay);
+    private void SetPreviewError(GameObject obj) => SetObjectPreviewMaterial(obj, ImpAssets.HologramError);
+
+    private void SetObjectPreviewMaterial(GameObject obj, Material material)
+    {
+        if (prefabPreviewMeshRenderers.TryGetValue(obj.name, out var meshRenderers))
+        {
+            foreach (var renderer in meshRenderers)
+            {
+                renderer.material = material;
+                renderer.materials = Enumerable.Repeat(material, renderer.materials.Length).ToArray();
+            }
+        }
+    }
+
+    private GameObject CreatePreviewPrefab(GameObject obj)
+    {
+        Utils.SpawnNetworkChildren(obj);
+
+        foreach (var component in obj.GetComponentsInChildren<Component>())
         {
             switch (component)
             {
                 case MeshRenderer renderer:
-                    renderer.material = ImpAssets.HologramOkay;
-                    renderer.materials = Enumerable.Repeat(ImpAssets.HologramOkay, renderer.materials.Length).ToArray();
-
+                    ImpUtils.DictionaryGetOrNew(prefabPreviewMeshRenderers, obj.name).Add(renderer);
                     break;
                 case SphereCollider:
                 case CapsuleCollider:
@@ -163,25 +374,128 @@ internal class ImpLevelEditor : MonoBehaviour
                     break;
                 case LocalPropSet:
                     Destroy(component.gameObject);
-                break;
+                    break;
             }
         }
 
-        selectedTile = new PreviewTile
-        {
-            Tile = tile,
-            PreviewPrefab = previewPrefab,
-            CurrentDoorIndex = 0
-        };
+        obj.SetActive(true);
 
-        tilePicker.Close();
+        return obj;
     }
 
-    private void RegisterDoors()
+    private static PlacedTile GeneratePlacedTile(PreviewTile tile)
     {
+        var tileObj = Instantiate(tile.Tile.Prefab);
+        tileObj.transform.position = tile.PreviewPrefab.transform.position;
+        tileObj.transform.rotation = tile.PreviewPrefab.transform.rotation;
+
+        var aiNodes = tileObj.GetComponentsInChildren<Component>()
+            .Where(comp => comp.CompareTag("AINode"))
+            .Select(node =>
+                {
+                    var collider = node.gameObject.AddComponent<SphereCollider>();
+                    collider.isTrigger = true;
+                    return new MapPointCached
+                    {
+                        Object = node.gameObject,
+                        Collider = node.gameObject.AddComponent<SphereCollider>()
+                    };
+                }
+            )
+            .ToList();
+        var scrapSpawns = tileObj.GetComponentsInChildren<RandomScrapSpawn>().Select(scrapSpawn =>
+        {
+            var collider = scrapSpawn.gameObject.AddComponent<SphereCollider>();
+            collider.isTrigger = true;
+            return new MapPointCached
+            {
+                Object = scrapSpawn.gameObject,
+                Collider = scrapSpawn.gameObject.AddComponent<SphereCollider>()
+            };
+        }).ToList();
+
+        var globalProps = tileObj.GetComponentsInChildren<GlobalProp>().Select(globalProp =>
+        {
+            var colliders = globalProp.GetComponentsInChildren<Collider>();
+            var obj = globalProp.gameObject;
+            // Use the instance of the spawn prefab as object reference if global prop has SpawnSyncedObject.
+            if (globalProp.TryGetComponent<SpawnSyncedObject>(out var syncedObject))
+            {
+                obj = Object.Instantiate(
+                    syncedObject.spawnPrefab,
+                    syncedObject.transform.position,
+                    syncedObject.transform.rotation,
+                    obj.transform
+                );
+                colliders = obj.GetComponentsInChildren<Collider>();
+            }
+
+            return new GlobalPropCached
+            {
+                Prop = globalProp,
+                Object = obj,
+                Colliders = colliders.ToHashSet(),
+                MeshRenderers = obj.GetComponentsInChildren<MeshRenderer>()
+            };
+        }).ToList();
+
+        var localPropSets = tileObj.GetComponentsInChildren<LocalPropSet>();
+        var propSetHolders = localPropSets.Select(propSet => propSet.gameObject).ToHashSet();
+        var localProps = localPropSets
+            .SelectMany(localPropSet => localPropSet.Props.Weights)
+            .Where(propObj => propObj.Value)
+            // .Where(propObj => propObj.Value && !propSetHolders.Contains(propObj.Value))
+            .Select(propObj => new LocalPropCached
+            {
+                Object = propObj.Value,
+                Colliders = propObj.Value.gameObject.GetComponentsInChildren<Collider>().ToHashSet(),
+                MeshRenderers = propObj.Value.gameObject.GetComponentsInChildren<MeshRenderer>()
+            })
+            .ToList();
+
+        return new PlacedTile
+        {
+            Blueprint = tile.Tile,
+            ScrapSpawns = scrapSpawns,
+            AINodes = aiNodes,
+            GlobalProps = globalProps,
+            LocalProps = localProps
+        };
+    }
+
+    private void RegisterDoors(bool clear = false)
+    {
+        if (clear)
+        {
+            foreach (var marker in registeredMarkers) Destroy(marker.gameObject);
+            markerPositions.Clear();
+            registeredMarkers.Clear();
+        }
+
+        var registeredPositions = new List<Vector3>();
+
         foreach (var doorway in FindObjectsOfType<Doorway>())
         {
-            if (markerPositions.Contains(doorway.transform.position)) continue;
+            var markerExists = false;
+            foreach (var markerPosition in markerPositions)
+            {
+                if (Vector3.Distance(markerPosition, doorway.transform.position) < 0.1f)
+                {
+                    markerExists = true;
+                    break;
+                }
+            }
+
+            for (var i = 0; i < registeredPositions.Count; i++)
+            {
+                if (Vector3.Distance(registeredPositions[i], doorway.transform.position) < 0.1f)
+                {
+                    registeredMarkers[i].IsConnected = true;
+                    break;
+                }
+            }
+
+            if (markerExists) continue;
 
             var markerObj = Instantiate(ImpAssets.DoorMarkerObject, doorway.transform);
             var marker = markerObj.AddComponent<DoorMarker>();
@@ -189,6 +503,7 @@ internal class ImpLevelEditor : MonoBehaviour
 
             registeredMarkers.Add(marker);
             markerPositions.Add(doorway.transform.position);
+            registeredPositions.Add(doorway.transform.position);
         }
     }
 
@@ -197,11 +512,19 @@ internal class ImpLevelEditor : MonoBehaviour
 
     private DoorMarker currentPreviewMarker;
 
+    private bool componentPickedThisFrame;
+
     private void Update()
     {
+        // var camera = Imperium.Freecam.IsFreecamEnabled.Value
+        // ? Imperium.Freecam.FreecamCamera
+        // : Imperium.Player.gameplayCamera;
+
+        var camera = Imperium.Player.gameplayCamera;
+
         var intersects = Physics.RaycastNonAlloc(
-            Imperium.Player.gameplayCamera.transform.position,
-            Imperium.Player.gameplayCamera.transform.forward,
+            camera.transform.position,
+            camera.transform.forward,
             rayHits,
             10
         );
@@ -236,6 +559,8 @@ internal class ImpLevelEditor : MonoBehaviour
             }
 
             selectedTile?.PreviewPrefab.SetActive(false);
+            selectedBlocker?.PreviewPrefab.SetActive(false);
+            selectedConnector?.PreviewPrefab.SetActive(false);
         }
         else
         {
@@ -243,49 +568,167 @@ internal class ImpLevelEditor : MonoBehaviour
             {
                 selectedTile.PreviewPrefab.SetActive(true);
 
-                if (currentPreviewMarker != highlightedMarker)
+                if (currentPreviewMarker != highlightedMarker || componentPickedThisFrame)
                 {
                     var doorPivot = highlightedMarker.DoorwayOrigin;
                     selectedTile.PreviewPrefab.transform.position =
-                        doorPivot - selectedTile.Tile.DoorwayPositions[selectedTile.CurrentDoorIndex];
-                    var rotationOffset = Quaternion.AngleAxis(
-                        selectedTile.Tile.DoorwayRotationsY[selectedTile.CurrentDoorIndex],
-                        Vector3.up
+                        doorPivot - selectedTile.Tile.DoorwayOrigins[selectedTile.CurrentDoorIndex];
+                    selectedTile.PreviewPrefab.transform.rotation = selectedTile.Tile.OriginalRotation;
+                    selectedTile.PreviewPrefab.transform.RotateAround(
+                        doorPivot,
+                        Vector3.up,
+                        highlightedMarker.DoorwayRotation.eulerAngles.y - 180 -
+                        selectedTile.Tile.DoorwayYRotations[selectedTile.CurrentDoorIndex]
                     );
-                    transform.position = rotationOffset * (selectedTile.PreviewPrefab.transform.position - doorPivot) + doorPivot;
-                    transform.rotation = rotationOffset * selectedTile.Tile.OriginalRotation;
 
-                    currentPreviewMarker = highlightedMarker;
+                    if (highlightedMarker.IsConnected)
+                    {
+                        previewValid = false;
+                        SetPreviewError(selectedTile.PreviewPrefab);
+                    }
+                    else
+                    {
+                        previewValid = true;
+                        SetPreviewOkay(selectedTile.PreviewPrefab);
+                    }
                 }
             }
+            else if (selectedBlocker != null)
+            {
+                selectedBlocker.PreviewPrefab.SetActive(true);
+
+                if (currentPreviewMarker != highlightedMarker || componentPickedThisFrame)
+                {
+                    selectedBlocker.PreviewPrefab.transform.position = highlightedMarker.DoorwayOrigin;
+                    selectedBlocker.PreviewPrefab.transform.rotation = highlightedMarker.DoorwayRotation;
+                }
+
+                if (highlightedMarker.IsConnected)
+                {
+                    previewValid = false;
+                    SetPreviewError(selectedBlocker.PreviewPrefab);
+                }
+                else
+                {
+                    previewValid = true;
+                    SetPreviewOkay(selectedBlocker.PreviewPrefab);
+                }
+            }
+            else if (selectedConnector != null)
+            {
+                selectedConnector.PreviewPrefab.SetActive(true);
+
+                if (currentPreviewMarker != highlightedMarker || componentPickedThisFrame)
+                {
+                    selectedConnector.PreviewPrefab.transform.position = highlightedMarker.DoorwayOrigin;
+                    selectedConnector.PreviewPrefab.transform.rotation = highlightedMarker.DoorwayRotation;
+                }
+
+                if (highlightedMarker.HasDoorway || !highlightedMarker.IsConnected)
+                {
+                    previewValid = false;
+                    SetPreviewError(selectedConnector.PreviewPrefab);
+                }
+                else
+                {
+                    previewValid = true;
+                    SetPreviewOkay(selectedConnector.PreviewPrefab);
+                }
+            }
+
+            TileProxy p;
+
+            currentPreviewMarker = highlightedMarker;
+            componentPickedThisFrame = false;
         }
 
         var scrollValue = Mathf.RoundToInt(Imperium.IngamePlayerSettings.playerInput.actions
             .FindAction("SwitchItem")
             .ReadValue<float>());
 
-
         timeSinceCycling += Time.deltaTime;
         if (timeSinceCycling > 0.15f)
         {
             if (scrollValue != 0)
             {
-                OnCyclePreviewDoor(scrollValue > 0);
+                OnMouseCycle(scrollValue > 0);
                 timeSinceCycling = 0;
             }
         }
     }
 
-    private float timeSinceCycling;
+    internal static class Utils
+    {
+        internal static void SpawnNetworkChildren(GameObject obj)
+        {
+            foreach (var syncedObject in obj.GetComponentsInChildren<SpawnSyncedObject>())
+            {
+                Instantiate(
+                    syncedObject.spawnPrefab,
+                    syncedObject.transform.position,
+                    syncedObject.transform.rotation,
+                    obj.transform
+                );
+            }
+        }
+    }
 }
 
-internal struct Tile
+internal record PlacedDungeon
+{
+    internal List<PlacedTile> Tiles { get; init; } = [];
+}
+
+internal readonly struct Tile
 {
     internal string Name { get; init; }
     internal GameObject Prefab { get; init; }
     internal Quaternion OriginalRotation { get; init; }
-    internal Vector3[] DoorwayPositions { get; init; }
-    internal float[] DoorwayRotationsY { get; init; }
+    internal Doorway[] Doorways { get; init; }
+    internal Vector3[] DoorwayOrigins { get; init; }
+    internal float[] DoorwayYRotations { get; init; }
+    internal float ScrapSpawns { get; init; }
+    internal float AINodesCount { get; init; }
+}
+
+internal readonly struct GlobalPropCached
+{
+    internal GlobalProp Prop { get; init; }
+    internal HashSet<Collider> Colliders { get; init; }
+
+    internal GameObject Object { get; init; }
+    internal Vector3 OriginalPosition { get; init; }
+    internal Quaternion OriginalRotatioon { get; init; }
+    internal Vector3 PositionOffset { get; init; }
+    internal Vector3 RotationOffset { get; init; }
+    internal MeshRenderer[] MeshRenderers { get; init; }
+}
+
+internal readonly struct LocalPropCached
+{
+    internal Vector3 OriginalPosition { get; init; }
+    internal Quaternion OriginalRotatioon { get; init; }
+    internal Vector3 PositionOffset { get; init; }
+    internal Vector3 RotationOffset { get; init; }
+
+    internal GameObject Object { get; init; }
+    internal HashSet<Collider> Colliders { get; init; }
+    internal MeshRenderer[] MeshRenderers { get; init; }
+}
+
+internal readonly struct MapPointCached
+{
+    internal GameObject Object { get; init; }
+    internal SphereCollider Collider { get; init; }
+}
+
+internal readonly struct PlacedTile
+{
+    internal Tile Blueprint { get; init; }
+    internal List<GlobalPropCached> GlobalProps { get; init; }
+    internal List<LocalPropCached> LocalProps { get; init; }
+    internal List<MapPointCached> AINodes { get; init; }
+    internal List<MapPointCached> ScrapSpawns { get; init; }
 }
 
 internal record PreviewTile
@@ -293,4 +736,32 @@ internal record PreviewTile
     internal Tile Tile { get; init; }
     internal GameObject PreviewPrefab { get; init; }
     internal int CurrentDoorIndex { get; set; } = 0;
+}
+
+internal struct Blocker
+{
+    internal string Name { get; init; }
+    internal DoorwaySocket Socket { get; init; }
+    internal GameObject Prefab { get; init; }
+    internal Quaternion OriginalRotation { get; init; }
+}
+
+internal record PreviewBlocker
+{
+    internal Blocker Blocker { get; init; }
+    internal GameObject PreviewPrefab { get; init; }
+}
+
+internal struct Connector
+{
+    internal string Name { get; init; }
+    internal DoorwaySocket Socket { get; init; }
+    internal GameObject Prefab { get; init; }
+    internal Quaternion OriginalRotation { get; init; }
+}
+
+internal record PreviewConnector
+{
+    internal Connector Connector { get; init; }
+    internal GameObject PreviewPrefab { get; init; }
 }

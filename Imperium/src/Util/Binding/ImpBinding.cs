@@ -28,7 +28,7 @@ public class ImpBinding<T> : IBinding<T>
     }
 
     public ImpBinding(
-        T currentValue,
+        T currentValue = default,
         T defaultValue = default,
         Action<T> onUpdate = null,
         Action<T> onUpdateFromLocal = null,

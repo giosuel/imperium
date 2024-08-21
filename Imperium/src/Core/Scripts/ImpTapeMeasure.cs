@@ -12,12 +12,13 @@ namespace Imperium.Core.Scripts;
 
 public class ImpTapeMeasure : MonoBehaviour
 {
+    internal bool IsActive { get; private set; }
+
     private GameObject indicator;
     private RectTransform canvasRect;
     private RectTransform panelRect;
     private TMP_Text distanceText;
 
-    private bool isActive;
     private bool hasAborted;
 
     private Vector3? startPosition;
@@ -69,9 +70,9 @@ public class ImpTapeMeasure : MonoBehaviour
         OnExitAction();
     }
 
-    internal void Activate()
+    private void Activate()
     {
-        isActive = true;
+        IsActive = true;
         hasAborted = false;
         indicator.SetActive(true);
 
@@ -91,9 +92,9 @@ public class ImpTapeMeasure : MonoBehaviour
         Imperium.InputBindings.BaseMap.Teleport.Disable();
     }
 
-    internal void Deactivate()
+    private void Deactivate()
     {
-        isActive = false;
+        IsActive = false;
         indicator.SetActive(false);
 
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed -= OnLeftClick;
@@ -119,7 +120,7 @@ public class ImpTapeMeasure : MonoBehaviour
 
     private void OnLeftClick(InputAction.CallbackContext context = default)
     {
-        if (!isActive) return;
+        if (!IsActive) return;
 
         if (!startPosition.HasValue)
         {
@@ -138,7 +139,7 @@ public class ImpTapeMeasure : MonoBehaviour
 
     private void OnTapeOpen(InputAction.CallbackContext callbackContext)
     {
-        if (isActive)
+        if (IsActive)
         {
             OnExitAction();
         }
@@ -256,7 +257,7 @@ public class ImpTapeMeasure : MonoBehaviour
             panelRect.localScale = Vector3.one * Mathf.Clamp(4 / distanceToTape, 0.5f, 2);
             panelRect.gameObject.SetActive(!hasAborted && screenPosition.z > 0);
 
-            if (isActive)
+            if (IsActive)
             {
                 tapeLine.gameObject.SetActive(true);
                 distanceText.text = $"{tapeLineVector.magnitude:0.00}u ({tapeLineVector.magnitude * 0.62:0.0}m)";

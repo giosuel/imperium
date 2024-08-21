@@ -24,7 +24,7 @@ internal abstract class ImpAssets
     internal static GameObject SpawningUIObject;
 
     internal static GameObject LayerSelectorObject;
-    internal static GameObject TilePickerObject;
+    internal static GameObject ComponentManagerObject;
     internal static GameObject MinimapOverlayObject;
     internal static GameObject MinimapSettingsObject;
 
@@ -74,6 +74,7 @@ internal abstract class ImpAssets
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
     internal static GameObject ObjectInsightPanel;
+    internal static GameObject BuildInfoPanel;
 
     /*
      * Audio Clips
@@ -141,7 +142,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/tooltip.prefab", out ImperiumTooltipObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/imperium_ui.prefab", out ImperiumUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/layer_selector.prefab", out LayerSelectorObject),
-            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/tile_picker.prefab", out TilePickerObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/component_manager.prefab", out ComponentManagerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/map_ui.prefab", out MapUIObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/minimap.prefab", out MinimapOverlayObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/minimap_settings.prefab", out MinimapSettingsObject),
@@ -167,6 +168,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_timer.prefab", out SpawnTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/prop_info.prefab", out BuildInfoPanel),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
             LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XRay),
@@ -198,6 +200,35 @@ internal abstract class ImpAssets
         Imperium.IO.LogBlock(logBuffer, "Imperium Resource Loader");
 
         return loadResults.All(result => result);
+    }
+
+    private static readonly Dictionary<string, Sprite> spriteCache = new();
+
+    internal static Sprite LoadSpriteFromFiles(string spriteName)
+    {
+        var spritePath = new[]
+            {
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                "images",
+                $"{spriteName}.png"
+            }
+            .Aggregate(Path.Combine);
+
+        if (spriteCache.TryGetValue(spritePath, out var sprite)) return sprite;
+
+        if (File.Exists(spritePath))
+        {
+            var fileData = File.ReadAllBytes(spritePath);
+            var texture = new Texture2D(2, 2);
+            if (texture.LoadImage(fileData))
+            {
+                sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
+                spriteCache[spriteName] = sprite;
+                return sprite;
+            }
+        }
+
+        return null;
     }
 
     private static List<string> logBuffer = [];
