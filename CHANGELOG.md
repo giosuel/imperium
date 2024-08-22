@@ -1,5 +1,10 @@
 # Changelog
 
+## Imperium v0.2.5 [Beta] - Hofix
+
+- Fixed a bug where the interior would always be the Mineshaft for the host.
+- Fixed a bug where the freecam would break spectating.
+
 ## Imperium v0.2.4 [Beta] - Bug Fixes
 
 ### Internal Fixes
