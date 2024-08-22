@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using BepInEx.Configuration;
 using DunGen;
@@ -146,7 +147,7 @@ internal class Visualization
     /// </summary>
     internal void RefreshOverlays()
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var stopwatch = Stopwatch.StartNew();
 
         foreach (var (uniqueIdentifier, definition) in VisualizerDefinitions)
         {

@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using BepInEx.Configuration;
@@ -61,7 +62,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
     {
         yield return 0;
 
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var stopwatch = Stopwatch.StartNew();
 
         // Skip udpating if no insights are visible
         if (InsightVisibilityBindings.Value.All(binding => !binding.Value.Value)) yield break;
@@ -97,6 +98,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
                 }
             }
         }
+
         stopwatch.Stop();
         Imperium.IO.LogInfo($" - SPENT IN INSIGHTS: {stopwatch.ElapsedMilliseconds}");
     }

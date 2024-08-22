@@ -1,3 +1,5 @@
+#region
+
 using System.Collections.Generic;
 using System.Linq;
 using DunGen;
@@ -6,6 +8,8 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+#endregion
 
 namespace Imperium.Core.LevelEditor;
 
@@ -728,7 +732,7 @@ internal record PreviewTile
 {
     internal Tile Tile { get; init; }
     internal GameObject PreviewPrefab { get; init; }
-    internal int CurrentDoorIndex { get; set; } = 0;
+    internal int CurrentDoorIndex { get; set; }
 }
 
 internal struct Blocker

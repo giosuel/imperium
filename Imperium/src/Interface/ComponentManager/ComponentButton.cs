@@ -1,11 +1,14 @@
+#region
+
 using System;
-using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#endregion
 
 namespace Imperium.Interface.ComponentManager;
 

@@ -135,10 +135,10 @@ internal static class RoundManagerPatch
     {
 // #if DEBUG
 //         __instance.mapSizeMultiplier = 0.1f;
-         foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
-         {
-             flow.rarity = flow.id == 4 ? 10 : 0;
-         }
+        foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
+        {
+            flow.rarity = flow.id == 4 ? 10 : 0;
+        }
 // #endif
     }
 

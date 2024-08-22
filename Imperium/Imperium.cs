@@ -11,7 +11,6 @@ using Imperium.Core.LevelEditor;
 using Imperium.Core.Lifecycle;
 using Imperium.Core.Scripts;
 using Imperium.Integration;
-using Imperium.Interface.ComponentManager;
 using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.MapUI;
 using Imperium.Interface.OracleUI;
@@ -85,7 +84,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
     internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
-    internal static ImpLevelEditor ImpLevelEditor { get; private set; }
+    internal static ImpLevelEditor ImpLevelEditor { get; }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }

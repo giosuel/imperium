@@ -9,7 +9,6 @@ using Imperium.API.Types.Networking;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = System.Random;
 
 #endregion
@@ -341,7 +340,7 @@ internal class Oracle : ImpLifecycleObject
 
             if (spawningEntity.requireNestObjectsToSpawn)
             {
-                var nests = Object.FindObjectsByType<EnemyAINestSpawnObject>(FindObjectsSortMode.None);
+                var nests = FindObjectsByType<EnemyAINestSpawnObject>(FindObjectsSortMode.None);
                 if (nests.All(t => t.enemyType != spawningEntity)) continue;
             }
 
@@ -388,7 +387,7 @@ internal class Oracle : ImpLifecycleObject
         var roundManager = Imperium.RoundManager;
         var spawning = new List<SpawnReport>();
 
-        var moldSpreadManager = Object.FindObjectOfType<MoldSpreadManager>();
+        var moldSpreadManager = FindObjectOfType<MoldSpreadManager>();
         var moldCount = moldSpreadManager ? moldSpreadManager.generatedMold.Count : 0;
         if (moldCount <= 30 || weedEntitySimulator.Next(0, 80) > moldCount) return spawning;
 

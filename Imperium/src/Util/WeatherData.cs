@@ -1,7 +1,11 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Integration;
+
+#endregion
 
 namespace Imperium.Util;
 

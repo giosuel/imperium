@@ -10,7 +10,6 @@ using Imperium.Util.Binding;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
-using Object = UnityEngine.Object;
 
 #endregion
 
@@ -49,7 +48,7 @@ internal class PlayerManager : ImpLifecycleObject
     private static readonly int GasEmitting = Animator.StringToHash("gasEmitting");
 
     protected override void Init()
-    { 
+    {
         dropItemMessage.OnClientRecive += OnDropitemClient;
         killPlayerMessage.OnClientRecive += OnKillPlayerClient;
         revivePlayerMessage.OnClientRecive += OnRevivePlayerClient;
@@ -132,7 +131,7 @@ internal class PlayerManager : ImpLifecycleObject
 
     internal static void UpdateCameras()
     {
-        foreach (var camera in Object.FindObjectsOfType<Camera>())
+        foreach (var camera in FindObjectsOfType<Camera>())
         {
             if (camera.gameObject.name == "MapCamera" || !camera.targetTexture) continue;
 

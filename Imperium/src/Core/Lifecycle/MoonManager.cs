@@ -157,7 +157,8 @@ internal class MoonManager : ImpLifecycleObject
     {
         changeWeatherMessage.DispatchToClients(request);
 
-        if(WeatherRegistryIntegration.IsEnabled){
+        if (WeatherRegistryIntegration.IsEnabled)
+        {
             WeatherRegistryIntegration.ChangeWeather(Imperium.StartOfRound.levels[request.LevelIndex], request.WeatherType);
         }
     }

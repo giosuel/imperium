@@ -60,9 +60,9 @@ internal class TeleportationWindow : ImperiumWindow
         // We need to set the teleport function as sync callback as the game might teleport the player to different
         // coordinates due to OOB restrictions. That way, the input field would be out of sync with the actual position,
         // so we have to re-set the coords without invoking another teleport that would lead to a stack overflow.
-        coordinateX = new ImpBinding<float>(0, onUpdateFromLocal: _ => TeleportToCoords());
-        coordinateY = new ImpBinding<float>(0, onUpdateFromLocal: _ => TeleportToCoords());
-        coordinateZ = new ImpBinding<float>(0, onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateX = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateY = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateZ = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
 
         ImpInput.Bind("Coords/CoordsX", content, coordinateX, theme, max: 10000f, min: -10000f);
         ImpInput.Bind("Coords/CoordsY", content, coordinateY, theme, max: 999f, min: -999f);

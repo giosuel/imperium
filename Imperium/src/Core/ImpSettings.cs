@@ -3,7 +3,6 @@
 using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
-using DunGen;
 using Imperium.Core.Lifecycle;
 using Imperium.Patches.Objects;
 using Imperium.Types;

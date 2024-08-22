@@ -1,6 +1,10 @@
+#region
+
 using DunGen;
 using Imperium.Util;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Core.LevelEditor;
 

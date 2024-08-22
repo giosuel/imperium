@@ -4,7 +4,6 @@ using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Unity.Netcode;
-using UnityEngine;
 
 #endregion
 
@@ -48,7 +47,7 @@ internal class GameManager : ImpLifecycleObject
         Imperium.TimeOfDay.daysUntilDeadline,
         onUpdateClient: value =>
         {
-            var startMatchLever = Object.FindObjectOfType<StartMatchLever>();
+            var startMatchLever = FindObjectOfType<StartMatchLever>();
             startMatchLever.hasDisplayedTimeWarning = false;
             startMatchLever.triggerScript.timeToHold = 0.7f;
 

@@ -10,7 +10,7 @@
 - Added integration for [WeatherRegistry](https://thunderstore.io/c/lethal-company/p/mrov/WeatherRegistry/).
 - Changed some theme settings to make colors more consistent across UIs.
 - Fixed a bug where respawning entities would not work.
-- Various performance tweaks to the object explorer functions.
+- Various performance tweaks to the object explorer window.
 - Fixed some performance issues with Oracle.
 
 ## Imperium v0.2.3 [Beta] - Bug Fixes

@@ -52,5 +52,7 @@ internal class ImpInteractable : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public void OnPointerDown(PointerEventData eventData) => onDown?.Invoke();
     public void OnPointerUp(PointerEventData eventData) => onUp?.Invoke();
     public void OnPointerMove(PointerEventData eventData) => onOver?.Invoke(eventData.position);
-    public void OnDrag(PointerEventData eventData) => onDrag?.Invoke(eventData.position, eventData.pressPosition, eventData.delta);
+
+    public void OnDrag(PointerEventData eventData) =>
+        onDrag?.Invoke(eventData.position, eventData.pressPosition, eventData.delta);
 }

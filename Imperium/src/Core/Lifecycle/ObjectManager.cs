@@ -1,9 +1,8 @@
 #region
 
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using DunGen;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
@@ -16,7 +15,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 #endregion
@@ -421,7 +419,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     private static EnemyType CreateShiggyType(EnemyType type)
     {
-        var shiggyType = Object.Instantiate(type);
+        var shiggyType = Instantiate(type);
         shiggyType.enemyName = "Shiggy";
 
         return shiggyType;
@@ -459,7 +457,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal void RefreshLevelEntities()
     {
         HashSet<EnemyAI> currentLevelEntities = [];
-        foreach (var obj in Object.FindObjectsOfType<EnemyAI>())
+        foreach (var obj in FindObjectsOfType<EnemyAI>())
         {
             // Ignore objects that are hidden
             if (obj.gameObject.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
@@ -477,8 +475,8 @@ internal class ObjectManager : ImpLifecycleObject
 
     internal void RefreshLevelObjects()
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var stopwatch2 = System.Diagnostics.Stopwatch.StartNew();
+        var stopwatch = Stopwatch.StartNew();
+        var stopwatch2 = Stopwatch.StartNew();
         HashSet<DoorLock> currentLevelDoors = [];
         HashSet<Turret> currentLevelTurrets = [];
         HashSet<EnemyVent> currentLevelVents = [];
@@ -681,7 +679,7 @@ internal class ObjectManager : ImpLifecycleObject
             var entityObj = request.Name switch
             {
                 "Shiggy" => InstantiateShiggy(spawningEntity, actualSpawnPosition),
-                _ => Object.Instantiate(
+                _ => Instantiate(
                     enemyPrefab,
                     actualSpawnPosition,
                     Quaternion.identity
@@ -721,15 +719,15 @@ internal class ObjectManager : ImpLifecycleObject
 
     private static GameObject InstantiateShiggy(EnemyType enemyType, Vector3 spawnPosition)
     {
-        var shiggyPrefab = Object.Instantiate(enemyType.enemyPrefab, spawnPosition, Quaternion.identity);
+        var shiggyPrefab = Instantiate(enemyType.enemyPrefab, spawnPosition, Quaternion.identity);
         shiggyPrefab.name = "ShiggyEntity";
-        Object.Destroy(shiggyPrefab.GetComponent<TestEnemy>());
-        Object.Destroy(shiggyPrefab.GetComponent<HDAdditionalLightData>());
-        Object.Destroy(shiggyPrefab.GetComponent<Light>());
-        Object.Destroy(shiggyPrefab.GetComponent<AudioSource>());
+        Destroy(shiggyPrefab.GetComponent<TestEnemy>());
+        Destroy(shiggyPrefab.GetComponent<HDAdditionalLightData>());
+        Destroy(shiggyPrefab.GetComponent<Light>());
+        Destroy(shiggyPrefab.GetComponent<AudioSource>());
         foreach (var componentsInChild in shiggyPrefab.GetComponentsInChildren<BoxCollider>())
         {
-            Object.Destroy(componentsInChild);
+            Destroy(componentsInChild);
         }
 
         var shiggyAI = shiggyPrefab.AddComponent<ShiggyAI>();
@@ -767,7 +765,7 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
-        Object.Destroy(obj);
+        Destroy(obj);
     }
 
     [ImpAttributes.LocalMethod]
@@ -798,7 +796,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var itemObj = Object.Instantiate(
+            var itemObj = Instantiate(
                 itemPrefab,
                 request.SpawnPosition,
                 Quaternion.identity,
@@ -925,7 +923,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            Object.Instantiate(
+            Instantiate(
                 outsideObject.prefabToSpawn, request.SpawnPosition, Quaternion.Euler(outsideObject.rotationOffset)
             );
         }
@@ -966,7 +964,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            Object.Instantiate(staticPrefab, request.SpawnPosition, rotationOffset);
+            Instantiate(staticPrefab, request.SpawnPosition, rotationOffset);
         }
 
         if (request.SendNotification)
@@ -999,7 +997,7 @@ internal class ObjectManager : ImpLifecycleObject
             ? groundInfo.point
             : clientId.GetPlayerController()!.transform.position;
 
-        var cruiserObj = Object.Instantiate(
+        var cruiserObj = Instantiate(
             LoadedStaticPrefabs.Value["CompanyCruiser"],
             actualSpawnPosition + Vector3.up * 2.5f,
             Quaternion.identity,
@@ -1010,7 +1008,7 @@ internal class ObjectManager : ImpLifecycleObject
         vehicleNetObject.Spawn();
         CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = cruiserObj;
 
-        var cruiserManualObj = Object.Instantiate(
+        var cruiserManualObj = Instantiate(
             LoadedStaticPrefabs.Value["CompanyCruiserManual"],
             actualSpawnPosition + Vector3.up * 2.5f,
             Quaternion.identity,
@@ -1043,7 +1041,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var staticObj = Object.Instantiate(staticPrefab, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
+            var staticObj = Instantiate(staticPrefab, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
 
             var netObject = staticObj.gameObject.GetComponent<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
@@ -1069,7 +1067,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnLandmine(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(
+        var hazardObj = Instantiate(
             LoadedMapHazards.Value["Landmine"], position, Quaternion.Euler(Vector3.zero)
         );
         hazardObj.transform.Find("Landmine").rotation = Quaternion.Euler(270, 0, 0);
@@ -1083,7 +1081,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnTurret(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(LoadedMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
+        var hazardObj = Instantiate(LoadedMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
@@ -1094,7 +1092,7 @@ internal class ObjectManager : ImpLifecycleObject
     private void SpawnSteamValve(Vector3 position)
     {
         var hazardObj =
-            Object.Instantiate(LoadedMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
+            Instantiate(LoadedMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
@@ -1104,7 +1102,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnSpikeTrap(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(
+        var hazardObj = Instantiate(
             LoadedMapHazards.Value["Spike Trap"],
             position,
             Quaternion.Euler(Vector3.zero)

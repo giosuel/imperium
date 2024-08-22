@@ -3,7 +3,6 @@
 using Imperium.Netcode;
 using Imperium.Patches.Systems;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using Unity.Netcode;
 
 #endregion

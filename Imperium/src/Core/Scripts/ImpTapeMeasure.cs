@@ -268,7 +268,6 @@ public class ImpTapeMeasure : MonoBehaviour
                     endPosition ?? currentLookPosition
                 );
             }
-
         }
         else
         {

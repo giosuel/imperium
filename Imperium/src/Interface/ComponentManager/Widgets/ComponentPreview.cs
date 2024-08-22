@@ -1,11 +1,11 @@
+#region
+
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text;
 using DunGen;
 using Imperium.Core.LevelEditor;
 using Imperium.Interface.Common;
 using Imperium.Util;
-using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,6 +13,8 @@ using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
 using Formatting = Imperium.Util.Formatting;
 using Tile = Imperium.Core.LevelEditor.Tile;
+
+#endregion
 
 namespace Imperium.Interface.ComponentManager.Widgets;
 
@@ -25,8 +27,8 @@ public class ComponentPreview : MonoBehaviour
     private RawImage cameraCanvas;
 
     private TMP_Text descriptionText;
-    
-    private static readonly Vector3 previewOrigin = new (-1000, -500, -1000);
+
+    private static readonly Vector3 previewOrigin = new(-1000, -500, -1000);
 
     private GameObject currentPreviewObject;
     private readonly Dictionary<string, GameObject> previewCache = [];

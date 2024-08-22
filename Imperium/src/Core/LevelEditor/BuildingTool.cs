@@ -1,8 +1,12 @@
+#region
+
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Util;
 using TMPro;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Core.LevelEditor;
 

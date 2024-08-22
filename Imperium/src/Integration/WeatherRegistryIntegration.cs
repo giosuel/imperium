@@ -1,13 +1,10 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
-using HarmonyLib;
-using Imperium.Util;
+using WeatherRegistry;
 
 #endregion
 
@@ -23,8 +20,7 @@ public static class WeatherRegistryIntegration
         if (!IsEnabled)
             return null;
 
-        return WeatherRegistry
-            .WeatherManager.Weathers.Select(weather => weather.VanillaWeatherType)
+        return WeatherManager.Weathers.Select(weather => weather.VanillaWeatherType)
             .ToList();
     }
 
@@ -34,6 +30,6 @@ public static class WeatherRegistryIntegration
         if (!IsEnabled)
             return;
 
-        WeatherRegistry.WeatherController.ChangeWeather(level, weather);
+        WeatherController.ChangeWeather(level, weather);
     }
 }
