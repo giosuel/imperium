@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types.Networking;
+using Imperium.Util;
 using Imperium.Types;
 using TMPro;
 using UnityEngine;
@@ -36,16 +37,15 @@ public class WeatherForecaster : ImpWidget
         }
 
         var levels = Imperium.StartOfRound.levels;
-        var options = Enum.GetValues(typeof(LevelWeatherType)).Cast<LevelWeatherType>()
-            .OrderBy(enumValue => enumValue)
-            .Select(enumValue => Enum.GetName(typeof(LevelWeatherType), enumValue))
+        var options = WeatherData.Weathers
+            .Select(enumValue => enumValue.ToString())
             .Select(weather => new TMP_Dropdown.OptionData(weather))
             .ToList();
 
         foreach (var (levelIndex, dropdown) in dropdowns)
         {
             dropdown.options = options;
-            dropdown.value = (int)levels[levelIndex].currentWeather;
+            dropdown.value = (int)(levels[levelIndex].currentWeather + 1);
 
             dropdown.onValueChanged.AddListener(_ =>
             {

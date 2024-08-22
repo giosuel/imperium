@@ -2,6 +2,7 @@
 
 using System.Linq;
 using Imperium.API.Types.Networking;
+using Imperium.Integration;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -156,6 +157,10 @@ internal class MoonManager : ImpLifecycleObject
     private void OnWeatherChangeServer(ChangeWeatherRequest request, ulong clientId)
     {
         changeWeatherMessage.DispatchToClients(request);
+
+        if(WeatherRegistryIntegration.IsEnabled){
+            WeatherRegistryIntegration.ChangeWeather(Imperium.StartOfRound.levels[request.LevelIndex], request.WeatherType);
+        }
     }
 
     [ImpAttributes.LocalMethod]
