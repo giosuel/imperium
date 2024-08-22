@@ -143,7 +143,9 @@ public class ImpFreecam : MonoBehaviour
 
         Imperium.InputBindings.FreecamMap.Disable();
         FreecamCamera.enabled = false;
-        Imperium.StartOfRound.SwitchCamera(gameplayCamera);
+        Imperium.StartOfRound.SwitchCamera(
+            Imperium.Player.isPlayerDead ? Imperium.StartOfRound.spectateCamera : gameplayCamera
+        );
         Imperium.Player.isFreeCamera = false;
         enabled = false;
     }
