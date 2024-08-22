@@ -73,7 +73,7 @@ internal class MapUI : BaseUI
             new StyleOverride("LayerSelector", Variant.BACKGROUND),
             new StyleOverride("LayerSelector/Border", Variant.DARKER),
             new StyleOverride("LayerSelector/ScrollView/Scrollbar", Variant.DARKEST),
-            new StyleOverride("LayerSelector/ScrollView/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND),
+            new StyleOverride("LayerSelector/ScrollView/Scrollbar/SlidingArea/Handle", Variant.LIGHTER),
             new StyleOverride("MapBorder", Variant.DARKER),
             new StyleOverride("MapSettings", Variant.BACKGROUND),
             new StyleOverride("MapSettings/Border", Variant.DARKER),

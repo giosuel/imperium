@@ -1,14 +1,12 @@
 #region
 
 using Imperium.Netcode;
-using Imperium.Util.Binding;
 
 #endregion
 
 namespace Imperium.Core.Lifecycle;
 
-internal class CruiserManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-    : ImpLifecycleObject(sceneLoaded, playersConnected)
+internal class CruiserManager : ImpLifecycleObject
 {
     internal readonly ImpNetworkBinding<bool> Indestructible = new(
         "CruiserIndestructible",

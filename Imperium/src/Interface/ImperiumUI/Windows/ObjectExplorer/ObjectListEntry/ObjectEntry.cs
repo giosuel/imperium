@@ -43,14 +43,11 @@ internal class ObjectEntry : MonoBehaviour
 
     private RectTransform rect;
 
-    internal Action forceDelayedUpdate { get; private set; }
-
     private readonly ImpTimer intervalUpdateTimer = ImpTimer.ForInterval(0.2f);
 
-    internal void InitItem(ImpBinding<ImpTheme> theme, Action forceDelayedUpdateCallback)
+    internal void InitItem(ImpBinding<ImpTheme> theme)
     {
         rect = gameObject.GetComponent<RectTransform>();
-        forceDelayedUpdate = forceDelayedUpdateCallback;
 
         IsObjectActive = new ImpBinding<bool>(true);
         Imperium.ObjectManager.DisabledObjects.onUpdate += disabledObjects =>
@@ -115,8 +112,6 @@ internal class ObjectEntry : MonoBehaviour
 
         // Revive button (Unthemed, as it is blue in every theme)
         reviveButton = ImpButton.Bind("Revive", transform, () => ObjectEntryGenerator.ReviveObject(this));
-
-        forceDelayedUpdate += ClearItem;
     }
 
     private void ToggleDisabledObject()

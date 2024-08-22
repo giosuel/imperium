@@ -64,7 +64,7 @@ public class TilePicker : BaseUI
             content,
             new StyleOverride("List", Variant.DARKER),
             new StyleOverride("List/ScrollView/Scrollbar", Variant.DARKEST),
-            new StyleOverride("List/ScrollView/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND)
+            new StyleOverride("List/ScrollView/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
         ImpThemeManager.Style(

@@ -14,8 +14,7 @@ internal class GameManager : ImpLifecycleObject
 {
     internal readonly ImpNetEvent FulfillQuotaEvent = new("FulfillQuota", Imperium.Networking);
 
-    internal GameManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-        : base(sceneLoaded, playersConnected)
+    protected override void Init()
     {
         if (NetworkManager.Singleton.IsHost) FulfillQuotaEvent.OnServerReceive += FulfillQuota;
     }

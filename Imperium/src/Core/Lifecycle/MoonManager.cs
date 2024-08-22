@@ -15,15 +15,14 @@ namespace Imperium.Core.Lifecycle;
 
 internal class MoonManager : ImpLifecycleObject
 {
-    internal readonly ImpEvent WeatherEvent = new();
+    private readonly ImpEvent WeatherEvent = new();
 
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
     public int ScrapAmount;
     public int ChallengeScrapAmount;
 
-    internal MoonManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-        : base(sceneLoaded, playersConnected)
+    protected override void Init()
     {
         changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
         changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;

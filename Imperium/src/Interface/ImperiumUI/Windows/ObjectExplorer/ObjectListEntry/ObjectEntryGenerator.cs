@@ -67,12 +67,16 @@ internal static class ObjectEntryGenerator
         _ => true
     };
 
-    internal static void DespawnObject(ObjectEntry entry)
+    internal static void DespawnObject(ObjectEntry entry, bool isRespawn = false)
     {
         switch (entry.Type)
         {
             case ObjectType.Entity:
-                Imperium.ObjectManager.DespawnEntity(entry.objectNetId!.Value);
+                Imperium.ObjectManager.DespawnEntity(new EntityDespawnRequest
+                {
+                    NetId = entry.objectNetId!.Value,
+                    IsRespawn = isRespawn
+                });
                 break;
             case ObjectType.Item:
                 Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
@@ -110,8 +114,6 @@ internal static class ObjectEntryGenerator
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        entry.forceDelayedUpdate.Invoke();
     }
 
     internal static void RespawnObject(ObjectEntry entry)
@@ -158,11 +160,11 @@ internal static class ObjectEntryGenerator
                 });
                 break;
             case ObjectType.Entity:
-                DespawnObject(entry);
-                var entity = (EnemyAI)entry.component;
+                var entityType = ((EnemyAI)entry.component).enemyType;
+                DespawnObject(entry, isRespawn: true);
                 Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
                 {
-                    Name = entity.enemyType.enemyName,
+                    Name = entityType.enemyName,
                     SpawnPosition = entry.containerObject.transform.position
                 });
                 break;
@@ -233,8 +235,6 @@ internal static class ObjectEntryGenerator
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        entry.forceDelayedUpdate.Invoke();
     }
 
     internal static void ReviveObject(ObjectEntry entry)
@@ -260,8 +260,6 @@ internal static class ObjectEntryGenerator
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        entry.forceDelayedUpdate.Invoke();
     }
 
     internal static void ToggleObject(ObjectEntry entry, bool isActive)
@@ -469,6 +467,7 @@ internal static class ObjectEntryGenerator
     {
         ObjectType.Landmine => entry.component.transform.parent.gameObject,
         ObjectType.Turret => entry.component.transform.parent.gameObject,
+        ObjectType.SpikeTrap => entry.component.transform.parent.parent.parent.gameObject,
         _ => entry.component.gameObject
     };
 

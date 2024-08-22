@@ -13,11 +13,11 @@ using Visualization = Imperium.Core.Visualization;
 namespace Imperium.Visualizers;
 
 internal class ScrapSpawnIndicators(
-    ImpBinding<HashSet<RandomScrapSpawn>> objectsBinding,
+    ImpBinding<IReadOnlyCollection<RandomScrapSpawn>> objectsBinding,
     ImpBinding<bool> visibilityBinding
-) : BaseVisualizer<HashSet<RandomScrapSpawn>, Transform>(objectsBinding, visibilityBinding)
+) : BaseVisualizer<IReadOnlyCollection<RandomScrapSpawn>, Transform>(objectsBinding, visibilityBinding)
 {
-    protected override void OnRefresh(HashSet<RandomScrapSpawn> objects)
+    protected override void OnRefresh(IReadOnlyCollection<RandomScrapSpawn> objects)
     {
         ClearObjects();
 

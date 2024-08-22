@@ -85,7 +85,7 @@ internal class EventLogWindow : ImperiumWindow
             new StyleOverride("Content/Background", Variant.BACKGROUND_DARKER),
             new StyleOverride("Content/Viewport/Content/Template/Hover", Variant.FADED),
             new StyleOverride("Content/Scrollbar", Variant.DARKEST),
-            new StyleOverride("Content/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND)
+            new StyleOverride("Content/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
         foreach (var entry in entryInstances)

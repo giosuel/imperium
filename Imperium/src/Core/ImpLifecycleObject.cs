@@ -1,19 +1,34 @@
 #region
 
 using Imperium.Util.Binding;
+using UnityEngine;
 
 #endregion
 
 namespace Imperium.Core;
 
-public abstract class ImpLifecycleObject
+public abstract class ImpLifecycleObject : MonoBehaviour
 {
-    internal ImpLifecycleObject(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
+    internal static T Create<T>(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) where T : ImpLifecycleObject
+    {
+        var lifecycleObj = new GameObject(typeof(T).Name).AddComponent<T>();
+        lifecycleObj.Init(sceneLoaded, playersConnected);
+
+        return lifecycleObj;
+    }
+
+    private void Init(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
     {
         sceneLoaded.onTrue += OnSceneLoad;
         sceneLoaded.onFalse += OnSceneUnload;
 
         playersConnected.onUpdate += OnPlayersUpdate;
+
+        Init();
+    }
+
+    protected virtual void Init()
+    {
     }
 
     /// <summary>

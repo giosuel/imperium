@@ -103,7 +103,7 @@ public abstract class ImpMultiSelect
             container,
             new StyleOverride("", Variant.FOREGROUND),
             new StyleOverride("Content/Scrollbar", Variant.DARKEST),
-            new StyleOverride("Content/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND)
+            new StyleOverride("Content/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
     }
 }

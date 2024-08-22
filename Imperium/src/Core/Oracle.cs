@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types;
@@ -15,7 +16,7 @@ using Random = System.Random;
 
 namespace Imperium.Core;
 
-internal class Oracle
+internal class Oracle : ImpLifecycleObject
 {
     internal readonly ImpBinding<OracleState> State = new(new OracleState());
 
@@ -24,12 +25,14 @@ internal class Oracle
 
     internal void Simulate(bool initial, string reason)
     {
-        ImpUtils.RunSafe(() => SimulateUnsafe(initial, reason), "Oracle simulation failed");
+        ImpUtils.RunSafe(() => StartCoroutine(simulateUnsafe(initial, reason)), "Oracle simulation failed");
     }
 
-    private void SimulateUnsafe(bool initial, string reason)
+    private IEnumerator simulateUnsafe(bool initial, string reason)
     {
-        if (!Imperium.IsSceneLoaded.Value) return;
+        if (!Imperium.IsSceneLoaded.Value) yield break;
+
+        yield return 0;
 
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
@@ -152,6 +155,8 @@ internal class Oracle
                 type: NotificationType.OracleUpdate
             );
         }
+
+        yield return 0;
 
         State.Refresh();
     }

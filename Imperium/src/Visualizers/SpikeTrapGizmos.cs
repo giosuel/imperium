@@ -25,7 +25,7 @@ internal class SpikeTrapGizmos(
             if (!visualizerObjects.ContainsKey(spikeTrap.GetInstanceID()))
             {
                 var indicatorObject = new GameObject($"Imp_SpikeTrapGizmo_{spikeTrap.GetInstanceID()}");
-                indicatorObject.transform.SetParent(spikeTrap.transform);
+                indicatorObject.transform.SetParent(spikeTrap.transform.parent);
 
                 var indicator = indicatorObject.AddComponent<SpikeTrapGizmo>();
                 indicator.Init(spikeTrap);

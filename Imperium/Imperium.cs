@@ -188,15 +188,15 @@ public class Imperium : BaseUnityPlugin
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 
-        Oracle = new Oracle();
         EventLog = new ImpEventLog();
 
-        GameManager = new GameManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        MoonManager = new MoonManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        ShipManager = new ShipManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        CruiserManager = new CruiserManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        Oracle = ImpLifecycleObject.Create<Oracle>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        GameManager = ImpLifecycleObject.Create<GameManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        MoonManager = ImpLifecycleObject.Create<MoonManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        ShipManager = ImpLifecycleObject.Create<ShipManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        CruiserManager = ImpLifecycleObject.Create<CruiserManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        ObjectManager = ImpLifecycleObject.Create<ObjectManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        PlayerManager = ImpLifecycleObject.Create<PlayerManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
 
         Map = ImpMap.Create();
@@ -330,7 +330,7 @@ public class Imperium : BaseUnityPlugin
             IsSceneLoaded
         );
         Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
-        Interface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
+        // Interface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
 
         Interface.RefreshTheme();
 

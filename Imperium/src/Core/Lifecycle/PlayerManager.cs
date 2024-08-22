@@ -48,13 +48,8 @@ internal class PlayerManager : ImpLifecycleObject
 
     private static readonly int GasEmitting = Animator.StringToHash("gasEmitting");
 
-    public PlayerManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-        : base(sceneLoaded, playersConnected)
-    {
-        sceneLoaded.onTrigger += ShipTPAnchor.Refresh;
-        sceneLoaded.onTrigger += MainEntranceTPAnchor.Refresh;
-        sceneLoaded.onTrigger += ApparatusTPAnchor.Refresh;
-
+    protected override void Init()
+    { 
         dropItemMessage.OnClientRecive += OnDropitemClient;
         killPlayerMessage.OnClientRecive += OnKillPlayerClient;
         revivePlayerMessage.OnClientRecive += OnRevivePlayerClient;
@@ -67,6 +62,13 @@ internal class PlayerManager : ImpLifecycleObject
             revivePlayerMessage.OnServerReceive += OnRevivePlayerServer;
             teleportPlayerMessage.OnServerReceive += OnTeleportPlayerServer;
         }
+    }
+
+    protected override void OnSceneLoad()
+    {
+        ShipTPAnchor.Refresh();
+        MainEntranceTPAnchor.Refresh();
+        ApparatusTPAnchor.Refresh();
     }
 
     [ImpAttributes.RemoteMethod]

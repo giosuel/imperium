@@ -23,6 +23,12 @@ public readonly struct EntitySpawnRequest()
     [SerializeField] public string MaskedName { get; init; } = null;
 }
 
+public readonly struct EntityDespawnRequest
+{
+    [SerializeField] public ulong NetId { get; init; }
+    [SerializeField] public bool IsRespawn { get; init; }
+}
+
 public readonly struct ItemSpawnRequest()
 {
     [SerializeField] public string Name { get; init; }

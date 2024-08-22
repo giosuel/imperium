@@ -65,7 +65,7 @@ public class WeatherForecaster : ImpWidget
             transform,
             new StyleOverride("", Variant.DARKER),
             new StyleOverride("ScrollView/Scrollbar", Variant.DARKEST),
-            new StyleOverride("ScrollView/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND)
+            new StyleOverride("ScrollView/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
         // Update template and real entries
@@ -76,6 +76,7 @@ public class WeatherForecaster : ImpWidget
             new StyleOverride("Arrow", Variant.FOREGROUND),
             new StyleOverride("Template", Variant.DARKER),
             new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
+            new StyleOverride("Template/Scrollbar", Variant.DARKEST),
             new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
@@ -88,6 +89,7 @@ public class WeatherForecaster : ImpWidget
                 new StyleOverride("Arrow", Variant.FOREGROUND),
                 new StyleOverride("Template", Variant.DARKER),
                 new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
+                new StyleOverride("Template/Scrollbar", Variant.DARKEST),
                 new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
             );
         }
