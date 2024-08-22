@@ -399,6 +399,7 @@ public class ImpSettings(ConfigFile config)
             "TileBorders",
             false,
             value => Imperium.Visualization.Collider(value, "Ignore Raycast", IdentifierType.LAYER)
+            // value => Imperium.Visualization.Objects<Tile>(value, Imperium.Visualization.VisualizeTileBounds)
         );
 
         internal readonly ImpConfig<bool> Room = new(
@@ -539,6 +540,20 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.Visualization.Point(
                 value,
                 "OutsideAINode",
+                IdentifierType.TAG,
+                size: 0.8f,
+                material: ImpAssets.FresnelWhite
+            )
+        );
+
+        internal readonly ImpConfig<bool> AINodesCave = new(
+            config,
+            "Visualization.Overlays",
+            "CaveNode",
+            false,
+            value => Imperium.Visualization.Point(
+                value,
+                "CaveNode",
                 IdentifierType.TAG,
                 size: 0.8f,
                 material: ImpAssets.FresnelWhite

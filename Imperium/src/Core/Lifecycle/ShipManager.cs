@@ -3,7 +3,6 @@
 using Imperium.Netcode;
 using Imperium.Patches.Systems;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using Unity.Netcode;
 
 #endregion
@@ -14,7 +13,7 @@ internal class ShipManager : ImpLifecycleObject
 {
     private readonly ImpNetMessage<int> navigateShipMessage = new("NavigateShip", Imperium.Networking);
 
-    internal ShipManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected) : base(sceneLoaded, playersConnected)
+    protected override void Init()
     {
         if (NetworkManager.Singleton.IsHost) navigateShipMessage.OnServerReceive += OnNavigateToServer;
         navigateShipMessage.OnClientRecive += OnNavigateToClient;

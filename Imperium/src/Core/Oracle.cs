@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types;
@@ -8,14 +9,13 @@ using Imperium.API.Types.Networking;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = System.Random;
 
 #endregion
 
 namespace Imperium.Core;
 
-internal class Oracle
+internal class Oracle : ImpLifecycleObject
 {
     internal readonly ImpBinding<OracleState> State = new(new OracleState());
 
@@ -24,12 +24,14 @@ internal class Oracle
 
     internal void Simulate(bool initial, string reason)
     {
-        ImpUtils.RunSafe(() => SimulateUnsafe(initial, reason), "Oracle simulation failed");
+        ImpUtils.RunSafe(() => StartCoroutine(simulateUnsafe(initial, reason)), "Oracle simulation failed");
     }
 
-    private void SimulateUnsafe(bool initial, string reason)
+    private IEnumerator simulateUnsafe(bool initial, string reason)
     {
-        if (!Imperium.IsSceneLoaded.Value) return;
+        if (!Imperium.IsSceneLoaded.Value) yield break;
+
+        yield return 0;
 
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
@@ -152,6 +154,8 @@ internal class Oracle
                 type: NotificationType.OracleUpdate
             );
         }
+
+        yield return 0;
 
         State.Refresh();
     }
@@ -336,7 +340,7 @@ internal class Oracle
 
             if (spawningEntity.requireNestObjectsToSpawn)
             {
-                var nests = Object.FindObjectsByType<EnemyAINestSpawnObject>(FindObjectsSortMode.None);
+                var nests = FindObjectsByType<EnemyAINestSpawnObject>(FindObjectsSortMode.None);
                 if (nests.All(t => t.enemyType != spawningEntity)) continue;
             }
 
@@ -383,7 +387,7 @@ internal class Oracle
         var roundManager = Imperium.RoundManager;
         var spawning = new List<SpawnReport>();
 
-        var moldSpreadManager = Object.FindObjectOfType<MoldSpreadManager>();
+        var moldSpreadManager = FindObjectOfType<MoldSpreadManager>();
         var moldCount = moldSpreadManager ? moldSpreadManager.generatedMold.Count : 0;
         if (moldCount <= 30 || weedEntitySimulator.Next(0, 80) > moldCount) return spawning;
 

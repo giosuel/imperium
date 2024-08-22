@@ -168,6 +168,12 @@ internal class Visualizers : ImpWidget
             theme
         );
         ImpToggle.Bind(
+            "Overlays/AINodesCave",
+            transform,
+            Imperium.Settings.Visualization.AINodesCave,
+            theme
+        );
+        ImpToggle.Bind(
             "Overlays/SpawnDenialPoints",
             transform,
             Imperium.Settings.Visualization.SpawnDenialPoints,

@@ -22,6 +22,7 @@ public class ImpInputBindings
         StaticMap.AddAction("Shift", binding: "<Keyboard>/shift");
         StaticMap.AddAction("RightClick", binding: "<Mouse>/rightButton");
         StaticMap.AddAction("Escape", binding: "<Keyboard>/escape");
+        StaticMap.AddAction("Scroll", binding: "<Mouse>/scroll");
         StaticMap.Enable();
 
         BaseMap.ToggleFlight.performed += OnToggleFlight;

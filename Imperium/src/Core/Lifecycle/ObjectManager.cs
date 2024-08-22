@@ -1,8 +1,8 @@
 #region
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using DunGen;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
@@ -15,7 +15,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 #endregion
@@ -84,7 +83,7 @@ internal class ObjectManager : ImpLifecycleObject
     /*
      * Misc scene objects.
      */
-    internal readonly ImpBinding<HashSet<RandomScrapSpawn>> CurrentScrapSpawnPoints = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<RandomScrapSpawn>> CurrentScrapSpawnPoints = new([]);
 
     /*
      * Cache of game objects indexed by name for visualizers and other object access.
@@ -138,7 +137,7 @@ internal class ObjectManager : ImpLifecycleObject
     );
 
     private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
-    private readonly ImpNetMessage<ulong> entityDespawnMessage = new("DespawnEntity", Imperium.Networking);
+    private readonly ImpNetMessage<EntityDespawnRequest> entityDespawnMessage = new("DespawnEntity", Imperium.Networking);
     private readonly ImpNetMessage<ulong> itemDespawnMessage = new("DespawnItem", Imperium.Networking);
     private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new("DespawnObstacle", Imperium.Networking);
 
@@ -164,8 +163,7 @@ internal class ObjectManager : ImpLifecycleObject
         "treeLeafless.003_LOD0(Clone)"
     ];
 
-    internal ObjectManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-        : base(sceneLoaded, playersConnected)
+    protected override void Init()
     {
         FetchGlobalSpawnLists();
         FetchPlayers();
@@ -267,7 +265,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal void DespawnItem(ulong itemNetId) => itemDespawnMessage.DispatchToServer(itemNetId);
 
     [ImpAttributes.RemoteMethod]
-    internal void DespawnEntity(ulong entityNetId) => entityDespawnMessage.DispatchToServer(entityNetId);
+    internal void DespawnEntity(EntityDespawnRequest request) => entityDespawnMessage.DispatchToServer(request);
 
     [ImpAttributes.RemoteMethod]
     internal void DespawnObstacle(ulong obstacleNetId) => obstacleDespawnMessage.DispatchToServer(obstacleNetId);
@@ -309,19 +307,19 @@ internal class ObjectManager : ImpLifecycleObject
         enemyVent.occupied = false;
     }
 
-    internal GameObject FindObject(string name)
+    internal GameObject FindObject(string objName)
     {
-        if (ObjectCache.TryGetValue(name, out var v)) return v;
+        if (ObjectCache.TryGetValue(objName, out var v)) return v;
         var obj = Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(
-            obj => obj.name == name && obj.scene != SceneManager.GetSceneByName("HideAndDontSave"));
+            obj => obj.name == objName && obj.scene != SceneManager.GetSceneByName("HideAndDontSave"));
         if (!obj) return null;
-        ObjectCache[name] = obj;
+        ObjectCache[objName] = obj;
         return obj;
     }
 
-    internal void ToggleObject(string name, bool isOn)
+    internal void ToggleObject(string objName, bool isOn)
     {
-        var obj = FindObject(name);
+        var obj = FindObject(objName);
         if (obj) obj.SetActive(isOn);
     }
 
@@ -354,15 +352,6 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        foreach (var tileSet in Resources.FindObjectsOfTypeAll<TileSet>())
-        {
-            Imperium.IO.LogInfo($"Tile Set {tileSet.name}");
-            foreach (var tileWeightsWeight in tileSet.TileWeights.Weights)
-            {
-                Imperium.IO.LogInfo($" - Tile: {tileWeightsWeight.Value}");
-            }
-        }
-
         // Instantiate shiggy type if not already exists and if redpill has been found
         if (redPillType && !shiggyExists) allEntities.Add(CreateShiggyType(redPillType));
 
@@ -375,6 +364,8 @@ internal class ObjectManager : ImpLifecycleObject
         var allStaticPrefabs = new Dictionary<string, GameObject>();
         var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
         var allOutsideObjects = Resources.FindObjectsOfTypeAll<SpawnableOutsideObject>()
+            .GroupBy(obj => obj.prefabToSpawn.name)
+            .Select(obj => obj.First())
             .ToDictionary(obj => obj.prefabToSpawn.name);
 
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
@@ -428,7 +419,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     private static EnemyType CreateShiggyType(EnemyType type)
     {
-        var shiggyType = Object.Instantiate(type);
+        var shiggyType = Instantiate(type);
         shiggyType.enemyName = "Shiggy";
 
         return shiggyType;
@@ -466,7 +457,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal void RefreshLevelEntities()
     {
         HashSet<EnemyAI> currentLevelEntities = [];
-        foreach (var obj in Object.FindObjectsOfType<EnemyAI>())
+        foreach (var obj in FindObjectsOfType<EnemyAI>())
         {
             // Ignore objects that are hidden
             if (obj.gameObject.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
@@ -479,8 +470,13 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelObjectsChanged.Trigger();
     }
 
+    private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
+    private readonly LayerMask vainShroudMask = LayerMask.NameToLayer("MoldSpore");
+
     internal void RefreshLevelObjects()
     {
+        var stopwatch = Stopwatch.StartNew();
+        var stopwatch2 = Stopwatch.StartNew();
         HashSet<DoorLock> currentLevelDoors = [];
         HashSet<Turret> currentLevelTurrets = [];
         HashSet<EnemyVent> currentLevelVents = [];
@@ -497,14 +493,14 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<VehicleController> currentLevelCompanyCruisers = [];
         HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
 
-        foreach (var obj in Object.FindObjectsOfType<GameObject>())
+        foreach (var obj in FindObjectsOfType<GameObject>())
         {
-            // Ignore objects that are hidden
-            if (obj.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
+            if (obj.layer == vainShroudMask && currentLevelVainShrouds.Add(obj)) continue;
 
-            if (obj.name.Contains("MoldSpore") && currentLevelVainShrouds.Add(obj)) continue;
-
-            if (OutsideObjectPrefabNameMap.Contains(obj.name) && currentLevelOutsideObjects.Add(obj))
+            if (obj.layer == terrainMask
+                && OutsideObjectPrefabNameMap.Contains(obj.name)
+                && currentLevelOutsideObjects.Add(obj)
+               )
             {
                 continue;
             }
@@ -513,50 +509,50 @@ internal class ObjectManager : ImpLifecycleObject
             {
                 switch (component)
                 {
-                    case DoorLock doorLock when !currentLevelDoors.Contains(doorLock):
+                    case DoorLock doorLock:
                         currentLevelDoors.Add(doorLock);
                         break;
                     case TerminalAccessibleObject securityDoor:
                         currentLevelSecurityDoors.Add(securityDoor);
                         break;
-                    case Turret turret when !currentLevelTurrets.Contains(turret):
+                    case Turret turret:
                         currentLevelTurrets.Add(turret);
                         break;
-                    case Landmine landmine when !currentLevelLandmines.Contains(landmine):
+                    case Landmine landmine:
                         currentLevelLandmines.Add(landmine);
                         break;
-                    case SpikeRoofTrap spikeTrap when !currentLevelSpikeTraps.Contains(spikeTrap):
+                    case SpikeRoofTrap spikeTrap:
                         currentLevelSpikeTraps.Add(spikeTrap);
                         break;
-                    case BreakerBox breakerBox when !currentLevelBreakerBoxes.Contains(breakerBox):
+                    case BreakerBox breakerBox:
                         currentLevelBreakerBoxes.Add(breakerBox);
                         break;
-                    case EnemyVent enemyVent when !currentLevelVents.Contains(enemyVent):
+                    case EnemyVent enemyVent:
                         currentLevelVents.Add(enemyVent);
                         break;
-                    case SteamValveHazard steamValve when !currentLevelSteamValves.Contains(steamValve):
+                    case SteamValveHazard steamValve:
                         currentLevelSteamValves.Add(steamValve);
                         break;
-                    case SandSpiderWebTrap spiderWeb when !currentLevelSpiderWebs.Contains(spiderWeb):
+                    case SandSpiderWebTrap spiderWeb:
                         currentLevelSpiderWebs.Add(spiderWeb);
                         break;
-                    case RandomScrapSpawn scrapSpawn when !currentScrapSpawnPoints.Contains(scrapSpawn):
+                    case RandomScrapSpawn scrapSpawn:
                         currentScrapSpawnPoints.Add(scrapSpawn);
                         break;
-                    case VehicleController vehicleController when !currentLevelCompanyCruisers.Contains(vehicleController):
+                    case VehicleController vehicleController:
                         currentLevelCompanyCruisers.Add(vehicleController);
                         break;
-                    case GrabbableObject item when !currentLevelItems.Contains(item):
+                    case GrabbableObject item:
                         currentLevelItems.Add(item);
                         break;
-                    case EnemyAI entity when !currentLevelEntities.Contains(entity):
+                    case EnemyAI entity:
                         currentLevelEntities.Add(entity);
+                        break;
+                    case NetworkObject netObj:
+                        CurrentLevelObjects[netObj.NetworkObjectId] = obj.gameObject;
                         break;
                 }
             }
-
-            var networkObject = obj.GetComponent<NetworkObject>() ?? obj.GetComponentInChildren<NetworkObject>();
-            if (networkObject) CurrentLevelObjects[networkObject.NetworkObjectId] = obj.gameObject;
         }
 
         CurrentLevelItems.Set(currentLevelItems);
@@ -575,7 +571,13 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelCruisers.Set(currentLevelCompanyCruisers);
         CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
 
+        stopwatch.Stop();
+        Imperium.IO.LogInfo($"REFRESH : {stopwatch.ElapsedMilliseconds}");
+
         CurrentLevelObjectsChanged.Trigger();
+
+        stopwatch2.Stop();
+        Imperium.IO.LogInfo($"TOTAL REFRESH : {stopwatch2.ElapsedMilliseconds}");
     }
 
     private void GenerateDisplayNameMaps()
@@ -677,7 +679,7 @@ internal class ObjectManager : ImpLifecycleObject
             var entityObj = request.Name switch
             {
                 "Shiggy" => InstantiateShiggy(spawningEntity, actualSpawnPosition),
-                _ => Object.Instantiate(
+                _ => Instantiate(
                     enemyPrefab,
                     actualSpawnPosition,
                     Quaternion.identity
@@ -717,15 +719,15 @@ internal class ObjectManager : ImpLifecycleObject
 
     private static GameObject InstantiateShiggy(EnemyType enemyType, Vector3 spawnPosition)
     {
-        var shiggyPrefab = Object.Instantiate(enemyType.enemyPrefab, spawnPosition, Quaternion.identity);
+        var shiggyPrefab = Instantiate(enemyType.enemyPrefab, spawnPosition, Quaternion.identity);
         shiggyPrefab.name = "ShiggyEntity";
-        Object.Destroy(shiggyPrefab.GetComponent<TestEnemy>());
-        Object.Destroy(shiggyPrefab.GetComponent<HDAdditionalLightData>());
-        Object.Destroy(shiggyPrefab.GetComponent<Light>());
-        Object.Destroy(shiggyPrefab.GetComponent<AudioSource>());
+        Destroy(shiggyPrefab.GetComponent<TestEnemy>());
+        Destroy(shiggyPrefab.GetComponent<HDAdditionalLightData>());
+        Destroy(shiggyPrefab.GetComponent<Light>());
+        Destroy(shiggyPrefab.GetComponent<AudioSource>());
         foreach (var componentsInChild in shiggyPrefab.GetComponentsInChildren<BoxCollider>())
         {
-            Object.Destroy(componentsInChild);
+            Destroy(componentsInChild);
         }
 
         var shiggyAI = shiggyPrefab.AddComponent<ShiggyAI>();
@@ -763,7 +765,7 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
-        Object.Destroy(obj);
+        Destroy(obj);
     }
 
     [ImpAttributes.LocalMethod]
@@ -794,7 +796,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var itemObj = Object.Instantiate(
+            var itemObj = Instantiate(
                 itemPrefab,
                 request.SpawnPosition,
                 Quaternion.identity,
@@ -921,7 +923,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            Object.Instantiate(
+            Instantiate(
                 outsideObject.prefabToSpawn, request.SpawnPosition, Quaternion.Euler(outsideObject.rotationOffset)
             );
         }
@@ -962,7 +964,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            Object.Instantiate(staticPrefab, request.SpawnPosition, rotationOffset);
+            Instantiate(staticPrefab, request.SpawnPosition, rotationOffset);
         }
 
         if (request.SendNotification)
@@ -995,7 +997,7 @@ internal class ObjectManager : ImpLifecycleObject
             ? groundInfo.point
             : clientId.GetPlayerController()!.transform.position;
 
-        var cruiserObj = Object.Instantiate(
+        var cruiserObj = Instantiate(
             LoadedStaticPrefabs.Value["CompanyCruiser"],
             actualSpawnPosition + Vector3.up * 2.5f,
             Quaternion.identity,
@@ -1006,7 +1008,7 @@ internal class ObjectManager : ImpLifecycleObject
         vehicleNetObject.Spawn();
         CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = cruiserObj;
 
-        var cruiserManualObj = Object.Instantiate(
+        var cruiserManualObj = Instantiate(
             LoadedStaticPrefabs.Value["CompanyCruiserManual"],
             actualSpawnPosition + Vector3.up * 2.5f,
             Quaternion.identity,
@@ -1039,7 +1041,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var staticObj = Object.Instantiate(staticPrefab, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
+            var staticObj = Instantiate(staticPrefab, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
 
             var netObject = staticObj.gameObject.GetComponent<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
@@ -1065,7 +1067,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnLandmine(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(
+        var hazardObj = Instantiate(
             LoadedMapHazards.Value["Landmine"], position, Quaternion.Euler(Vector3.zero)
         );
         hazardObj.transform.Find("Landmine").rotation = Quaternion.Euler(270, 0, 0);
@@ -1079,7 +1081,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnTurret(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(LoadedMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
+        var hazardObj = Instantiate(LoadedMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
@@ -1090,7 +1092,7 @@ internal class ObjectManager : ImpLifecycleObject
     private void SpawnSteamValve(Vector3 position)
     {
         var hazardObj =
-            Object.Instantiate(LoadedMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
+            Instantiate(LoadedMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
@@ -1100,7 +1102,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void SpawnSpikeTrap(Vector3 position)
     {
-        var hazardObj = Object.Instantiate(
+        var hazardObj = Instantiate(
             LoadedMapHazards.Value["Spike Trap"],
             position,
             Quaternion.Euler(Vector3.zero)
@@ -1193,15 +1195,15 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnDespawnEntity(ulong entityNetId, ulong clientId)
+    private void OnDespawnEntity(EntityDespawnRequest request, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(entityNetId, out var obj))
+        if (!CurrentLevelObjects.TryGetValue(request.NetId, out var obj))
         {
-            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn entity with net ID {entityNetId}");
+            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn entity with net ID {request.NetId}");
             return;
         }
 
-        DespawnObject(obj, clientId);
+        DespawnObject(obj, clientId, request.IsRespawn);
     }
 
     [ImpAttributes.HostOnly]
@@ -1238,11 +1240,11 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void DespawnObject(GameObject gameObject, ulong clientId)
+    private void DespawnObject(GameObject obj, ulong objectNetId, bool isRespawn = false)
     {
-        if (!gameObject) return;
+        if (!obj) return;
 
-        if (gameObject.TryGetComponent<GrabbableObject>(out var grabbableObject))
+        if (obj.TryGetComponent<GrabbableObject>(out var grabbableObject))
         {
             if (grabbableObject.isHeld && grabbableObject.playerHeldBy is not null)
             {
@@ -1253,22 +1255,23 @@ internal class ObjectManager : ImpLifecycleObject
                 });
             }
         }
-        else if (gameObject.TryGetComponent<SandSpiderAI>(out var sandSpider))
+        else if (obj.TryGetComponent<SandSpiderAI>(out var sandSpider))
         {
             for (var i = 0; i < sandSpider.webTraps.Count; i++)
             {
-                sandSpider.BreakWebServerRpc(i, (int)clientId);
+                sandSpider.BreakWebServerRpc(i, (int)objectNetId);
             }
         }
 
         try
         {
-            if (gameObject.TryGetComponent<NetworkObject>(out var networkObject)) networkObject.Despawn();
+            if (obj.TryGetComponent<NetworkObject>(out var networkObject)) networkObject.Despawn();
         }
         finally
         {
-            Object.Destroy(gameObject);
-            objectsChangedEvent.DispatchToClients();
+            Destroy(obj);
+
+            if (!isRespawn) objectsChangedEvent.DispatchToClients();
         }
     }
 

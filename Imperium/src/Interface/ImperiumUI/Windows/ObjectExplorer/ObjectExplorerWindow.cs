@@ -72,7 +72,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private List<ObjectCategory> categoryOrder;
     private Dictionary<ObjectCategory, CategoryDefinition> objectCategories;
 
-    private bool performRefreshNextFrame = true;
     private float previousScrollValue;
 
     protected override void InitWindow()
@@ -208,7 +207,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             var obj = Instantiate(entryTemplate, contentRect);
             obj.gameObject.SetActive(true);
             var entry = obj.AddComponent<ObjectEntry>();
-            entry.InitItem(theme, OnDestroyObject);
+            entry.InitItem(theme);
             entryInstances.Add(entry);
         }
 
@@ -217,14 +216,24 @@ internal class ObjectExplorerWindow : ImperiumWindow
         RefreshEntries();
     }
 
-    public void RefreshEntries(bool useCache)
+    internal void RefreshEntries()
+    {
+        if (!gameObject.activeInHierarchy) return;
+        StartCoroutine(refreshEntries(useCache: false));
+    }
+
+    private IEnumerator refreshEntries(bool useCache)
     {
         // Skip element calculation when the scroll value remains the same and cached values are used
         var currentScrollValue = scrollRect.verticalNormalizedPosition;
-        if (useCache && Mathf.Approximately(currentScrollValue, previousScrollValue)) return;
+        if (useCache && Mathf.Approximately(currentScrollValue, previousScrollValue)) yield break;
         previousScrollValue = currentScrollValue;
 
+        if (!useCache) yield return 0;
+
         var (objects, categoryCounts, incrementalCategoryCounts) = objectEntryEngine.Generate(useCache);
+
+        if (!useCache) yield return 0;
 
         // Calculate title positions based on the amount of entries in each category
         var titlePositions = new List<float>();
@@ -294,22 +303,5 @@ internal class ObjectExplorerWindow : ImperiumWindow
         vainsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0).ToString()})";
     }
 
-    private IEnumerator waitForRefresh()
-    {
-        yield return 0;
-        RefreshEntries();
-    }
-
-    private void Update()
-    {
-        if (performRefreshNextFrame)
-        {
-            StartCoroutine(waitForRefresh());
-            performRefreshNextFrame = false;
-        }
-    }
-
-    private void OnDestroyObject() => performRefreshNextFrame = true;
-    public void RefreshEntries() => RefreshEntries(false);
-    private void OnScroll(Vector2 _) => RefreshEntries(useCache: true);
+    private void OnScroll(Vector2 _) => StartCoroutine(refreshEntries(useCache: true));
 }

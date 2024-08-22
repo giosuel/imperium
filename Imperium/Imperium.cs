@@ -15,7 +15,6 @@ using Imperium.Interface.ImperiumUI;
 using Imperium.Interface.MapUI;
 using Imperium.Interface.OracleUI;
 using Imperium.Interface.SpawningUI;
-using Imperium.Interface.TilePicker;
 using Imperium.Netcode;
 using Imperium.Patches.Objects;
 using Imperium.Patches.Systems;
@@ -32,6 +31,7 @@ namespace Imperium;
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
@@ -39,7 +39,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "0.2.3";
+    public const string PLUGIN_VERSION = "0.2.4";
 
     private static ConfigFile configFile;
     private static Harmony Harmony;
@@ -84,7 +84,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
     internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
-    internal static ImpLevelEditor ImpLevelEditor { get; private set; }
+    internal static ImpLevelEditor ImpLevelEditor { get; }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
@@ -187,15 +187,15 @@ public class Imperium : BaseUnityPlugin
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 
-        Oracle = new Oracle();
         EventLog = new ImpEventLog();
 
-        GameManager = new GameManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        MoonManager = new MoonManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        ShipManager = new ShipManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        CruiserManager = new CruiserManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        ObjectManager = new ObjectManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        PlayerManager = new PlayerManager(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        Oracle = ImpLifecycleObject.Create<Oracle>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        GameManager = ImpLifecycleObject.Create<GameManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        MoonManager = ImpLifecycleObject.Create<MoonManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        ShipManager = ImpLifecycleObject.Create<ShipManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        CruiserManager = ImpLifecycleObject.Create<CruiserManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        ObjectManager = ImpLifecycleObject.Create<ObjectManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        PlayerManager = ImpLifecycleObject.Create<PlayerManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
 
         Map = ImpMap.Create();
@@ -236,9 +236,10 @@ public class Imperium : BaseUnityPlugin
             Settings.LoadAll();
 
             StartUI();
-
-            // This needs to be here as it depends on the UI
-            // ImpLevelEditor = ImpLevelEditor.Create();
+// #if DEBUG
+//             // This needs to be here as it depends on the UI
+//             ImpLevelEditor = ImpLevelEditor.Create();
+// #endif
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
@@ -328,7 +329,7 @@ public class Imperium : BaseUnityPlugin
             IsSceneLoaded
         );
         Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
-        Interface.RegisterInterface<TilePicker>(ImpAssets.TilePickerObject);
+        // Interface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
 
         Interface.RefreshTheme();
 

@@ -2,6 +2,7 @@
 
 using System.Linq;
 using Imperium.API.Types.Networking;
+using Imperium.Integration;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -14,15 +15,14 @@ namespace Imperium.Core.Lifecycle;
 
 internal class MoonManager : ImpLifecycleObject
 {
-    internal readonly ImpEvent WeatherEvent = new();
+    private readonly ImpEvent WeatherEvent = new();
 
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
     public int ScrapAmount;
     public int ChallengeScrapAmount;
 
-    internal MoonManager(ImpBinaryBinding sceneLoaded, IBinding<int> playersConnected)
-        : base(sceneLoaded, playersConnected)
+    protected override void Init()
     {
         changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
         changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
@@ -156,6 +156,11 @@ internal class MoonManager : ImpLifecycleObject
     private void OnWeatherChangeServer(ChangeWeatherRequest request, ulong clientId)
     {
         changeWeatherMessage.DispatchToClients(request);
+
+        if (WeatherRegistryIntegration.IsEnabled)
+        {
+            WeatherRegistryIntegration.ChangeWeather(Imperium.StartOfRound.levels[request.LevelIndex], request.WeatherType);
+        }
     }
 
     [ImpAttributes.LocalMethod]

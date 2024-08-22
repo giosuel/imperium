@@ -1,7 +1,9 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using BepInEx.Configuration;
@@ -46,11 +48,25 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
         RegisterDefaultInsights();
         Refresh();
 
+        foreach (var (_, binding) in InsightVisibilityBindings.Value) binding.onTrigger += Refresh;
+
         registeredInsights.onTrigger += Refresh;
     }
 
     internal void Refresh()
     {
+        Imperium.ObjectManager.StartCoroutine(refresh());
+    }
+
+    private IEnumerator refresh()
+    {
+        yield return 0;
+
+        var stopwatch = Stopwatch.StartNew();
+
+        // Skip udpating if no insights are visible
+        if (InsightVisibilityBindings.Value.All(binding => !binding.Value.Value)) yield break;
+
         foreach (var obj in Object.FindObjectsOfType<GameObject>())
         {
             // Make sure visualizers aren't being added to other visualization objects
@@ -82,6 +98,9 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
                 }
             }
         }
+
+        stopwatch.Stop();
+        Imperium.IO.LogInfo($" - SPENT IN INSIGHTS: {stopwatch.ElapsedMilliseconds}");
     }
 
     /// <summary>

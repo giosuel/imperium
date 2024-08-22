@@ -78,13 +78,25 @@ internal class LayerSelector : BaseUI
         if (fovSlider)
         {
             fovSlider.gameObject.SetActive(false);
-            ImpSlider.Bind("FovSlider", transform, Imperium.Settings.Freecam.FreecamFieldOfView, theme: theme);
+            ImpSlider.Bind(
+                "FovSlider",
+                transform,
+                Imperium.Settings.Freecam.FreecamFieldOfView,
+                theme: theme,
+                playClickSound: false
+            );
         }
 
         if (movementSpeedSlider)
         {
             movementSpeedSlider.gameObject.SetActive(false);
-            ImpSlider.Bind("MovementSpeedSlider", transform, Imperium.Settings.Freecam.FreecamMovementSpeed, theme: theme);
+            ImpSlider.Bind(
+                "MovementSpeedSlider",
+                transform,
+                Imperium.Settings.Freecam.FreecamMovementSpeed,
+                theme: theme,
+                playClickSound: false
+            );
         }
     }
 
@@ -96,6 +108,15 @@ internal class LayerSelector : BaseUI
             new StyleOverride("", Variant.BACKGROUND),
             new StyleOverride("Border", Variant.DARKER),
             new StyleOverride("TitleBox", Variant.DARKER)
+        );
+
+        ImpThemeManager.Style(
+            themeUpdate,
+            transform,
+            new StyleOverride("FovSlider", Variant.BACKGROUND),
+            new StyleOverride("FovSlider/Border", Variant.DARKER),
+            new StyleOverride("MovementSpeedSlider", Variant.BACKGROUND),
+            new StyleOverride("MovementSpeedSlider/Border", Variant.DARKER)
         );
 
         ImpThemeManager.StyleText(

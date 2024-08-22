@@ -1,10 +1,10 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types.Networking;
 using Imperium.Types;
+using Imperium.Util;
 using TMPro;
 using UnityEngine;
 
@@ -36,16 +36,15 @@ public class WeatherForecaster : ImpWidget
         }
 
         var levels = Imperium.StartOfRound.levels;
-        var options = Enum.GetValues(typeof(LevelWeatherType)).Cast<LevelWeatherType>()
-            .OrderBy(enumValue => enumValue)
-            .Select(enumValue => Enum.GetName(typeof(LevelWeatherType), enumValue))
+        var options = WeatherData.Weathers
+            .Select(enumValue => enumValue.ToString())
             .Select(weather => new TMP_Dropdown.OptionData(weather))
             .ToList();
 
         foreach (var (levelIndex, dropdown) in dropdowns)
         {
             dropdown.options = options;
-            dropdown.value = (int)levels[levelIndex].currentWeather;
+            dropdown.value = (int)(levels[levelIndex].currentWeather + 1);
 
             dropdown.onValueChanged.AddListener(_ =>
             {
@@ -65,7 +64,7 @@ public class WeatherForecaster : ImpWidget
             transform,
             new StyleOverride("", Variant.DARKER),
             new StyleOverride("ScrollView/Scrollbar", Variant.DARKEST),
-            new StyleOverride("ScrollView/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND)
+            new StyleOverride("ScrollView/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
         // Update template and real entries
@@ -76,6 +75,7 @@ public class WeatherForecaster : ImpWidget
             new StyleOverride("Arrow", Variant.FOREGROUND),
             new StyleOverride("Template", Variant.DARKER),
             new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
+            new StyleOverride("Template/Scrollbar", Variant.DARKEST),
             new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
@@ -88,6 +88,7 @@ public class WeatherForecaster : ImpWidget
                 new StyleOverride("Arrow", Variant.FOREGROUND),
                 new StyleOverride("Template", Variant.DARKER),
                 new StyleOverride("Template/Viewport/Content/Item/Background", Variant.DARKER),
+                new StyleOverride("Template/Scrollbar", Variant.DARKEST),
                 new StyleOverride("Template/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
             );
         }

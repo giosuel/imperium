@@ -1,7 +1,10 @@
-using System;
+#region
+
 using DunGen;
 using Imperium.Util;
 using UnityEngine;
+
+#endregion
 
 namespace Imperium.Core.LevelEditor;
 
@@ -22,17 +25,23 @@ internal class DoorMarker : MonoBehaviour
     private float targetScale;
 
     internal Vector3 DoorwayOrigin { get; private set; }
-    internal Vector3 DoorwayNormal { get; private set; }
+    internal Quaternion DoorwayRotation { get; private set; }
 
     private GameObject blockingPlane;
     private BoxCollider blockingPlaneCollider;
 
+    internal bool IsConnected;
+    internal bool HasDoorway;
+
+    internal DoorwaySocket Socket { get; private set; }
+
     internal void Init(Doorway markerDoor)
     {
         doorway = markerDoor;
+        Socket = markerDoor.Socket;
 
         DoorwayOrigin = doorway.transform.position;
-        DoorwayNormal = doorway.transform.forward;
+        DoorwayRotation = doorway.transform.rotation;
 
         transform.SetParent(markerDoor.transform);
         transform.localPosition = new Vector3(0, markerDoor.socket.size.y / 2f, 0);

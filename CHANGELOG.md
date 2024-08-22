@@ -1,5 +1,18 @@
 # Changelog
 
+## Imperium v0.2.4 [Beta] - Bug Fixes
+
+### Internal Fixes
+
+- Fixed a bug where duplicate outside hazards would prevent Imperium from spawning.
+- Fixed a bug where the theme wouldn't apply correctly to the freecam sliders.
+- Fixed a bug where visualizers would sometimes fail to find an entity.
+- Added integration for [WeatherRegistry](https://thunderstore.io/c/lethal-company/p/mrov/WeatherRegistry/).
+- Changed some theme settings to make colors more consistent across UIs.
+- Fixed a bug where respawning entities would not work.
+- Various performance tweaks to the object explorer window.
+- Fixed some performance issues with Oracle.
+
 ## Imperium v0.2.3 [Beta] - Bug Fixes
 
 ### Internal Fixes

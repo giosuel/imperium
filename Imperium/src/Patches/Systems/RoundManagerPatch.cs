@@ -107,7 +107,7 @@ internal static class RoundManagerPatch
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
         Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
-        Imperium.Oracle.Simulate();
+        Imperium.Oracle.Resimulate(null);
     }
 
     [HarmonyPostfix]
@@ -118,7 +118,7 @@ internal static class RoundManagerPatch
 
         // Re-simulate spawn cycle this function uses AnomalyRandom
         Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
-        Imperium.Oracle.Simulate();
+        Imperium.Oracle.Resimulate(null);
     }
 
     [HarmonyPostfix]
@@ -133,7 +133,13 @@ internal static class RoundManagerPatch
     [HarmonyPatch("GenerateNewFloor")]
     private static void GenerateNewFloorPrefixPatch(RoundManager __instance)
     {
-        // __instance.mapSizeMultiplier = 0.1f;
+// #if DEBUG
+//         __instance.mapSizeMultiplier = 0.1f;
+        foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
+        {
+            flow.rarity = flow.id == 4 ? 10 : 0;
+        }
+// #endif
     }
 
     [HarmonyPostfix]

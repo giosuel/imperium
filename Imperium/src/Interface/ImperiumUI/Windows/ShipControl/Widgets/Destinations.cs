@@ -31,7 +31,7 @@ public class Destinations : ImpWidget
             transform,
             new StyleOverride("", Variant.DARKER),
             new StyleOverride("ScrollView/Scrollbar", Variant.DARKEST),
-            new StyleOverride("ScrollView/Scrollbar/SlidingArea/Handle", Variant.FOREGROUND)
+            new StyleOverride("ScrollView/Scrollbar/SlidingArea/Handle", Variant.LIGHTER)
         );
 
         foreach (var button in buttons)

@@ -20,8 +20,12 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
 {
     internal readonly Dictionary<EnemyType, EntityGizmoConfig> EntityInfoConfigs = [];
 
+    private readonly ConfigFile config;
+
     internal EntityGizmos(IBinding<IReadOnlyCollection<EnemyAI>> objectsBinding, ConfigFile config) : base(objectsBinding)
     {
+        this.config = config;
+
         foreach (var entity in Resources.FindObjectsOfTypeAll<EnemyType>())
         {
             EntityInfoConfigs[entity] = new EntityGizmoConfig(entity.enemyName, config);
@@ -36,9 +40,15 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         {
             if (!visualizerObjects.ContainsKey(entity.GetInstanceID()))
             {
+                if (!EntityInfoConfigs.TryGetValue(entity.enemyType, out var entityConfig))
+                {
+                    entityConfig = new EntityGizmoConfig(entity.enemyType.enemyName, config);
+                    EntityInfoConfigs[entity.enemyType] = entityConfig;
+                }
+
                 var entityGizmoObject = new GameObject($"Imp_EntityGizmo_{entity.GetInstanceID()}");
                 var entityGizmo = entityGizmoObject.AddComponent<EntityGizmo>();
-                entityGizmo.Init(EntityInfoConfigs[entity.enemyType], Imperium.Visualization, entity);
+                entityGizmo.Init(entityConfig, Imperium.Visualization, entity);
 
                 visualizerObjects[entity.GetInstanceID()] = entityGizmo;
             }

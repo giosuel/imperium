@@ -109,7 +109,7 @@ public class SpikeTrapGizmo : MonoBehaviour
         );
         sphere.SetActive(false);
 
-        var spikeTimer = Instantiate(ImpAssets.SpikeTrapTimerObject, spikeTrap.transform.parent);
+        var spikeTimer = Instantiate(ImpAssets.SpikeTrapTimerObject, transform);
         var trapTransform = spikeTrap.transform;
         spikeTimer.transform.position = trapTransform.position + Vector3.down * 2f;
         spikeTimerCanvas = spikeTimer.transform.Find("Canvas");
