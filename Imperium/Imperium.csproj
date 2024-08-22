@@ -99,7 +99,7 @@
 
     <!--  Ignore this - Unity is a great software that always works, especially on Linux :]  -->
     <Target Name="PreBuild" AfterTargets="PreBuildEvent">
-        <Exec Command="cp /run/user/1000/gvfs/sftp:host=192.168.1.169/home/giosuel/Projects/imperium/imperium-assets/AssetBundles/StandaloneWindows/imperium_assets $(ProjectDir)resources/imperium_assets" />
+<!--        <Exec Command="cp /run/user/1000/gvfs/sftp:host=192.168.1.169/home/giosuel/Projects/imperium/imperium-assets/AssetBundles/StandaloneWindows/imperium_assets $(ProjectDir)resources/imperium_assets" />-->
     </Target>
 
     <!-- MinVer Set Mod Version from Git -->

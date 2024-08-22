@@ -18,8 +18,6 @@ public class BuildingTool : MonoBehaviour
 
     private PlacedDungeon dungeon;
 
-    private List<GameObject> visualizers = [];
-
     internal void Init(PlacedDungeon placedDungeon)
     {
         dungeon = placedDungeon;
@@ -35,6 +33,7 @@ public class BuildingTool : MonoBehaviour
             startColor: new Color(0f, 1f, 0.73f),
             endColor: new Color(0f, 1f, 0.73f)
         );
+        viewLine.gameObject.SetActive(false);
 
         hitIndicator = ImpGeometry.CreatePrimitive(PrimitiveType.Sphere, transform, color: new Color(1, 1, 1), 0.05f);
     }
@@ -46,8 +45,6 @@ public class BuildingTool : MonoBehaviour
 
     private void LateUpdate()
     {
-        foreach (var visualizer in visualizers) Destroy(visualizer);
-
         var camera = Imperium.Freecam.IsFreecamEnabled.Value
             ? Imperium.Freecam.FreecamCamera
             : Imperium.Player.hasBegunSpectating
@@ -79,7 +76,7 @@ public class BuildingTool : MonoBehaviour
         );
         hitIndicator.transform.position = hitInfo.point;
 
-        GameObject foundObject = null;
+        TileProp foundObject = null;
 
         if (selectedObjectRenderers != null)
         {
@@ -104,42 +101,17 @@ public class BuildingTool : MonoBehaviour
 
         foreach (var tile in dungeon.Tiles)
         {
-            foreach (var prop in tile.GlobalProps.Where(prop => prop.Colliders.Contains(hitInfo.collider)))
+            foreach (var prop in tile.TileProps.Where(prop => prop.Colliders.Contains(hitInfo.collider)))
             {
                 selectedObjectRenderers = prop.MeshRenderers;
-                foundObject = prop.Object;
+                foundObject = prop;
+                break;
             }
 
-            if (foundObject) break;
-
-            foreach (var prop in tile.LocalProps.Where(prop => prop.Colliders.Contains(hitInfo.collider)))
-            {
-                selectedObjectRenderers = prop.MeshRenderers;
-                foundObject = prop.Object;
-            }
-
-            if (foundObject) break;
-
-            foreach (var scrapSpawn in tile.ScrapSpawns)
-            {
-                if (scrapSpawn.Collider == hitInfo.collider)
-                {
-                    foundObject = scrapSpawn.Object;
-                }
-            }
-
-            if (foundObject) break;
-
-            foreach (var node in tile.AINodes)
-            {
-                if (node.Collider == hitInfo.collider)
-                {
-                    foundObject = node.Object;
-                }
-            }
+            if (foundObject != null) break;
         }
 
-        if (foundObject)
+        if (foundObject != null)
         {
             if (selectedObjectRenderers != null)
             {

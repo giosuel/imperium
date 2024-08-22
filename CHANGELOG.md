@@ -6,6 +6,7 @@
 
 - Fixed a bug where duplicate outside hazards would prevent Imperium from spawning.
 - Fixed a bug where the theme wouldn't apply correctly to the freecam sliders.
+- Fixed a bug where visualizers would sometimes fail to find an entity.
 
 ## Imperium v0.2.3 [Beta] - Bug Fixes
 

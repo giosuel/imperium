@@ -236,10 +236,10 @@ public class Imperium : BaseUnityPlugin
             Settings.LoadAll();
 
             StartUI();
-#if DEBUG
-            // This needs to be here as it depends on the UI
-            ImpLevelEditor = ImpLevelEditor.Create();
-#endif
+// #if DEBUG
+//             // This needs to be here as it depends on the UI
+//             ImpLevelEditor = ImpLevelEditor.Create();
+// #endif
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();

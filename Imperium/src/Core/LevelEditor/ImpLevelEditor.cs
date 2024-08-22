@@ -6,7 +6,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UniverseLib;
 
 namespace Imperium.Core.LevelEditor;
 
@@ -395,10 +394,12 @@ internal class ImpLevelEditor : MonoBehaviour
                 {
                     var collider = node.gameObject.AddComponent<SphereCollider>();
                     collider.isTrigger = true;
-                    return new MapPointCached
+                    return new TileProp
                     {
                         Object = node.gameObject,
-                        Collider = node.gameObject.AddComponent<SphereCollider>()
+                        Colliders = [node.gameObject.AddComponent<SphereCollider>()],
+                        Type = TilePropType.AINode,
+                        Parent = tileObj.transform
                     };
                 }
             )
@@ -407,10 +408,12 @@ internal class ImpLevelEditor : MonoBehaviour
         {
             var collider = scrapSpawn.gameObject.AddComponent<SphereCollider>();
             collider.isTrigger = true;
-            return new MapPointCached
+            return new TileProp
             {
                 Object = scrapSpawn.gameObject,
-                Collider = scrapSpawn.gameObject.AddComponent<SphereCollider>()
+                Colliders = [scrapSpawn.gameObject.AddComponent<SphereCollider>()],
+                Type = TilePropType.ScrapSpawn,
+                Parent = tileObj.transform
             };
         }).ToList();
 
@@ -421,7 +424,7 @@ internal class ImpLevelEditor : MonoBehaviour
             // Use the instance of the spawn prefab as object reference if global prop has SpawnSyncedObject.
             if (globalProp.TryGetComponent<SpawnSyncedObject>(out var syncedObject))
             {
-                obj = Object.Instantiate(
+                obj = Instantiate(
                     syncedObject.spawnPrefab,
                     syncedObject.transform.position,
                     syncedObject.transform.rotation,
@@ -430,36 +433,37 @@ internal class ImpLevelEditor : MonoBehaviour
                 colliders = obj.GetComponentsInChildren<Collider>();
             }
 
-            return new GlobalPropCached
+            return new TileProp
             {
-                Prop = globalProp,
                 Object = obj,
                 Colliders = colliders.ToHashSet(),
-                MeshRenderers = obj.GetComponentsInChildren<MeshRenderer>()
+                MeshRenderers = obj.GetComponentsInChildren<MeshRenderer>(),
+                Type = TilePropType.GlobalProp,
+                Parent = tileObj.transform
             };
         }).ToList();
 
-        var localPropSets = tileObj.GetComponentsInChildren<LocalPropSet>();
-        var propSetHolders = localPropSets.Select(propSet => propSet.gameObject).ToHashSet();
-        var localProps = localPropSets
-            .SelectMany(localPropSet => localPropSet.Props.Weights)
-            .Where(propObj => propObj.Value)
-            // .Where(propObj => propObj.Value && !propSetHolders.Contains(propObj.Value))
-            .Select(propObj => new LocalPropCached
-            {
-                Object = propObj.Value,
-                Colliders = propObj.Value.gameObject.GetComponentsInChildren<Collider>().ToHashSet(),
-                MeshRenderers = propObj.Value.gameObject.GetComponentsInChildren<MeshRenderer>()
-            })
-            .ToList();
+        var localProps = new List<TileProp>();
+        foreach (var localPropSet in tileObj.GetComponentsInChildren<LocalPropSet>())
+        {
+            localProps.AddRange(
+                localPropSet.Props.Weights
+                    .Where(propObj => propObj.Value)
+                    .Select(propObj => new TileProp
+                    {
+                        Object = propObj.Value,
+                        Colliders = propObj.Value.gameObject.GetComponentsInChildren<Collider>().ToHashSet(),
+                        MeshRenderers = propObj.Value.gameObject.GetComponentsInChildren<MeshRenderer>(),
+                        Type = TilePropType.LocalProp,
+                        Parent = localPropSet.transform
+                    })
+            );
+        }
 
         return new PlacedTile
         {
             Blueprint = tile.Tile,
-            ScrapSpawns = scrapSpawns,
-            AINodes = aiNodes,
-            GlobalProps = globalProps,
-            LocalProps = localProps
+            TileProps = scrapSpawns.Concat(aiNodes).Concat(globalProps).Concat(localProps).ToList()
         };
     }
 
@@ -679,6 +683,27 @@ internal record PlacedDungeon
     internal List<PlacedTile> Tiles { get; init; } = [];
 }
 
+internal record TileProp
+{
+    internal GameObject Object { get; init; }
+    internal TilePropType Type { get; init; }
+    internal Transform Parent { get; init; }
+
+    internal HashSet<Collider> Colliders { get; init; }
+    internal MeshRenderer[] MeshRenderers { get; init; }
+
+    internal Vector3 OriginalPosition { get; init; }
+    internal Quaternion OriginalRotatioon { get; init; }
+    internal Vector3 PositionOffset { get; init; }
+    internal Quaternion RotationOffset { get; init; }
+}
+
+internal readonly struct PlacedTile
+{
+    internal Tile Blueprint { get; init; }
+    internal List<TileProp> TileProps { get; init; }
+}
+
 internal readonly struct Tile
 {
     internal string Name { get; init; }
@@ -691,44 +716,12 @@ internal readonly struct Tile
     internal float AINodesCount { get; init; }
 }
 
-internal readonly struct GlobalPropCached
+internal enum TilePropType
 {
-    internal GlobalProp Prop { get; init; }
-    internal HashSet<Collider> Colliders { get; init; }
-
-    internal GameObject Object { get; init; }
-    internal Vector3 OriginalPosition { get; init; }
-    internal Quaternion OriginalRotatioon { get; init; }
-    internal Vector3 PositionOffset { get; init; }
-    internal Vector3 RotationOffset { get; init; }
-    internal MeshRenderer[] MeshRenderers { get; init; }
-}
-
-internal readonly struct LocalPropCached
-{
-    internal Vector3 OriginalPosition { get; init; }
-    internal Quaternion OriginalRotatioon { get; init; }
-    internal Vector3 PositionOffset { get; init; }
-    internal Vector3 RotationOffset { get; init; }
-
-    internal GameObject Object { get; init; }
-    internal HashSet<Collider> Colliders { get; init; }
-    internal MeshRenderer[] MeshRenderers { get; init; }
-}
-
-internal readonly struct MapPointCached
-{
-    internal GameObject Object { get; init; }
-    internal SphereCollider Collider { get; init; }
-}
-
-internal readonly struct PlacedTile
-{
-    internal Tile Blueprint { get; init; }
-    internal List<GlobalPropCached> GlobalProps { get; init; }
-    internal List<LocalPropCached> LocalProps { get; init; }
-    internal List<MapPointCached> AINodes { get; init; }
-    internal List<MapPointCached> ScrapSpawns { get; init; }
+    GlobalProp,
+    LocalProp,
+    AINode,
+    ScrapSpawn
 }
 
 internal record PreviewTile

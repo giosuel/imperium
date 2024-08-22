@@ -133,13 +133,13 @@ internal static class RoundManagerPatch
     [HarmonyPatch("GenerateNewFloor")]
     private static void GenerateNewFloorPrefixPatch(RoundManager __instance)
     {
-#if DEBUG
-        __instance.mapSizeMultiplier = 0.1f;
-        foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
-        {
-            flow.rarity = flow.id == 1 ? 10 : 0;
-        }
-#endif
+// #if DEBUG
+//         __instance.mapSizeMultiplier = 0.1f;
+//         foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
+//         {
+//             flow.rarity = flow.id == 1 ? 10 : 0;
+//         }
+// #endif
     }
 
     [HarmonyPostfix]
