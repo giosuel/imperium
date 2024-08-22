@@ -32,6 +32,7 @@ namespace Imperium;
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
