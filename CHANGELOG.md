@@ -1,5 +1,9 @@
 # Changelog
 
+## Imperium v0.2.6 [Beta] - Hotfix
+
+- Fixed a bug where the infinite turbo option was always enabled for the company cruiser.
+
 ## Imperium v0.2.5 [Beta] - Hotfix
 
 - Fixed a bug where the interior would always be the Mineshaft for the host.
