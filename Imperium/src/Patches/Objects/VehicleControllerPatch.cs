@@ -68,7 +68,7 @@ public static class VehicleControllerPatch
     [HarmonyPatch("UseTurboBoostLocalClient")]
     internal static void UseTurboBoostLocalClientPrefixPatch(VehicleController __instance)
     {
-        __instance.AddTurboBoostOnLocalClient(1);
+        if (Imperium.CruiserManager.InfiniteTurbo.Value) __instance.AddTurboBoostOnLocalClient(1);
     }
 
     [HarmonyPrefix]

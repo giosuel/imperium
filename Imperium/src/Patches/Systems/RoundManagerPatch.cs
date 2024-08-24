@@ -134,7 +134,7 @@ internal static class RoundManagerPatch
     private static void GenerateNewFloorPrefixPatch(RoundManager __instance)
     {
 // #if DEBUG
-//         __instance.mapSizeMultiplier = 0.1f;
+         // __instance.mapSizeMultiplier = 12f;
         // foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
         // {
             // flow.rarity = flow.id == 4 ? 10 : 0;
