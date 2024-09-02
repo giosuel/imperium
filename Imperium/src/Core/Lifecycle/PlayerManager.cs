@@ -253,7 +253,7 @@ internal class PlayerManager : ImpLifecycleObject
         var isInShip = Imperium.StartOfRound.shipInnerRoomBounds.bounds.Contains(request.Destination);
         player.isInHangarShipRoom = isInShip;
 
-        foreach (var heldItem in Imperium.Player.ItemSlots)
+        foreach (var heldItem in player.ItemSlots)
         {
             if (!heldItem) continue;
             heldItem.isInFactory = isInFactory;

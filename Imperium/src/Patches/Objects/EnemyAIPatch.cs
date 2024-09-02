@@ -24,10 +24,6 @@ internal static class EnemyAIPatch
         {
             __result = false;
         }
-        else
-        {
-            __result = true;
-        }
     }
 
     [HarmonyPostfix]

@@ -1,5 +1,13 @@
 # Changelog
 
+## Imperium v0.2.7 [Beta] - V64 Compatibility Patch
+
+**Note:** *This version of Imperium is compatible with the [Version 64 (Beta)](<https://steamdb.info/changelist/25039181/>) and [Version 62](https://steamdb.info/changelist/24877906/) of Lethal Company.*
+
+- Fixed a bug where the player was always targetable when untargetabillity was turned off.
+- Removed weed entity spawn prediction from Oracle.
+- Fixed a bug where items weren't properly updated when the player teleported.
+
 ## Imperium v0.2.6 [Beta] - Hotfix
 
 - Fixed a bug where the infinite turbo option was always enabled for the company cruiser.

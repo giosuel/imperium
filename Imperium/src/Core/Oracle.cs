@@ -39,7 +39,6 @@ internal class Oracle : ImpLifecycleObject
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
         var EntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.EnemySpawnRandom);
         var OutsideEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.OutsideEnemySpawnRandom);
-        var WeedEntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.WeedEnemySpawnRandom);
 
         var roundManager = Imperium.RoundManager;
         var currentLevel = roundManager.currentLevel;
@@ -67,9 +66,6 @@ internal class Oracle : ImpLifecycleObject
         );
         var firstTimeSpawningOutsideEnemies = Reflection.Get<RoundManager, bool>(
             roundManager, "firstTimeSpawningOutsideEnemies"
-        );
-        var firstTimeSpawningWeedEnemies = Reflection.Get<RoundManager, bool>(
-            roundManager, "firstTimeSpawningWeedEnemies"
         );
         var firstTimeSpawningDaytimeEnemies = Reflection.Get<RoundManager, bool>(
             roundManager, "firstTimeSpawningDaytimeEnemies"
@@ -104,14 +100,6 @@ internal class Oracle : ImpLifecycleObject
                     ref firstTimeSpawningOutsideEnemies,
                     currentHour, currentTime
                 );
-
-                State.Value.OutdoorCycles[i] = State.Value.OutdoorCycles[i].Concat(SimulateWeedSpawnCycle(
-                    AnomalySimulator, WeedEntitySimulator,
-                    ref outdoorPower,
-                    outdoorEntityCounts,
-                    ref firstTimeSpawningWeedEnemies,
-                    currentHour, currentTime
-                )).ToList();
             }
 
             var spawnTimes = new List<int>();
@@ -369,111 +357,6 @@ internal class Oracle : ImpLifecycleObject
                     SpawnTime = (int)currentDayTime
                 });
             }
-        }
-
-        return spawning;
-    }
-
-    private static List<SpawnReport> SimulateWeedSpawnCycle(
-        Random anomalySimulator,
-        Random weedEntitySimulator,
-        ref float currentPower,
-        IDictionary<EnemyType, int> entitySpawnCounts,
-        ref bool firstTimeSpawning,
-        int currentHour,
-        float currentDayTime
-    )
-    {
-        var roundManager = Imperium.RoundManager;
-        var spawning = new List<SpawnReport>();
-
-        var moldSpreadManager = FindObjectOfType<MoldSpreadManager>();
-        var moldCount = moldSpreadManager ? moldSpreadManager.generatedMold.Count : 0;
-        if (moldCount <= 30 || weedEntitySimulator.Next(0, 80) > moldCount) return spawning;
-
-        var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
-        var entityAmount = weedEntitySimulator.Next(1, 3);
-
-        var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
-
-        for (var i = 0; i < entityAmount; i++)
-        {
-            var probabilities = new List<int>();
-            var totalProbability = 0;
-            for (var j = 0; j < roundManager.WeedEnemies.Count; j++)
-            {
-                var enemyType = roundManager.WeedEnemies[j].enemyType;
-
-                if (firstTimeSpawning)
-                {
-                    entitySpawnCounts[enemyType] = 0;
-                }
-
-                if (enemyType.PowerLevel > roundManager.currentMaxOutsidePower - currentPower ||
-                    entitySpawnCounts[enemyType] >= enemyType.MaxCount || enemyType.spawningDisabled)
-                {
-                    probabilities.Add(0);
-                    continue;
-                }
-
-                var probability = roundManager.increasedOutsideEnemySpawnRateIndex == j ? 100 :
-                    !enemyType.useNumberSpawnedFalloff ? (int)(roundManager.currentLevel.OutsideEnemies[j].rarity *
-                                                               enemyType.probabilityCurve.Evaluate(timeUpToCurrentHour /
-                                                                   Imperium.TimeOfDay.totalTime)) :
-                    (int)(roundManager.currentLevel.OutsideEnemies[j].rarity *
-                          (enemyType.probabilityCurve.Evaluate(timeUpToCurrentHour / Imperium.TimeOfDay.totalTime) *
-                           enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)));
-
-                if (enemyType.spawnFromWeeds)
-                {
-                    probability = (int)Mathf.Clamp(probability * (probability / 60f), 0f, 200f);
-                }
-
-                probabilities.Add(probability);
-                totalProbability += probability;
-            }
-
-            firstTimeSpawning = false;
-
-            if (totalProbability <= 20) break;
-
-            if (probabilities.Sum() == 0) continue;
-
-            var randomWeightedIndex = roundManager.GetRandomWeightedIndex(
-                probabilities.ToArray(), weedEntitySimulator
-            );
-            var spawningEntity = roundManager.WeedEnemies[randomWeightedIndex].enemyType;
-            float groupSize = Mathf.Max(spawningEntity.spawnInGroupsOf, 1);
-
-            var result = false;
-            for (var k = 0; k < groupSize; k++)
-            {
-                if (spawningEntity.PowerLevel > roundManager.currentMaxOutsidePower - currentPower)
-                {
-                    break;
-                }
-
-                var position = spawnPoints[anomalySimulator.Next(0, spawnPoints.Length)].transform.position;
-                position = roundManager.GetRandomNavMeshPositionInBoxPredictable(
-                    position, 10f, default, anomalySimulator,
-                    roundManager.GetLayermaskForEnemySizeLimit(spawningEntity)
-                );
-                position = PositionWithDenialPointsChecked(position, spawnPoints, spawningEntity, anomalySimulator);
-
-                currentPower += spawningEntity.PowerLevel;
-                entitySpawnCounts[spawningEntity]++;
-
-                spawning.Add(new SpawnReport
-                {
-                    Entity = spawningEntity,
-                    Position = position,
-                    SpawnTime = (int)currentDayTime
-                });
-
-                result = true;
-            }
-
-            if (!result) break;
         }
 
         return spawning;
