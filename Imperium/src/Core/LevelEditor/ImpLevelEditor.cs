@@ -645,8 +645,6 @@ internal class ImpLevelEditor : MonoBehaviour
                 }
             }
 
-            TileProxy p;
-
             currentPreviewMarker = highlightedMarker;
             componentPickedThisFrame = false;
         }

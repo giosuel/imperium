@@ -1,5 +1,12 @@
 # Changelog
 
+## Imperium v0.2.8 [Beta] - Bug Fixes
+
+### Internal Fixes
+
+- Fixed a bug where frame setting overrides were always being overriden.
+- Fixed a bug where frame settings were affecting inactive cameras.
+
 ## Imperium v0.2.7 [Beta] - V64 Compatibility Patch
 
 **Note:** *This version of Imperium is compatible with the [Version 64 (Beta)](<https://steamdb.info/changelist/25039181/>) and [Version 62](https://steamdb.info/changelist/24877906/) of Lethal Company.*
