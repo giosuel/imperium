@@ -2,10 +2,21 @@
 
 ## Imperium v0.2.8 [Beta] - Bug Fixes
 
+### Added Stuff
+
+- Added new visualizers for the Maneater.
+- Added new visualizers for the Flowerman.
+
+### API Changes
+
+- Added more entity visualizer functions and wrote more documentation.
+
 ### Internal Fixes
 
 - Fixed a bug where frame setting overrides were always being overriden.
 - Fixed a bug where frame settings were affecting inactive cameras.
+- Fixed a bug where Oracle was re-simulating when it wasn't required.
+- Fixed a bug where instant landing and takeoff sometimes wouldn't work.
 
 ## Imperium v0.2.7 [Beta] - V64 Compatibility Patch
 

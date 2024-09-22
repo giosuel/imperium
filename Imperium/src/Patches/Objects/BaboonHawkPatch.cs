@@ -20,7 +20,7 @@ public static class BaboonHawkPatch
             __instance.eye,
             40f,
             material: ImpAssets.WireframePurple,
-            relativepositionOverride: () => Vector3.forward * 38f + Vector3.up * 8f,
+            relativePositionOverride: () => Vector3.forward * 38f + Vector3.up * 8f,
             absolutePositionOverride: eye => eye.position + eye.forward * 38f + eye.up * 8f
         );
 

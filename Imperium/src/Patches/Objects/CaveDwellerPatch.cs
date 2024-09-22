@@ -1,8 +1,8 @@
 #region
 
 using HarmonyLib;
+using Imperium.API.Types;
 using Imperium.Util;
-using UnityEngine;
 
 #endregion
 
@@ -15,20 +15,43 @@ public static class CaveDwellerPatch
     [HarmonyPatch("DoAIInterval")]
     private static void DoAIIntervalPatch(CaveDwellerAI __instance)
     {
-        Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
-            __instance,
-            __instance.eye,
-            __instance.currentSearchWidth + 15,
-            material: ImpAssets.WireframeRed
-        );
+        if (__instance.isOutside)
+        {
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
+                __instance,
+                __instance.eye,
+                radius: __instance.currentSearchWidth + 15,
+                material: ImpAssets.WireframeRed,
+                id: 1
+            );
 
-        Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
-            __instance,
-            __instance.eye,
-            __instance.currentSearchWidth + 15,
-            material: ImpAssets.WireframeCyan,
-            relativepositionOverride: () =>  __instance.caveHidingSpot,
-            absolutePositionOverride: eye => __instance.caveHidingSpot
-        );
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
+                __instance,
+                __instance.eye,
+                radius: __instance.currentSearchWidth + 30,
+                material: ImpAssets.WireframeGreen,
+                id: 2
+            );
+        }
+        else
+        {
+            Imperium.Visualization.EntityGizmos.StaticSphereVisualizerUpdate(
+                __instance,
+                __instance.caveHidingSpot,
+                radius: __instance.currentSearchWidth + 15,
+                material: ImpAssets.WireframeRed,
+                id: 3,
+                gizmoType: GizmoType.Custom
+            );
+
+            Imperium.Visualization.EntityGizmos.StaticSphereVisualizerUpdate(
+                __instance,
+                __instance.caveHidingSpot,
+                radius: __instance.currentSearchWidth + 30,
+                material: ImpAssets.WireframeGreen,
+                id: 4,
+                gizmoType: GizmoType.Custom
+            );
+        }
     }
 }

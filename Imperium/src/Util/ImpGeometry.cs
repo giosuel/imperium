@@ -184,6 +184,7 @@ public static class ImpGeometry
         }
 
         primitive.transform.localScale = Vector3.one * size;
+
         if (parent)
         {
             primitive.transform.position = parent.position;

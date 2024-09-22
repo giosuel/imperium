@@ -100,28 +100,6 @@ internal static class RoundManagerPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("YRotationThatFacesTheNearestFromPosition")]
-    private static void YRotationThatFacesTheNearestFromPositionPatch(RoundManager __instance)
-    {
-        if (!Imperium.IsImperiumLoaded) return;
-
-        // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotNear");
-        Imperium.Oracle.Resimulate(null);
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("YRotationThatFacesTheFarthestFromPosition")]
-    private static void YRotationThatFacesTheFarthestFromPosition(RoundManager __instance)
-    {
-        if (!Imperium.IsImperiumLoaded) return;
-
-        // Re-simulate spawn cycle this function uses AnomalyRandom
-        Imperium.IO.LogInfo("[ORACLE] Oracle had to re-simulate due to YRotFar");
-        Imperium.Oracle.Resimulate(null);
-    }
-
-    [HarmonyPostfix]
     [HarmonyPatch("SpawnEnemyFromVent")]
     private static void SpawnEnemyFromVentPatch(RoundManager __instance, EnemyVent vent)
     {
@@ -195,6 +173,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
     private static bool PlotOutEnemiesForNextHourPatch()
     {
+        Imperium.IO.LogInfo($"Outdoor spwawning paused: {Imperium.MoonManager.IndoorSpawningPaused.Value}");
         return !Imperium.MoonManager.IndoorSpawningPaused.Value;
     }
 
@@ -202,6 +181,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnEnemiesOutside")]
     private static bool SpawnEnemiesOutsidePatch()
     {
+        Imperium.IO.LogInfo($"Outdoor spwawning paused: {Imperium.MoonManager.OutdoorSpawningPaused.Value}");
         return !Imperium.MoonManager.OutdoorSpawningPaused.Value;
     }
 
@@ -209,6 +189,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnDaytimeEnemiesOutside")]
     private static bool SpawnDaytimeEnemiesOutsidePatch(RoundManager __instance)
     {
+        Imperium.IO.LogInfo($"Outdoor spwawning paused: {Imperium.MoonManager.DaytimeSpawningPaused.Value}");
         return !Imperium.MoonManager.DaytimeSpawningPaused.Value;
     }
 
