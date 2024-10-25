@@ -64,8 +64,10 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
     }
 
     internal void ConeVisualizerUpdate(
-        EnemyAI instance, Transform eye, float angle, float size, Material material, bool isCustom = false,
-        Func<Vector3> relativepositionOverride = null,
+        EnemyAI instance, Transform eye, float angle, float length, Material material,
+        GizmoType gizmoType = GizmoType.LineOfSight, GizmoDuration gizmoDuration = GizmoDuration.AIInterval,
+        int id = -1,
+        Func<Vector3> relativePositionOverride = null,
         Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
@@ -73,17 +75,21 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         {
             entityGizmo.ConeVisualizerUpdate(
                 eye ?? instance.transform,
-                angle, size, material,
-                config => isCustom ? config.Custom : config.LineOfSight,
-                relativepositionOverride,
+                angle, length, material,
+                visConfig => gizmoType == GizmoType.LineOfSight ? visConfig.LineOfSight : visConfig.Custom,
+                gizmoDuration,
+                id,
+                relativePositionOverride,
                 absolutePositionOverride
             );
         }
     }
 
     internal void SphereVisualizerUpdate(
-        EnemyAI instance, Transform eye, float size, Material material, bool isCustom = false,
-        Func<Vector3> relativepositionOverride = null,
+        EnemyAI instance, Transform eye, float radius, Material material,
+        GizmoType gizmoType = GizmoType.LineOfSight, GizmoDuration gizmoDuration = GizmoDuration.AIInterval,
+        int id = -1,
+        Func<Vector3> relativePositionOverride = null,
         Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
@@ -91,10 +97,31 @@ internal class EntityGizmos : BaseVisualizer<IReadOnlyCollection<EnemyAI>, Entit
         {
             entityGizmo.SphereVisualizerUpdate(
                 eye ?? instance.transform,
-                size, material,
-                config => isCustom ? config.Custom : config.LineOfSight,
-                relativepositionOverride,
+                radius, material,
+                visConfig => gizmoType == GizmoType.LineOfSight ? visConfig.LineOfSight : visConfig.Custom,
+                gizmoDuration,
+                id,
+                relativePositionOverride,
                 absolutePositionOverride
+            );
+        }
+    }
+
+    internal void StaticSphereVisualizerUpdate(
+        EnemyAI instance, Vector3 position, Material material,
+        float radius = 2f,
+        GizmoType gizmoType = GizmoType.LineOfSight, GizmoDuration gizmoDuration = GizmoDuration.Indefinite,
+        int id = -1
+    )
+    {
+        if (visualizerObjects.TryGetValue(instance.GetInstanceID(), out var entityGizmo))
+        {
+            entityGizmo.StaticSphereVisualizerUpdate(
+                instance.gameObject,
+                position, radius, material,
+                visConfig => gizmoType == GizmoType.LineOfSight ? visConfig.LineOfSight : visConfig.Custom,
+                gizmoDuration,
+                id
             );
         }
     }

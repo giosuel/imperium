@@ -19,12 +19,13 @@ public class ImpFreecam : MonoBehaviour
     private Vector2 lookInput;
     private LayerSelector layerSelector;
 
-    internal Camera FreecamCamera { get; private set; }
-
     private static Rect minicamRect => new(100f / Screen.width, 1 - 100f / Screen.height - 0.4f, 0.4f, 0.4f);
 
+    internal Camera FreecamCamera { get; private set; }
     internal readonly ImpBinaryBinding IsFreecamEnabled = new(false);
-    internal readonly ImpBinaryBinding IsMinicamEnabled = new(false);
+
+    private readonly ImpBinaryBinding IsMinicamEnabled = new(false);
+    private readonly ImpBinaryBinding IsMinicamFullscreenEnabled = new(false);
 
     internal static ImpFreecam Create() => new GameObject("ImpFreecam").AddComponent<ImpFreecam>();
 
@@ -55,11 +56,15 @@ public class ImpFreecam : MonoBehaviour
         IsMinicamEnabled.onTrue += OnMinicamEnable;
         IsMinicamEnabled.onFalse += OnMinicamDisable;
 
+        IsMinicamFullscreenEnabled.onTrue += OnMinicamFullscreenEnable;
+        IsMinicamFullscreenEnabled.onFalse += OnMinicamFullscreenDisable;
+
         var lightObject = Instantiate(Imperium.Player.nightVision.gameObject, transform, false);
         lightObject.transform.position = Vector3.up;
 
         Imperium.InputBindings.BaseMap.Freecam.performed += OnFreecamToggle;
         Imperium.InputBindings.BaseMap.Minicam.performed += OnMinicamToggle;
+        Imperium.InputBindings.BaseMap.MinicamFullscreen.performed += OnMinicamFullscreenToggle;
         Imperium.InputBindings.BaseMap.Reset.performed += OnFreecamReset;
         Imperium.InputBindings.FreecamMap.LayerSelector.performed += OnToggleLayerSelector;
         Imperium.Settings.Freecam.FreecamLayerMask.onUpdate += value => FreecamCamera.cullingMask = value;
@@ -69,7 +74,18 @@ public class ImpFreecam : MonoBehaviour
     {
         Imperium.InputBindings.BaseMap.Freecam.performed -= OnFreecamToggle;
         Imperium.InputBindings.BaseMap.Minicam.performed -= OnMinicamToggle;
+        Imperium.InputBindings.BaseMap.MinicamFullscreen.performed -= OnMinicamFullscreenToggle;
         Imperium.InputBindings.BaseMap.Reset.performed -= OnFreecamReset;
+        Imperium.InputBindings.FreecamMap.LayerSelector.performed -= OnToggleLayerSelector;
+    }
+
+    private void OnFreecamToggle(InputAction.CallbackContext callbackContext)
+    {
+        if (Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.Player.inTerminalMenu ||
+            Imperium.Player.isTypingChat) return;
+
+        IsFreecamEnabled.Toggle();
     }
 
     private void OnMinicamToggle(InputAction.CallbackContext callbackContext)
@@ -82,13 +98,15 @@ public class ImpFreecam : MonoBehaviour
         IsMinicamEnabled.Toggle();
     }
 
-    private void OnFreecamToggle(InputAction.CallbackContext callbackContext)
+    private void OnMinicamFullscreenToggle(InputAction.CallbackContext callbackContext)
     {
         if (Imperium.Player.quickMenuManager.isMenuOpen ||
             Imperium.Player.inTerminalMenu ||
-            Imperium.Player.isTypingChat) return;
+            Imperium.Player.isTypingChat ||
+            Imperium.ShipBuildModeManager.InBuildMode ||
+            !IsMinicamEnabled.Value) return;
 
-        IsFreecamEnabled.Toggle();
+        IsMinicamFullscreenEnabled.Toggle();
     }
 
     private void OnMinicamEnable()
@@ -98,6 +116,8 @@ public class ImpFreecam : MonoBehaviour
         HUDManager.Instance.HideHUD(true);
         FreecamCamera.enabled = true;
         FreecamCamera.rect = minicamRect;
+
+        IsMinicamFullscreenEnabled.SetFalse();
     }
 
     private void OnMinicamDisable()
@@ -109,6 +129,9 @@ public class ImpFreecam : MonoBehaviour
 
         FreecamCamera.rect = new Rect(0, 0, 1, 1);
     }
+
+    private void OnMinicamFullscreenEnable() => FreecamCamera.rect = new Rect(0, 0, 1, 1);
+    private void OnMinicamFullscreenDisable() => FreecamCamera.rect = minicamRect;
 
     private void OnFreecamEnable()
     {

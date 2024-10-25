@@ -84,9 +84,7 @@ public static class VehicleControllerPatch
     {
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(VehicleController), "TryIgnition", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> openingDoorsSequenceTranspiler(
-            IEnumerable<CodeInstruction> instructions
-        )
+        private static IEnumerable<CodeInstruction> TryIgnitionTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
         }

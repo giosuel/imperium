@@ -1,5 +1,30 @@
 # Changelog
 
+## Imperium v0.2.8 [Beta] - V65 Compatibility Patch
+
+**Note:** *This version of Imperium is compatible with the [Version 66](<https://steamdb.info/changelist/25889392/>) of Lethal Company.*
+
+### Added Stuff
+
+- Added new visualizers for the Maneater.
+- Added new visualizers for the Flowerman.
+- Added a switch to turn off the 69% sales easter egg.
+- Added an option to fullscreen the minicam (`Default: F11`).
+
+### API Changes
+
+- Added more entity visualizer functions and wrote more documentation.
+
+### Internal Fixes
+
+- Fixed a bug where frame setting overrides were always being overridden.
+- Fixed a bug where frame settings were affecting inactive cameras.
+- Fixed a bug where Oracle was re-simulating when it wasn't required to.
+- Fixed a bug where instant landing and takeoff sometimes wouldn't work.
+- Reverted a change that made Oracle unstable.
+- Updated oracle to take rush index into account ([Info](<https://lethal-company.fandom.com/wiki/Version_65>)).
+- Fixed a bug where keybinds weren't unsubscribing properly when restarting a game.
+
 ## Imperium v0.2.7 [Beta] - V64 Compatibility Patch
 
 **Note:** *This version of Imperium is compatible with the [Version 64 (Beta)](<https://steamdb.info/changelist/25039181/>) and [Version 62](https://steamdb.info/changelist/24877906/) of Lethal Company.*

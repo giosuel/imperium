@@ -1,7 +1,9 @@
 #region
 
 using HarmonyLib;
+using Imperium.API.Types;
 using Imperium.Util;
+using Imperium.Visualizers;
 
 #endregion
 
@@ -23,6 +25,14 @@ public static class HoarderBugPatch
             width,
             proximityAwareness,
             material: ImpAssets.WireframeRed
+        );
+
+        Imperium.Visualization.EntityGizmos.StaticSphereVisualizerUpdate(
+            __instance,
+            __instance.nestPosition,
+            material: ImpAssets.WireframeYellow,
+            id: 1,
+            gizmoType: GizmoType.Custom
         );
     }
 }

@@ -79,6 +79,7 @@ internal class MoonControlWindow : ImperiumWindow
             Imperium.GameManager.CustomSeed,
             theme: theme,
             interactableInvert: true,
+            negativeIsEmpty: true,
             interactableBindings: Imperium.IsSceneLoaded
         );
     }

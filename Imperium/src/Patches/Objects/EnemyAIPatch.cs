@@ -31,6 +31,7 @@ internal static class EnemyAIPatch
     private static void KillEnemyPatch(EnemyAI __instance)
     {
         Imperium.ObjectManager.CurrentLevelEntities.Refresh();
+        Imperium.IO.LogInfo("Oracle has to resimulate to entity killed");
         Imperium.Oracle.Resimulate(
             $"Entity {Imperium.ObjectManager.GetDisplayName(__instance.enemyType.enemyName)} was killed."
         );

@@ -205,6 +205,9 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
         InsightsFor<NutcrackerEnemyAI>()
             .SetPositionOverride(entity => DefaultPositionOverride(entity) + Vector3.down * 7f);
 
+        InsightsFor<CaveDwellerAI>()
+            .RegisterInsight("Search Width", maneater => $"{maneater.currentSearchWidth:0.#}u");
+
         InsightsFor<MaskedPlayerEnemy>()
             .RegisterInsight("Ship Interest", masked => $"{masked.interestInShipCooldown:0.0}")
             .RegisterInsight("Stop and Stare", masked => $"{masked.stopAndStareTimer:0.0}s")

@@ -1,6 +1,7 @@
 #region
 
 using HarmonyLib;
+using Imperium.API.Types;
 using Imperium.Util;
 
 #endregion
@@ -19,7 +20,7 @@ public static class DocileLocustBeesPatch
             null,
             8,
             material: ImpAssets.WireframeRed,
-            isCustom: true
+            gizmoType: GizmoType.Custom
         );
 
         Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
@@ -27,7 +28,7 @@ public static class DocileLocustBeesPatch
             null,
             16,
             material: ImpAssets.WireframeGreen,
-            isCustom: true
+            gizmoType: GizmoType.Custom
         );
     }
 }

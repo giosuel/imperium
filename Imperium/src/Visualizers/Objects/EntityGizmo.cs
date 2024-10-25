@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using Imperium.API.Types;
 using Imperium.Core;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -64,14 +65,19 @@ public class EntityGizmo : MonoBehaviour
 
     internal void ConeVisualizerUpdate(
         Transform eye,
-        float angle, float size,
+        float angle, float length,
         Material material,
         Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
-        Func<Vector3> relativepositionOverride = null,
+        GizmoDuration gizmoDuration,
+        int id = -1,
+        Func<Vector3> relativePositionOverride = null,
         Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
-        var identifier = Visualization.GenerateConeHash(entityController, eye, angle, size);
+        // Default the ID to the radius
+        if (id == -1) id = (int)length;
+
+        var identifier = Visualization.GenerateConeHash(entityController, eye, angle, id);
 
         if (!VisualizerObjects.TryGetValue(identifier, out var visualizer))
         {
@@ -84,11 +90,11 @@ public class EntityGizmo : MonoBehaviour
                                                  ?? (ulong)entityController.GetInstanceID();
         }
 
-        visualizer.transform.localScale = Vector3.one * size;
+        visualizer.transform.localScale = Vector3.one * length;
 
         if (Imperium.Settings.Visualization.SmoothAnimations.Value)
         {
-            visualizer.transform.localPosition = relativepositionOverride?.Invoke() ?? Vector3.zero;
+            visualizer.transform.localPosition = relativePositionOverride?.Invoke() ?? Vector3.zero;
             visualizer.transform.localRotation = Quaternion.identity;
             visualizer.transform.SetParent(eye, true);
         }
@@ -102,41 +108,31 @@ public class EntityGizmo : MonoBehaviour
         // Enable / Disable based on config
         visualizer.gameObject.SetActive(configGetter(entityConfig).Value);
 
-        // Update the visualizer timer
-        VisualizerTimers[identifier] = Time.realtimeSinceStartup;
+        if (gizmoDuration == GizmoDuration.AIInterval)
+        {
+            VisualizerTimers[identifier] = Time.realtimeSinceStartup;
+        }
     }
 
     internal void SphereVisualizerUpdate(
         [CanBeNull] Transform eye,
-        float size, Material material,
+        float radius, Material material,
         Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
-        Func<Vector3> relativepositionOverride = null,
+        GizmoDuration gizmoDuration,
+        int id = -1,
+        Func<Vector3> relativePositionOverride = null,
         Func<Transform, Vector3> absolutePositionOverride = null
     )
     {
-        var identifier = Visualization.GenerateSphereHash(entityController, eye, size);
+        // Default the ID to the radius
+        if (id == -1) id = (int)radius;
 
-        if (!VisualizerObjects.TryGetValue(identifier, out var visualizer))
-        {
-            visualizer = ImpGeometry.CreatePrimitive(
-                PrimitiveType.Sphere,
-                // Parent the visualizer to the eye if smooth animations are enabled
-                parent: Imperium.Settings.Visualization.SmoothAnimations.Value ? eye : null,
-                material: material,
-                size: size * 2,
-                name: $"ImpVis_Custom_{identifier}"
-            );
-
-            VisualizerObjects[identifier] = visualizer;
-            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>()?.NetworkObjectId
-                                                 ?? (ulong)entityController.GetInstanceID();
-        }
-
-        visualizer.transform.localScale = Vector3.one * size;
+        var identifier = Visualization.GenerateSphereHash(entityController, eye, id);
+        var visualizer = GetOrCreateSphereVisualizerObject(identifier, radius, material);
 
         if (Imperium.Settings.Visualization.SmoothAnimations.Value)
         {
-            visualizer.transform.localPosition = relativepositionOverride?.Invoke() ?? Vector3.zero;
+            visualizer.transform.localPosition = relativePositionOverride?.Invoke() ?? Vector3.zero;
             visualizer.transform.localRotation = Quaternion.identity;
             visualizer.transform.SetParent(eye, true);
         }
@@ -148,10 +144,60 @@ public class EntityGizmo : MonoBehaviour
         }
 
         // Enable / Disable based on the provided config
-        visualizer.gameObject.SetActive(configGetter(entityConfig).Value);
+        visualizer.SetActive(configGetter(entityConfig).Value);
 
-        // Update the visualizer timer
-        VisualizerTimers[identifier] = Time.realtimeSinceStartup;
+        if (gizmoDuration == GizmoDuration.AIInterval)
+        {
+            VisualizerTimers[identifier] = Time.realtimeSinceStartup;
+        }
+    }
+
+    internal void StaticSphereVisualizerUpdate(
+        GameObject ownerObj,
+        Vector3 position,
+        float radius,
+        Material material,
+        Func<EntityGizmoConfig, ImpBinding<bool>> configGetter,
+        GizmoDuration gizmoDuration,
+        int id = -1
+    )
+    {
+        // Default the ID to the radius
+        if (id == -1) id = (int)radius;
+
+        var identifier = Visualization.GenerateSphereHash(entityController, ownerObj, id);
+        var visualizer = GetOrCreateSphereVisualizerObject(identifier, radius, material);
+
+        visualizer.transform.position = position;
+        visualizer.transform.rotation = Quaternion.identity;
+
+        // Enable / Disable based on the provided config
+        visualizer.SetActive(configGetter(entityConfig).Value);
+
+        if (gizmoDuration == GizmoDuration.AIInterval)
+        {
+            VisualizerTimers[identifier] = Time.realtimeSinceStartup;
+        }
+    }
+
+    private GameObject GetOrCreateSphereVisualizerObject(string identifier, float radius, Material material)
+    {
+        if (!VisualizerObjects.TryGetValue(identifier, out var visualizer))
+        {
+            visualizer = ImpGeometry.CreatePrimitive(
+                PrimitiveType.Sphere,
+                parent: null,
+                material: material,
+                size: radius * 2,
+                name: $"ImpVis_Custom_{identifier}"
+            );
+
+            VisualizerObjects[identifier] = visualizer;
+            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>()?.NetworkObjectId
+                                                 ?? (ulong)entityController.GetInstanceID();
+        }
+
+        return visualizer;
     }
 
     private void OnDestroy()
