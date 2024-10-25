@@ -1,6 +1,7 @@
 #region
 
 using HarmonyLib;
+using Imperium.Core;
 using UnityEngine;
 
 #endregion
@@ -19,16 +20,15 @@ public class TimeOfDayPatch
             Imperium.HUDManager.SetClock(__instance.normalizedTimeOfDay, __instance.numberOfHours);
         }
 
-        if (Imperium.MoonManager.TimeIsPaused.Value) return false;
+        if (
+            !Imperium.MoonManager.TimeIsPaused.Value &&
+            !Mathf.Approximately(Imperium.MoonManager.TimeSpeed.Value, ImpConstants.DefaultTimeSpeed)
+        )
+        {
+            __instance.globalTimeSpeedMultiplier = Imperium.MoonManager.TimeSpeed.Value;
+        }
 
-        var timeBefore = __instance.globalTime;
-        __instance.globalTime = Mathf.Clamp(
-            timeBefore + Time.deltaTime * Imperium.MoonManager.TimeSpeed.Value,
-            0f, __instance.globalTimeAtEndOfDay
-        );
-        __instance.timeUntilDeadline -= __instance.globalTime - timeBefore;
-
-        return false;
+        return true;
     }
 
 

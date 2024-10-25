@@ -1042,6 +1042,14 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> QuickloadOnQuit = new(config, "Preferences.Quickload", "OnQuit", false);
         internal readonly ImpConfig<bool> QuickloadCleanFile = new(config, "Preferences.Quickload", "CleanFile", false);
         internal readonly ImpConfig<int> QuickloadSaveNumber = new(config, "Preferences.Quickload", "SaveFileNumber", 4);
+
+        internal readonly ImpConfig<bool> DisableLeFunni = new(
+            config,
+            "Preferences.General",
+            "DisableLeFunni",
+            false,
+            description: "Disables 69% sales in the terminal. (\u0361\u00b0 \u035cʖ \u0361\u00b0)"
+        );
     }
 
     internal class MapSettings(ConfigFile config) : SettingBase(config)

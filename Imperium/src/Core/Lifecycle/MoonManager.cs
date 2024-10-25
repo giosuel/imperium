@@ -47,7 +47,11 @@ internal class MoonManager : ImpLifecycleObject
 
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
         "TimeIsPaused",
-        Imperium.Networking
+        Imperium.Networking,
+        onUpdateClient: isPaused =>
+        {
+            Imperium.TimeOfDay.globalTimeSpeedMultiplier = isPaused ? 0 : ImpConstants.DefaultTimeSpeed;
+        }
     );
 
     internal readonly ImpNetworkBinding<float> TimeSpeed = new(

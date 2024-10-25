@@ -145,6 +145,8 @@ internal static class RoundManagerPatch
         Imperium.EventLog.GameEvents.AdvanceHourAndSpawnNewBatchOfEnemiesPostfix(true);
 
         ImpSpawnTracker.EndCycle(__instance);
+
+        Imperium.Oracle.Simulate();
     }
 
     [HarmonyPrefix]

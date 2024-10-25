@@ -31,8 +31,8 @@ public class StartOfRoundPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("FinishGeneratingLevel")]
-    private static void FinishGeneratingLevelPostfixPatch(StartOfRound __instance)
+    [HarmonyPatch("openingDoorsSequence")]
+    private static void openingDoorsSequencePostfixPatch(StartOfRound __instance)
     {
         // Reset ship animator
         __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;

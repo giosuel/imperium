@@ -124,7 +124,7 @@ internal abstract class ImpAssets
 
     private static bool LoadAssets()
     {
-        using (var assetBundleStream = LoadResource("Imperium.resources.imperium_assets"))
+        using (var assetBundleStream = LoadResource("Imperium.resources.assets.imperium_assets"))
         {
             ImperiumAssets = AssetBundle.LoadFromStream(assetBundleStream);
         }
