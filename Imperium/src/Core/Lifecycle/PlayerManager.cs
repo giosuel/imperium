@@ -155,56 +155,56 @@ internal class PlayerManager : ImpLifecycleObject
 
         Resources.UnloadUnusedAssets();
 
-        foreach (var camera in Resources.FindObjectsOfTypeAll<HDAdditionalCameraData>())
+        foreach (var camera in FindObjectsByType<HDAdditionalCameraData>(FindObjectsSortMode.None))
         {
             if (camera.gameObject.name == "MapCamera") continue;
 
             camera.customRenderingSettings = true;
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.DecalLayers] = true;
+                [(int)FrameSettingsField.DecalLayers] = Imperium.Settings.Rendering.DecalLayers.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.DecalLayers, Imperium.Settings.Rendering.DecalLayers.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.SSGI] = true;
+                [(int)FrameSettingsField.SSGI] = Imperium.Settings.Rendering.SSGI.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.SSGI, Imperium.Settings.Rendering.SSGI.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.RayTracing] = true;
+                [(int)FrameSettingsField.RayTracing] = Imperium.Settings.Rendering.RayTracing.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.RayTracing, Imperium.Settings.Rendering.RayTracing.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.VolumetricClouds] = true;
+                [(int)FrameSettingsField.VolumetricClouds] = Imperium.Settings.Rendering.VolumetricClouds.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.VolumetricClouds, Imperium.Settings.Rendering.VolumetricClouds.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.SubsurfaceScattering] = true;
+                [(int)FrameSettingsField.SubsurfaceScattering] = Imperium.Settings.Rendering.SSS.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.SubsurfaceScattering, Imperium.Settings.Rendering.SSS.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.ReprojectionForVolumetrics] = true;
+                [(int)FrameSettingsField.ReprojectionForVolumetrics] = Imperium.Settings.Rendering.VolumeReprojection.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.ReprojectionForVolumetrics, Imperium.Settings.Rendering.VolumeReprojection.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.TransparentPrepass] = true;
+                [(int)FrameSettingsField.TransparentPrepass] = Imperium.Settings.Rendering.TransparentPrepass.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.TransparentPrepass, Imperium.Settings.Rendering.TransparentPrepass.Value
             );
 
             camera.renderingPathCustomFrameSettingsOverrideMask.mask
-                [(int)FrameSettingsField.TransparentPostpass] = true;
+                [(int)FrameSettingsField.TransparentPostpass] = Imperium.Settings.Rendering.TransparentPostpass.Value;
             camera.renderingPathCustomFrameSettings.SetEnabled(
                 FrameSettingsField.TransparentPostpass, Imperium.Settings.Rendering.TransparentPostpass.Value
             );

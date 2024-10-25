@@ -29,12 +29,17 @@ public sealed class ImpConfig<T> : ImpBinding<T>
         Action<T> onUpdate = null,
         Action<T> fromLocalUpdate = null,
         bool ignoreRefresh = false,
-        bool allowWhenDisabled = false
+        bool allowWhenDisabled = false,
+        string description = null
     ) : base(defaultValue, default, onUpdate, fromLocalUpdate, ignoreRefresh)
     {
         this.allowWhenDisabled = allowWhenDisabled;
 
-        config = configFile.Bind(section, key, defaultValue);
+        config = configFile.Bind(
+            section, key,
+            defaultValue,
+            configDescription: !string.IsNullOrEmpty(description) ? new ConfigDescription(description) : null
+        );
         base.Value = config.Value;
     }
 

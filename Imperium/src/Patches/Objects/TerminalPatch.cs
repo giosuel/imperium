@@ -2,6 +2,7 @@
 
 using System.Linq;
 using HarmonyLib;
+using Imperium.Core;
 using TMPro;
 using UnityEngine;
 
@@ -35,6 +36,8 @@ internal static class TerminalPatch
     [HarmonyPatch("SetItemSales")]
     private static void SetItemSalesPatch(Terminal __instance)
     {
+        if (Imperium.Settings.Preferences.DisableLeFunni.Value) return;
+
         for (var i = 0; i < __instance.itemSalesPercentages.Length; i++)
         {
             __instance.itemSalesPercentages[i] = 31;

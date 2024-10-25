@@ -24,6 +24,9 @@ internal sealed class ImpInputBaseMap : LcInputActions
     [InputAction("<Keyboard>/x", Name = "Minicam")]
     internal InputAction Minicam { get; set; }
 
+    [InputAction("<Keyboard>/f11", Name = "Fullscreen Minicam")]
+    internal InputAction MinicamFullscreen { get; set; }
+
     [InputAction("<Keyboard>/z", Name = "Toggle HUD")]
     internal InputAction ToggleHUD { get; set; }
 

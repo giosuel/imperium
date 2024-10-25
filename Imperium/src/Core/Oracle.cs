@@ -19,19 +19,22 @@ internal class Oracle : ImpLifecycleObject
 {
     internal readonly ImpBinding<OracleState> State = new(new OracleState());
 
-    internal void Simulate() => Simulate(false, null);
+    internal void Simulate()
+    {
+        Imperium.IO.LogInfo("Oracle is simulating...");
+        Simulate(false, null);
+    }
+
     internal void Resimulate(string reason) => Simulate(false, reason);
 
     internal void Simulate(bool initial, string reason)
     {
-        ImpUtils.RunSafe(() => StartCoroutine(simulateUnsafe(initial, reason)), "Oracle simulation failed");
+        ImpUtils.RunSafe(() => SimulateUnsafe(initial, reason), "Oracle simulation failed");
     }
 
-    private IEnumerator simulateUnsafe(bool initial, string reason)
+    private void SimulateUnsafe(bool initial, string reason)
     {
-        if (!Imperium.IsSceneLoaded.Value) yield break;
-
-        yield return 0;
+        if (!Imperium.IsSceneLoaded.Value) return;
 
         var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
@@ -143,8 +146,6 @@ internal class Oracle : ImpLifecycleObject
             );
         }
 
-        yield return 0;
-
         State.Refresh();
     }
 
@@ -178,6 +179,8 @@ internal class Oracle : ImpLifecycleObject
             Math.Min(lowerBound, upperBound),
             Math.Max(lowerBound, upperBound)
         ), roundManager.minEnemiesToSpawn, 20);
+
+        if (roundManager.enemyRushIndex != -1) entityAmount += 2;
 
         entityAmount = Mathf.Clamp(entityAmount, 0, freeVents.Count);
 
@@ -218,17 +221,20 @@ internal class Oracle : ImpLifecycleObject
                     continue;
                 }
 
-                var probability = roundManager.increasedInsideEnemySpawnRateIndex == j
-                    ? 100
-                    : !enemyType.useNumberSpawnedFalloff
-                        ? (int)(roundManager.currentLevel.Enemies[j].rarity *
-                                enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime)
-                        )
-                        : (int)(roundManager.currentLevel.Enemies[j].rarity * (
-                                enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime) *
-                                enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)
+                var probability = roundManager.enemyRushIndex != -1
+                    ? roundManager.enemyRushIndex != i ? 1 : 100
+                    : roundManager.increasedInsideEnemySpawnRateIndex == j
+                        ? 100
+                        : !enemyType.useNumberSpawnedFalloff
+                            ? (int)(roundManager.currentLevel.Enemies[j].rarity *
+                                    enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime)
                             )
-                        );
+                            : (int)(roundManager.currentLevel.Enemies[j].rarity * (
+                                    enemyType.probabilityCurve.Evaluate(currentDayTime /
+                                                                        roundManager.timeScript.totalTime) *
+                                    enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)
+                                )
+                            );
 
                 if (enemyType.increasedChanceInterior != -1 &&
                     roundManager.currentDungeonType != enemyType.increasedChanceInterior)
