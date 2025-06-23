@@ -1,5 +1,11 @@
 # Changelog
 
+## Imperium v1.1 - Bug Fixes
+
+### Bug Fixes
+
+- Fixed a bug that made Imperium crash when some mods are adding outside objects without a prefab.
+
 ## Imperium v1.0 - The Release
 
 > We've come a long way since the release of the first Imperium prototype in early April 2024 to where we are today. Imperium was my first modding project for any game and it was just meant to be a fun little tool to explore the wonderful mechanics of this amazing game.

@@ -378,6 +378,7 @@ internal class ObjectManager : ImpLifecycleObject
         var allStaticPrefabs = new Dictionary<string, GameObject>();
         var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
         var allOutsideObjects = Resources.FindObjectsOfTypeAll<SpawnableOutsideObject>()
+            .Where(obj => obj.prefabToSpawn)
             .GroupBy(obj => obj.prefabToSpawn.name)
             .Select(obj => obj.First())
             .ToDictionary(obj => obj.prefabToSpawn.name);
