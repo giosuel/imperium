@@ -1,5 +1,12 @@
 # Changelog
 
+## Imperium v1.1.1 - Bug Fixes
+
+### Bug Fixes
+
+- Fixed a problem that caused log spam from tooltips.
+- Fixed an issue that caused the game to crash when Imperium was used with some content changing mods.
+
 ## Imperium v1.1 - Bug Fixes
 
 ### Bug Fixes
