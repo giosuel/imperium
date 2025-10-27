@@ -330,7 +330,8 @@ internal class EntityGizmoConfig
             .Replace("]", "")
             .Replace("\n", "")
             .Replace("\t", "")
-            .Replace("\\", "");
+            .Replace("\\", "")
+            .Trim();
 
         Info = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Info", escapedEntityName, false);
         Pathfinding = new ImpConfig<bool>(config, "Visualization.EntityGizmos.Pathfinding", escapedEntityName, false);
