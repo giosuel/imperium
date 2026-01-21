@@ -46,9 +46,11 @@ internal class ObjectVisualizers : ImpWidget
 
         insightTemplate = insightsList.Find("Item").gameObject;
         insightTemplate.SetActive(false);
+        FixupTextLabelPosition(insightTemplate);
 
         playerTemplate = playerList.Find("Item").gameObject;
         playerTemplate.SetActive(false);
+        FixupTextLabelPosition(playerTemplate);
 
         entityTemplate = entityList.Find("Item").gameObject;
         entityTemplate.SetActive(false);
@@ -183,6 +185,16 @@ internal class ObjectVisualizers : ImpWidget
         {
             configGetter(entityInfoConfig).Set(setActive);
         }
+    }
+
+    private static void FixupTextLabelPosition(GameObject item)
+    {
+        // Change Name.RectTransform.m_AnchoredPosition from -54.067223 to 100.24
+        // Fixes https://github.com/giosuel/imperium/issues/96
+        var rectTransform = item.transform.Find("Name").GetComponent<RectTransform>();
+        var position = rectTransform.anchoredPosition;
+        position.x = 100.24f;
+        rectTransform.anchoredPosition = position;
     }
 
     public void Refresh()
