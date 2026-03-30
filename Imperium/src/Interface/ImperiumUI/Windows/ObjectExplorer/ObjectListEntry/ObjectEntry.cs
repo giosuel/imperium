@@ -86,7 +86,11 @@ internal class ObjectEntry : MonoBehaviour
         destroyButton = ImpButton.Bind(
             "Destroy",
             transform,
-            () => ObjectEntryGenerator.DespawnObject(this)
+            () =>
+            {
+                ObjectEntryGenerator.DespawnObject(this);
+                Destroy(this);
+            }
         );
 
         // Respawn button

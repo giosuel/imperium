@@ -1,11 +1,31 @@
 # Changelog
 
-## Imperium v1.1.1 - Bug Fixes
+## Imperium v1.2 - v80 Update
+
+This update brings compatibility with the Lethal Company v80 public beta, along with several long-standing bug fixes.
+
+Note: *Due to a lot of changes in the entity spawning, Oracle entity spawn prediction is currently broken.*
+
+### General Changes
+
+- Imperium now works with Lethal Company v80.
+- Re-added functionality to spawn, despawn and manage vain shrouds.
+- Added functionality to spawn cadaver blooms and cadaver growths.
+- Due to long-standing issues, the save file editor has been removed.
 
 ### Bug Fixes
 
 - Fixed a problem that caused log spam from tooltips.
+- Fixed a bug that caused insights to be invisible in the visualization window.
 - Fixed an issue that caused the game to crash when Imperium was used with some content changing mods.
+
+### QoL Improvements
+- Improved responsiveness of the object explorer.
+- Added name overrides for several items and entities in the spawn menu.
+
+### Compatibility
+
+This version is compatible with the [v80](https://steamdb.info/changelist/34734266/) public beta of Lethal Company.
 
 ## Imperium v1.1 - Bug Fixes
 

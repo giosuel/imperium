@@ -190,7 +190,6 @@ internal class MoonManager : ImpLifecycleObject
         if (!Imperium.IsSceneLoaded.Value) return;
 
         Imperium.RoundManager.SetToCurrentLevelWeather();
-        Imperium.TimeOfDay.SetWeatherBasedOnVariables();
         for (var i = 0; i < Imperium.TimeOfDay.effects.Length; i++)
         {
             var weatherEffect = Imperium.TimeOfDay.effects[i];

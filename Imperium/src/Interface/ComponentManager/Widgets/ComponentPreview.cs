@@ -125,7 +125,7 @@ public class ComponentPreview : MonoBehaviour
     {
         OnShowPreview();
 
-        var proxy = new TileProxy(tile.Prefab, true, Vector3.up);
+        var proxy = new TileProxy(tile.Prefab);
         var bounds = proxy.Placement.LocalBounds;
         var radius = bounds.size.magnitude;
         previewCamera.orthographicSize = radius / 2;

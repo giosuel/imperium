@@ -113,7 +113,7 @@ public abstract class ImpUtils
 
     public static string GetPlayerLocationText(PlayerControllerB player, bool locationOnly)
     {
-        var isNearOtherPlayers = player.NearOtherPlayers(Imperium.Player, 17f);
+        var isNearOtherPlayers = player.NearOtherPlayers(17f);
         var isHearingOthers = player.PlayerIsHearingOthersThroughWalkieTalkie(Imperium.Player);
 
         var isAlone = !locationOnly && !isNearOtherPlayers && !isHearingOthers ? " (Alone)" : "";
@@ -206,7 +206,7 @@ public abstract class ImpUtils
         ICollection<SpawnableItemWithRarity> scrapList
     )
     {
-        var newScrap = new SpawnableItemWithRarity { spawnableItem = itemType, rarity = 0 };
+        var newScrap = new SpawnableItemWithRarity(itemType, 0);
         scrapList.Add(newScrap);
         return itemType;
     }
@@ -216,7 +216,7 @@ public abstract class ImpUtils
         ICollection<SpawnableEnemyWithRarity> entityList
     )
     {
-        var newEntity = new SpawnableEnemyWithRarity { enemyType = entityType, rarity = 0 };
+        var newEntity = new SpawnableEnemyWithRarity(entityType, 0);
         entityList.Add(newEntity);
         return entityType;
     }

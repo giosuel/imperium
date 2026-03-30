@@ -34,6 +34,7 @@ internal static class ObjectEntryGenerator
         ObjectType.Vent => false,
         ObjectType.Player => false,
         ObjectType.SteamValve => false,
+        ObjectType.VainShroud => false,
         ObjectType.SecurityDoor => false,
         ObjectType.OutsideObject => false,
         _ => true
@@ -66,6 +67,7 @@ internal static class ObjectEntryGenerator
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
         ObjectType.Vent => false,
+        ObjectType.VainShroud => false,
         ObjectType.OutsideObject => false,
         _ => true
     };
@@ -88,6 +90,13 @@ internal static class ObjectEntryGenerator
                 Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
                 {
                     Type = LocalObjectType.OutsideObject,
+                    Position = entry.containerObject.transform.position
+                });
+                break;
+            case ObjectType.VainShroud:
+                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                {
+                    Type = LocalObjectType.VainShroud,
                     Position = entry.containerObject.transform.position
                 });
                 break;
@@ -332,6 +341,17 @@ internal static class ObjectEntryGenerator
                 }, Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null, castGround: true);
                 Imperium.Interface.Close();
                 break;
+            case ObjectType.VainShroud:
+                Imperium.ImpPositionIndicator.Activate(position =>
+                {
+                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    {
+                        Type = LocalObjectType.VainShroud,
+                        Position = entry.containerObject.transform.position,
+                        Destination = position
+                    });
+                }, origin, castGround: true);
+                break;
             case ObjectType.OutsideObject:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
@@ -399,6 +419,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
             case ObjectType.Cruiser:
+            case ObjectType.VainShroud:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
@@ -430,6 +451,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.Item:
+            case ObjectType.VainShroud:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
@@ -453,6 +475,7 @@ internal static class ObjectEntryGenerator
         ObjectType.SecurityDoor => GetObjectGenericName("Security Door", entry.component),
         ObjectType.OutsideObject => GetOutsideObjectName(entry.component.gameObject),
         ObjectType.Vent => GetVentName((EnemyVent)entry.component),
+        ObjectType.VainShroud => $"Mold Spore (<i>ID: {entry.component.GetInstanceID()}</i>)",
         _ => throw new ArgumentOutOfRangeException()
     };
 
