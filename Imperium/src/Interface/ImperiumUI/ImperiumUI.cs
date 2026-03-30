@@ -86,11 +86,11 @@ public class ImperiumUI : BaseUI
             "Right/Rendering",
             "Render Settings"
         );
-        RegisterImperiumWindow<SaveEditorWindow>(
-            ImpAssets.SaveEditorWindowObject,
-            "Right/SaveEditor",
-            "Save File Editor"
-        );
+        // RegisterImperiumWindow<SaveEditorWindow>(
+        //     ImpAssets.SaveEditorWindowObject,
+        //     "Right/SaveEditor",
+        //     "Save File Editor"
+        // );
         RegisterImperiumWindow<EventLogWindow>(
             ImpAssets.EventLogWindowObject,
             "Right/EventLog",

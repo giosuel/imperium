@@ -4,11 +4,14 @@
 
 This update brings compatibility with the Lethal Company v80 public beta, along with several long-standing bug fixes.
 
+Note: *Due to a lot of changes in the entity spawning, Oracle entity spawn prediction is currently broken.*
+
 ### General Changes
 
-- Updated to game version v80.
+- Imperium now works with Lethal Company v80.
 - Re-added functionality to spawn, despawn and manage vain shrouds.
 - Added functionality to spawn cadaver blooms and cadaver growths.
+- Due to long-standing issues, the save file editor has been removed.
 
 ### Bug Fixes
 
