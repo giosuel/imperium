@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -75,6 +76,7 @@ internal class ObjectManager : ImpLifecycleObject
      * Lists of local objects that don't have a network object or script to reference
      */
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelOutsideObjects = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds = new([]);
 
     // Event that signalizes a change in any of the object lists
     internal event Action CurrentLevelObjectsChanged;
@@ -135,6 +137,9 @@ internal class ObjectManager : ImpLifecycleObject
         "LocalObjectTeleportation", Imperium.Networking
     );
 
+    private readonly ImpNetMessage<BurstCadaverBloomRequest> burstCadaverBloom =
+        new("BurstCadaverBloom", Imperium.Networking);
+
     private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
     private readonly ImpNetMessage<EntityDespawnRequest> entityDespawnMessage = new("DespawnEntity", Imperium.Networking);
     private readonly ImpNetMessage<ulong> itemDespawnMessage = new("DespawnItem", Imperium.Networking);
@@ -185,6 +190,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         objectsChangedEvent.OnClientRecive += RefreshLevelObjects;
         burstSteamValve.OnClientRecive += OnSteamValveBurst;
+        burstCadaverBloom.OnClientRecive += OnCadaverBloomBurst;
         objectTeleportationRequest.OnClientRecive += OnObjectTeleportationRequestClient;
 
         localObjectDespawnMessage.OnClientRecive += OnDespawnLocalObject;
@@ -321,8 +327,8 @@ internal class ObjectManager : ImpLifecycleObject
     internal GameObject FindObject(string objName)
     {
         if (ObjectCache.TryGetValue(objName, out var v)) return v;
-        var obj = Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(
-            obj => obj.name == objName && obj.scene != SceneManager.GetSceneByName("HideAndDontSave"));
+        var obj = Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(obj =>
+            obj.name == objName && obj.scene != SceneManager.GetSceneByName("HideAndDontSave"));
         if (!obj) return null;
         ObjectCache[objName] = obj;
         return obj;
@@ -415,6 +421,9 @@ internal class ObjectManager : ImpLifecycleObject
                 case "StickyNoteItem":
                     allStaticPrefabs["StickyNote"] = obj;
                     break;
+                case "MoldSpore 1":
+                    allLocalStaticPrefabs["MoldSpore"] = obj;
+                    break;
             }
         }
 
@@ -484,6 +493,7 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
+    private readonly LayerMask vainShroudMask = LayerMask.NameToLayer("MoldSpore");
 
     internal void RefreshLevelObjects()
     {
@@ -498,14 +508,18 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<BreakerBox> currentLevelBreakerBoxes = [];
         HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
         HashSet<GameObject> currentLevelOutsideObjects = [];
+        HashSet<GameObject> currentLevelVainShrouds = [];
         HashSet<SteamValveHazard> currentLevelSteamValves = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
         HashSet<RandomScrapSpawn> currentScrapSpawnPoints = [];
         HashSet<VehicleController> currentLevelCompanyCruisers = [];
         HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
 
-        foreach (var obj in FindObjectsOfType<GameObject>())
+        foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
         {
+            // This is cursed but there is no other way
+            if (obj.name.Contains("MoldSpore 1") && currentLevelVainShrouds.Add(obj)) continue;
+
             if (obj.layer == terrainMask
                 && OutsideObjectPrefabNameMap.Contains(obj.name)
                 && currentLevelOutsideObjects.Add(obj)
@@ -564,9 +578,12 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
+        Imperium.IO.LogInfo($"Van shrouds: {currentLevelVainShrouds.Count}");
+
         CurrentLevelItems.Set(currentLevelItems);
         CurrentLevelEntities.Set(currentLevelEntities);
         CurrentLevelOutsideObjects.Set(currentLevelOutsideObjects);
+        CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
         CurrentLevelDoors.Set(currentLevelDoors);
         CurrentLevelSecurityDoors.Set(currentLevelSecurityDoors);
         CurrentLevelTurrets.Set(currentLevelTurrets);
@@ -603,6 +620,10 @@ internal class ObjectManager : ImpLifecycleObject
             var displayName = item.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
             if (!string.IsNullOrEmpty(displayName)) displayNameMap[item.itemName] = displayName;
         }
+
+        displayNameMap["MoldSpore"] = "Vain Shroud";
+        displayNameMap["Maneater"] = "Cave Dweller";
+        displayNameMap["Cadaver Bloom"] = "Cadaver Bloom";
 
         overrideDisplayNameMap["StickyNote"] = "Sticky Note";
         overrideDisplayNameMap["Clipboard"] = "Clipboard";
@@ -676,6 +697,8 @@ internal class ObjectManager : ImpLifecycleObject
             new Ray(request.SpawnPosition + Vector3.up * 2f, Vector3.down),
             out var groundInfo, 100, ImpConstants.IndicatorMask
         );
+
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == clientId);
         var actualSpawnPosition = hasGround
             ? groundInfo.point
             : clientId.GetPlayerController()!.transform.position;
@@ -688,7 +711,7 @@ internal class ObjectManager : ImpLifecycleObject
                 _ => Instantiate(
                     enemyPrefab,
                     actualSpawnPosition,
-                    Quaternion.identity
+                    Quaternion.LookRotation(player.transform.position - actualSpawnPosition)
                 )
             };
             var entity = entityObj.GetComponent<EnemyAI>();
@@ -707,6 +730,21 @@ internal class ObjectManager : ImpLifecycleObject
             )
             {
                 AssignMaskedToPlayer(maskedEntity, (ulong)request.MaskedPlayerId, request.MaskedName);
+            }
+            else if (entityObj.TryGetComponent<CadaverBloomAI>(out _))
+            {
+                // Send delayed burst command if entity is cadaver bloom
+                IEnumerator Routine()
+                {
+                    yield return new WaitForSeconds(0.2f);
+                    burstCadaverBloom.DispatchToClients(new BurstCadaverBloomRequest
+                    {
+                        NetObj = netObject,
+                        PlayerId = clientId,
+                        Position = actualSpawnPosition
+                    });
+                }
+                StartCoroutine(Routine());
             }
         }
 
@@ -835,8 +873,8 @@ internal class ObjectManager : ImpLifecycleObject
             var spawnedInInventory = false;
             if (request.SpawnInInventory)
             {
-                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts.First(
-                    player => player.actualClientId == clientId
+                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts.First(player =>
+                    player.actualClientId == clientId
                 );
                 var firstItemSlot = invokingPlayer.FirstEmptyItemSlot();
                 if (firstItemSlot != -1 && grabbableItem.grabbable)
@@ -1167,6 +1205,16 @@ internal class ObjectManager : ImpLifecycleObject
     {
         switch (request.Type)
         {
+            case LocalObjectType.VainShroud:
+                TeleportLocalObject(
+                    request.Type,
+                    request.Position,
+                    CurrentLevelVainShrouds.Value
+                        .Where(obj => obj)
+                        .FirstOrDefault(obj => obj.transform.position == request.Position),
+                    request.Destination
+                );
+                break;
             case LocalObjectType.OutsideObject:
                 TeleportLocalObject(
                     request.Type,
@@ -1192,6 +1240,18 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
+        if (obj.TryGetComponent<GrabbableObject>(out var grabbableObject))
+        {
+            if (grabbableObject.isHeld && grabbableObject.playerHeldBy is not null)
+            {
+                Imperium.PlayerManager.DropItem(new DropItemRequest
+                {
+                    PlayerId = grabbableObject.playerHeldBy.playerClientId,
+                    ItemIndex = PlayerManager.GetItemHolderSlot(grabbableObject)
+                });
+            }
+        }
+
         DespawnObject(obj, clientId);
     }
 
@@ -1202,6 +1262,14 @@ internal class ObjectManager : ImpLifecycleObject
         {
             Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn entity with net ID {request.NetId}");
             return;
+        }
+
+        if (obj.TryGetComponent<SandSpiderAI>(out var sandSpider))
+        {
+            for (var i = 0; i < sandSpider.webTraps.Count; i++)
+            {
+                sandSpider.BreakWebServerRpc(i, (int)clientId);
+            }
         }
 
         DespawnObject(obj, clientId, request.IsRespawn);
@@ -1224,6 +1292,12 @@ internal class ObjectManager : ImpLifecycleObject
     {
         switch (request.Type)
         {
+            case LocalObjectType.VainShroud:
+                DespawnLocalObject(request.Type, request.Position, CurrentLevelVainShrouds.Value
+                    .Where(obj => obj)
+                    .FirstOrDefault(obj => obj.transform.position == request.Position)
+                );
+                break;
             case LocalObjectType.OutsideObject:
                 DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value
                     .Where(obj => obj)
@@ -1240,25 +1314,6 @@ internal class ObjectManager : ImpLifecycleObject
     private void DespawnObject(GameObject obj, ulong objectNetId, bool isRespawn = false)
     {
         if (!obj) return;
-
-        if (obj.TryGetComponent<GrabbableObject>(out var grabbableObject))
-        {
-            if (grabbableObject.isHeld && grabbableObject.playerHeldBy is not null)
-            {
-                Imperium.PlayerManager.DropItem(new DropItemRequest
-                {
-                    PlayerId = grabbableObject.playerHeldBy.playerClientId,
-                    ItemIndex = PlayerManager.GetItemHolderSlot(grabbableObject)
-                });
-            }
-        }
-        else if (obj.TryGetComponent<SandSpiderAI>(out var sandSpider))
-        {
-            for (var i = 0; i < sandSpider.webTraps.Count; i++)
-            {
-                sandSpider.BreakWebServerRpc(i, (int)objectNetId);
-            }
-        }
 
         try
         {
@@ -1279,6 +1334,28 @@ internal class ObjectManager : ImpLifecycleObject
         steamValve.valveHasBurst = true;
         steamValve.valveHasBeenRepaired = false;
         steamValve.BurstValve();
+    }
+
+    [ImpAttributes.LocalMethod]
+    private static void OnCadaverBloomBurst(BurstCadaverBloomRequest request)
+    {
+        if (!request.NetObj.TryGet(out var networkObject))
+        {
+            Imperium.IO.LogError("Failed to burst cadaver bloom. Network object not found.");
+            return;
+        }
+
+        if (!networkObject.TryGetComponent<CadaverBloomAI>(out var cadaverBloom))
+        {
+            Imperium.IO.LogError("Failed to burst cadaver bloom. Network object does not have enemy script.");
+            return;
+        }
+
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
+        cadaverBloom.BurstForth(
+            player, false, request.Position,
+            Quaternion.LookRotation(player.transform.position - request.Position).eulerAngles
+        );
     }
 
     #endregion

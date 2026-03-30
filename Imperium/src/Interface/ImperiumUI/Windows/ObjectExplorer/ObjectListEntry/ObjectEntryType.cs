@@ -8,6 +8,7 @@ internal enum ObjectCategory
     Hazards,
     Items,
     Vents,
+    Vains,
     Other,
     OutsideObjects
 }

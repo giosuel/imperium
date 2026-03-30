@@ -2,6 +2,7 @@
 
 #region
 
+using Unity.Netcode;
 using UnityEngine;
 
 #endregion
@@ -87,9 +88,17 @@ public readonly struct VentToggleRequest
     [SerializeField] public bool IsEnabled { get; init; }
 }
 
+public readonly struct BurstCadaverBloomRequest
+{
+    [SerializeField] public ulong PlayerId { get; init; }
+    [SerializeField] public Vector3 Position { get; init; }
+    [SerializeField] public NetworkObjectReference NetObj { get; init; }
+}
+
 public enum LocalObjectType
 {
-    OutsideObject
+    OutsideObject,
+    VainShroud
 }
 
 public enum ObjectType
@@ -105,6 +114,7 @@ public enum ObjectType
     SteamValve,
     SecurityDoor,
     OutsideObject,
+    VainShroud,
     Turret,
     Vent
 }
