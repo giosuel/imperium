@@ -333,5 +333,6 @@ public class Imperium : BaseUnityPlugin
 
         Harmony.PatchAll(typeof(PreInitPatches.PreInitSceneScriptPatch));
         Harmony.PatchAll(typeof(PreInitPatches.MenuManagerPatch));
+        Harmony.PatchAll(typeof(PreInitPatches.GameNetworkManagerPatch));
     }
 }

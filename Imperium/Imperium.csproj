@@ -83,6 +83,7 @@
         <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.RenderPipelines.HighDefinition.Runtime.dll" Private="False" Publicize="true" />
         <Reference Include="Unity.RenderPipelines.Core.Runtime" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Unity.RenderPipelines.Core.Runtime.dll" Private="False" Publicize="true" />
         <Reference Include="Newtonsoft.Json" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Newtonsoft.Json.dll" Private="False" Publicize="true"/>
+        <Reference Include="Facepunch.Steamworks" HintPath="$(LethalCompanyDir)Lethal Company_Data/Managed/Facepunch.Steamworks.Win64.dll" Private="False" Publicize="true"/>
     </ItemGroup>
 
     <ItemGroup>
