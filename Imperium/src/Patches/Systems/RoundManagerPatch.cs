@@ -125,7 +125,7 @@ internal static class RoundManagerPatch
             dungeonFlowTypesBackup = Imperium.StartOfRound.currentLevel.dungeonFlowTypes;
             __instance.currentLevel.dungeonFlowTypes =
             [
-                new IntWithRarity { id = Imperium.GameManager.CustomDungeonFlow.Value, rarity = 1 }
+                new IntWithRarity(Imperium.GameManager.CustomDungeonFlow.Value, 1, null)
             ];
         }
     }
