@@ -4,7 +4,7 @@ internal enum ObjectCategory
 {
     Players,
     Entities,
-    Cruisers,
+    Vehicles,
     Hazards,
     Items,
     Vents,

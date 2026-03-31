@@ -1,6 +1,28 @@
 # Changelog
 
-## Imperium v1.2 - v80 Update
+## Imperium v1.2.1 - Small Update
+
+### General Changes
+- Oracle is correctly predicting enemies again.
+- Added support for modded vehicles in the spawning UI and object explorer.
+- Made it so pausing time persists after restarting the game.
+
+### QoL Improvements
+- Improved usability of the Oracle UI and removed coordinates.
+- Moved all visualizer objects into Imperium parent objects.
+- Destroying a cruiser in the object explorer now makes it explode.
+- Made it so the time indicator icon is replaced with a lock when time is paused.
+- Removed various internal log statements.
+
+### Bug Fixes
+- Fixed a bug that caused a destroyed cruiser to leave colliders behind.
+- Fixed a bug that caused naturally spawned cruisers to be invisible.
+
+### Compatibility
+
+This version is compatible with the [v80](https://steamdb.info/changelist/34734266/) public beta of Lethal Company.
+
+## Imperium v1.2.0 - v80 Update
 
 This update brings compatibility with the Lethal Company v80 public beta, along with several long-standing bug fixes.
 

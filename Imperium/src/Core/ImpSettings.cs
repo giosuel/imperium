@@ -38,6 +38,8 @@ public class ImpSettings(ConfigFile config)
     internal readonly PreferenceSettings Preferences = new(config);
     internal readonly FreecamSettings Freecam = new(config);
 
+    internal readonly ConfigFile Config = config;
+
     internal class PlayerSettings(ConfigFile config) : SettingBase(config)
     {
         internal readonly ImpConfig<bool> InfiniteSprint = new(config, "Player", "InfiniteSprint", false);
@@ -128,6 +130,7 @@ public class ImpSettings(ConfigFile config)
     {
         internal readonly ImpConfig<bool> RealtimeClock = new(config, "Game.Time", "RealtimeClock", true);
         internal readonly ImpConfig<bool> PermanentClock = new(config, "Game.Time", "PermanentClock", true);
+        internal readonly ImpConfig<bool> TimeIsPaused = new(config, "Game.Time", "TimeIsPaused", false);
     }
 
     internal class EventLogSettings(ConfigFile config) : SettingBase(config)

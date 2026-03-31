@@ -43,7 +43,7 @@ internal class ObjectEntryEngine
 
         AddType(Imperium.ObjectManager.CurrentPlayers, ObjectType.Player, ObjectCategory.Players);
         AddType(Imperium.ObjectManager.CurrentLevelEntities, ObjectType.Entity, ObjectCategory.Entities);
-        AddType(Imperium.ObjectManager.CurrentLevelCruisers, ObjectType.Cruiser, ObjectCategory.Cruisers);
+        AddType(Imperium.ObjectManager.CurrentLevelVehicles, ObjectType.Vehicle, ObjectCategory.Vehicles);
         AddType(Imperium.ObjectManager.CurrentLevelTurrets, ObjectType.Turret, ObjectCategory.Hazards);
         AddType(Imperium.ObjectManager.CurrentLevelLandmines, ObjectType.Landmine, ObjectCategory.Hazards);
         AddType(Imperium.ObjectManager.CurrentLevelSpikeTraps, ObjectType.SpikeTrap, ObjectCategory.Hazards);

@@ -24,7 +24,7 @@ namespace Imperium.Core;
 
 internal delegate void Visualizer(GameObject obj, string identifier, float thickness, Material material);
 
-internal class Visualization
+internal class Visualization : ImpLifecycleObject
 {
     // Contains all registered visualizers with their UNIQUE identifier
     private readonly Dictionary<string, VisualizerDefinition> VisualizerDefinitions = new();
@@ -36,44 +36,45 @@ internal class Visualization
     // Note: This dictionary will contain NULL values if objects are deleted
     private readonly Dictionary<string, Dictionary<int, GameObject>> VisualizationObjectMap = new();
 
-    internal readonly ShotgunGizmos ShotgunGizmos;
-    internal readonly ShovelGizmos ShovelGizmos;
-    internal readonly KnifeGizmos KnifeGizmos;
-    internal readonly LandmineGizmos LandmineGizmos;
-    internal readonly SpikeTrapGizmos SpikeTrapGizmos;
-    internal readonly SpawnIndicators SpawnIndicators;
-    internal readonly VentTimers VentTimers;
-    internal readonly PlayerGizmos PlayerGizmos;
-    internal readonly EntityGizmos EntityGizmos;
-    internal readonly ScrapSpawnIndicators ScrapSpawns;
-    internal readonly MapHazardIndicators HazardSpawns;
-    internal readonly NavMeshVisualizer NavMeshVisualizer;
-
-    internal readonly ObjectInsights ObjectInsights;
+    internal ShotgunGizmos ShotgunGizmos;
+    internal ShovelGizmos ShovelGizmos;
+    internal KnifeGizmos KnifeGizmos;
+    internal LandmineGizmos LandmineGizmos;
+    internal SpikeTrapGizmos SpikeTrapGizmos;
+    internal SpawnIndicators SpawnIndicators;
+    internal VentTimers VentTimers;
+    internal PlayerGizmos PlayerGizmos;
+    internal EntityGizmos EntityGizmos;
+    internal ScrapSpawnIndicators ScrapSpawns;
+    internal MapHazardIndicators HazardSpawns;
+    internal NavMeshVisualizer NavMeshVisualizer;
+    internal ObjectInsights ObjectInsights;
 
     private static Material DefaultMaterial => ImpAssets.WireframeCyan;
 
-    internal Visualization(ImpBinding<OracleState> oracleStateBinding, ObjectManager objectManager, ConfigFile config)
+    protected override void Init()
     {
+        base.Init();
+
         // Static visualizers are updated by object lists
         LandmineGizmos = new LandmineGizmos(
-            objectManager.CurrentLevelLandmines,
+            Imperium.ObjectManager.CurrentLevelLandmines,
             Imperium.Settings.Visualization.LandmineIndicators
         );
         SpikeTrapGizmos = new SpikeTrapGizmos(
-            objectManager.CurrentLevelSpikeTraps,
+            Imperium.ObjectManager.CurrentLevelSpikeTraps,
             Imperium.Settings.Visualization.SpikeTrapIndicators
         );
         VentTimers = new VentTimers(
-            objectManager.CurrentLevelVents,
+            Imperium.ObjectManager.CurrentLevelVents,
             Imperium.Settings.Visualization.VentTimers
         );
         SpawnIndicators = new SpawnIndicators(
-            oracleStateBinding,
+            Imperium.Oracle.State,
             Imperium.Settings.Visualization.SpawnIndicators
         );
         ScrapSpawns = new ScrapSpawnIndicators(
-            objectManager.CurrentScrapSpawnPoints,
+            Imperium.ObjectManager.CurrentScrapSpawnPoints,
             Imperium.Settings.Visualization.ScrapSpawns
         );
         HazardSpawns = new MapHazardIndicators(
@@ -91,10 +92,10 @@ internal class Visualization
         KnifeGizmos = new KnifeGizmos(Imperium.Settings.Visualization.KnifeIndicators);
 
         // Player and entity infos are separate as they have their own configs
-        PlayerGizmos = new PlayerGizmos(objectManager.CurrentPlayers, config);
-        EntityGizmos = new EntityGizmos(objectManager.CurrentLevelEntities, config);
+        PlayerGizmos = new PlayerGizmos(Imperium.ObjectManager.CurrentPlayers, Imperium.Settings.Config);
+        EntityGizmos = new EntityGizmos(Imperium.ObjectManager.CurrentLevelEntities, Imperium.Settings.Config);
 
-        ObjectInsights = new ObjectInsights(config);
+        ObjectInsights = new ObjectInsights(Imperium.Settings.Config);
         Imperium.IsSceneLoaded.onTrigger += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelObjectsChanged += ObjectInsights.Refresh;
         Imperium.ObjectManager.CurrentLevelObjectsChanged += RefreshOverlays;
@@ -163,7 +164,7 @@ internal class Visualization
         }
 
         stopwatch.Stop();
-        Imperium.IO.LogInfo($" - SPENT IN VISUALIZATION: {stopwatch.ElapsedMilliseconds}");
+        Imperium.IO.LogDebug($"[PROFILE] - SPENT IN VISUALIZATION: {stopwatch.ElapsedMilliseconds}");
     }
 
     public static GameObject VisualizePoint(GameObject obj, float size, Material material = null, string name = null)

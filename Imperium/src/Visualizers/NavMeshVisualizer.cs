@@ -23,6 +23,7 @@ internal class NavMeshVisualizer(
         foreach (var navmeshSurface in Visualization.GetNavmeshSurfaces())
         {
             var navmeshVisualizer = new GameObject($"ImpVis_NavMeshSurface_{index}");
+            navmeshVisualizer.transform.SetParent(Imperium.Visualization.transform, true);
             var navmeshRenderer = navmeshVisualizer.AddComponent<MeshRenderer>();
             navmeshRenderer.material = ImpAssets.TriggerMaterial;
             var navmeshFilter = navmeshVisualizer.AddComponent<MeshFilter>();

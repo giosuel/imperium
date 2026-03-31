@@ -199,17 +199,15 @@ internal static class RoundManagerPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("PlotOutEnemiesForNextHour")]
-    private static bool PlotOutEnemiesForNextHourPatch()
+    private static bool PlotOutEnemiesForNextHourPatch(RoundManager __instance)
     {
-        Imperium.IO.LogInfo($"Outdoor spwawning paused: {Imperium.MoonManager.IndoorSpawningPaused.Value}");
         return !Imperium.MoonManager.IndoorSpawningPaused.Value;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("SpawnEnemiesOutside")]
-    private static bool SpawnEnemiesOutsidePatch()
+    private static bool SpawnEnemiesOutsidePatch(RoundManager __instance)
     {
-        Imperium.IO.LogInfo($"Outdoor spwawning paused: {Imperium.MoonManager.OutdoorSpawningPaused.Value}");
         return !Imperium.MoonManager.OutdoorSpawningPaused.Value;
     }
 
@@ -217,7 +215,6 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnDaytimeEnemiesOutside")]
     private static bool SpawnDaytimeEnemiesOutsidePatch(RoundManager __instance)
     {
-        Imperium.IO.LogInfo($"Outdoor spwawning paused: {Imperium.MoonManager.DaytimeSpawningPaused.Value}");
         return !Imperium.MoonManager.DaytimeSpawningPaused.Value;
     }
 

@@ -23,7 +23,7 @@ internal class SpawnIndicators(
         {
             foreach (var spawnReport in state.OutdoorCycles[i])
             {
-                var indicatorObject = Object.Instantiate(ImpAssets.SpawnIndicator);
+                var indicatorObject = Object.Instantiate(ImpAssets.SpawnIndicator, Imperium.Visualization.transform);
                 var indicator = indicatorObject.AddComponent<SpawnIndicator>();
                 indicator.transform.position = spawnReport.Position;
                 indicator.Init(

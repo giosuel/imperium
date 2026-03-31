@@ -44,7 +44,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "1.2";
+    public const string PLUGIN_VERSION = "1.2.1";
 
     private static Harmony Harmony;
     private static ManualLogSource Log;
@@ -213,7 +213,7 @@ public class Imperium : BaseUnityPlugin
         ObjectManager = ImpLifecycleObject.Create<ObjectManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         PlayerManager = ImpLifecycleObject.Create<PlayerManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         WaypointManager = ImpLifecycleObject.Create<WaypointManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
-        Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
+        Visualization = ImpLifecycleObject.Create<Visualization>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
 
         Map = ImpMap.Create();
         Freecam = ImpFreecam.Create();

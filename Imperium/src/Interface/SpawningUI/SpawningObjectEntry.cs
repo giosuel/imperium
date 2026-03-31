@@ -123,10 +123,11 @@ public class SpawningObjectEntry : MonoBehaviour
                     SendNotification = true
                 });
                 break;
-            case SpawnObjectType.CompanyCruiser:
-                Imperium.ObjectManager.SpawnCompanyCruiser(new CompanyCruiserSpawnRequest
+            case SpawnObjectType.Vehicle:
+                Imperium.ObjectManager.SpawnVehicle(new VehicleSpawnRequest
                 {
-                    SpawnPosition = position + Vector3.up * 5f,
+                    Name = spawnObjectName,
+                    SpawnPosition = position,
                     SendNotification = true
                 });
                 break;

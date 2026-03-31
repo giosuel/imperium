@@ -40,6 +40,11 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.Networking
     );
 
+    internal readonly ImpNetworkBinding<bool> WeedSpawningPaused = new(
+        "WeedSpawningPaused",
+        Imperium.Networking
+    );
+
     internal readonly ImpNetworkBinding<bool> DaytimeSpawningPaused = new(
         "DaytimeSpawningPaused",
         Imperium.Networking
@@ -48,6 +53,7 @@ internal class MoonManager : ImpLifecycleObject
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
         "TimeIsPaused",
         Imperium.Networking,
+        masterBinding: Imperium.Settings.Time.TimeIsPaused,
         onUpdateClient: isPaused =>
         {
             Imperium.TimeOfDay.globalTimeSpeedMultiplier = isPaused ? 0 : ImpConstants.DefaultTimeSpeed;

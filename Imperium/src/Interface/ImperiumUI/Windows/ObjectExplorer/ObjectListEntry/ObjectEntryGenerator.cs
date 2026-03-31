@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
@@ -19,7 +20,7 @@ internal static class ObjectEntryGenerator
     internal static bool CanDestroy(ObjectEntry entry) => entry.Type switch
     {
         ObjectType.Player => false,
-        ObjectType.Cruiser when entry.component is VehicleController
+        ObjectType.Vehicle when entry.component is VehicleController
         {
             currentPassenger: not null,
             currentDriver: not null
@@ -54,15 +55,13 @@ internal static class ObjectEntryGenerator
 
     internal static bool CanRevive(ObjectEntry entry) => entry.Type switch
     {
-
-
         ObjectType.Player when entry.component is PlayerControllerB { isPlayerDead: true } => true,
         _ => false
     };
 
     internal static bool CanToggle(ObjectEntry entry) => entry.Type switch
     {
-        ObjectType.Cruiser => false,
+        ObjectType.Vehicle => false,
         ObjectType.Player => false,
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
@@ -72,7 +71,7 @@ internal static class ObjectEntryGenerator
         _ => true
     };
 
-    internal static void DespawnObject(ObjectEntry entry, bool isRespawn = false)
+    internal static bool DespawnObject(ObjectEntry entry, bool isRespawn = false)
     {
         switch (entry.Type)
         {
@@ -82,7 +81,7 @@ internal static class ObjectEntryGenerator
                     NetId = entry.objectNetId!.Value,
                     IsRespawn = isRespawn
                 });
-                break;
+                return true;
             case ObjectType.Item:
                 Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
                 break;
@@ -92,21 +91,23 @@ internal static class ObjectEntryGenerator
                     Type = LocalObjectType.OutsideObject,
                     Position = entry.containerObject.transform.position
                 });
-                break;
+                return true;
             case ObjectType.VainShroud:
                 Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
                 {
                     Type = LocalObjectType.VainShroud,
                     Position = entry.containerObject.transform.position
                 });
-                break;
-            case ObjectType.Cruiser:
+                return true;
+            case ObjectType.Vehicle:
                 var cruiser = (VehicleController)entry.component;
-                if (cruiser.currentDriver || cruiser.currentPassenger) return;
-                Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
-                break;
-            case ObjectType.Player:
-                break;
+                if (cruiser.currentDriver || cruiser.currentPassenger) return false;
+                Imperium.ObjectManager.DespawnVehicle(new VehicleDespawnRequest
+                {
+                    NetId = entry.objectNetId!.Value,
+                    IsRespawn = isRespawn
+                });
+                return true;
             case ObjectType.BreakerBox:
             case ObjectType.Landmine:
             case ObjectType.Turret:
@@ -116,63 +117,99 @@ internal static class ObjectEntryGenerator
             case ObjectType.Vent:
             case ObjectType.SecurityDoor:
                 Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
+                return true;
+            case ObjectType.Player:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        return false;
     }
 
     internal static void RespawnObject(ObjectEntry entry)
     {
         switch (entry.Type)
         {
-            case ObjectType.Cruiser:
-                DespawnObject(entry);
-                Imperium.ObjectManager.SpawnCompanyCruiser(new CompanyCruiserSpawnRequest
+            case ObjectType.Vehicle:
+                var vehicle = (VehicleController)entry.component;
+                var buyableVehicle = Imperium.ObjectManager.LoadedVehicles.Value.Values.FirstOrDefault(vhc => vhc
+                    .vehiclePrefab
+                    .GetComponent<VehicleController>()?
+                    .vehicleID.Equals(vehicle.vehicleID) ?? false
+                );
+
+                if (buyableVehicle == null)
                 {
-                    SpawnPosition = entry.containerObject.transform.position
-                });
+                    Imperium.IO.LogError($"[SPAWN] Failed to find vehicle to respawn by ID. ID: {vehicle.vehicleID}");
+                    return;
+                }
+
+                if (DespawnObject(entry, isRespawn: true))
+                {
+                    Imperium.ObjectManager.SpawnVehicle(new VehicleSpawnRequest
+                    {
+                        Name = buyableVehicle.vehicleDisplayName,
+                        SpawnPosition = entry.containerObject.transform.position
+                    });
+                }
+
                 break;
             case ObjectType.Landmine:
-                DespawnObject(entry);
-                Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                if (DespawnObject(entry, isRespawn: true))
                 {
-                    Name = "Landmine",
-                    SpawnPosition = entry.containerObject.transform.position
-                });
+                    Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                    {
+                        Name = "Landmine",
+                        SpawnPosition = entry.containerObject.transform.position
+                    });
+                }
+
                 break;
             case ObjectType.Turret:
-                DespawnObject(entry);
-                Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                if (DespawnObject(entry, isRespawn: true))
                 {
-                    Name = "Turret",
-                    SpawnPosition = entry.containerObject.transform.position
-                });
+                    Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                    {
+                        Name = "Turret",
+                        SpawnPosition = entry.containerObject.transform.position
+                    });
+                }
+
                 break;
             case ObjectType.SpiderWeb:
-                DespawnObject(entry);
-                Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                if (DespawnObject(entry, isRespawn: true))
                 {
-                    Name = "SpiderWeb",
-                    SpawnPosition = entry.containerObject.transform.position
-                });
+                    Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                    {
+                        Name = "SpiderWeb",
+                        SpawnPosition = entry.containerObject.transform.position
+                    });
+                }
+
                 break;
             case ObjectType.SpikeTrap:
-                DespawnObject(entry);
-                Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                if (DespawnObject(entry, isRespawn: true))
                 {
-                    Name = "Spike Trap",
-                    SpawnPosition = entry.containerObject.transform.position
-                });
+                    Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
+                    {
+                        Name = "Spike Trap",
+                        SpawnPosition = entry.containerObject.transform.position
+                    });
+                }
+
                 break;
             case ObjectType.Entity:
-                var entityType = ((EnemyAI)entry.component).enemyType;
-                DespawnObject(entry, isRespawn: true);
-                Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
+                if (DespawnObject(entry, isRespawn: true))
                 {
-                    Name = entityType.enemyName,
-                    SpawnPosition = entry.containerObject.transform.position
-                });
+                    var entityType = ((EnemyAI)entry.component).enemyType;
+                    Imperium.ObjectManager.SpawnEntity(new EntitySpawnRequest
+                    {
+                        Name = entityType.enemyName,
+                        SpawnPosition = entry.containerObject.transform.position
+                    });
+                }
+
                 break;
             case ObjectType.Vent:
             case ObjectType.SteamValve:
@@ -181,6 +218,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Item:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
+            case ObjectType.VainShroud:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -200,7 +238,7 @@ internal static class ObjectEntryGenerator
                     ItemIndex = PlayerManager.GetItemHolderSlot(item)
                 });
                 break;
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
             case ObjectType.Landmine:
             case ObjectType.Turret:
             case ObjectType.SpiderWeb:
@@ -225,7 +263,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player when entry.component is PlayerControllerB { isPlayerDead: false } player:
                 Imperium.PlayerManager.KillPlayer(player.playerClientId);
                 break;
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
             case ObjectType.Landmine:
             case ObjectType.Turret:
             case ObjectType.SpiderWeb:
@@ -250,7 +288,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player when entry.component is PlayerControllerB { isPlayerDead: true } player:
                 Imperium.PlayerManager.RevivePlayer(player.playerClientId);
                 break;
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
             case ObjectType.Landmine:
             case ObjectType.Turret:
             case ObjectType.SpiderWeb:
@@ -304,7 +342,7 @@ internal static class ObjectEntryGenerator
                 break;
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
             case ObjectType.Item:
             case ObjectType.Vent:
             case ObjectType.OutsideObject:
@@ -320,7 +358,7 @@ internal static class ObjectEntryGenerator
 
         switch (entry.Type)
         {
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
@@ -418,7 +456,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SpikeTrap:
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
             case ObjectType.VainShroud:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
@@ -449,7 +487,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.BreakerBox:
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
-            case ObjectType.Cruiser:
+            case ObjectType.Vehicle:
             case ObjectType.Item:
             case ObjectType.VainShroud:
             case ObjectType.SecurityDoor:
@@ -463,7 +501,7 @@ internal static class ObjectEntryGenerator
     internal static string GetObjectName(ObjectEntry entry) => entry.Type switch
     {
         ObjectType.BreakerBox => GetObjectGenericName("Breaker Box", entry.component),
-        ObjectType.Cruiser => GetObjectGenericName("Cruiser", entry.component),
+        ObjectType.Vehicle => GetVehicleName(entry.component),
         ObjectType.Entity => GetEntityName((EnemyAI)entry.component),
         ObjectType.Item => ((GrabbableObject)entry.component).itemProperties.itemName,
         ObjectType.Landmine => GetObjectGenericName("Landmine", entry.component),
@@ -492,6 +530,20 @@ internal static class ObjectEntryGenerator
         ObjectType.SpikeTrap => entry.component.transform.parent.parent.parent.gameObject,
         _ => entry.component.gameObject
     };
+
+    private static string GetVehicleName(Component obj)
+    {
+        var vehicle = (VehicleController)obj;
+        var buyableVehicle = Imperium.ObjectManager.LoadedVehicles.Value.Values.FirstOrDefault(vhc => vhc
+            .vehiclePrefab
+            .GetComponent<VehicleController>()?
+            .vehicleID.Equals(vehicle.vehicleID) ?? false
+        );
+
+        return buyableVehicle == null
+            ? $"Unknown Vehicle (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})"
+            : buyableVehicle.vehicleDisplayName;
+    }
 
     private static string GetObjectGenericName(string name, Component obj)
     {
