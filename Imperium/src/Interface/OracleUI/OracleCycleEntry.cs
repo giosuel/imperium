@@ -72,7 +72,9 @@ public class OracleCycleEntry : MonoBehaviour
         reports.ForEach(Destroy);
         reports.Clear();
 
-        title.text = $"Cycle #{cycleIndex} ({Formatting.FormatDayTime(state.Cycles[cycleIndex].CycleTime)})";
+        title.text = cycleIndex == 0
+            ? "Initial Cycle"
+            : $"Cycle #{cycleIndex} ({Formatting.FormatDayTime(state.Cycles[cycleIndex].CycleTime)})";
 
         state.IndoorCycles[cycleIndex].ForEach(entry => AddReport(entry, indoorList));
         if (outdoorList) state.OutdoorCycles[cycleIndex].ForEach(entry => AddReport(entry, outdoorList));
@@ -83,17 +85,15 @@ public class OracleCycleEntry : MonoBehaviour
     {
         var reportObject = Instantiate(entryTemplate, list, true);
         reportObject.SetActive(true);
-        reportObject.transform.Find("Name").GetComponent<TMP_Text>().text =
-            Imperium.ObjectManager.GetDisplayName(report.Entity.enemyName);
-        reportObject.transform.Find("Time").GetComponent<TMP_Text>().text =
-            Formatting.FormatDayTime(report.SpawnTime);
-        reportObject.transform.Find("GhostSpawn").gameObject.SetActive(false);
 
-        var clickableText = reportObject.transform.Find("Position").gameObject.AddComponent<ImpClickableText>();
-        clickableText.Init(
-            Formatting.FormatVector(report.Position, 1),
+        var clickableName = reportObject.transform.Find("Name").gameObject.AddComponent<ImpClickableText>();
+        clickableName.Init(
+            Imperium.ObjectManager.GetDisplayName(report.Entity.enemyName),
             () => Imperium.PlayerManager.TeleportLocalPlayer(report.Position)
         );
+
+        reportObject.transform.Find("Time").GetComponent<TMP_Text>().text =
+            Formatting.FormatDayTime(report.SpawnTime);
 
         reports.Add(reportObject);
     }

@@ -163,7 +163,7 @@ internal class Visualization
         }
 
         stopwatch.Stop();
-        Imperium.IO.LogInfo($" - SPENT IN VISUALIZATION: {stopwatch.ElapsedMilliseconds}");
+        Imperium.IO.LogDebug($"[PROFILE] - SPENT IN VISUALIZATION: {stopwatch.ElapsedMilliseconds}");
     }
 
     public static GameObject VisualizePoint(GameObject obj, float size, Material material = null, string name = null)

@@ -40,6 +40,11 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.Networking
     );
 
+    internal readonly ImpNetworkBinding<bool> WeedSpawningPaused = new(
+        "WeedSpawningPaused",
+        Imperium.Networking
+    );
+
     internal readonly ImpNetworkBinding<bool> DaytimeSpawningPaused = new(
         "DaytimeSpawningPaused",
         Imperium.Networking

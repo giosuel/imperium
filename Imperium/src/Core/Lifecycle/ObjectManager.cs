@@ -578,8 +578,6 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        Imperium.IO.LogInfo($"Van shrouds: {currentLevelVainShrouds.Count}");
-
         CurrentLevelItems.Set(currentLevelItems);
         CurrentLevelEntities.Set(currentLevelEntities);
         CurrentLevelOutsideObjects.Set(currentLevelOutsideObjects);
@@ -597,12 +595,12 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelCruisers.Set(currentLevelCompanyCruisers);
 
         stopwatch.Stop();
-        Imperium.IO.LogInfo($"REFRESH : {stopwatch.ElapsedMilliseconds}");
+        Imperium.IO.LogDebug($"[PROFILE] Objects refresh time : {stopwatch.ElapsedMilliseconds}");
 
         CurrentLevelObjectsChanged?.Invoke();
 
         stopwatch2.Stop();
-        Imperium.IO.LogInfo($"TOTAL REFRESH : {stopwatch2.ElapsedMilliseconds}");
+        Imperium.IO.LogDebug($"[PROFILE] Total objects refresh time : {stopwatch2.ElapsedMilliseconds}");
     }
 
     private void GenerateDisplayNameMaps()

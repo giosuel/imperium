@@ -21,7 +21,7 @@ internal class Oracle : ImpLifecycleObject
 
     internal void Simulate()
     {
-        Imperium.IO.LogInfo("Oracle is simulating...");
+        Imperium.IO.LogInfo("[ORACLE] Oracle is simulating...");
         Simulate(false, null);
     }
 
@@ -39,76 +39,166 @@ internal class Oracle : ImpLifecycleObject
         var currentHour = Imperium.RoundManager.currentHour;
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
 
+        Imperium.IO.LogDebug($"[ORACLE] Start simulating at {currentHour}. Initial: {initial}");
+
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
         var EntitySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.EnemySpawnRandom);
+
         var OutsideEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.OutsideEnemySpawnRandom);
+        var OutsideEnemySpawnPlacementSimulator = ImpUtils.CloneRandom(
+            Imperium.RoundManager.OutsideEnemySpawnPlacementRandom
+        );
+
+        var WeedEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.WeedEnemySpawnRandom);
+        var WeedEnemySpawnPlacementSimulator = ImpUtils.CloneRandom(
+            Imperium.RoundManager.WeedEnemySpawnPlacementRandom
+        );
+
+        var DaytimeEnemySpawnSimulator = ImpUtils.CloneRandom(Imperium.RoundManager.DaytimeEnemySpawnRandom);
+        var DaytimeEnemySpawnPlacementSimulator = ImpUtils.CloneRandom(
+            Imperium.RoundManager.DaytimeEnemySpawnPlacementRandom
+        );
 
         var roundManager = Imperium.RoundManager;
         var currentLevel = roundManager.currentLevel;
 
+        var moldSpreadManager = FindObjectOfType<MoldSpreadManager>();
+
         // Variables that change in cycles
         var currentTime = Imperium.TimeOfDay.currentDayTime;
+        var normalizedTimeOfDay = Imperium.TimeOfDay.normalizedTimeOfDay;
 
         var indoorPower = roundManager.currentEnemyPower;
+        var indoorPowerNoDeaths = roundManager.currentEnemyPowerNoDeaths;
+        var indoorDiversityLevel = roundManager.currentInsideEnemyDiversityLevel;
+
         var outdoorPower = roundManager.currentOutsideEnemyPower;
+        var outdoorPowerNoDeaths = roundManager.currentOutsideEnemyPowerNoDeaths;
+        var outdoorDiversityLevel = roundManager.currentOutsideEnemyDiversityLevel;
+
         var daytimePower = roundManager.currentDaytimeEnemyPower;
+        var daytimePowerNoDeaths = roundManager.currentDaytimeEnemyPowerNoDeaths;
+
+        var weedPower = roundManager.currentWeedEnemyPower;
+
         var cannotSpawnMoreInsideEnemies = roundManager.cannotSpawnMoreInsideEnemies;
 
         var indoorEntityCounts = currentLevel.Enemies
             .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
+        var indoorEntitySpawnedAtLeastOnce = currentLevel.Enemies
+            .Distinct()
+            .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.hasSpawnedAtLeastOne);
+
         var outdoorEntityCounts = currentLevel.OutsideEnemies
             .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
+        var outdoorEntitySpawnedAtLeastOnce = currentLevel.OutsideEnemies
+            .Distinct()
+            .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.hasSpawnedAtLeastOne);
+
         var daytimeEntityCounts = currentLevel.DaytimeEnemies
             .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
+        var daytimeEntitySpawnedAtLeastOnce = currentLevel.DaytimeEnemies
+            .Distinct()
+            .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.hasSpawnedAtLeastOne);
+
+        var weedEntityCounts = roundManager.WeedEnemies
+            .Distinct()
+            .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
+        var weedEntitySpawnedAtLeastOnce = roundManager.WeedEnemies
+            .Distinct()
+            .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.hasSpawnedAtLeastOne);
 
         var firstTimeSpawningEnemies = roundManager.firstTimeSpawningEnemies;
         var firstTimeSpawningOutsideEnemies = roundManager.firstTimeSpawningOutsideEnemies;
         var firstTimeSpawningDaytimeEnemies = roundManager.firstTimeSpawningDaytimeEnemies;
+        var firstTimeSpawningWeedEnemies = roundManager.firstTimeSpawningWeedEnemies;
+
+        var minIndoorEntitiesToSpawn = roundManager.minEnemiesToSpawn;
 
         // Cycle Variables
         State.Value.CurrentCycle = Mathf.RoundToInt(
             currentHour * Imperium.TimeOfDay.lengthOfHours / Imperium.TimeOfDay.totalTime * 9
         );
 
+        Imperium.IO.LogDebug($"[ORACLE] Simulating starting cycle: {State.Value.CurrentCycle}");
+
         for (var i = State.Value.CurrentCycle; i <= 9; i++)
         {
+            Imperium.IO.LogDebug(
+                $"[ORACLE] Simulating cycle {i} at currentTime: {currentTime}, currentHour: {currentHour}");
+
             State.Value.Cycles[i].CycleTime = currentTime;
 
-            if (!Imperium.MoonManager.DaytimeSpawningPaused.Value)
+            // The game only spawns outdoor, daytime and weed entities after the initial cycle
+            if (i > 0)
             {
-                State.Value.DaytimeCycles[i] = SimulateDaytimeSpawnCycle(
-                    AnomalySimulator, EntitySimulator,
-                    ref daytimePower,
-                    daytimeEntityCounts,
-                    ref firstTimeSpawningDaytimeEnemies,
-                    currentHour, currentTime
-                );
-            }
+                if (!Imperium.MoonManager.DaytimeSpawningPaused.Value)
+                {
+                    State.Value.DaytimeCycles[i] = SimulateDaytimeSpawnCycle(
+                        AnomalySimulator, DaytimeEnemySpawnSimulator,
+                        DaytimeEnemySpawnPlacementSimulator,
+                        ref daytimePower,
+                        ref daytimePowerNoDeaths,
+                        daytimeEntityCounts,
+                        daytimeEntitySpawnedAtLeastOnce,
+                        ref firstTimeSpawningDaytimeEnemies,
+                        normalizedTimeOfDay,
+                        currentHour, currentTime
+                    );
+                }
 
-            if (!Imperium.MoonManager.OutdoorSpawningPaused.Value)
-            {
-                State.Value.OutdoorCycles[i] = SimulateOutdoorSpawnCycle(
-                    AnomalySimulator, OutsideEnemySpawnSimulator,
-                    ref outdoorPower,
-                    outdoorEntityCounts,
-                    ref firstTimeSpawningOutsideEnemies,
-                    currentHour, currentTime
-                );
+                if (!Imperium.MoonManager.OutdoorSpawningPaused.Value)
+                {
+                    State.Value.OutdoorCycles[i] = SimulateOutdoorSpawnCycle(
+                        AnomalySimulator,
+                        OutsideEnemySpawnSimulator,
+                        OutsideEnemySpawnPlacementSimulator,
+                        ref outdoorPower,
+                        ref outdoorPowerNoDeaths,
+                        ref outdoorDiversityLevel,
+                        outdoorEntityCounts,
+                        outdoorEntitySpawnedAtLeastOnce,
+                        ref firstTimeSpawningOutsideEnemies,
+                        moldSpreadManager,
+                        normalizedTimeOfDay,
+                        currentHour, currentTime
+                    );
+                }
+
+                if (!Imperium.MoonManager.WeedSpawningPaused.Value)
+                {
+                    State.Value.OutdoorCycles[i].AddRange(SimulateWeedSpawnCycle(
+                        AnomalySimulator,
+                        WeedEnemySpawnSimulator,
+                        WeedEnemySpawnPlacementSimulator,
+                        ref weedPower,
+                        weedEntityCounts,
+                        weedEntitySpawnedAtLeastOnce,
+                        moldSpreadManager,
+                        ref firstTimeSpawningWeedEnemies,
+                        currentHour, currentTime
+                    ));
+                }
             }
 
             var spawnTimes = new List<int>();
             if (!Imperium.MoonManager.IndoorSpawningPaused.Value)
             {
                 State.Value.IndoorCycles[i] = SimulateIndoorSpawnCycle(
-                    AnomalySimulator, EntitySimulator,
+                    EntitySimulator,
                     ref indoorPower,
+                    ref indoorPowerNoDeaths,
+                    ref indoorDiversityLevel,
                     indoorEntityCounts,
+                    indoorEntitySpawnedAtLeastOnce,
                     ref cannotSpawnMoreInsideEnemies,
                     ref firstTimeSpawningEnemies,
-                    currentHour, currentTime
+                    ref minIndoorEntitiesToSpawn,
+                    normalizedTimeOfDay,
+                    currentHour
                 );
                 spawnTimes = State.Value.IndoorCycles[i].Select(report => report.SpawnTime).ToList();
             }
@@ -144,38 +234,60 @@ internal class Oracle : ImpLifecycleObject
     }
 
     private static List<SpawnReport> SimulateIndoorSpawnCycle(
-        Random anomalySimulator,
         Random entitySimulator,
         ref float currentPower,
+        ref float currentPowerNoDeaths,
+        ref int currentDiversityLevel,
         IDictionary<EnemyType, int> entitySpawnCounts,
+        IDictionary<EnemyType, bool> entitySpawnedAtLeastOne,
         ref bool cannotSpawnMoreInsideEnemies,
         ref bool firstTimeSpawning,
-        int currentHour,
-        float currentDayTime
+        ref int minEntitiesToSpawn,
+        float normalizedTimeOfDay,
+        int currentHour
     )
     {
         var roundManager = Imperium.RoundManager;
         var spawning = new List<SpawnReport>();
+
         var freeVents = Imperium.RoundManager.allEnemyVents.Where(t => !t.occupied).ToList();
         var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
 
         if (!freeVents.Any() || cannotSpawnMoreInsideEnemies) return spawning;
 
+        if (
+            StartOfRound.Instance.connectedPlayersAmount + 1 > 0 &&
+            TimeOfDay.Instance.daysUntilDeadline <= 2 && (
+                roundManager.valueOfFoundScrapItems / TimeOfDay.Instance.profitQuota > 0.8f &&
+                normalizedTimeOfDay > 0.3f ||
+                roundManager.valueOfFoundScrapItems / roundManager.totalScrapValueInLevel > 0.65f ||
+                StartOfRound.Instance.daysPlayersSurvivedInARow >= 5
+            ) &&
+            minEntitiesToSpawn == 0
+        )
+        {
+            minEntitiesToSpawn = 1;
+        }
+
         // Get time of next hour since AdvanceHourAndSpawnNewBatchOfEnemies increases currentHour before spawning
         var baseEntityAmount = roundManager.currentLevel.enemySpawnChanceThroughoutDay.Evaluate(
-            currentDayTime / roundManager.timeScript.totalTime);
+            Imperium.TimeOfDay.lengthOfHours * currentHour / roundManager.timeScript.totalTime);
+        baseEntityAmount -= 1;
+
         if (StartOfRound.Instance.isChallengeFile) baseEntityAmount += 1f;
 
-        var lower = baseEntityAmount + Mathf.Abs(Imperium.TimeOfDay.daysUntilDeadline - 3) / 1.6f;
-        var lowerBound = (int)(lower - roundManager.currentLevel.spawnProbabilityRange);
-        var upperBound = (int)(baseEntityAmount + roundManager.currentLevel.spawnProbabilityRange);
-        var entityAmount = Mathf.Clamp(anomalySimulator.Next(
-            Math.Min(lowerBound, upperBound),
-            Math.Max(lowerBound, upperBound)
-        ), roundManager.minEnemiesToSpawn, 20);
+        var lowerBound = baseEntityAmount + Mathf.Abs(Imperium.TimeOfDay.daysUntilDeadline - 3) / 1.6f -
+                         roundManager.currentLevel.spawnProbabilityRange;
+        var upperBound = baseEntityAmount + roundManager.currentLevel.spawnProbabilityRange;
+
+        var entityAmount = Mathf.RoundToInt(
+            Mathf.Clamp(
+                Mathf.Lerp(lowerBound, upperBound, (float)entitySimulator.NextDouble()),
+                minEntitiesToSpawn, 20f
+            )
+        );
 
         if (roundManager.enemyRushIndex != -1) entityAmount += 2;
-
         entityAmount = Mathf.Clamp(entityAmount, 0, freeVents.Count);
 
         if (currentPower >= roundManager.currentMaxInsidePower)
@@ -184,67 +296,170 @@ internal class Oracle : ImpLifecycleObject
             return spawning;
         }
 
+        var specialEntity = roundManager.currentLevel.specialEnemyRarity;
+        if (specialEntity.overrideEnemy != null && specialEntity.percentageChance >= 1f)
+        {
+            entityAmount = Mathf.Max(entityAmount, 1);
+        }
+
         for (var i = 0; i < entityAmount; i++)
         {
-            var probabilities = new List<int>();
-            var spawnTime = anomalySimulator.Next(
+            var spawnTime = entitySimulator.Next(
                 (int)(10f + timeUpToCurrentHour),
                 (int)(Imperium.TimeOfDay.lengthOfHours * roundManager.hourTimeBetweenEnemySpawnBatches +
-                      timeUpToCurrentHour)
+                      timeUpToCurrentHour
+                )
             );
-            var spawnVentIndex = anomalySimulator.Next(freeVents.Count);
+            var spawnVentIndex = entitySimulator.Next(freeVents.Count);
             var spawnVent = freeVents[spawnVentIndex];
 
+            var dynamicPower = currentPowerNoDeaths;
+            var useNoDeathsPower = false;
+            for (var j = 0; j < roundManager.currentLevel.OutsideEnemies.Count; j++)
+            {
+                var entity = roundManager.currentLevel.OutsideEnemies[j];
+                if (firstTimeSpawning)
+                {
+                    entitySpawnCounts[entity.enemyType] = 0;
+                    entitySpawnedAtLeastOne[entity.enemyType] = false;
+                }
+
+                if (!IndoorEnemyCannotBeSpawned(j, currentPower, currentDiversityLevel, entitySpawnCounts))
+                {
+                    useNoDeathsPower = true;
+                    break;
+                }
+            }
+
+            if (!useNoDeathsPower)
+            {
+                dynamicPower = currentPower;
+            }
+
+            var probabilities = new List<int>();
             for (var j = 0; j < roundManager.currentLevel.Enemies.Count; j++)
             {
                 var enemyType = roundManager.currentLevel.Enemies[j].enemyType;
 
-                var entityCannotBeSpawned = enemyType.spawningDisabled ||
-                                            enemyType.PowerLevel > roundManager.currentMaxInsidePower - currentPower ||
-                                            entitySpawnCounts[enemyType] >= enemyType.MaxCount;
-
                 if (firstTimeSpawning)
                 {
-                    firstTimeSpawning = false;
                     entitySpawnCounts[enemyType] = 0;
+                    entitySpawnedAtLeastOne[enemyType] = false;
                 }
 
-                if (entityCannotBeSpawned)
+                var entityCannotBespawned =
+                    IndoorEnemyCannotBeSpawned(j, dynamicPower, currentDiversityLevel, entitySpawnCounts);
+
+                if (entityCannotBespawned)
                 {
                     probabilities.Add(0);
                     continue;
                 }
 
+                var currentTime = Imperium.TimeOfDay.lengthOfHours * currentHour / Imperium.TimeOfDay.totalTime;
+
                 var probability = roundManager.enemyRushIndex != -1
-                    ? roundManager.enemyRushIndex != i ? 1 : 100
+                    ? roundManager.enemyRushIndex != j ? 1 : 100
                     : roundManager.increasedInsideEnemySpawnRateIndex == j
                         ? 100
                         : !enemyType.useNumberSpawnedFalloff
                             ? (int)(roundManager.currentLevel.Enemies[j].rarity *
-                                    enemyType.probabilityCurve.Evaluate(currentDayTime / roundManager.timeScript.totalTime)
+                                    enemyType.probabilityCurve.Evaluate(currentTime)
                             )
                             : (int)(roundManager.currentLevel.Enemies[j].rarity * (
-                                    enemyType.probabilityCurve.Evaluate(currentDayTime /
-                                                                        roundManager.timeScript.totalTime) *
-                                    enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)
+                                    enemyType.probabilityCurve.Evaluate(currentTime) *
+                                    enemyType.numberSpawnedFalloff.Evaluate(
+                                        Mathf.Clamp(entitySpawnCounts[enemyType] / 10f, 0, 1)
+                                    )
                                 )
                             );
 
-                if (enemyType.increasedChanceInterior != -1 &&
-                    roundManager.currentDungeonType != enemyType.increasedChanceInterior)
+                if (
+                    enemyType.increasedChanceInterior != -1 &&
+                    roundManager.currentDungeonType == enemyType.increasedChanceInterior
+                )
                 {
-                    probability = (int)Mathf.Min(probability * 1.7f, 100);
+                    probability = (int)Mathf.Min(probability * 1.5f, probability + 50);
                 }
 
                 probabilities.Add(probability);
             }
 
-            if (probabilities.Sum() == 0) continue;
-            var index = roundManager.GetRandomWeightedIndex(probabilities.ToArray(), entitySimulator);
+            firstTimeSpawning = false;
 
-            var spawningEntity = roundManager.currentLevel.Enemies[index].enemyType;
+            if (probabilities.Sum() <= 0)
+            {
+                if (dynamicPower >= Imperium.RoundManager.currentMaxInsidePower)
+                {
+                    cannotSpawnMoreInsideEnemies = true;
+                    break;
+                }
+            }
+
+            var entityIndex = 0;
+            var hasOverrideEntity = false;
+            if (roundManager.currentLevel.specialEnemyRarity.overrideEnemy != null)
+            {
+                var overrideEntity = roundManager.currentLevel.specialEnemyRarity;
+                Imperium.IO.LogDebug($"[ORACLE] Level has override entity: {overrideEntity.overrideEnemy.enemyName}");
+
+                if (overrideEntity.percentageChance >= 1f)
+                {
+                    for (var j = 0; j < roundManager.currentLevel.Enemies.Count; j++)
+                    {
+                        if (roundManager.currentLevel.Enemies[j].enemyType == overrideEntity.overrideEnemy)
+                        {
+                            if (probabilities[j] != 0)
+                            {
+                                entityIndex = j;
+                                hasOverrideEntity = true;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    var num6 = -1;
+                    var num7 = 0f;
+                    for (var j = 0; j < roundManager.currentLevel.Enemies.Count; j++)
+                    {
+                        if (roundManager.currentLevel.Enemies[j].enemyType == overrideEntity.overrideEnemy)
+                        {
+                            num6 = j;
+                        }
+
+                        if (num6 != j)
+                        {
+                            num7 += probabilities[j];
+                        }
+                    }
+
+                    if (num6 != -1 && probabilities[num6] != 0 && specialEntity.percentageChance > 0f)
+                    {
+                        probabilities[num6] =
+                            (int)(specialEntity.percentageChance * num7 / (1f - specialEntity.percentageChance));
+                    }
+                }
+            }
+
+            if (!hasOverrideEntity)
+            {
+                entityIndex = roundManager.GetRandomWeightedIndex(probabilities.ToArray(), entitySimulator);
+                Imperium.IO.LogDebug($"[ORACLE] Randomly picking enemy from list of {probabilities.Count}");
+            }
+
+            var spawningEntity = roundManager.currentLevel.Enemies[entityIndex].enemyType;
+
+            Imperium.IO.LogDebug($"[ORACLE] Picked indoor entity: {spawningEntity.enemyName}");
+
             currentPower += spawningEntity.PowerLevel;
+            currentPowerNoDeaths += spawningEntity.PowerLevel;
+
             entitySpawnCounts[spawningEntity]++;
+            entitySpawnedAtLeastOne[spawningEntity] = true;
+
             spawning.Add(new SpawnReport
             {
                 Entity = spawningEntity,
@@ -258,12 +473,129 @@ internal class Oracle : ImpLifecycleObject
         return spawning;
     }
 
+    private static List<SpawnReport> SimulateWeedSpawnCycle(
+        Random anomalySimulator,
+        Random weedEntitySimulator,
+        Random weedEntityPlacementSimulator,
+        ref float currentPower,
+        IDictionary<EnemyType, int> entitySpawnCounts,
+        IDictionary<EnemyType, bool> entitySpawnedAtLeastOne,
+        MoldSpreadManager moldSpreadManager,
+        ref bool firstTimeSpawning,
+        int currentHour,
+        float currentDayTime
+    )
+    {
+        var roundManager = Imperium.RoundManager;
+        var spawning = new List<SpawnReport>();
+
+        var moldCount = moldSpreadManager ? moldSpreadManager.generatedMold.Count : 0;
+
+        // This is actually TimeOfDay.hour, maybe this will break
+        if (moldCount <= 15 || currentHour < 3 || weedEntitySimulator.Next(0, 70) > moldCount)
+        {
+            return spawning;
+        }
+
+        var entityAmount = weedEntitySimulator.Next(1, 3);
+        var timeUpToCurrentHour = Imperium.TimeOfDay.lengthOfHours * currentHour;
+
+        for (var i = 0; i < entityAmount; i++)
+        {
+            var probabilities = new List<int>();
+            for (var j = 0; j < roundManager.WeedEnemies.Count; j++)
+            {
+                var enemyType = roundManager.WeedEnemies[j].enemyType;
+
+                if (firstTimeSpawning)
+                {
+                    entitySpawnCounts[enemyType] = 0;
+                    entitySpawnedAtLeastOne[enemyType] = false;
+                }
+
+                if (enemyType.PowerLevel > 4f - currentPower ||
+                    entitySpawnCounts[enemyType] >= enemyType.MaxCount || enemyType.spawningDisabled)
+                {
+                    probabilities.Add(0);
+                    continue;
+                }
+
+                var probability = roundManager.increasedOutsideEnemySpawnRateIndex == j
+                    ? 100
+                    : !enemyType.useNumberSpawnedFalloff
+                        ? (int)(roundManager.WeedEnemies[j].rarity *
+                                enemyType.probabilityCurve.Evaluate(
+                                    timeUpToCurrentHour / Imperium.TimeOfDay.totalTime)
+                        )
+                        : (int)(roundManager.WeedEnemies[j].rarity *
+                                (enemyType.probabilityCurve.Evaluate(timeUpToCurrentHour / Imperium.TimeOfDay.totalTime) *
+                                 enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)));
+
+                probabilities.Add(probability);
+            }
+
+            firstTimeSpawning = false;
+
+            if (probabilities.Sum() <= 20) continue;
+
+            var randomWeightedIndex = roundManager.GetRandomWeightedIndex(
+                probabilities.ToArray(), weedEntitySimulator
+            );
+            var spawningEntity = roundManager.currentLevel.OutsideEnemies[randomWeightedIndex].enemyType;
+
+            var spawnPoints = spawningEntity.WaterType switch
+            {
+                EnemyWaterType.WaterOnly => roundManager.outsideAIWaterNodes,
+                EnemyWaterType.LandOnly => roundManager.outsideAIDryNodes,
+                _ => roundManager.outsideAINodes
+            };
+
+            float groupSize = Mathf.Max(spawningEntity.spawnInGroupsOf, 1);
+            for (var k = 0; k < groupSize; k++)
+            {
+                if (spawningEntity.PowerLevel > 4f - currentPower)
+                {
+                    break;
+                }
+
+                var position = spawnPoints[anomalySimulator.Next(0, spawnPoints.Length)].transform.position;
+                position = roundManager.GetRandomNavMeshPositionInBoxPredictable(
+                    position, 10f, default, weedEntityPlacementSimulator,
+                    roundManager.GetLayermaskForEnemySizeLimit(spawningEntity)
+                );
+                position = PositionWithDenialPointsChecked(
+                    position, spawnPoints, spawningEntity, -1, weedEntityPlacementSimulator
+                );
+
+                currentPower += spawningEntity.PowerLevel;
+
+                entitySpawnCounts[spawningEntity]++;
+                entitySpawnedAtLeastOne[spawningEntity] = true;
+
+                spawning.Add(new SpawnReport
+                {
+                    Entity = spawningEntity,
+                    Position = position,
+                    SpawnTime = (int)currentDayTime
+                });
+            }
+        }
+
+        return spawning;
+    }
+
     private static List<SpawnReport> SimulateOutdoorSpawnCycle(
         Random anomalySimulator,
         Random outsideEntitySimulator,
+        Random outsideEntityPlacementSimulator,
         ref float currentPower,
+        ref float currentPowerNoDeaths,
+        ref int currentDiversityLevel,
         IDictionary<EnemyType, int> entitySpawnCounts,
+        IDictionary<EnemyType, bool> entitySpawnedAtLeastOne,
         ref bool firstTimeSpawning,
+        MoldSpreadManager moldSpreadManager,
+        float normalizedTimeOfDay,
         int currentHour,
         float currentDayTime
     )
@@ -285,12 +617,47 @@ internal class Oracle : ImpLifecycleObject
         var upperBound = (int)(baseEntityAmount + 3f);
         var entityAmount = Mathf.Clamp(
             outsideEntitySimulator.Next(Mathf.Min(lowerBound, upperBound), Mathf.Max(lowerBound, upperBound)),
-            roundManager.minOutsideEnemiesToSpawn, 20);
+            roundManager.minOutsideEnemiesToSpawn, 20
+        );
 
-        var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
+        Imperium.IO.LogDebug($"[ORACLE] Spawn outdoor amount; base: {baseEntityAmount}, actual: {entityAmount}");
 
         for (var i = 0; i < entityAmount; i++)
         {
+            var dynamicPower = currentPowerNoDeaths;
+            var useNoDeathsPower = false;
+            foreach (var entity in roundManager.currentLevel.OutsideEnemies)
+            {
+                if (firstTimeSpawning)
+                {
+                    entitySpawnCounts[entity.enemyType] = 0;
+                    entitySpawnedAtLeastOne[entity.enemyType] = false;
+                }
+
+                var canSpawnInNoDeaths =
+                    (
+                        entitySpawnCounts[entity.enemyType] > 0 || entity.enemyType.DiversityPowerLevel <=
+                        roundManager.currentMaxOutsideDiversityLevel - currentDiversityLevel
+                    ) &&
+                    entity.enemyType.PowerLevel <= roundManager.currentLevel.maxDaytimeEnemyPowerCount -
+                    roundManager.currentDaytimeEnemyPowerNoDeaths &&
+                    entitySpawnCounts[entity.enemyType] < entity.enemyType.MaxCount &&
+                    entity.enemyType.normalizedTimeInDayToLeave >= normalizedTimeOfDay &&
+                    !entity.enemyType.spawningDisabled;
+
+                if (canSpawnInNoDeaths)
+                {
+                    useNoDeathsPower = true;
+                    break;
+                }
+            }
+
+            if (!useNoDeathsPower)
+            {
+                dynamicPower = currentPower;
+            }
+
+            var moldCount = moldSpreadManager ? moldSpreadManager.generatedMold.Count : 0;
             var probabilities = new List<int>();
             for (var j = 0; j < roundManager.currentLevel.OutsideEnemies.Count; j++)
             {
@@ -298,11 +665,13 @@ internal class Oracle : ImpLifecycleObject
 
                 if (firstTimeSpawning)
                 {
-                    firstTimeSpawning = false;
                     entitySpawnCounts[enemyType] = 0;
+                    entitySpawnedAtLeastOne[enemyType] = false;
                 }
 
-                if (enemyType.PowerLevel > roundManager.currentMaxOutsidePower - currentPower ||
+                if (entitySpawnCounts[enemyType] <= 0 && enemyType.DiversityPowerLevel >
+                    roundManager.currentMaxOutsideDiversityLevel - currentDiversityLevel ||
+                    enemyType.PowerLevel > roundManager.currentMaxOutsidePower - currentPower ||
                     entitySpawnCounts[enemyType] >= enemyType.MaxCount || enemyType.spawningDisabled)
                 {
                     probabilities.Add(0);
@@ -316,39 +685,65 @@ internal class Oracle : ImpLifecycleObject
                     (int)(roundManager.currentLevel.OutsideEnemies[j].rarity *
                           (enemyType.probabilityCurve.Evaluate(timeUpToCurrentHour / Imperium.TimeOfDay.totalTime) *
                            enemyType.numberSpawnedFalloff.Evaluate(entitySpawnCounts[enemyType] / 10f)));
+
+                if (enemyType.spawnFromWeeds)
+                {
+                    probability = (int)Mathf.Clamp(probability * (moldCount / 60f), 0, 200);
+                }
+
                 probabilities.Add(probability);
             }
 
-            if (probabilities.Sum() == 0) continue;
+            firstTimeSpawning = false;
+
+            if (probabilities.Sum() <= 0) continue;
 
             var randomWeightedIndex = roundManager.GetRandomWeightedIndex(
                 probabilities.ToArray(), outsideEntitySimulator
             );
             var spawningEntity = roundManager.currentLevel.OutsideEnemies[randomWeightedIndex].enemyType;
 
-            if (spawningEntity.requireNestObjectsToSpawn)
+            Imperium.IO.LogDebug($"[ORACLE] Picked outdoor entity: {spawningEntity.enemyName}");
+
+            var spawnPoints = spawningEntity.WaterType switch
             {
-                var nests = FindObjectsByType<EnemyAINestSpawnObject>(FindObjectsSortMode.None);
-                if (nests.All(t => t.enemyType != spawningEntity)) continue;
-            }
+                EnemyWaterType.WaterOnly => roundManager.outsideAIWaterNodes,
+                EnemyWaterType.LandOnly => roundManager.outsideAIDryNodes,
+                _ => roundManager.outsideAINodes
+            };
+
+            var spawnedBefore = entitySpawnedAtLeastOne[spawningEntity];
 
             float groupSize = Mathf.Max(spawningEntity.spawnInGroupsOf, 1);
+            var spawnedAtLeastOne = false;
             for (var k = 0; k < groupSize; k++)
             {
-                if (spawningEntity.PowerLevel > roundManager.currentMaxOutsidePower - currentPower)
+                Imperium.IO.LogDebug(
+                    $"[ORACLE] Dynamic Power: {dynamicPower}, Max: {roundManager.currentMaxOutsidePower}, Req: {spawningEntity.PowerLevel}"
+                );
+
+                if (spawningEntity.PowerLevel > roundManager.currentMaxOutsidePower - dynamicPower)
                 {
                     break;
                 }
 
                 var position = spawnPoints[anomalySimulator.Next(0, spawnPoints.Length)].transform.position;
                 position = roundManager.GetRandomNavMeshPositionInBoxPredictable(
-                    position, 10f, default, anomalySimulator,
+                    position, 10f, default, outsideEntityPlacementSimulator,
                     roundManager.GetLayermaskForEnemySizeLimit(spawningEntity)
                 );
-                position = PositionWithDenialPointsChecked(position, spawnPoints, spawningEntity, anomalySimulator);
+                position = PositionWithDenialPointsChecked(
+                    position, spawnPoints, spawningEntity, -1, outsideEntityPlacementSimulator
+                );
 
                 currentPower += spawningEntity.PowerLevel;
+                currentPowerNoDeaths += spawningEntity.PowerLevel;
+                dynamicPower += spawningEntity.PowerLevel;
+
                 entitySpawnCounts[spawningEntity]++;
+
+                // This is currently not executed (bug)
+                // entitySpawnedAtLeastOne[spawningEntity] = true;
 
                 spawning.Add(new SpawnReport
                 {
@@ -356,6 +751,13 @@ internal class Oracle : ImpLifecycleObject
                     Position = position,
                     SpawnTime = (int)currentDayTime
                 });
+
+                spawnedAtLeastOne = true;
+            }
+
+            if (spawnedAtLeastOne && !spawnedBefore)
+            {
+                currentDiversityLevel += spawningEntity.DiversityPowerLevel;
             }
         }
 
@@ -364,10 +766,14 @@ internal class Oracle : ImpLifecycleObject
 
     private static List<SpawnReport> SimulateDaytimeSpawnCycle(
         Random anomalySimulator,
-        Random entitySimulator,
+        Random daytimeEntitySimulator,
+        Random daytimeEntityPlacementSimulator,
         ref float currentPower,
+        ref float currentPowerNoDeaths,
         IDictionary<EnemyType, int> entitySpawnCounts,
+        IDictionary<EnemyType, bool> entitySpawnedAtLeastOne,
         ref bool firstTimeSpawning,
+        float normalizedTimeOfDay,
         int currentHour,
         float currentDayTime
     )
@@ -387,24 +793,53 @@ internal class Oracle : ImpLifecycleObject
             timeUpToCurrentHour / Imperium.TimeOfDay.totalTime
         );
         var entityAmount = Mathf.Clamp(
-            anomalySimulator.Next((int)(baseEntityAmount - roundManager.currentLevel.daytimeEnemiesProbabilityRange),
+            daytimeEntitySimulator.Next((int)(baseEntityAmount - roundManager.currentLevel.daytimeEnemiesProbabilityRange),
                 (int)(baseEntityAmount + roundManager.currentLevel.daytimeEnemiesProbabilityRange)),
             0, 20
         );
-        var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
+        // var spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
 
         for (var i = 0; i < entityAmount; i++)
         {
+            var dynamicPower = currentPowerNoDeaths;
+            var useNoDeathsPower = false;
+            foreach (var entity in roundManager.currentLevel.DaytimeEnemies)
+            {
+                if (firstTimeSpawning)
+                {
+                    entitySpawnCounts[entity.enemyType] = 0;
+                    entitySpawnedAtLeastOne[entity.enemyType] = false;
+                }
+
+                var canSpawnInNoDeaths =
+                    entity.enemyType.PowerLevel <= roundManager.currentLevel.maxDaytimeEnemyPowerCount -
+                    roundManager.currentDaytimeEnemyPowerNoDeaths &&
+                    entitySpawnCounts[entity.enemyType] < entity.enemyType.MaxCount &&
+                    entity.enemyType.normalizedTimeInDayToLeave >= normalizedTimeOfDay &&
+                    !entity.enemyType.spawningDisabled;
+
+                if (canSpawnInNoDeaths)
+                {
+                    useNoDeathsPower = true;
+                    break;
+                }
+            }
+
+            if (!useNoDeathsPower)
+            {
+                dynamicPower = currentPower;
+            }
+
             var probabilities = new List<int>();
             foreach (var entity in roundManager.currentLevel.DaytimeEnemies)
             {
                 if (firstTimeSpawning)
                 {
-                    firstTimeSpawning = false;
                     entitySpawnCounts[entity.enemyType] = 0;
+                    entitySpawnedAtLeastOne[entity.enemyType] = false;
                 }
 
-                if (entity.enemyType.PowerLevel > roundManager.currentLevel.maxDaytimeEnemyPowerCount - currentPower ||
+                if (entity.enemyType.PowerLevel > roundManager.currentLevel.maxDaytimeEnemyPowerCount - dynamicPower ||
                     entitySpawnCounts[entity.enemyType] >= entity.enemyType.MaxCount ||
                     entity.enemyType.normalizedTimeInDayToLeave < currentDayTime / roundManager.timeScript.totalTime ||
                     entity.enemyType.spawningDisabled)
@@ -418,31 +853,44 @@ internal class Oracle : ImpLifecycleObject
                 probabilities.Add(probability);
             }
 
-            // Breaks here since SpawnRandomDaytimeEnemy should return false when all probabilities = 0
-            if (probabilities.Sum() == 0) break;
+            firstTimeSpawning = false;
 
-            var index = roundManager.GetRandomWeightedIndex(probabilities.ToArray(), entitySimulator);
+            if (probabilities.Sum() <= 0) break;
+
+            var index = roundManager.GetRandomWeightedIndex(probabilities.ToArray(), daytimeEntitySimulator);
             var enemyType = roundManager.currentLevel.DaytimeEnemies[index].enemyType;
 
             float groupSize = Mathf.Max(enemyType.spawnInGroupsOf, 1);
 
+            var spawnPoints = enemyType.WaterType switch
+            {
+                EnemyWaterType.WaterOnly => roundManager.outsideAIWaterNodes,
+                EnemyWaterType.LandOnly => roundManager.outsideAIDryNodes,
+                _ => roundManager.outsideAINodes
+            };
 
             for (var j = 0; j < groupSize; j++)
             {
-                if (enemyType.PowerLevel > roundManager.currentLevel.maxDaytimeEnemyPowerCount - currentPower)
+                if (enemyType.PowerLevel > roundManager.currentLevel.maxDaytimeEnemyPowerCount - dynamicPower)
                 {
                     break;
                 }
 
                 var position = spawnPoints[anomalySimulator.Next(0, spawnPoints.Length)].transform.position;
                 position = roundManager.GetRandomNavMeshPositionInBoxPredictable(
-                    position, 10f, default, entitySimulator,
+                    position, 10f, default, daytimeEntityPlacementSimulator,
                     roundManager.GetLayermaskForEnemySizeLimit(enemyType)
                 );
-                position = PositionWithDenialPointsChecked(position, spawnPoints, enemyType, anomalySimulator);
+                position = PositionWithDenialPointsChecked(
+                    position, spawnPoints, enemyType, -1, daytimeEntityPlacementSimulator
+                );
 
                 currentPower += enemyType.PowerLevel;
+                currentPowerNoDeaths += enemyType.PowerLevel;
+                dynamicPower += enemyType.PowerLevel;
+
                 entitySpawnCounts[enemyType]++;
+                entitySpawnedAtLeastOne[enemyType] = true;
 
                 spawning.Add(new SpawnReport
                 {
@@ -456,11 +904,39 @@ internal class Oracle : ImpLifecycleObject
         return spawning;
     }
 
+    private static bool IndoorEnemyCannotBeSpawned(
+        int entityIndex,
+        float currentPowerLevel,
+        int diversityLevel,
+        IDictionary<EnemyType, int> entitySpawnCounts
+    )
+    {
+        var currentLevel = Imperium.RoundManager.currentLevel;
+        var entityType = currentLevel.Enemies[entityIndex].enemyType;
+
+        if (
+            (
+                entitySpawnCounts[entityType] > 0 ||
+                entityType.DiversityPowerLevel <= Imperium.RoundManager.currentMaxInsideDiversityLevel - diversityLevel
+            ) &&
+            !entityType.spawningDisabled
+        )
+        {
+            if (!(entityType.PowerLevel > Imperium.RoundManager.currentMaxInsidePower - currentPowerLevel))
+            {
+                return entitySpawnCounts[entityType] >= entityType.MaxCount;
+            }
+        }
+
+        return true;
+    }
+
     private static Vector3 PositionWithDenialPointsChecked(
         Vector3 spawnPosition,
         IReadOnlyList<GameObject> spawnPoints,
         EnemyType enemyType,
-        Random randomSimulator
+        float distanceFromShip = -1f,
+        Random randomSimulator = null
     )
     {
         if (spawnPoints.Count == 0) return spawnPosition;
@@ -473,7 +949,9 @@ internal class Oracle : ImpLifecycleObject
             {
                 flag = true;
                 if (Vector3.Distance(spawnPosition, denialPoint.transform.position) <
-                    16f)
+                    16f || distanceFromShip != -1 &&
+                    Vector3.Distance(spawnPosition, Imperium.StartOfRound.shipLandingPosition.position) <
+                    distanceFromShip)
                 {
                     num = (num + 1) % spawnPoints.Count;
                     spawnPosition = spawnPoints[num].transform.position;

@@ -1,6 +1,19 @@
 # Changelog
 
-## Imperium v1.2 - v80 Update
+## Imperium v1.2.1 - Small Update
+
+### General Changes
+- Oracle is correctly predicting enemies again.
+- Removed various internal log statements.
+
+### QoL Improvements
+- Improved usability of the Oracle UI and removed coordinates.
+
+### Compatibility
+
+This version is compatible with the [v80](https://steamdb.info/changelist/34734266/) public beta of Lethal Company.
+
+## Imperium v1.2.0 - v80 Update
 
 This update brings compatibility with the Lethal Company v80 public beta, along with several long-standing bug fixes.
 

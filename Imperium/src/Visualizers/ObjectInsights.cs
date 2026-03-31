@@ -100,7 +100,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
         }
 
         stopwatch.Stop();
-        Imperium.IO.LogInfo($" - SPENT IN INSIGHTS: {stopwatch.ElapsedMilliseconds}");
+        Imperium.IO.LogDebug($"[PROFILE] - SPENT IN INSIGHTS: {stopwatch.ElapsedMilliseconds}");
     }
 
     /// <summary>
