@@ -237,19 +237,19 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetConfigKey("SteamValves");
 
         /*
-         * Company cruiser
+         * Vehicles
          */
         InsightsFor<VehicleController>()
-            .SetNameGenerator(_ => "Company Cruiser")
-            .SetIsDeadGenerator(cruiser => cruiser.carDestroyed)
-            .RegisterInsight("Cruiser HP", cruiser => $"{cruiser.carHP} HP")
-            .RegisterInsight("Ignition Started", cruiser => cruiser.ignitionStarted ? "Yes" : "No")
-            .RegisterInsight("Movement", cruiser => Formatting.FormatVector(cruiser.moveInputVector, 1))
-            .RegisterInsight("Steering", cruiser => $"{cruiser.steeringInput:0.0}")
-            .RegisterInsight("Turbulence", cruiser => $"{cruiser.turbulenceAmount:0.0}")
-            .RegisterInsight("Stress", cruiser => $"{cruiser.carStress:0.0}")
+            .SetNameGenerator(_ => "Vehicle")
+            .SetIsDeadGenerator(vehicle => vehicle.carDestroyed)
+            .RegisterInsight("Vehicle HP", vehicle => $"{vehicle.carHP} HP")
+            .RegisterInsight("Ignition Started", vehicle => vehicle.ignitionStarted ? "Yes" : "No")
+            .RegisterInsight("Movement", vehicle => Formatting.FormatVector(vehicle.moveInputVector, 1))
+            .RegisterInsight("Steering", vehicle => $"{vehicle.steeringInput:0.0}")
+            .RegisterInsight("Turbulence", vehicle => $"{vehicle.turbulenceAmount:0.0}")
+            .RegisterInsight("Stress", vehicle => $"{vehicle.carStress:0.0}")
             .SetPositionOverride(DefaultPositionOverride)
-            .SetConfigKey("CompanyCruiser");
+            .SetConfigKey("Vehicles");
 
         /*
          * Misc objects

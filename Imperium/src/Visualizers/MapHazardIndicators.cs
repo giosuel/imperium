@@ -25,7 +25,7 @@ internal class MapHazardIndicators(
             if (!visualizerObjects.ContainsKey(spawn.GetHashCode()))
             {
                 visualizerObjects[spawn.GetHashCode()] = Visualization.VisualizePoint(
-                    null,
+                    Imperium.Visualization.gameObject,
                     spawn.spawnRange,
                     material: ImpAssets.WireframeRed,
                     name: "Imp_HazardSpawnIndicator"

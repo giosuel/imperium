@@ -252,7 +252,7 @@ public static class Resources
             APIHelpers.AssertImperiumReady();
 
             return ImpImmutableBinding<IReadOnlyCollection<VehicleController>>.Wrap(
-                Imperium.ObjectManager.CurrentLevelCruisers
+                Imperium.ObjectManager.CurrentLevelVehicles
             );
         }
     }

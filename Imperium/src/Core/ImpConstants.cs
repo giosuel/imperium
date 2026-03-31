@@ -56,7 +56,7 @@ public struct ImpConstants
         { nameof(Landmine), "Landmines" },
         { nameof(SteamValveHazard), "Steam Valves" },
         { nameof(BridgeTrigger), "Bridges" },
-        { nameof(VehicleController), "Company Cruiser" }
+        { nameof(VehicleController), "Vehicle" }
     };
 
     // Items that have no spawn prefab

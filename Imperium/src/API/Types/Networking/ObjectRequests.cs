@@ -56,10 +56,22 @@ public readonly struct StaticPrefabSpawnRequest()
     [SerializeField] public bool SendNotification { get; init; } = false;
 }
 
-public readonly struct CompanyCruiserSpawnRequest()
+public readonly struct VehicleSpawnRequest()
 {
+    [SerializeField] public string Name { get; init; }
     [SerializeField] public Vector3 SpawnPosition { get; init; } = default;
     [SerializeField] public bool SendNotification { get; init; } = false;
+}
+
+public readonly struct VehicleSpawnResponse
+{
+    [SerializeField] public NetworkObjectReference NetObj { get; init; }
+}
+
+public readonly struct VehicleDespawnRequest
+{
+    [SerializeField] public ulong NetId { get; init; }
+    [SerializeField] public bool IsRespawn { get; init; }
 }
 
 public readonly struct ObjectTeleportRequest()
@@ -104,7 +116,7 @@ public enum LocalObjectType
 public enum ObjectType
 {
     BreakerBox,
-    Cruiser,
+    Vehicle,
     Entity,
     Item,
     Landmine,

@@ -24,8 +24,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private RectTransform entitiesTitle;
     private TMP_Text entitiesCount;
 
-    private RectTransform cruisersTitle;
-    private TMP_Text cruisersCount;
+    private RectTransform vehiclesTitle;
+    private TMP_Text vehiclesCount;
 
     private RectTransform itemsTitle;
     private TMP_Text itemsCount;
@@ -52,7 +52,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
     private readonly ImpBinding<bool> PlayersCollapsed = new(false);
     private readonly ImpBinding<bool> EntitiesCollapsed = new(false);
-    private readonly ImpBinding<bool> CruisersCollapsed = new(false);
+    private readonly ImpBinding<bool> VehiclesCollapsed = new(false);
     private readonly ImpBinding<bool> HazardsCollapsed = new(false);
     private readonly ImpBinding<bool> VentsCollapsed = new(false);
     private readonly ImpBinding<bool> ItemsCollapsed = new(false);
@@ -87,8 +87,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
         playersCount = contentRect.Find("PlayerListTitle/Count").GetComponent<TMP_Text>();
         entitiesTitle = contentRect.Find("EntityListTitle").GetComponent<RectTransform>();
         entitiesCount = contentRect.Find("EntityListTitle/Count").GetComponent<TMP_Text>();
-        cruisersTitle = contentRect.Find("CruiserListTitle").GetComponent<RectTransform>();
-        cruisersCount = contentRect.Find("CruiserListTitle/Count").GetComponent<TMP_Text>();
+        vehiclesTitle = contentRect.Find("VehicleListTitle").GetComponent<RectTransform>();
+        vehiclesCount = contentRect.Find("VehicleListTitle/Count").GetComponent<TMP_Text>();
         itemsTitle = contentRect.Find("ItemListTitle").GetComponent<RectTransform>();
         itemsCount = contentRect.Find("ItemListTitle/Count").GetComponent<TMP_Text>();
         hazardsTitle = contentRect.Find("HazardListTitle").GetComponent<RectTransform>();
@@ -104,7 +104,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
         ImpButton.CreateCollapse("PlayerListTitle/Arrow", contentRect, stateBinding: PlayersCollapsed);
         ImpButton.CreateCollapse("EntityListTitle/Arrow", contentRect, stateBinding: EntitiesCollapsed);
-        ImpButton.CreateCollapse("CruiserListTitle/Arrow", contentRect, stateBinding: CruisersCollapsed);
+        ImpButton.CreateCollapse("VehicleListTitle/Arrow", contentRect, stateBinding: VehiclesCollapsed);
         ImpButton.CreateCollapse("ItemListTitle/Arrow", contentRect, stateBinding: ItemsCollapsed);
         ImpButton.CreateCollapse("HazardListTitle/Arrow", contentRect, stateBinding: HazardsCollapsed);
         ImpButton.CreateCollapse("VentListTitle/Arrow", contentRect, stateBinding: VentsCollapsed);
@@ -114,7 +114,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
         PlayersCollapsed.onTrigger += RefreshEntries;
         EntitiesCollapsed.onTrigger += RefreshEntries;
-        CruisersCollapsed.onTrigger += RefreshEntries;
+        VehiclesCollapsed.onTrigger += RefreshEntries;
         HazardsCollapsed.onTrigger += RefreshEntries;
         VentsCollapsed.onTrigger += RefreshEntries;
         ItemsCollapsed.onTrigger += RefreshEntries;
@@ -128,7 +128,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         {
             { ObjectCategory.Players, new CategoryDefinition { TitleRect = playersTitle, Binding = PlayersCollapsed } },
             { ObjectCategory.Entities, new CategoryDefinition { TitleRect = entitiesTitle, Binding = EntitiesCollapsed } },
-            { ObjectCategory.Cruisers, new CategoryDefinition { TitleRect = cruisersTitle, Binding = CruisersCollapsed } },
+            { ObjectCategory.Vehicles, new CategoryDefinition { TitleRect = vehiclesTitle, Binding = VehiclesCollapsed } },
             { ObjectCategory.Hazards, new CategoryDefinition { TitleRect = hazardsTitle, Binding = HazardsCollapsed } },
             { ObjectCategory.Items, new CategoryDefinition { TitleRect = itemsTitle, Binding = ItemsCollapsed } },
             { ObjectCategory.Vents, new CategoryDefinition { TitleRect = ventsTitle, Binding = VentsCollapsed } },
@@ -144,7 +144,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         [
             ObjectCategory.Players,
             ObjectCategory.Entities,
-            ObjectCategory.Cruisers,
+            ObjectCategory.Vehicles,
             ObjectCategory.Hazards,
             ObjectCategory.Items,
             ObjectCategory.Vents,
@@ -163,7 +163,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             contentRect,
             new StyleOverride("PlayerListTitle", Variant.DARKER),
             new StyleOverride("EntityListTitle", Variant.DARKER),
-            new StyleOverride("CruiserListTitle", Variant.DARKER),
+            new StyleOverride("VehicleListTitle", Variant.DARKER),
             new StyleOverride("HazardListTitle", Variant.DARKER),
             new StyleOverride("ItemListTitle", Variant.DARKER),
             new StyleOverride("VentListTitle", Variant.DARKER),
@@ -184,7 +184,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             contentRect,
             new StyleOverride("PlayerListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("EntityListTitle/Count", Variant.FADED_TEXT),
-            new StyleOverride("CruiserListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("VehicleListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("HazardListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("ItemListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VentListTitle/Count", Variant.FADED_TEXT),
@@ -294,7 +294,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
         playersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Players, 0).ToString()})";
         entitiesCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Entities, 0).ToString()})";
-        cruisersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Cruisers, 0).ToString()})";
+        vehiclesCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vehicles, 0).ToString()})";
         hazardsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Hazards, 0).ToString()})";
         itemsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Items, 0).ToString()})";
         ventsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vents, 0).ToString()})";

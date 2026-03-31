@@ -39,10 +39,11 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedItems = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedScrap = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedEntities = new([]);
+    internal readonly ImpBinding<IReadOnlyDictionary<string, BuyableVehicle>> LoadedVehicles = new();
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedMapHazards = new();
 
     // Lists of bjects with network behaviours (e.g. clipboard, body, company cruiser)
-    internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedStaticPrefabs = new();
+    internal readonly ImpBinding<IReadOnlyDictionary<string, NetworkObject>> LoadedStaticPrefabs = new();
     internal readonly ImpBinding<IReadOnlyDictionary<string, SpawnableOutsideObject>> LoadedOutsideObjects = new();
 
     // Lists of bjects without network behaviours (e.g. trees, vain shrouds, rocks)
@@ -67,7 +68,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<GrabbableObject>> CurrentLevelItems = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<BreakerBox>> CurrentLevelBreakerBoxes = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SpikeRoofTrap>> CurrentLevelSpikeTraps = new([]);
-    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelCruisers = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelVehicles = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SteamValveHazard>> CurrentLevelSteamValves = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
@@ -101,13 +102,17 @@ internal class ObjectManager : ImpLifecycleObject
     );
 
     // Used by the server to execute a despawn request from a client via network ID
-    private readonly Dictionary<ulong, GameObject> CurrentLevelObjects = [];
+    private readonly Dictionary<ulong, NetworkObject> CurrentLevelObjects = [];
 
     private readonly Dictionary<string, string> displayNameMap = [];
     private readonly Dictionary<string, string> overrideDisplayNameMap = [];
 
     private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
     private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem", Imperium.Networking);
+    private readonly ImpNetMessage<VehicleSpawnRequest> vehicleSpawnMessage = new("SpawnVehicle", Imperium.Networking);
+
+    private readonly ImpNetMessage<VehicleSpawnResponse> vehicleSpawnResponseMessage =
+        new("SpawnVehicleResponse", Imperium.Networking);
 
     private readonly ImpNetMessage<MapHazardSpawnRequest> mapHazardSpawnMessage = new(
         "MapHazardSpawn", Imperium.Networking
@@ -125,10 +130,6 @@ internal class ObjectManager : ImpLifecycleObject
         "OutsideObjectSpawn", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<CompanyCruiserSpawnRequest> companyCruiserSpawnMessage = new(
-        "CompanyCruiserSpawn", Imperium.Networking
-    );
-
     private readonly ImpNetMessage<ObjectTeleportRequest> objectTeleportationRequest = new(
         "ObjectTeleportation", Imperium.Networking
     );
@@ -142,6 +143,10 @@ internal class ObjectManager : ImpLifecycleObject
 
     private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
     private readonly ImpNetMessage<EntityDespawnRequest> entityDespawnMessage = new("DespawnEntity", Imperium.Networking);
+
+    private readonly ImpNetMessage<VehicleDespawnRequest>
+        vehicleDespawnMessage = new("DespawnVehicle", Imperium.Networking);
+
     private readonly ImpNetMessage<ulong> itemDespawnMessage = new("DespawnItem", Imperium.Networking);
     private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new("DespawnObstacle", Imperium.Networking);
 
@@ -191,6 +196,7 @@ internal class ObjectManager : ImpLifecycleObject
         objectsChangedEvent.OnClientRecive += RefreshLevelObjects;
         burstSteamValve.OnClientRecive += OnSteamValveBurst;
         burstCadaverBloom.OnClientRecive += OnCadaverBloomBurst;
+        vehicleSpawnResponseMessage.OnClientRecive += OnSpawnVehicleClient;
         objectTeleportationRequest.OnClientRecive += OnObjectTeleportationRequestClient;
 
         localObjectDespawnMessage.OnClientRecive += OnDespawnLocalObject;
@@ -202,11 +208,12 @@ internal class ObjectManager : ImpLifecycleObject
         {
             entitySpawnMessage.OnServerReceive += OnSpawnEntity;
             itemSpawnMessage.OnServerReceive += OnSpawnItem;
+            vehicleSpawnMessage.OnServerReceive += OnSpawnVehicle;
             mapHazardSpawnMessage.OnServerReceive += OnSpawnMapHazard;
-            companyCruiserSpawnMessage.OnServerReceive += OnSpawnCompanyCruiser;
             staticPrefabSpawnMessage.OnServerReceive += OnSpawnStaticPrefabServer;
 
             entityDespawnMessage.OnServerReceive += OnDespawnEntity;
+            vehicleDespawnMessage.OnServerReceive += OnDespawnVehicle;
             itemDespawnMessage.OnServerReceive += OnDespawnItem;
             obstacleDespawnMessage.OnServerReceive += OnDespawnObstacle;
 
@@ -232,6 +239,9 @@ internal class ObjectManager : ImpLifecycleObject
 
     [ImpAttributes.RemoteMethod]
     internal void SpawnItem(ItemSpawnRequest request) => itemSpawnMessage.DispatchToServer(request);
+
+    [ImpAttributes.RemoteMethod]
+    internal void SpawnVehicle(VehicleSpawnRequest request) => vehicleSpawnMessage.DispatchToServer(request);
 
     [ImpAttributes.RemoteMethod]
     internal void SpawnMapHazard(MapHazardSpawnRequest request) => mapHazardSpawnMessage.DispatchToServer(request);
@@ -273,16 +283,13 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void SpawnCompanyCruiser(CompanyCruiserSpawnRequest request)
-    {
-        companyCruiserSpawnMessage.DispatchToServer(request);
-    }
-
-    [ImpAttributes.RemoteMethod]
     internal void DespawnItem(ulong itemNetId) => itemDespawnMessage.DispatchToServer(itemNetId);
 
     [ImpAttributes.RemoteMethod]
     internal void DespawnEntity(EntityDespawnRequest request) => entityDespawnMessage.DispatchToServer(request);
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnVehicle(VehicleDespawnRequest request) => vehicleDespawnMessage.DispatchToServer(request);
 
     [ImpAttributes.RemoteMethod]
     internal void DespawnObstacle(ulong obstacleNetId) => obstacleDespawnMessage.DispatchToServer(obstacleNetId);
@@ -380,8 +387,13 @@ internal class ObjectManager : ImpLifecycleObject
 
         var allScrap = allItems.Where(scrap => scrap.isScrap).ToHashSet();
 
+        var allVehicles = Imperium.Terminal.buyableVehicles
+            .GroupBy(v => v.vehicleDisplayName)
+            .Select(g => g.First())
+            .ToDictionary(vehicle => vehicle.vehicleDisplayName, vehicle => vehicle);
+
         var allMapHazards = new Dictionary<string, GameObject>();
-        var allStaticPrefabs = new Dictionary<string, GameObject>();
+        var allStaticPrefabs = new Dictionary<string, NetworkObject>();
         var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
         var allOutsideObjects = Resources.FindObjectsOfTypeAll<SpawnableOutsideObject>()
             .Where(obj => obj.prefabToSpawn)
@@ -406,20 +418,14 @@ internal class ObjectManager : ImpLifecycleObject
                 case "Landmine" when obj.transform.Find("Landmine"):
                     allMapHazards["Landmine"] = obj;
                     break;
-                case "CompanyCruiser":
-                    allStaticPrefabs["CompanyCruiser"] = obj;
-                    break;
-                case "CompanyCruiserManual":
-                    allStaticPrefabs["CompanyCruiserManual"] = obj;
-                    break;
                 case "RagdollGrabbableObject":
-                    allStaticPrefabs["Body"] = obj;
+                    allStaticPrefabs["Body"] = obj.GetComponent<NetworkObject>();
                     break;
                 case "ClipboardManual":
-                    allStaticPrefabs["Clipboard"] = obj;
+                    allStaticPrefabs["Clipboard"] = obj.GetComponent<NetworkObject>();
                     break;
                 case "StickyNoteItem":
-                    allStaticPrefabs["StickyNote"] = obj;
+                    allStaticPrefabs["StickyNote"] = obj.GetComponent<NetworkObject>();
                     break;
                 case "MoldSpore 1":
                     allLocalStaticPrefabs["MoldSpore"] = obj;
@@ -430,6 +436,7 @@ internal class ObjectManager : ImpLifecycleObject
         LoadedItems.Set(allItems);
         LoadedScrap.Set(allScrap);
         LoadedEntities.Set(allEntities);
+        LoadedVehicles.Set(allVehicles);
         LoadedMapHazards.Set(allMapHazards);
         LoadedStaticPrefabs.Set(allStaticPrefabs);
         LoadedOutsideObjects.Set(allOutsideObjects);
@@ -485,7 +492,9 @@ internal class ObjectManager : ImpLifecycleObject
             if (obj.gameObject.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
 
             currentLevelEntities.Add(obj);
-            CurrentLevelObjects[obj.GetComponent<NetworkObject>().NetworkObjectId] = obj.gameObject;
+
+            var entityNetObj = obj.GetComponent<NetworkObject>();
+            CurrentLevelObjects[entityNetObj.NetworkObjectId] = entityNetObj;
         }
 
         CurrentLevelEntities.Set(currentLevelEntities);
@@ -493,7 +502,6 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
-    private readonly LayerMask vainShroudMask = LayerMask.NameToLayer("MoldSpore");
 
     internal void RefreshLevelObjects()
     {
@@ -512,7 +520,7 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<SteamValveHazard> currentLevelSteamValves = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
         HashSet<RandomScrapSpawn> currentScrapSpawnPoints = [];
-        HashSet<VehicleController> currentLevelCompanyCruisers = [];
+        HashSet<VehicleController> currentLevelVehicles = [];
         HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
 
         foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
@@ -563,7 +571,7 @@ internal class ObjectManager : ImpLifecycleObject
                         currentScrapSpawnPoints.Add(scrapSpawn);
                         break;
                     case VehicleController vehicleController:
-                        currentLevelCompanyCruisers.Add(vehicleController);
+                        currentLevelVehicles.Add(vehicleController);
                         break;
                     case GrabbableObject item:
                         currentLevelItems.Add(item);
@@ -572,7 +580,7 @@ internal class ObjectManager : ImpLifecycleObject
                         currentLevelEntities.Add(entity);
                         break;
                     case NetworkObject netObj:
-                        CurrentLevelObjects[netObj.NetworkObjectId] = obj.gameObject;
+                        CurrentLevelObjects[netObj.NetworkObjectId] = netObj;
                         break;
                 }
             }
@@ -592,7 +600,7 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelSteamValves.Set(currentLevelSteamValves);
         CurrentLevelSpiderWebs.Set(currentLevelSpiderWebs);
         CurrentScrapSpawnPoints.Set(currentScrapSpawnPoints);
-        CurrentLevelCruisers.Set(currentLevelCompanyCruisers);
+        CurrentLevelVehicles.Set(currentLevelVehicles);
 
         stopwatch.Stop();
         Imperium.IO.LogDebug($"[PROFILE] Objects refresh time : {stopwatch.ElapsedMilliseconds}");
@@ -719,7 +727,7 @@ internal class ObjectManager : ImpLifecycleObject
 
             var netObject = entityObj.gameObject.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
-            CurrentLevelObjects[netObject.NetworkObjectId] = entityObj;
+            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
 
             // Checked if spawned entity is a masked and the masked parameters are set
             if (
@@ -742,6 +750,7 @@ internal class ObjectManager : ImpLifecycleObject
                         Position = actualSpawnPosition
                     });
                 }
+
                 StartCoroutine(Routine());
             }
         }
@@ -865,7 +874,7 @@ internal class ObjectManager : ImpLifecycleObject
 
             var netObject = itemObj.gameObject.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
-            CurrentLevelObjects[netObject.NetworkObjectId] = itemObj;
+            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
 
             // If player has free slot, place it in hand, otherwise leave it on the ground and play sound
             var spawnedInInventory = false;
@@ -1033,8 +1042,20 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnSpawnCompanyCruiser(CompanyCruiserSpawnRequest request, ulong clientId)
+    private void OnSpawnVehicle(VehicleSpawnRequest request, ulong clientId)
     {
+        if (!LoadedVehicles.Value.TryGetValue(request.Name, out var spawningVehicle))
+        {
+            Imperium.IO.LogError($"[SPAWN] [R] Unable to find requested item '{request.Name}'.");
+            return;
+        }
+
+        if (!spawningVehicle.vehiclePrefab)
+        {
+            Imperium.IO.LogError($"[SPAWN] [R] Requested vehicle does not have a spawn prefab '{request.Name}'.");
+            return;
+        }
+
         // Raycast to find the ground to spawn the entity on
         var hasGround = Physics.Raycast(
             new Ray(request.SpawnPosition + Vector3.up * 2f, Vector3.down),
@@ -1044,37 +1065,61 @@ internal class ObjectManager : ImpLifecycleObject
             ? groundInfo.point
             : clientId.GetPlayerController()!.transform.position;
 
-        var cruiserObj = Instantiate(
-            LoadedStaticPrefabs.Value["CompanyCruiser"],
+        var vehicleObj = Instantiate(
+            spawningVehicle.vehiclePrefab,
             actualSpawnPosition + Vector3.up * 2.5f,
             Quaternion.identity,
             RoundManager.Instance.VehiclesContainer
         );
 
-        var vehicleNetObject = cruiserObj.gameObject.GetComponentInChildren<NetworkObject>();
+        var vehicleNetObject = vehicleObj.gameObject.GetComponentInChildren<NetworkObject>();
         vehicleNetObject.Spawn();
-        CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = cruiserObj;
+        CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = vehicleNetObject;
 
-        var cruiserManualObj = Instantiate(
-            LoadedStaticPrefabs.Value["CompanyCruiserManual"],
-            actualSpawnPosition + Vector3.up * 2.5f,
-            Quaternion.identity,
-            RoundManager.Instance.VehiclesContainer
-        );
-        var manualNetObject = cruiserManualObj.gameObject.GetComponentInChildren<NetworkObject>();
-        manualNetObject.Spawn();
-        CurrentLevelObjects[manualNetObject.NetworkObjectId] = cruiserObj;
+        if (spawningVehicle.secondaryPrefab)
+        {
+            var secondaryObj = Instantiate(
+                spawningVehicle.secondaryPrefab,
+                actualSpawnPosition + Vector3.up * 2.5f,
+                Quaternion.identity,
+                RoundManager.Instance.VehiclesContainer
+            );
+
+            var secondaryNetObj = secondaryObj.gameObject.GetComponentInChildren<NetworkObject>();
+            secondaryNetObj.Spawn();
+            CurrentLevelObjects[secondaryNetObj.NetworkObjectId] = secondaryNetObj;
+        }
 
         if (request.SendNotification)
         {
             Imperium.Networking.SendLog(new NetworkNotification
             {
-                Message = "A trusty Company Cruiser has been spawned!",
+                Message = $"A trusty {request.Name} has been spawned!",
                 Type = NotificationType.Spawning
             });
         }
 
         objectsChangedEvent.DispatchToClients();
+
+        vehicleSpawnResponseMessage.DispatchToClients(new VehicleSpawnResponse
+        {
+            NetObj = vehicleNetObject
+        });
+    }
+
+    [ImpAttributes.LocalMethod]
+    private void OnSpawnVehicleClient(VehicleSpawnResponse response)
+    {
+        if (!response.NetObj.TryGet(out var vehicleNetObj))
+        {
+            Imperium.IO.LogError("[SPAWN] Failed to initialize spawned vehicle.");
+            return;
+        }
+
+        var vehicle = vehicleNetObj.GetComponent<VehicleController>();
+
+        vehicle.mainRigidbody.MovePosition(vehicle.transform.position);
+        vehicle.hasBeenSpawned = true;
     }
 
     [ImpAttributes.HostOnly]
@@ -1088,12 +1133,12 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var staticObj = Instantiate(staticPrefab, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
+            var staticObj = Instantiate(staticPrefab.gameObject, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
 
             var netObject = staticObj.gameObject.GetComponent<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
 
-            CurrentLevelObjects[netObject.NetworkObjectId] = staticObj;
+            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
         }
 
         if (request.SendNotification)
@@ -1122,7 +1167,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = hazardObj;
+        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
     }
 
     [ImpAttributes.HostOnly]
@@ -1132,7 +1177,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = hazardObj;
+        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
     }
 
     [ImpAttributes.HostOnly]
@@ -1143,7 +1188,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = hazardObj;
+        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
     }
 
     [ImpAttributes.HostOnly]
@@ -1157,7 +1202,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
         netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = hazardObj;
+        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
     }
 
     [ImpAttributes.HostOnly]
@@ -1250,13 +1295,13 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        DespawnObject(obj, clientId);
+        DespawnObject(obj.gameObject, clientId);
     }
 
     [ImpAttributes.HostOnly]
     private void OnDespawnEntity(EntityDespawnRequest request, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(request.NetId, out var obj))
+        if (!CurrentLevelObjects.TryGetValue(request.NetId, out var obj) || !obj)
         {
             Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn entity with net ID {request.NetId}");
             return;
@@ -1270,7 +1315,31 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        DespawnObject(obj, clientId, request.IsRespawn);
+        DespawnObject(obj.gameObject, clientId, request.IsRespawn);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnDespawnVehicle(VehicleDespawnRequest request, ulong clientId)
+    {
+        if (!CurrentLevelObjects.TryGetValue(request.NetId, out var obj) || !obj)
+        {
+            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn vehicle with net ID {request.NetId}");
+            return;
+        }
+
+        var vehicle = obj.GetComponent<VehicleController>();
+
+        // Despawn vehicle but don't destroy local object. Local object will destroy itself on each client.
+        if (request.IsRespawn || vehicle.carDestroyed)
+        {
+            obj.Despawn(destroy: false);
+        }
+        else
+        {
+            vehicle.DestroyCarClientRpc((int)clientId);
+        }
+
+        if (!request.IsRespawn) objectsChangedEvent.DispatchToClients();
     }
 
     [ImpAttributes.HostOnly]
@@ -1282,7 +1351,7 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
-        DespawnObject(obj, clientId);
+        DespawnObject(obj.gameObject, clientId);
     }
 
     [ImpAttributes.LocalMethod]

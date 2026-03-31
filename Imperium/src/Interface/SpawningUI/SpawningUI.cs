@@ -38,7 +38,7 @@ internal class SpawningUI : BaseUI
         { SpawnObjectType.StaticPrefab, "Static Prefab" },
         { SpawnObjectType.LocalStaticPrefab, "Static Prefab (Local)" },
         { SpawnObjectType.OutsideObject, "Outdoor Object" },
-        { SpawnObjectType.CompanyCruiser, "Cruiser" },
+        { SpawnObjectType.Vehicle, "Vehicle" }
     };
 
     protected override void InitUI()
@@ -76,7 +76,7 @@ internal class SpawningUI : BaseUI
                 _ => SelectItemAndDeselectOthers(currentIndex),
                 typeDisplayNames,
                 theme
-                );
+            );
             entries.Add(spawningEntry);
         }
 
@@ -112,17 +112,29 @@ internal class SpawningUI : BaseUI
             entries.Add(spawningEntry);
         }
 
+        foreach (var vehicleName in Imperium.ObjectManager.LoadedVehicles.Value.Keys)
+        {
+            var currentIndex = entries.Count;
+            var spawningEntryObject = Instantiate(template, entryContainer);
+            var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
+            spawningEntry.Init(
+                SpawnObjectType.Vehicle,
+                vehicleName,
+                () => Spawn(spawningEntry, 1, -1),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
+                theme
+            );
+            entries.Add(spawningEntry);
+        }
+
         foreach (var prefabName in Imperium.ObjectManager.LoadedStaticPrefabs.Value.Keys)
         {
             var currentIndex = entries.Count;
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
-            // Since the company cruiser requires a different spawn function, we have to assign it its own type
-            var spawnType = prefabName == "CompanyCruiser"
-                ? SpawnObjectType.CompanyCruiser
-                : SpawnObjectType.StaticPrefab;
             spawningEntry.Init(
-                spawnType,
+                SpawnObjectType.StaticPrefab,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
                 _ => SelectItemAndDeselectOthers(currentIndex),
@@ -260,7 +272,7 @@ internal class SpawningUI : BaseUI
         var useIndicator = spawningObjectEntry.SpawnType is
             SpawnObjectType.MapHazard or
             SpawnObjectType.StaticPrefab or
-            SpawnObjectType.CompanyCruiser or
+            SpawnObjectType.Vehicle or
             SpawnObjectType.LocalStaticPrefab or
             SpawnObjectType.OutsideObject;
 
@@ -412,7 +424,7 @@ internal enum SpawnObjectType
     StaticPrefab,
     LocalStaticPrefab,
     OutsideObject,
-    CompanyCruiser
+    Vehicle
 }
 
 internal readonly struct SpawnInputParameters

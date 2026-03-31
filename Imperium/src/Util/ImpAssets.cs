@@ -93,6 +93,7 @@ internal abstract class ImpAssets
     /*
      * Other
      */
+    public static Sprite LockImage;
     public static IReadOnlyCollection<string> EntityNames;
 
     internal static AssetBundle ImperiumAssets;
@@ -193,7 +194,8 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out WireframeRed),
             LoadAsset(ImperiumAssets, "Assets/Materials/shig.mat", out ShiggyMaterial),
             LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.wav", out ButtonClick),
-            LoadAsset(ImperiumAssets, "Assets/Audio/OpenClick.ogg", out OpenClick)
+            LoadAsset(ImperiumAssets, "Assets/Audio/OpenClick.ogg", out OpenClick),
+            LoadAsset(ImperiumAssets, "Assets/ImperiumSprites/lock.png", out LockImage)
         ];
 
         foreach (var material in Resources.FindObjectsOfTypeAll<Material>())

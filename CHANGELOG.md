@@ -4,10 +4,19 @@
 
 ### General Changes
 - Oracle is correctly predicting enemies again.
-- Removed various internal log statements.
+- Added support for modded vehicles in the spawning UI and object explorer.
+- Made it so pausing time persists after restarting the game.
 
 ### QoL Improvements
 - Improved usability of the Oracle UI and removed coordinates.
+- Moved all visualizer objects into Imperium parent objects.
+- Destroying a cruiser in the object explorer now makes it explode.
+- Made it so the time indicator icon is replaced with a lock when time is paused.
+- Removed various internal log statements.
+
+### Bug Fixes
+- Fixed a bug that caused a destroyed cruiser to leave colliders behind.
+- Fixed a bug that caused naturally spawned cruisers to be invisible.
 
 ### Compatibility
 

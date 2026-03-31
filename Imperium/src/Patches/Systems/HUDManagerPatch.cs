@@ -1,7 +1,9 @@
 #region
 
 using HarmonyLib;
+using Imperium.Core;
 using Imperium.Interface.MapUI;
+using Imperium.Util;
 
 #endregion
 
@@ -16,7 +18,16 @@ internal static class HUDManagerPatch
     {
         if (Imperium.Settings.Time.PermanentClock.Value || !Imperium.Player.isInsideFactory)
         {
-            __instance.Clock.targetAlpha = Imperium.MoonManager.TimeIsPaused.Value ? 0.4f : 1f;
+            if (Imperium.MoonManager.TimeIsPaused.Value)
+            {
+                __instance.Clock.targetAlpha = 0.6f;
+                __instance.clockIcon.sprite = ImpAssets.LockImage;
+            }
+            else
+            {
+                __instance.Clock.targetAlpha = 1f;
+                Imperium.TimeOfDay.RefreshClockUI();
+            }
             return false;
         }
 
