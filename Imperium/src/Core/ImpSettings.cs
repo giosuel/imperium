@@ -990,6 +990,21 @@ public class ImpSettings(ConfigFile config)
             true
         );
 
+        internal readonly ImpConfig<bool> DisableFlipCamera = new(
+            config,
+            "Preferences.General",
+            "DisableFlipCamera",
+            false,
+            primaryUpdate: isDisabled =>
+            {
+                if (isDisabled)
+                {
+                    IngamePlayerSettings.Instance.flipCamera = false;
+                    Imperium.HUDManager.SetPlayerScreenFlip(false);
+                }
+            }
+        );
+
         internal readonly ImpConfig<bool> NotificationsGodMode = new(
             config,
             "Preferences.Notifications",

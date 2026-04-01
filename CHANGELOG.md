@@ -4,6 +4,7 @@
 
 ### General Changes
 - Added support for story logs in the object explorer.
+- Added an option to disable the flipped camera effect on 1st of April.
 
 ### Bug Fixes
 - Moved some field initializers to init functions to make Imperium work with development builds.

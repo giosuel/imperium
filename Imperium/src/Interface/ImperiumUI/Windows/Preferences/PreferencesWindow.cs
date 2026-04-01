@@ -58,6 +58,19 @@ internal class PreferencesWindow : ImperiumWindow
             }
         );
 
+        ImpToggle.Bind(
+            "DisableFlipCamera",
+            general,
+            Imperium.Settings.Preferences.DisableFlipCamera,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Disable Camera Flipping",
+                Description = "Disables the camera flipping effect on 1st of April.",
+                Tooltip = tooltip
+            }
+        );
+
         var hosting = content.Find("Grid/Hosting/Hosting");
         ImpToggle.Bind(
             "AllowClients",
