@@ -50,16 +50,17 @@ internal class ObjectEntryEngine
         AddType(Imperium.ObjectManager.CurrentLevelSpiderWebs, ObjectType.SpiderWeb, ObjectCategory.Hazards);
         AddType(Imperium.ObjectManager.CurrentLevelItems, ObjectType.Item, ObjectCategory.Items);
         AddType(Imperium.ObjectManager.CurrentLevelVents, ObjectType.Vent, ObjectCategory.Vents);
+        // As the entry requires a component to function and these object's don't use a script, we use their transform.
         AddType(
             Imperium.ObjectManager.CurrentLevelVainShrouds,
             ObjectType.VainShroud,
             ObjectCategory.Vains,
             componentGetter: obj => obj.transform
         );
+        AddType(Imperium.ObjectManager.CurrentLevelStoryLogs, ObjectType.StoryLog, ObjectCategory.StoryLogs);
         AddType(Imperium.ObjectManager.CurrentLevelBreakerBoxes, ObjectType.BreakerBox, ObjectCategory.Other);
         AddType(Imperium.ObjectManager.CurrentLevelSteamValves, ObjectType.SteamValve, ObjectCategory.Other);
         AddType(Imperium.ObjectManager.CurrentLevelSecurityDoors, ObjectType.SecurityDoor, ObjectCategory.Other);
-        // As the entry requires a component to function and these object's don't use a script, we use their transform.
         AddType(
             Imperium.ObjectManager.CurrentLevelOutsideObjects,
             ObjectType.OutsideObject,

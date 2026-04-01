@@ -35,8 +35,9 @@ internal static class ObjectEntryGenerator
         ObjectType.Vent => false,
         ObjectType.Player => false,
         ObjectType.SteamValve => false,
-        ObjectType.VainShroud => false,
         ObjectType.SecurityDoor => false,
+        ObjectType.VainShroud => false,
+        ObjectType.StoryLog => false,
         ObjectType.OutsideObject => false,
         _ => true
     };
@@ -44,6 +45,12 @@ internal static class ObjectEntryGenerator
     internal static bool CanDrop(ObjectEntry entry) => entry.Type switch
     {
         ObjectType.Item => true,
+        _ => false
+    };
+
+    internal static bool CanUnlock(ObjectEntry entry) => entry.Type switch
+    {
+        ObjectType.StoryLog => true,
         _ => false
     };
 
@@ -66,6 +73,7 @@ internal static class ObjectEntryGenerator
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
         ObjectType.Vent => false,
+        ObjectType.StoryLog => false,
         ObjectType.VainShroud => false,
         ObjectType.OutsideObject => false,
         _ => true
@@ -115,11 +123,11 @@ internal static class ObjectEntryGenerator
             case ObjectType.SpikeTrap:
             case ObjectType.SteamValve:
             case ObjectType.Vent:
+            case ObjectType.StoryLog:
             case ObjectType.SecurityDoor:
                 Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
                 return true;
             case ObjectType.Player:
-                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -219,7 +227,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
             case ObjectType.VainShroud:
-                break;
+            case ObjectType.StoryLog:
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -250,7 +258,35 @@ internal static class ObjectEntryGenerator
             case ObjectType.BreakerBox:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
+            case ObjectType.VainShroud:
+            case ObjectType.StoryLog:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    internal static void UnlockObject(ObjectEntry entry)
+    {
+        switch (entry.Type)
+        {
+            case ObjectType.StoryLog:
+                var storyLog = (StoryLog)entry.component;
+                storyLog.CollectLog();
                 break;
+            case ObjectType.BreakerBox:
+            case ObjectType.Vehicle:
+            case ObjectType.Entity:
+            case ObjectType.Landmine:
+            case ObjectType.Player:
+            case ObjectType.SpiderWeb:
+            case ObjectType.SpikeTrap:
+            case ObjectType.SteamValve:
+            case ObjectType.SecurityDoor:
+            case ObjectType.OutsideObject:
+            case ObjectType.VainShroud:
+            case ObjectType.Turret:
+            case ObjectType.Vent:
+            case ObjectType.Item:
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -275,7 +311,8 @@ internal static class ObjectEntryGenerator
             case ObjectType.BreakerBox:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
-                break;
+            case ObjectType.VainShroud:
+            case ObjectType.StoryLog:
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -300,7 +337,8 @@ internal static class ObjectEntryGenerator
             case ObjectType.BreakerBox:
             case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
-                break;
+            case ObjectType.VainShroud:
+            case ObjectType.StoryLog:
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -340,12 +378,14 @@ internal static class ObjectEntryGenerator
             case ObjectType.SpikeTrap:
                 ((SpikeRoofTrap)entry.component).slamOnIntervals = isActive;
                 break;
+            case ObjectType.StoryLog:
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
             case ObjectType.Vehicle:
             case ObjectType.Item:
             case ObjectType.Vent:
             case ObjectType.OutsideObject:
+            case ObjectType.VainShroud:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -411,6 +451,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
             case ObjectType.Vent:
             case ObjectType.SecurityDoor:
+            case ObjectType.StoryLog:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
@@ -448,6 +489,10 @@ internal static class ObjectEntryGenerator
                 entry.dropButton.interactable = isHeld;
                 entry.teleportHereButton.interactable = !isHeld;
                 break;
+            case ObjectType.StoryLog:
+                var storyLog = (StoryLog)entry.component;
+                entry.unlockButton.interactable = !storyLog.collected;
+                break;
             case ObjectType.Landmine:
             case ObjectType.Turret:
             case ObjectType.Vent:
@@ -479,6 +524,7 @@ internal static class ObjectEntryGenerator
                     Tooltip = entry.tooltip
                 });
                 break;
+            case ObjectType.StoryLog:
             case ObjectType.SteamValve:
             case ObjectType.Landmine:
             case ObjectType.Turret:
@@ -513,8 +559,9 @@ internal static class ObjectEntryGenerator
         ObjectType.SecurityDoor => GetObjectGenericName("Security Door", entry.component),
         ObjectType.OutsideObject => GetOutsideObjectName(entry.component.gameObject),
         ObjectType.Vent => GetVentName((EnemyVent)entry.component),
+        ObjectType.StoryLog => GetStoryLogName((StoryLog)entry.component),
         ObjectType.VainShroud => $"Mold Spore (<i>ID: {entry.component.GetInstanceID()}</i>)",
-        _ => throw new ArgumentOutOfRangeException()
+        _ => entry.component.gameObject.name
     };
 
     internal static Vector3 GetTeleportPosition(ObjectEntry entry) => entry.Type switch
@@ -525,8 +572,7 @@ internal static class ObjectEntryGenerator
 
     internal static GameObject GetContainerObject(ObjectEntry entry) => entry.Type switch
     {
-        ObjectType.Landmine => entry.component.transform.parent.gameObject,
-        ObjectType.Turret => entry.component.transform.parent.gameObject,
+        ObjectType.Landmine or ObjectType.Turret => entry.component.transform.parent.gameObject,
         ObjectType.SpikeTrap => entry.component.transform.parent.parent.parent.gameObject,
         _ => entry.component.gameObject
     };
@@ -571,6 +617,11 @@ internal static class ObjectEntryGenerator
         var personalName = $"({Imperium.ObjectManager.GetEntityName(entity)})";
         var entityName = $"{entity.enemyType.enemyName} {RichText.Size(personalName, 10)}";
         return entity.isEnemyDead ? RichText.Strikethrough(entityName) : entityName;
+    }
+
+    private static string GetStoryLogName(StoryLog storyLog)
+    {
+        return Imperium.Terminal.logEntryFiles[storyLog.storyLogID].creatureName;
     }
 
     private static string GetPlayerName(PlayerControllerB player)

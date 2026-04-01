@@ -127,6 +127,7 @@ public enum ObjectType
     SecurityDoor,
     OutsideObject,
     VainShroud,
+    StoryLog,
     Turret,
     Vent
 }

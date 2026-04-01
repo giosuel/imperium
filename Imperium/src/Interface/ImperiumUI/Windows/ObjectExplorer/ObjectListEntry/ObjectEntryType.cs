@@ -9,6 +9,7 @@ internal enum ObjectCategory
     Items,
     Vents,
     Vains,
+    StoryLogs,
     Other,
     OutsideObjects
 }

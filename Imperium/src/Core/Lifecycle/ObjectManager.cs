@@ -64,6 +64,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<EnemyVent>> CurrentLevelVents = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<EnemyAI>> CurrentLevelEntities = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<Landmine>> CurrentLevelLandmines = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<StoryLog>> CurrentLevelStoryLogs = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<PlayerControllerB>> CurrentPlayers = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<GrabbableObject>> CurrentLevelItems = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<BreakerBox>> CurrentLevelBreakerBoxes = new([]);
@@ -536,20 +537,22 @@ internal class ObjectManager : ImpLifecycleObject
     {
         var stopwatch = Stopwatch.StartNew();
         var stopwatch2 = Stopwatch.StartNew();
+
         HashSet<DoorLock> currentLevelDoors = [];
         HashSet<Turret> currentLevelTurrets = [];
         HashSet<EnemyVent> currentLevelVents = [];
         HashSet<EnemyAI> currentLevelEntities = [];
         HashSet<Landmine> currentLevelLandmines = [];
+        HashSet<StoryLog> currentLevelStoryLogs = [];
         HashSet<GrabbableObject> currentLevelItems = [];
+        HashSet<GameObject> currentLevelVainShrouds = [];
         HashSet<BreakerBox> currentLevelBreakerBoxes = [];
         HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
         HashSet<GameObject> currentLevelOutsideObjects = [];
-        HashSet<GameObject> currentLevelVainShrouds = [];
+        HashSet<VehicleController> currentLevelVehicles = [];
         HashSet<SteamValveHazard> currentLevelSteamValves = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
         HashSet<RandomScrapSpawn> currentScrapSpawnPoints = [];
-        HashSet<VehicleController> currentLevelVehicles = [];
         HashSet<TerminalAccessibleObject> currentLevelSecurityDoors = [];
 
         foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
@@ -608,6 +611,9 @@ internal class ObjectManager : ImpLifecycleObject
                     case EnemyAI entity:
                         currentLevelEntities.Add(entity);
                         break;
+                    case StoryLog storyLog:
+                        currentLevelStoryLogs.Add(storyLog);
+                        break;
                     case NetworkObject netObj:
                         CurrentLevelObjects[netObj.NetworkObjectId] = netObj;
                         break;
@@ -616,20 +622,21 @@ internal class ObjectManager : ImpLifecycleObject
         }
 
         CurrentLevelItems.Set(currentLevelItems);
-        CurrentLevelEntities.Set(currentLevelEntities);
-        CurrentLevelOutsideObjects.Set(currentLevelOutsideObjects);
-        CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
         CurrentLevelDoors.Set(currentLevelDoors);
-        CurrentLevelSecurityDoors.Set(currentLevelSecurityDoors);
-        CurrentLevelTurrets.Set(currentLevelTurrets);
-        CurrentLevelLandmines.Set(currentLevelLandmines);
-        CurrentLevelSpikeTraps.Set(currentLevelSpikeTraps);
-        CurrentLevelBreakerBoxes.Set(currentLevelBreakerBoxes);
         CurrentLevelVents.Set(currentLevelVents);
-        CurrentLevelSteamValves.Set(currentLevelSteamValves);
-        CurrentLevelSpiderWebs.Set(currentLevelSpiderWebs);
-        CurrentScrapSpawnPoints.Set(currentScrapSpawnPoints);
+        CurrentLevelTurrets.Set(currentLevelTurrets);
         CurrentLevelVehicles.Set(currentLevelVehicles);
+        CurrentLevelEntities.Set(currentLevelEntities);
+        CurrentLevelLandmines.Set(currentLevelLandmines);
+        CurrentLevelStoryLogs.Set(currentLevelStoryLogs);
+        CurrentLevelSpiderWebs.Set(currentLevelSpiderWebs);
+        CurrentLevelSpikeTraps.Set(currentLevelSpikeTraps);
+        CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
+        CurrentLevelSteamValves.Set(currentLevelSteamValves);
+        CurrentScrapSpawnPoints.Set(currentScrapSpawnPoints);
+        CurrentLevelBreakerBoxes.Set(currentLevelBreakerBoxes);
+        CurrentLevelSecurityDoors.Set(currentLevelSecurityDoors);
+        CurrentLevelOutsideObjects.Set(currentLevelOutsideObjects);
 
         stopwatch.Stop();
         Imperium.IO.LogDebug($"[PROFILE] Objects refresh time : {stopwatch.ElapsedMilliseconds}");
@@ -1406,23 +1413,6 @@ internal class ObjectManager : ImpLifecycleObject
         }
     }
 
-    [ImpAttributes.HostOnly]
-    private void DespawnObject(GameObject obj, ulong objectNetId, bool isRespawn = false)
-    {
-        if (!obj) return;
-
-        try
-        {
-            if (obj.TryGetComponent<NetworkObject>(out var networkObject)) networkObject.Despawn();
-        }
-        finally
-        {
-            Destroy(obj);
-
-            if (!isRespawn) objectsChangedEvent.DispatchToClients();
-        }
-    }
-
     [ImpAttributes.LocalMethod]
     private static void OnSteamValveBurst(ulong valveNetId)
     {
@@ -1455,4 +1445,21 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     #endregion
+
+    [ImpAttributes.HostOnly]
+    private void DespawnObject(GameObject obj, ulong objectNetId, bool isRespawn = false)
+    {
+        if (!obj) return;
+
+        try
+        {
+            if (obj.TryGetComponent<NetworkObject>(out var networkObject)) networkObject.Despawn();
+        }
+        finally
+        {
+            Destroy(obj);
+
+            if (!isRespawn) objectsChangedEvent.DispatchToClients();
+        }
+    }
 }

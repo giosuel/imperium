@@ -21,6 +21,7 @@ internal class ObjectEntry : MonoBehaviour
     private TMP_Text objectNameText;
 
     internal Button dropButton { get; private set; }
+    internal Button unlockButton { get; private set; }
     internal Button reviveButton { get; private set; }
     internal Button killButton { get; private set; }
     internal Button destroyButton { get; private set; }
@@ -111,6 +112,15 @@ internal class ObjectEntry : MonoBehaviour
             isIconButton: true
         );
 
+        // Unlock button
+        unlockButton = ImpButton.Bind(
+            "Unlock",
+            transform,
+            () => ObjectEntryGenerator.UnlockObject(this),
+            theme,
+            isIconButton: true
+        );
+
         // Kill button (Unthemes, as it is red in every theme)
         killButton = ImpButton.Bind("Kill", transform, () => ObjectEntryGenerator.KillObject(this));
 
@@ -124,8 +134,6 @@ internal class ObjectEntry : MonoBehaviour
         Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value.Toggle(objectNetId.Value));
     }
 
-    internal void ClearItem() => ClearItem(0);
-
     internal void ClearItem(float positionY)
     {
         component = null;
@@ -138,6 +146,7 @@ internal class ObjectEntry : MonoBehaviour
         activeToggle.gameObject.SetActive(false);
         respawnButton.gameObject.SetActive(false);
         dropButton.gameObject.SetActive(false);
+        unlockButton.gameObject.SetActive(false);
         killButton.gameObject.SetActive(false);
         reviveButton.gameObject.SetActive(false);
 
@@ -176,6 +185,7 @@ internal class ObjectEntry : MonoBehaviour
         activeToggle.gameObject.SetActive(ObjectEntryGenerator.CanToggle(this) && objectNetId.HasValue);
         respawnButton.gameObject.SetActive(ObjectEntryGenerator.CanRespawn(this));
         dropButton.gameObject.SetActive(ObjectEntryGenerator.CanDrop(this));
+        unlockButton.gameObject.SetActive(ObjectEntryGenerator.CanUnlock(this));
         killButton.gameObject.SetActive(ObjectEntryGenerator.CanKill(this));
         reviveButton.gameObject.SetActive(ObjectEntryGenerator.CanRevive(this));
 

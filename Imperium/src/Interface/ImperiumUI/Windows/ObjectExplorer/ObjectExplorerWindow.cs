@@ -39,6 +39,9 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private RectTransform vainShroudsTitle;
     private TMP_Text vainShroudsCount;
 
+    private RectTransform storyLogsTitle;
+    private TMP_Text storyLogsCount;
+
     private RectTransform othersTitle;
     private TMP_Text othersCount;
 
@@ -57,6 +60,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private readonly ImpBinding<bool> VentsCollapsed = new(false);
     private readonly ImpBinding<bool> ItemsCollapsed = new(false);
     private readonly ImpBinding<bool> VainsCollapsed = new(false);
+    private readonly ImpBinding<bool> StoryLogsCollapsed = new(false);
     private readonly ImpBinding<bool> OtherCollapsed = new(false);
     private readonly ImpBinding<bool> OutsideObjectsCollapsed = new(false);
 
@@ -97,6 +101,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ventsCount = contentRect.Find("VentListTitle/Count").GetComponent<TMP_Text>();
         vainShroudsTitle = contentRect.Find("VainShroudsListTitle").GetComponent<RectTransform>();
         vainShroudsCount = contentRect.Find("VainShroudsListTitle/Count").GetComponent<TMP_Text>();
+        storyLogsTitle = contentRect.Find("StoryLogsListTitle").GetComponent<RectTransform>();
+        storyLogsCount = contentRect.Find("StoryLogsListTitle/Count").GetComponent<TMP_Text>();
         othersTitle = contentRect.Find("OtherListTitle").GetComponent<RectTransform>();
         othersCount = contentRect.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
         outsideObjectsTitle = contentRect.Find("OutsideObjectsListTitle").GetComponent<RectTransform>();
@@ -109,6 +115,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ImpButton.CreateCollapse("HazardListTitle/Arrow", contentRect, stateBinding: HazardsCollapsed);
         ImpButton.CreateCollapse("VentListTitle/Arrow", contentRect, stateBinding: VentsCollapsed);
         ImpButton.CreateCollapse("VainShroudsListTitle/Arrow", contentRect, stateBinding: VainsCollapsed);
+        ImpButton.CreateCollapse("StoryLogsListTitle/Arrow", contentRect, stateBinding: StoryLogsCollapsed);
         ImpButton.CreateCollapse("OtherListTitle/Arrow", contentRect, stateBinding: OtherCollapsed);
         ImpButton.CreateCollapse("OutsideObjectsListTitle/Arrow", contentRect, stateBinding: OutsideObjectsCollapsed);
 
@@ -119,6 +126,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         VentsCollapsed.onTrigger += RefreshEntries;
         ItemsCollapsed.onTrigger += RefreshEntries;
         VainsCollapsed.onTrigger += RefreshEntries;
+        StoryLogsCollapsed.onTrigger += RefreshEntries;
         OtherCollapsed.onTrigger += RefreshEntries;
         OutsideObjectsCollapsed.onTrigger += RefreshEntries;
 
@@ -133,6 +141,10 @@ internal class ObjectExplorerWindow : ImperiumWindow
             { ObjectCategory.Items, new CategoryDefinition { TitleRect = itemsTitle, Binding = ItemsCollapsed } },
             { ObjectCategory.Vents, new CategoryDefinition { TitleRect = ventsTitle, Binding = VentsCollapsed } },
             { ObjectCategory.Vains, new CategoryDefinition { TitleRect = vainShroudsTitle, Binding = VainsCollapsed } },
+            {
+                ObjectCategory.StoryLogs,
+                new CategoryDefinition { TitleRect = storyLogsTitle, Binding = StoryLogsCollapsed }
+            },
             { ObjectCategory.Other, new CategoryDefinition { TitleRect = othersTitle, Binding = OtherCollapsed } },
             {
                 ObjectCategory.OutsideObjects,
@@ -149,6 +161,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             ObjectCategory.Items,
             ObjectCategory.Vents,
             ObjectCategory.Vains,
+            ObjectCategory.StoryLogs,
             ObjectCategory.Other,
             ObjectCategory.OutsideObjects
         ];
@@ -168,6 +181,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             new StyleOverride("ItemListTitle", Variant.DARKER),
             new StyleOverride("VentListTitle", Variant.DARKER),
             new StyleOverride("VainShroudsListTitle", Variant.DARKER),
+            new StyleOverride("StoryLogsListTitle", Variant.DARKER),
             new StyleOverride("OtherListTitle", Variant.DARKER),
             new StyleOverride("OutsideObjectsListTitle", Variant.DARKER)
         );
@@ -189,6 +203,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             new StyleOverride("ItemListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VentListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VainShroudsListTitle/Count", Variant.FADED_TEXT),
+            new StyleOverride("StoryLogsListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("OtherListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("OutsideObjectsListTitle/Count", Variant.FADED_TEXT)
         );
@@ -299,6 +314,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         itemsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Items, 0).ToString()})";
         ventsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vents, 0).ToString()})";
         vainShroudsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0).ToString()})";
+        storyLogsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.StoryLogs, 0).ToString()})";
         othersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Other, 0).ToString()})";
         outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0).ToString()})";
     }
