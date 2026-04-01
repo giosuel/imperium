@@ -43,30 +43,27 @@ internal static class ShovelPatch
             __instance.previousPlayerHeldBy = __instance.playerHeldBy;
 
             if (__instance.reelingUpCoroutine != null) __instance.StopCoroutine(__instance.reelingUpCoroutine);
-            __instance.reelingUpCoroutine = __instance.StartCoroutine(reelUpShovelPatch(__instance));
+            __instance.reelingUpCoroutine = __instance.StartCoroutine(__instance.reelUpShovel());
         }
 
         return false;
     }
 
     /// <summary>
-    ///     Cloned from <see cref="Shovel.reelUpShovel" /> and removed static waiting times.
+    ///     Run original enumerator <see cref="Shovel.reelUpShovel" /> but remove static waiting times.
     /// </summary>
-    private static IEnumerator reelUpShovelPatch(Shovel shovel)
+    [HarmonyPostfix]
+    [HarmonyPatch("reelUpShovel")]
+    private static IEnumerator reelUpShovelPatch(IEnumerator __result)
     {
-        shovel.playerHeldBy.activatingItem = true;
-        shovel.playerHeldBy.twoHanded = true;
-        shovel.playerHeldBy.playerBodyAnimator.ResetTrigger(ShovelHit);
-        shovel.playerHeldBy.playerBodyAnimator.SetBool(ReelingUp, value: true);
-        shovel.shovelAudio.PlayOneShot(shovel.reelUp);
-        shovel.ReelUpSFXServerRpc();
-        yield return new WaitUntil(() => !shovel.isHoldingButton || !shovel.isHeld);
-        shovel.SwingShovel(!shovel.isHeld);
-        yield return new WaitForEndOfFrame();
-        shovel.HitShovel(!shovel.isHeld);
-        shovel.reelingUp = false;
-        shovel.reelingUpCoroutine = null;
-
-        yield return null;
+        while (__result.MoveNext())
+        {
+            var it = __result.Current;
+            if (it is WaitForSeconds { })
+            {
+                continue;
+            }
+            yield return it;
+        }
     }
 }
