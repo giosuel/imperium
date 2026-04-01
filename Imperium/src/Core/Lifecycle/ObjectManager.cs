@@ -79,7 +79,9 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelOutsideObjects = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds = new([]);
 
-    // Event that signalizes a change in any of the object lists
+    /*
+     * Event that signalizes a change in any of the object lists
+     */
     internal event Action CurrentLevelObjectsChanged;
 
     /*
@@ -101,18 +103,29 @@ internal class ObjectManager : ImpLifecycleObject
         "DisabledObjects", Imperium.Networking, []
     );
 
-    // Used by the server to execute a despawn request from a client via network ID
+    /*
+     * Used by the server to execute a despawn request from a client via network ID
+     */
     private readonly Dictionary<ulong, NetworkObject> CurrentLevelObjects = [];
 
     private readonly Dictionary<string, string> displayNameMap = [];
     private readonly Dictionary<string, string> overrideDisplayNameMap = [];
 
-    private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new("SpawnEntity", Imperium.Networking);
-    private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new("SpawnItem", Imperium.Networking);
-    private readonly ImpNetMessage<VehicleSpawnRequest> vehicleSpawnMessage = new("SpawnVehicle", Imperium.Networking);
+    private readonly ImpNetMessage<EntitySpawnRequest> entitySpawnMessage = new(
+        "SpawnEntity", Imperium.Networking
+    );
 
-    private readonly ImpNetMessage<VehicleSpawnResponse> vehicleSpawnResponseMessage =
-        new("SpawnVehicleResponse", Imperium.Networking);
+    private readonly ImpNetMessage<ItemSpawnRequest> itemSpawnMessage = new(
+        "SpawnItem", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<VehicleSpawnRequest> vehicleSpawnMessage = new(
+        "SpawnVehicle", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<VehicleSpawnResponse> vehicleSpawnResponseMessage = new(
+        "SpawnVehicleResponse", Imperium.Networking
+    );
 
     private readonly ImpNetMessage<MapHazardSpawnRequest> mapHazardSpawnMessage = new(
         "MapHazardSpawn", Imperium.Networking
@@ -138,23 +151,37 @@ internal class ObjectManager : ImpLifecycleObject
         "LocalObjectTeleportation", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<BurstCadaverBloomRequest> burstCadaverBloom =
-        new("BurstCadaverBloom", Imperium.Networking);
+    private readonly ImpNetMessage<BurstCadaverBloomRequest> burstCadaverBloom = new(
+        "BurstCadaverBloom", Imperium.Networking
+    );
 
-    private readonly ImpNetMessage<ulong> burstSteamValve = new("BurstSteamValve", Imperium.Networking);
-    private readonly ImpNetMessage<EntityDespawnRequest> entityDespawnMessage = new("DespawnEntity", Imperium.Networking);
+    private readonly ImpNetMessage<ulong> burstSteamValve = new(
+        "BurstSteamValve", Imperium.Networking
+    );
 
-    private readonly ImpNetMessage<VehicleDespawnRequest>
-        vehicleDespawnMessage = new("DespawnVehicle", Imperium.Networking);
+    private readonly ImpNetMessage<EntityDespawnRequest> entityDespawnMessage = new(
+        "DespawnEntity", Imperium.Networking
+    );
 
-    private readonly ImpNetMessage<ulong> itemDespawnMessage = new("DespawnItem", Imperium.Networking);
-    private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new("DespawnObstacle", Imperium.Networking);
+    private readonly ImpNetMessage<VehicleDespawnRequest> vehicleDespawnMessage = new(
+        "DespawnVehicle", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<ulong> itemDespawnMessage = new(
+        "DespawnItem", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new(
+        "DespawnObstacle", Imperium.Networking
+    );
 
     private readonly ImpNetMessage<LocalObjectDespawnRequest> localObjectDespawnMessage = new(
         "DespawnLocalObject", Imperium.Networking
     );
 
-    private readonly ImpNetEvent objectsChangedEvent = new("ObjectsChanged", Imperium.Networking);
+    private readonly ImpNetEvent objectsChangedEvent = new(
+        "ObjectsChanged", Imperium.Networking
+    );
 
     // List of prefab names of outside objects. Used to identify outside objects.
     private readonly HashSet<string> OutsideObjectPrefabNameMap =
@@ -183,6 +210,8 @@ internal class ObjectManager : ImpLifecycleObject
      * Assets loaded from the game's resources after loading objects
      */
     internal AudioClip BeaconDrop;
+
+    private LayerMask terrainMask;
 
     protected override void Init()
     {
@@ -219,6 +248,8 @@ internal class ObjectManager : ImpLifecycleObject
 
             objectTeleportationRequest.OnServerReceive += OnObjectTeleportationRequestServer;
         }
+
+        terrainMask = LayerMask.NameToLayer("Terrain");
     }
 
     protected override void OnSceneLoad()
@@ -500,8 +531,6 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelEntities.Set(currentLevelEntities);
         CurrentLevelObjectsChanged?.Invoke();
     }
-
-    private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
 
     internal void RefreshLevelObjects()
     {
