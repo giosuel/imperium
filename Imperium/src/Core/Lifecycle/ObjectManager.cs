@@ -1013,11 +1013,12 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
+        var mapPropsContainer = GameObject.FindGameObjectWithTag("MapPropsContainer");
+
         for (var i = 0; i < request.Amount; i++)
         {
-            Instantiate(
-                outsideObject.prefabToSpawn, request.SpawnPosition, Quaternion.Euler(outsideObject.rotationOffset)
-            );
+            var obj = Instantiate(outsideObject.prefabToSpawn, mapPropsContainer.transform);
+            obj.transform.position = request.SpawnPosition;
         }
 
         if (request.SendNotification)
@@ -1054,9 +1055,13 @@ internal class ObjectManager : ImpLifecycleObject
             rotationOffset = Quaternion.Euler(outsideObject.rotationOffset);
         }
 
+        var mapPropsContainer = GameObject.FindGameObjectWithTag("MapPropsContainer");
+
         for (var i = 0; i < request.Amount; i++)
         {
-            Instantiate(staticPrefab, request.SpawnPosition, rotationOffset);
+            var obj = Instantiate(staticPrefab, mapPropsContainer.transform);
+            obj.transform.position = request.SpawnPosition;
+            obj.transform.rotation = rotationOffset;
         }
 
         if (request.SendNotification)

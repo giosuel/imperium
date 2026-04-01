@@ -10,6 +10,7 @@
 
 ### Bug Fixes
 - Moved some field initializers to init functions to make Imperium work with development builds.
+- Fixed a bug that caused manually spawned outside objects to persist after leaving a moon.
 
 ## Imperium v1.2.1 - Small Update
 
