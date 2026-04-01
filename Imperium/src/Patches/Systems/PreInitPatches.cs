@@ -82,4 +82,12 @@ internal static class PreInitPatches
             }
         }
     }
+
+    [HarmonyPatch(typeof(GameNetworkManager))]
+    internal static class GameNetworkManagerPatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("SteamMatchmaking_OnLobbyCreated")]
+        private static void SteamMatchmaking_OnLobbyCreatedPatch(ref Steamworks.Data.Lobby lobby) => lobby.SetData("imperium", Imperium.PLUGIN_VERSION);
+    }
 }
