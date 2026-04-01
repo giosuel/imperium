@@ -7,8 +7,14 @@
 - Added an option to disable the flipped camera effect on 1st of April.
 - Added buttons to unlock all bestiary and story logs.
 - Added an identifier to steam lobbies when Imperium is running.
+- Added support for modded indoor map hazards in the spawning UI.
+
+### QoL Improvements
+
+- Added a check that disables flight when the player hits the ground.
 
 ### Bug Fixes
+
 - Moved some field initializers to init functions to make Imperium work with development builds.
 - Fixed a bug that caused manually spawned outside objects to persist after leaving a moon.
 

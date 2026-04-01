@@ -40,7 +40,7 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedScrap = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedEntities = new([]);
     internal readonly ImpBinding<IReadOnlyDictionary<string, BuyableVehicle>> LoadedVehicles = new();
-    internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedMapHazards = new();
+    internal readonly ImpBinding<IReadOnlyDictionary<string, IndoorMapHazardType>> LoadedMapHazards = new();
 
     // Lists of bjects with network behaviours (e.g. clipboard, body, company cruiser)
     internal readonly ImpBinding<IReadOnlyDictionary<string, NetworkObject>> LoadedStaticPrefabs = new();
@@ -424,32 +424,25 @@ internal class ObjectManager : ImpLifecycleObject
             .Select(g => g.First())
             .ToDictionary(vehicle => vehicle.vehicleDisplayName, vehicle => vehicle);
 
-        var allMapHazards = new Dictionary<string, GameObject>();
-        var allStaticPrefabs = new Dictionary<string, NetworkObject>();
-        var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
+        var allMapHazards = Resources.FindObjectsOfTypeAll<IndoorMapHazardType>()
+            .Where(obj => obj.prefabToSpawn)
+            .GroupBy(obj => obj.prefabToSpawn.name)
+            .Select(obj => obj.First())
+            .ToDictionary(obj => obj.prefabToSpawn.name);
+
         var allOutsideObjects = Resources.FindObjectsOfTypeAll<SpawnableOutsideObject>()
             .Where(obj => obj.prefabToSpawn)
             .GroupBy(obj => obj.prefabToSpawn.name)
             .Select(obj => obj.First())
             .ToDictionary(obj => obj.prefabToSpawn.name);
 
+        var allStaticPrefabs = new Dictionary<string, NetworkObject>();
+        var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
+
         foreach (var obj in Resources.FindObjectsOfTypeAll<GameObject>())
         {
             switch (obj.name)
             {
-                case "SpikeRoofTrapHazard":
-                    allMapHazards["Spike Trap"] = obj;
-                    break;
-                case "TurretContainer":
-                    allMapHazards["Turret"] = obj;
-                    break;
-                case "SteamValve":
-                    allMapHazards["SteamValve"] = obj;
-                    break;
-                // Find all landmine containers (Not the actual mine objects which happen to have the same name)
-                case "Landmine" when obj.transform.Find("Landmine"):
-                    allMapHazards["Landmine"] = obj;
-                    break;
                 case "RagdollGrabbableObject":
                     allStaticPrefabs["Body"] = obj.GetComponent<NetworkObject>();
                     break;
@@ -476,7 +469,6 @@ internal class ObjectManager : ImpLifecycleObject
 
         GenerateDisplayNameMaps();
     }
-
 
     private static EnemyType CreateShiggyType(EnemyType type)
     {
@@ -967,26 +959,22 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnSpawnMapHazard(MapHazardSpawnRequest request, ulong clientId)
     {
+        if (!LoadedMapHazards.Value.TryGetValue(request.Name, out var hazardType) || !hazardType.prefabToSpawn)
+        {
+            Imperium.IO.LogError($"[SPAWN] [R] Unable to find indoor hazard prefab '{request.Name}'.");
+            return;
+        }
+
         for (var i = 0; i < request.Amount; i++)
         {
-            switch (request.Name)
-            {
-                case "Turret":
-                    SpawnTurret(request.SpawnPosition);
-                    break;
-                case "Spike Trap":
-                    SpawnSpikeTrap(request.SpawnPosition);
-                    break;
-                case "Landmine":
-                    SpawnLandmine(request.SpawnPosition);
-                    break;
-                case "SteamValve":
-                    SpawnSteamValve(request.SpawnPosition);
-                    break;
-                default:
-                    Imperium.IO.LogError($"[SPAWN] [R] Failed to spawn map hazard {request.Name}");
-                    return;
-            }
+            var hazardObj = Instantiate(
+                hazardType.prefabToSpawn,
+                request.SpawnPosition, Quaternion.identity
+            );
+
+            var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
+            netObject.Spawn(destroyWithScene: true);
+            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
         }
 
         var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
@@ -1198,55 +1186,6 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void SpawnLandmine(Vector3 position)
-    {
-        var hazardObj = Instantiate(
-            LoadedMapHazards.Value["Landmine"], position, Quaternion.Euler(Vector3.zero)
-        );
-        hazardObj.transform.Find("Landmine").rotation = Quaternion.Euler(270, 0, 0);
-        hazardObj.transform.localScale = new Vector3(0.4574f, 0.4574f, 0.4574f);
-
-        var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
-        netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
-    }
-
-    [ImpAttributes.HostOnly]
-    private void SpawnTurret(Vector3 position)
-    {
-        var hazardObj = Instantiate(LoadedMapHazards.Value["Turret"], position, Quaternion.Euler(Vector3.zero));
-
-        var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
-        netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
-    }
-
-    [ImpAttributes.HostOnly]
-    private void SpawnSteamValve(Vector3 position)
-    {
-        var hazardObj =
-            Instantiate(LoadedMapHazards.Value["SteamValve"], position, Quaternion.Euler(Vector3.zero));
-
-        var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
-        netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
-    }
-
-    [ImpAttributes.HostOnly]
-    private void SpawnSpikeTrap(Vector3 position)
-    {
-        var hazardObj = Instantiate(
-            LoadedMapHazards.Value["Spike Trap"],
-            position,
-            Quaternion.Euler(Vector3.zero)
-        );
-
-        var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
-        netObject.Spawn(destroyWithScene: true);
-        CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
-    }
-
-    [ImpAttributes.HostOnly]
     private void OnObjectTeleportationRequestServer(ObjectTeleportRequest request, ulong clientId)
     {
         objectTeleportationRequest.DispatchToClients(request);
@@ -1336,7 +1275,7 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        DespawnObject(obj.gameObject, clientId);
+        DespawnObject(obj.gameObject);
     }
 
     [ImpAttributes.HostOnly]
@@ -1356,7 +1295,7 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        DespawnObject(obj.gameObject, clientId, request.IsRespawn);
+        DespawnObject(obj.gameObject, request.IsRespawn);
     }
 
     [ImpAttributes.HostOnly]
@@ -1392,7 +1331,7 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
-        DespawnObject(obj.gameObject, clientId);
+        DespawnObject(obj.gameObject);
     }
 
     [ImpAttributes.LocalMethod]
@@ -1452,7 +1391,7 @@ internal class ObjectManager : ImpLifecycleObject
     #endregion
 
     [ImpAttributes.HostOnly]
-    private void DespawnObject(GameObject obj, ulong objectNetId, bool isRespawn = false)
+    private void DespawnObject(GameObject obj, bool isRespawn = false)
     {
         if (!obj) return;
 
@@ -1463,7 +1402,6 @@ internal class ObjectManager : ImpLifecycleObject
         finally
         {
             Destroy(obj);
-
             if (!isRespawn) objectsChangedEvent.DispatchToClients();
         }
     }
