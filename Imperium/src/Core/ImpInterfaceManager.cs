@@ -135,7 +135,7 @@ internal class ImpInterfaceManager : MonoBehaviour
         return controller && controller.IsOpen;
     }
 
-    public void Open<T>(bool toggleCursorState = true, bool closeOthers = true)
+    public void Open<T>(bool toggleCursorState = true, bool closeOthers = true) where T : BaseUI
     {
         Open(typeof(T), toggleCursorState, closeOthers);
     }
@@ -171,9 +171,9 @@ internal class ImpInterfaceManager : MonoBehaviour
         }
     }
 
-    public void Toggle<T>(InputAction.CallbackContext _) => Toggle<T>();
+    public void Toggle<T>(InputAction.CallbackContext _) where T : BaseUI => Toggle<T>();
 
-    public void Toggle<T>(bool toggleCursorState = true, bool closeOthers = true)
+    public void Toggle<T>(bool toggleCursorState = true, bool closeOthers = true) where T : BaseUI
     {
         if (!interfaceControllers.TryGetValue(typeof(T), out var controller)) return;
 

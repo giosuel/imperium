@@ -13,7 +13,7 @@ internal class ConfirmationWindow : ImperiumWindow
         ImpButton.Bind("Content/Back", transform, Close, theme);
 
         // Unthemed button, as it is red in all themes
-        ImpButton.Bind("Content/Confirm", transform, () => Imperium.Interface.Open<SaveEditorWindow>());
+        // ImpButton.Bind("Content/Confirm", transform, () => Imperium.Interface.Open<SaveEditorWindow>());
     }
 
     protected override void OnOpen()

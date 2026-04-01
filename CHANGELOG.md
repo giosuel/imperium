@@ -17,6 +17,7 @@
 
 - Moved some field initializers to init functions to make Imperium work with development builds.
 - Fixed a bug that caused manually spawned outside objects to persist after leaving a moon.
+- Fixed a bug that caused the minimap settings window to break when opened.
 
 ## Imperium v1.2.1 - Small Update
 
