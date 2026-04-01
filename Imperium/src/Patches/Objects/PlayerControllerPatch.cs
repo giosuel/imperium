@@ -220,6 +220,14 @@ internal static class PlayerControllerPatch
 
             __instance.gameplayCamera.fieldOfView = targetFOV;
         }
+
+        if (Imperium.PlayerManager.IsFlying.Value)
+        {
+            if (__instance.thisController.isGrounded)
+            {
+                Imperium.PlayerManager.IsFlying.SetFalse();
+            }
+        }
     }
 
     // Temporarily stores gameHasStarted if patch overwrites it for pickup check
