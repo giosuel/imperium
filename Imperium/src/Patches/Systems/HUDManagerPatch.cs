@@ -43,4 +43,14 @@ internal static class HUDManagerPatch
     {
         return !Imperium.Interface.IsOpen<MapUI>();
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("SetPlayerScreenFlip")]
+    private static void SetPlayerScreenFlipPrefixPatch(HUDManager __instance, ref bool flip)
+    {
+        if (Imperium.Settings.Preferences.DisableFlipCamera.Value)
+        {
+            flip = false;
+        }
+    }
 }

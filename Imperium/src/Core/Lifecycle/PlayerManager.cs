@@ -43,17 +43,9 @@ internal class PlayerManager : ImpLifecycleObject
 
     private static readonly Dictionary<int, Vector2> CameraOriginalResolutions = [];
 
-    internal readonly ImpExternalBinding<Vector3?, bool> ShipTPAnchor = new(
-        () => GameObject.Find("CatwalkShip")?.transform.position
-    );
-
-    internal readonly ImpExternalBinding<Vector3?, bool> MainEntranceTPAnchor = new(
-        () => GameObject.Find("EntranceTeleportA")?.transform.position
-    );
-
-    internal readonly ImpExternalBinding<Vector3?, bool> ApparatusTPAnchor = new(
-        () => GameObject.Find("LungApparatus(Clone)")?.transform.position
-    );
+    internal ImpExternalBinding<Vector3?, bool> ShipTPAnchor;
+    internal ImpExternalBinding<Vector3?, bool> MainEntranceTPAnchor;
+    internal ImpExternalBinding<Vector3?, bool> ApparatusTPAnchor;
 
     internal bool AllowPlayerDeathOverride;
     internal bool FlyIsAscending;
@@ -87,6 +79,18 @@ internal class PlayerManager : ImpLifecycleObject
         };
 
         Imperium.InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
+
+        ShipTPAnchor = new ImpExternalBinding<Vector3?, bool>(
+            () => GameObject.Find("CatwalkShip")?.transform.position
+        );
+
+        MainEntranceTPAnchor = new ImpExternalBinding<Vector3?, bool>(
+            () => GameObject.Find("EntranceTeleportA")?.transform.position
+        );
+
+        ApparatusTPAnchor = new ImpExternalBinding<Vector3?, bool>(
+            () => GameObject.Find("LungApparatus(Clone)")?.transform.position
+        );
     }
 
     protected override void OnSceneLoad()

@@ -1,13 +1,34 @@
 # Changelog
 
+## Imperium v1.2.2 - Small Update
+
+### General Changes
+- Added support for story logs in the object explorer.
+- Added an option to disable the flipped camera effect on 1st of April.
+- Added buttons to unlock all bestiary and story logs.
+- Added an identifier to steam lobbies when Imperium is running.
+- Added support for modded indoor map hazards in the spawning UI.
+
+### QoL Improvements
+
+- Added a check that disables flight when the player hits the ground.
+
+### Bug Fixes
+
+- Moved some field initializers to init functions to make Imperium work with development builds.
+- Fixed a bug that caused manually spawned outside objects to persist after leaving a moon.
+- Fixed a bug that caused the minimap settings window to break when opened.
+
 ## Imperium v1.2.1 - Small Update
 
 ### General Changes
+
 - Oracle is correctly predicting enemies again.
 - Added support for modded vehicles in the spawning UI and object explorer.
 - Made it so pausing time persists after restarting the game.
 
 ### QoL Improvements
+
 - Improved usability of the Oracle UI and removed coordinates.
 - Moved all visualizer objects into Imperium parent objects.
 - Destroying a cruiser in the object explorer now makes it explode.
@@ -15,6 +36,7 @@
 - Removed various internal log statements.
 
 ### Bug Fixes
+
 - Fixed a bug that caused a destroyed cruiser to leave colliders behind.
 - Fixed a bug that caused naturally spawned cruisers to be invisible.
 

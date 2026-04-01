@@ -44,7 +44,7 @@ public class Imperium : BaseUnityPlugin
 {
     public const string PLUGIN_GUID = "giosuel.Imperium";
     public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "1.2.1";
+    public const string PLUGIN_VERSION = "1.2.2";
 
     private static Harmony Harmony;
     private static ManualLogSource Log;
@@ -333,5 +333,6 @@ public class Imperium : BaseUnityPlugin
 
         Harmony.PatchAll(typeof(PreInitPatches.PreInitSceneScriptPatch));
         Harmony.PatchAll(typeof(PreInitPatches.MenuManagerPatch));
+        Harmony.PatchAll(typeof(PreInitPatches.GameNetworkManagerPatch));
     }
 }

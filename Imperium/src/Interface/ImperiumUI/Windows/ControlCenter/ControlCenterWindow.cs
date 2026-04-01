@@ -1,9 +1,12 @@
 #region
 
+using System.Linq;
 using Imperium.Core;
 using Imperium.Interface.Common;
 using Imperium.Types;
+using Imperium.Util;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
 #endregion
@@ -137,6 +140,32 @@ internal class ControlCenterWindow : ImperiumWindow
 
     private void InitGameSettings()
     {
+        ImpButton.Bind(
+            "Left/GameSettings/UnlockLogs",
+            content,
+            () =>
+            {
+                Imperium.Terminal.unlockedStoryLogs = Imperium.Terminal.unlockedStoryLogs
+                    .Union(Imperium.Terminal.logEntryFiles.Select(node => node.storyLogFileID))
+                    .Distinct()
+                    .ToList();
+            },
+            theme: theme
+        );
+
+        ImpButton.Bind(
+            "Left/GameSettings/UnlockBestiary",
+            content,
+            () =>
+            {
+                Imperium.Terminal.scannedEnemyIDs = Imperium.Terminal.scannedEnemyIDs
+                    .Union(Imperium.Terminal.enemyFiles.Select(node => node.creatureFileID))
+                    .Distinct()
+                    .ToList();
+            },
+            theme: theme
+        );
+
         ImpToggle.Bind(
             "Left/GameSettings/UnlockShop",
             content,
