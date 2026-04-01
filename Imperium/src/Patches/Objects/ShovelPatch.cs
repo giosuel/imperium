@@ -26,7 +26,11 @@ internal static class ShovelPatch
     [HarmonyPatch("ItemActivate")]
     internal static bool ItemActivate(Shovel __instance, bool used, bool buttonDown = true)
     {
-        if (__instance.playerHeldBy) return true;
+        if (__instance.playerHeldBy == null)
+        {
+            // Vanilla would simply `return;` anyway
+            return true;
+        }
 
         if (!Imperium.Settings.Shovel.Speedy.Value)
         {
