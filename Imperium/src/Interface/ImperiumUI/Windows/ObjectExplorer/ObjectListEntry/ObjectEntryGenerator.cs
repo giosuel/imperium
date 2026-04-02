@@ -550,13 +550,13 @@ internal static class ObjectEntryGenerator
         ObjectType.Vehicle => GetVehicleName(entry.component),
         ObjectType.Entity => GetEntityName((EnemyAI)entry.component),
         ObjectType.Item => ((GrabbableObject)entry.component).itemProperties.itemName,
-        ObjectType.Landmine => GetObjectGenericName("Landmine", entry.component),
+        ObjectType.Landmine => GetTerminalAccessibleName("Landmine", entry.component),
         ObjectType.Player => GetPlayerName((PlayerControllerB)entry.component),
         ObjectType.SpiderWeb => GetObjectGenericName("Spider Web", entry.component),
         ObjectType.SpikeTrap => GetObjectGenericName("Spike Trap", entry.component),
         ObjectType.SteamValve => GetObjectGenericName("Steam Valve", entry.component),
-        ObjectType.Turret => GetObjectGenericName("Turret", entry.component),
-        ObjectType.SecurityDoor => GetObjectGenericName("Security Door", entry.component),
+        ObjectType.Turret => GetTerminalAccessibleName("Turret", entry.component),
+        ObjectType.SecurityDoor => GetTerminalAccessibleName("Security Door", entry.component),
         ObjectType.OutsideObject => GetOutsideObjectName(entry.component.gameObject),
         ObjectType.Vent => GetVentName((EnemyVent)entry.component),
         ObjectType.StoryLog => GetStoryLogName((StoryLog)entry.component),
@@ -594,6 +594,16 @@ internal static class ObjectEntryGenerator
     private static string GetObjectGenericName(string name, Component obj)
     {
         return $"{name} (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
+    }
+
+    private static string GetTerminalAccessibleName(string name, Component obj)
+    {
+        string code = "??";
+        if (obj.TryGetComponent<TerminalAccessibleObject>(out var terminalComponent))
+        {
+            code = terminalComponent.objectCode;
+        }
+        return $"{name} [{code}] (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
     }
 
     private static string GetOutsideObjectName(GameObject obj)

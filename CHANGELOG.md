@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### QoL Improvements
+
+- Added terminal codes to landmines, turrets and security doors in the object explorer.
+
 ## Imperium v1.2.3 - Hotfix
 
 ### Bug Fixes
