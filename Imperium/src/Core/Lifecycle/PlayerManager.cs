@@ -315,7 +315,6 @@ internal class PlayerManager : ImpLifecycleObject
             if (!heldItem) continue;
             heldItem.isInFactory = isInFactory;
             heldItem.isInShipRoom = isInShip;
-            heldItem.isInFactory = isInFactory;
         }
 
         if (request.PlayerId == NetworkManager.Singleton.LocalClientId) TimeOfDay.Instance.DisableAllWeather();
