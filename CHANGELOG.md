@@ -1,5 +1,11 @@
 # Changelog
 
+## Imperium v1.2.3 - Hotfix
+
+### Bug Fixes
+
+- Fixed a bug that caused outdated configs to break Imperium startup.
+
 ## Imperium v1.2.2 - Small Update
 
 ### General Changes
