@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+- Teleport to Apparatus button now correctly targets an apparatus dock machinery inside facility instead of collected apparatuses on the ship.
+
 ## Imperium v1.2.3 - Hotfix
 
 ### Bug Fixes
