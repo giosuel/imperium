@@ -1,12 +1,13 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using BepInEx.Logging;
 using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Util.Binding;
-using UnityEngine;
 using LogLevel = BepInEx.Logging.LogLevel;
 
 #endregion
@@ -62,35 +63,175 @@ internal class ImpOutput(ManualLogSource logger)
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }
 
+    private const string ELLIPSIS = "...";
+    private const int ELLIPSIS_WIDTH = 3;
+
+    private static void Repeat(StringBuilder stringBuilder, char c, int count)
+    {
+        if (count <= 0) return;
+        for (int i = 0; i < count; i++)
+        {
+            stringBuilder.Append(c);
+        }
+    }
+
+    private static int Elide(StringBuilder stringBuilder, string value, int maxLength)
+    {
+        if (maxLength <= 0)
+        {
+            // No space at all
+            return 0;
+        }
+        if (value.Length <= maxLength)
+        {
+            // Everything fits
+            stringBuilder.Append(value);
+            return value.Length;
+        }
+        else
+        {
+            // width of the visible text before the ellipsys...
+            var elidedLength = maxLength - ELLIPSIS_WIDTH;
+            if (elidedLength <= 0)
+            {
+                // Not enough space to elide
+                stringBuilder.Append(value.AsSpan(0, maxLength));
+            }
+            else
+            {
+                stringBuilder.Append(value.AsSpan(0, elidedLength));
+                stringBuilder.Append(ELLIPSIS);
+            }
+            return maxLength;
+        }
+    }
+
+    // Calculate left and right padding around content.
+    // Biased to align left if padding is not evenly divisible, i.e. right padding might be larger.
+    // Returned padding is non-negative, even if the content overflows.
+    private static (int, int) SplitPadding(int contentSize, int maxSize)
+    {
+        int padding = maxSize - contentSize;
+        if (padding <= 0)
+        {
+            return (0, 0);
+        }
+        int before = padding / 2;
+        int after = padding % 2 == 0 ? before : before + 1;
+        return (before, after);
+    }
+
     internal void LogBlock(List<string> lines, string title = "Imperium Monitoring")
     {
         if (!Imperium.Settings.Preferences.GeneralLogging.Value) return;
 
-        title = "< " + title + " >";
-        // Limit width to 518 so lines can be clamped to 512 and an ellipse can be added
-        var width = Mathf.Min(lines.Max(line => line.Length) + 4, 520);
-        var fullWidth = string.Concat(Enumerable.Repeat("\u2550", width - 2));
-        var titlePaddingCount = (width - title.Length) / 2 - 1;
-        if ((width - title.Length) / 2 % 2 == 0) titlePaddingCount++;
+        // ANSI box table formatting
+        //
+        // Example 1:
+        // ╒════════╕
+        // │< abcd >│
+        // ╞════════╡
+        // │ abcd12 │
+        // ╘════════╛
+        //
+        // Example 2:
+        // ╒══════════════════════╕
+        // │       < abcd >       │
+        // ╞══════════════════════╡
+        // │ Shorter line         │
+        // │ Slightly longer line │
+        // ╘══════════════════════╛
+        //
+        // Example 3 (with a simulated low limit on line width):
+        //    ┌      title line width      ┐
+        // ┌< │     padded title width     │ >┐
+        // ╒══════════════════════════════════╕
+        // │             < abcd >             │
+        // ╞══════════════════════════════════╡
+        // │ Amazingly long elided excepti... │
+        // ╘══════════════════════════════════╛
+        // └││           box width       │  ││┘
+        //  └│       padded line width   │  │┘
+        //   ├      content line width   │  ┘
+        //   └   max elided line width   ┘
+        //
+        // Title is wrapped in angle brackets, adding 4 characters to its width,
+        // but title may touch the borders, so title with brackets == padded line width.
+        //
+        // Content lines are padded with a single whitespace on each side,
+        // adding 2 characters to their padded line width.
+        //
+        // If any line exceeds content line width,
+        // the line is trimmed to the max elided line width, and an ellipsis is appended.
+        const int BOX_MAX_WIDTH = 512;
+        const char BOX_DRAWINGS_LIGHT_VERTICAL = '\u2502';
+        // Border width on one side
+        const int BOX_BORDER_WIDTH = 1;
+        const int PADDED_MAX_WIDTH = BOX_MAX_WIDTH - 2 * BOX_BORDER_WIDTH;
+        // Max padded title width is the same, because it touches the borders
+        const int PADDED_TITLE_MAX_WIDTH = PADDED_MAX_WIDTH;
+        // Title padding on one side (angle bracket and a whitespace)
+        const int TITLE_PADDING = 2;
+        const int TITLE_TEXT_MAX_WIDTH = PADDED_TITLE_MAX_WIDTH - 2 * TITLE_PADDING;
+        // Content padding on one side (just a whitespace)
+        const int CONTENT_PADDING = 1;
+        // Max content line width is 510 - 2 = 508.
+        const int CONTENT_TEXT_MAX_WIDTH = PADDED_TITLE_MAX_WIDTH - 2 * CONTENT_PADDING;
 
-        var titlePadding = string.Concat(Enumerable.Repeat(" ", titlePaddingCount));
-
-        var output = "\u2552" + fullWidth + "\u2555\n";
-        output += "\u2502" + titlePadding + title + titlePadding + "\u2502\n";
-        output += "\u255e" + fullWidth + "\u2561\n";
-        output = lines.Aggregate(
-            output,
-            (current, line) =>
-            {
-                var clampedLine = line.Length > 512 ? line[..512] + "..." : line;
-                return current + $"\u2502 {clampedLine}".PadRight(width - 2) + " \u2502\n";
-            }
-        );
-        output += "\u2558" + fullWidth + "\u255b";
-
-        foreach (var se in output.Split("\n"))
+        // First pass: estimate box width
+        int paddedWidth = title.Length + 2 * TITLE_PADDING;
+        // Note: lines.Max() would crash if empty
+        foreach (var line in lines)
         {
-            Log(LogLevel.Message, se.Trim());
+            paddedWidth = Math.Max(paddedWidth, line.Length + 2 * CONTENT_PADDING);
+        }
+        paddedWidth = Math.Min(paddedWidth, PADDED_MAX_WIDTH);
+        int boxWidth = paddedWidth + 2 * BOX_BORDER_WIDTH;
+        string paddedWidthHorizontalBorder = string.Concat(Enumerable.Repeat('\u2550', paddedWidth));
+        string boxBorderTop = '\u2552' + paddedWidthHorizontalBorder + '\u2555';
+        string boxBorderMiddle = '\u255e' + paddedWidthHorizontalBorder + '\u2561';
+        string boxBorderBottom = '\u2558' + paddedWidthHorizontalBorder + '\u255b';
+
+        // Second pass: elide and pad lines
+        List<string> table = new(lines.Count + 4); // 4 = 3 borders + 1 title line
+        table.Add(boxBorderTop);
+        {
+            int titleTextWidth = Math.Min(title.Length, TITLE_TEXT_MAX_WIDTH);
+            int paddedTitleWidth = titleTextWidth + 2 * TITLE_PADDING;
+            var (paddingLeft, paddingRight) = SplitPadding(paddedTitleWidth, paddedWidth);
+
+            StringBuilder row = new(boxWidth);
+
+            row.Append(BOX_DRAWINGS_LIGHT_VERTICAL);
+            Repeat(row, ' ', paddingLeft);
+            row.Append("< ");
+            Elide(row, title, TITLE_TEXT_MAX_WIDTH);
+            row.Append(" >");
+            Repeat(row, ' ', paddingRight);
+            row.Append(BOX_DRAWINGS_LIGHT_VERTICAL);
+
+            table.Add(row.ToString());
+        }
+        table.Add(boxBorderMiddle);
+        foreach (var line in lines)
+        {
+            int availableWidth = paddedWidth - 2 * CONTENT_PADDING;
+            StringBuilder row = new(boxWidth);
+
+            row.Append(BOX_DRAWINGS_LIGHT_VERTICAL);
+            row.Append(' ');
+            int usedWidth = Elide(row, line, CONTENT_TEXT_MAX_WIDTH);
+            Repeat(row, ' ', availableWidth - usedWidth);
+            row.Append(' ');
+            row.Append(BOX_DRAWINGS_LIGHT_VERTICAL);
+
+            table.Add(row.ToString());
+        }
+        table.Add(boxBorderBottom);
+
+        foreach (var row in table)
+        {
+            Log(LogLevel.Message, row);
         }
     }
 
