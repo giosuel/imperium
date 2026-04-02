@@ -13,7 +13,6 @@ using Imperium.Interface.ImperiumUI.Windows.ObjectControl;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Interface.ImperiumUI.Windows.Rendering;
-using Imperium.Interface.ImperiumUI.Windows.SaveEditor;
 using Imperium.Interface.ImperiumUI.Windows.ShipControl;
 using Imperium.Interface.ImperiumUI.Windows.Teleport;
 using Imperium.Interface.ImperiumUI.Windows.Visualization;
@@ -228,7 +227,22 @@ public class ImperiumUI : BaseUI
         var layoutConfigString = Imperium.Settings.Preferences.ImperiumWindowLayout.Value;
         if (string.IsNullOrEmpty(layoutConfigString)) return;
 
-        if (!ImpUtils.DeserializeJsonSafe<List<WindowDefinition>>(layoutConfigString, out var configList))
+        var settings = new JsonSerializerSettings
+        {
+            Error = delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
+            {
+                if (Equals(args.ErrorContext.Member, nameof(WindowDefinition.WindowType)) &&
+                    args.ErrorContext.OriginalObject?.GetType() == typeof(WindowDefinition))
+                {
+                    // Skip unknown / removed window types.
+                    // This will deserialize into a WindowDefinition object with a null WindowType.
+                    // BUG: https://github.com/giosuel/imperium/issues/111
+                    args.ErrorContext.Handled = true;
+                }
+            }
+        };
+
+        if (!ImpUtils.DeserializeJsonSafe<List<WindowDefinition>>(layoutConfigString, settings, out var configList))
         {
             Imperium.IO.LogError("[UI] Failed to load ImperiumUI layout config. Invalid JSON detected.");
             return;
@@ -239,7 +253,14 @@ public class ImperiumUI : BaseUI
 
         foreach (var windowDefinition in configList)
         {
-            var existingDefinition = windowControllers[windowDefinition.WindowType];
+            if (windowDefinition.WindowType == null || !windowControllers.TryGetValue(windowDefinition.WindowType, out var existingDefinition))
+            {
+                // Ignore non-registered window types
+                // BUG: https://github.com/giosuel/imperium/issues/111
+                var debugType = windowDefinition.WindowType?.ToString() ?? "[REDACTED]";
+                Imperium.IO.LogInfo($"[UI] Ignoring unknown window definition of type {debugType}");
+                continue;
+            }
             if (!controllers.Add(existingDefinition.WindowType)) continue;
 
             // Propagate data from config to existing definition and add it to the stack
