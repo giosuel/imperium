@@ -238,7 +238,13 @@ public class ImperiumUI : BaseUI
 
         foreach (var windowDefinition in configList)
         {
-            var existingDefinition = windowControllers[windowDefinition.WindowType];
+            if (!windowControllers.TryGetValue(windowDefinition.WindowType, out var existingDefinition))
+            {
+                // Ignore non-registered window types
+                // BUG: https://github.com/giosuel/imperium/issues/111
+                Imperium.IO.LogInfo($"[UI] Ignoring unknown window definition of type {windowDefinition.WindowType}");
+                continue;
+            }
             if (!controllers.Add(existingDefinition.WindowType)) continue;
 
             // Propagate data from config to existing definition and add it to the stack
