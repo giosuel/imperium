@@ -178,11 +178,11 @@ public abstract class ImpUtils
     /// <param name="deserializedObj"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static bool DeserializeJsonSafe<T>(string jsonString, out T deserializedObj)
+    public static bool DeserializeJsonSafe<T>(string jsonString, JsonSerializerSettings settings, out T deserializedObj)
     {
         try
         {
-            deserializedObj = JsonConvert.DeserializeObject<T>(jsonString);
+            deserializedObj = JsonConvert.DeserializeObject<T>(jsonString, settings);
             return deserializedObj != null;
         }
         catch (Exception)
