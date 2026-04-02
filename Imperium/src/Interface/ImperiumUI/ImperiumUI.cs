@@ -13,7 +13,6 @@ using Imperium.Interface.ImperiumUI.Windows.ObjectControl;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
 using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Interface.ImperiumUI.Windows.Rendering;
-using Imperium.Interface.ImperiumUI.Windows.SaveEditor;
 using Imperium.Interface.ImperiumUI.Windows.ShipControl;
 using Imperium.Interface.ImperiumUI.Windows.Teleport;
 using Imperium.Interface.ImperiumUI.Windows.Visualization;
