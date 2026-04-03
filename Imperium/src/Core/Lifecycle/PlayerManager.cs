@@ -303,7 +303,7 @@ internal class PlayerManager : ImpLifecycleObject
         var isInFactory = request.Destination.y < -100;
         player.isInsideFactory = isInFactory;
 
-        // There is no easy way to check this, so it will just be off by default for now
+        // There is no easy way to check this, so these are best-effort guesses
         var isInElevator = Imperium.StartOfRound.shipBounds.bounds.Contains(request.Destination);
         player.isInElevator = isInElevator;
 
