@@ -277,7 +277,7 @@ internal class ControlCenterWindow : ImperiumWindow
             interactableBindings: Imperium.Settings.Player.EnableFlying
         );
 
-        ImpSlider.Bind(
+        var fovSlider = ImpSlider.Bind(
             path: "Right/FieldOfView",
             container: content,
             valueBinding: Imperium.Settings.Player.CustomFieldOfView,
@@ -285,6 +285,9 @@ internal class ControlCenterWindow : ImperiumWindow
             indicatorUnit: "°",
             theme: theme
         );
+        fovSlider.Slider.minValue = 10;
+        var minLabel = fovSlider.gameObject.transform.Find("MinValue").GetComponent<TMP_Text>();
+        minLabel.text = $"{fovSlider.Slider.minValue}°";
 
         ImpSlider.Bind(
             path: "Right/MovementSpeed",
