@@ -67,7 +67,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
     private float viewHeight;
     private float contentHeight;
-    private int entryCount;
     private const float entryHeight = 19;
     private float originalViewHeight;
 
@@ -217,7 +216,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private void InitEntryEngine()
     {
         originalViewHeight = Math.Abs(scrollRect.GetComponent<RectTransform>().sizeDelta.y);
-        entryCount = Mathf.CeilToInt(originalViewHeight / entryHeight) + 2;
+        var entryCount = Mathf.CeilToInt(originalViewHeight / entryHeight) + 2;
         viewHeight = entryHeight * entryCount;
 
         for (var i = 0; i < entryCount; i++)
