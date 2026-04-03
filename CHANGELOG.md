@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+- Teleporting a player now applies the correct audio reverb preset.
+
 ## Imperium v1.2.3 - Hotfix
 
 ### Bug Fixes

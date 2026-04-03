@@ -310,6 +310,17 @@ internal class PlayerManager : ImpLifecycleObject
         var isInShip = Imperium.StartOfRound.shipInnerRoomBounds.bounds.Contains(request.Destination);
         player.isInHangarShipRoom = isInShip;
 
+        var audioReverbPresets = FindObjectOfType<AudioReverbPresets>();
+        if (audioReverbPresets != null && audioReverbPresets.audioPresets.Length >= 4)
+        {
+            // audio reverb presets:
+            // [1] = Ship
+            // [2] = Inside
+            // [3] = Outside
+            int preset = isInShip ? 1 : isInFactory ? 2 : 3;
+            audioReverbPresets.audioPresets[preset].ChangeAudioReverbForPlayer(player);
+        }
+
         foreach (var heldItem in player.ItemSlots)
         {
             if (!heldItem) continue;
