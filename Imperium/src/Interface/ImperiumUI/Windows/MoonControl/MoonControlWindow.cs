@@ -4,6 +4,7 @@ using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl.Widgets;
 using Imperium.Types;
+using TMPro;
 
 #endregion
 
@@ -189,10 +190,24 @@ internal class MoonControlWindow : ImperiumWindow
             theme: theme
         );
 
+        // ImpButton.Bind(
+        //     "Left/MapObstacles/MapHazards/Right/EnableLandmines",
+        //     transform,
+        //     () => MoonManager.ToggleLandmines(true),
+        //     interactableBindings: Imperium.IsSceneLoaded,
+        //     theme: theme
+        // );
+        // Draft: Repurposed
+        {
+            var buttonObject = transform.Find("Left/MapObstacles/MapHazards/Right/EnableLandmines");
+            var text = buttonObject.Find("Text")?.GetComponent<TMP_Text>() ??
+                    buttonObject.Find("Text (TMP)")?.GetComponent<TMP_Text>();
+            text.text = "Flicker Lights";
+        }
         ImpButton.Bind(
             "Left/MapObstacles/MapHazards/Right/EnableLandmines",
             transform,
-            () => MoonManager.ToggleLandmines(true),
+            () => Imperium.MoonManager.FlickerLights(),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
