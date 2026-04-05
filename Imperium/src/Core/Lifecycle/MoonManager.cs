@@ -19,6 +19,10 @@ internal class MoonManager : ImpLifecycleObject
 
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
+    private readonly ImpNetEvent mopTheFloor = new(
+        "mopTheFloor", Imperium.Networking
+    );
+
     public int ScrapAmount;
     public int ChallengeScrapAmount;
 
@@ -26,6 +30,7 @@ internal class MoonManager : ImpLifecycleObject
     {
         changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
         changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
+        mopTheFloor.OnClientRecive += OnMopTheFloor;
     }
 
     internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToServer(request);
@@ -320,5 +325,30 @@ internal class MoonManager : ImpLifecycleObject
                 box.SwitchBreaker(isOn);
             }
         }
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void MopTheFloor() => mopTheFloor.DispatchToClients();
+
+    [ImpAttributes.LocalMethod]
+    private static void OnMopTheFloor()
+    {
+        var startOfRound = Imperium.StartOfRound;
+        // copied from StartOfRound.ResetPooledObjects
+        if (startOfRound.slimeDecals != null)
+        {
+            for (int i = startOfRound.slimeDecals.Count - 1; i >= 0; i--)
+            {
+                if (startOfRound.slimeDecals[i] != null)
+                {
+                    Destroy(startOfRound.slimeDecals[i]);
+                }
+                startOfRound.slimeDecals.RemoveAt(i);
+            }
+            startOfRound.slimeFadingInDecalIndex = 0;
+        }
+        // clean up screen filters. See HUDManager.DisplaySpitOnHelmet and HUDManager.SetScreenFilters
+        Imperium.HUDManager.helmetGoop.SetActive(value: false);
+        // let vanilla deal with spitOnCameraAlpha
     }
 }
