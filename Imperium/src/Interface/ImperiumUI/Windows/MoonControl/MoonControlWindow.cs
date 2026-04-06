@@ -212,10 +212,25 @@ internal class MoonControlWindow : ImperiumWindow
             theme: theme
         );
 
+        // ImpButton.Bind(
+        //     "Left/MapObstacles/MapHazards/Right/DisableLandmines",
+        //     transform,
+        //     () => MoonManager.ToggleLandmines(false),
+        //     interactableBindings: Imperium.IsSceneLoaded,
+        //     theme: theme
+        // );
+
+        // Draft: Repurposed
+        {
+            var buttonObject = transform.Find("Left/MapObstacles/MapHazards/Right/DisableLandmines");
+            var text = buttonObject.Find("Text")?.GetComponent<TMP_Text>() ??
+                    buttonObject.Find("Text (TMP)")?.GetComponent<TMP_Text>();
+            text.text = "Mop the Floor";
+        }
         ImpButton.Bind(
             "Left/MapObstacles/MapHazards/Right/DisableLandmines",
             transform,
-            () => MoonManager.ToggleLandmines(false),
+            () => Imperium.MoonManager.MopTheFloor(),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
