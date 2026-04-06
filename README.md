@@ -1,4 +1,4 @@
-![Imperium Logo](https://github.com/giosuel/imperium/blob/main/assets/imperium_full.png?raw=true)
+![Imperium Logo](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium_full.png?raw=true)
 
 # Imperium
 
@@ -11,7 +11,7 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 >
 > I strongly stand against cheating and trolling in public lobbies. If you really want to cheat, at least put some effort into making your own hacked client!
 
-![imperium-control-center](https://github.com/giosuel/imperium/blob/main/assets/imperium-control-center.png?raw=true)
+![imperium-control-center](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-control-center.png?raw=true)
 
 ## Features
 
@@ -67,9 +67,9 @@ The main interface, called the "Imperium UI" is further divided into floating wi
 
 Imperium comes with its own minimap and full-screen map. The map can be used to follow yourself or other employees, as well as track entities or even map hazards. By default, the map is set to top-down view but you can adjust the viewing angle in the full-screen map.
 
-![imperium-map](https://github.com/giosuel/imperium/blob/main/assets/imperium-map.png?raw=true)
+![imperium-map](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-map.png?raw=true)
 
-![imperium-minimap](https://github.com/giosuel/imperium/blob/main/assets/imperium-minimap.png?raw=true)
+![imperium-minimap](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-minimap.png?raw=true)
 
 ## Imperium's Visualizers
 
@@ -83,17 +83,17 @@ Overlays are simple position trackers which highlight certain important coordina
 
 Insights provide screen-space overlays for any game objects in the scene.
 
-![imperium-visualizers](https://github.com/giosuel/imperium/blob/main/assets/imperium-visualizers.png?raw=true)
+![imperium-visualizers](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-visualizers.png?raw=true)
 
-![imperium-insights](https://github.com/giosuel/imperium/blob/main/assets/imperium-insights.png?raw=true)
+![imperium-insights](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-insights.png?raw=true)
 
-![imperium-los-visualizer](https://github.com/giosuel/imperium/blob/main/assets/imperium-los-vis.png?raw=true)
+![imperium-los-visualizer](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-los-vis.png?raw=true)
 
 ## Imperium's Freecam
 
 Imperium comes with a built-in freecam that can be activated with **F**. The freecam camera is an exact copy of the player's gameplay camera with the exception of the culling layers that can be toggled in the layer selector. The layer selector can be toggled with **L** and is activated by default.
 
-![freecam](https://github.com/giosuel/imperium/blob/main/assets/freecam-layers-imperium.png?raw=true)
+![freecam](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/freecam-layers-imperium.png?raw=true)
 
 The freecam can be moved with **WASD** controls and **Q** and **E** for up and down movement.
 
@@ -116,33 +116,33 @@ Tha spawning console allows you to spawn entities, scrap and map hazards into th
 
 **Command Syntax:** `objectName [amount] [health / value]`
 
-![spawning-ui](https://github.com/giosuel/imperium/blob/main/assets/spawning-ui.png?raw=true)
+![spawning-ui](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/spawning-ui.png?raw=true)
 
 ## The Tape Measure
 
 The tape measure is a virtual tool to measure distances in the game. The tape measure supports axis snapping when holding down the `Alt` key. It also tries to snap to surfaces as well as possible.
 
-![tape-measure](https://github.com/giosuel/imperium/blob/main/assets/tape-measure.png?raw=true)
+![tape-measure](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/tape-measure.png?raw=true)
 
 ## Ship and Moon Control
 
-![ship-moon-control](https://github.com/giosuel/imperium/blob/main/assets/ship-moon-control.png?raw=true)
+![ship-moon-control](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/ship-moon-control.png?raw=true)
 
 ## The Event Log
 
 The event log allows you to track specific game events such as entity spawns, noise detection, entity targeting and LoS detection and more.
 
-![event-log](https://github.com/giosuel/imperium/blob/main/assets/event-log.png?raw=true)
+![event-log](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/event-log.png?raw=true)
 
 ## Moon / Challenge Moon Information
 
-![moon-information](https://github.com/giosuel/imperium/blob/main/assets/moon-info.png?raw=true)
+![moon-information](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/moon-info.png?raw=true)
 
 ## The Save File Editor
 
 Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).
 
-![save-file-editor](https://github.com/giosuel/imperium/blob/main/assets/save-file-editor.png?raw=true)
+![save-file-editor](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/save-file-editor.png?raw=true)
 
 > [!CAUTION]
 > It is not recommended to use the save file editor unless you know what you are doing.
@@ -168,7 +168,7 @@ Entities spawned with Imperium do not count towards current level power or their
 > [!NOTE]
 > Oracle is currently in beta stage and is therefore not guaranteed to always work properly.
 
-![imperium-oracle](https://github.com/giosuel/imperium/blob/main/assets/imperium-oracle.png?raw=true)
+![imperium-oracle](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/imperium-oracle.png?raw=true)
 
 ## Bug Reports and Feature Requests
 
