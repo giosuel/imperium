@@ -11,6 +11,7 @@
 ### Bug Fixes
 
 - Fixed a bug that made it so locking doors toggled the lock instead.
+- Teleporting a player now applies the correct audio reverb preset.
 
 ## Imperium v1.2.3 - Hotfix
 
