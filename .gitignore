@@ -1,24 +1,18 @@
+# C# and IDE Stuff
 .idea/
-
 Imperium/bin/
-
 Imperium/obj/
-
 ldeps/
-
-*.DotSettings*
-giosuel.Imperium.dll
-
-manifest.json
-
+artifacts/
 out/
-
+*.DotSettings*
 Imperium.props.user
 
+# Output Stuff
+giosuel.Imperium.dll
 *.zip
 
+# Assets
 Imperium/resources/assets/assets
-
 Imperium/resources/assets/assets.manifest
-
 Imperium/resources/assets/imperium_assets.manifest

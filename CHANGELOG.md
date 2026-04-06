@@ -1,10 +1,27 @@
 # Changelog
 
+<<<<<<< work/ratijas/obj-explorer/terminal-codes
 ## Unreleased
 
 ### QoL Improvements
 
 - Added terminal codes to landmines, turrets and security doors in the object explorer.
+=======
+## Imperium v1.2.4 - Hotfix
+
+### General Changes
+
+- Reworked the map obstacle section in the moon control window.
+- Added a button to flicker the lights.
+- Added a button to remove the slippery surfaces / gunk from the stingray.
+
+### Bug Fixes
+
+- Fixed a bug that made it so locking doors toggled the lock instead.
+- Teleporting a player now applies the correct audio reverb preset.
+- The apparatus teleport button now correctly targets an apparatus inside the facility.
+- Fixed a bug that caused Imperium's lock blocks to misalign sometimes.
+>>>>>>> development
 
 ## Imperium v1.2.3 - Hotfix
 

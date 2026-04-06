@@ -1,24 +1,52 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+name: Build
 
-name: .NET
-
-on: push
+on:
+  push:
+    branches:
+      - main
+      - development
+  # Trigger the workflow on any pull request
+  pull_request:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      - name: Init Submodules
+        uses: snickerbockers/submodules-init@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.x"
+
+      - name: Restore
+        run: |
+          dotnet restore --locked-mode
+          dotnet tool restore
+
+      - name: Build
+        run: |
+          dotnet build -c Release --no-restore
+
+      - name: Pack Thunderstore
+        run: |
+          dotnet pack -c Release --no-build -target:PackThunderstore
+
+      - name: Upload Thunderstore artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thunderstore-build
+          path: ./artifacts/thunderstore/*.zip
+
+      - name: Upload nupkg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg-build
+          path: ./artifacts/package/release/*.nupkg
