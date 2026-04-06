@@ -19,6 +19,8 @@ internal class MoonManager : ImpLifecycleObject
 
     private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
 
+    private readonly ImpNetEvent flickerLights = new(
+        "flickerLights", Imperium.Networking
     private readonly ImpNetEvent mopTheFloor = new(
         "mopTheFloor", Imperium.Networking
     );
@@ -30,6 +32,7 @@ internal class MoonManager : ImpLifecycleObject
     {
         changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
         changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
+        flickerLights.OnClientRecive += OnFlickerLights;
         mopTheFloor.OnClientRecive += OnMopTheFloor;
     }
 
@@ -328,6 +331,10 @@ internal class MoonManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
+    internal void FlickerLights() => flickerLights.DispatchToClients();
+
+    [ImpAttributes.LocalMethod]
+    private static void OnFlickerLights() => Imperium.RoundManager.FlickerLights(true);
     internal void MopTheFloor() => mopTheFloor.DispatchToClients();
 
     [ImpAttributes.LocalMethod]
