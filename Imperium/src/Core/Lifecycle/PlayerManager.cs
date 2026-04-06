@@ -89,8 +89,12 @@ internal class PlayerManager : ImpLifecycleObject
         );
 
         ApparatusTPAnchor = new ImpExternalBinding<Vector3?, bool>(
-            () => GameObject.Find("LungApparatus(Clone)")?.transform.position
-        );
+            () =>
+            {
+                var apps = FindObjectsByType<LungProp>(findObjectsInactive: FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.None);
+                var docked = apps.FirstOrDefault(app => app.isLungDocked);
+                return docked?.transform.position;
+            });
     }
 
     protected override void OnSceneLoad()

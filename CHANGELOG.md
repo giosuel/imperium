@@ -12,6 +12,7 @@
 
 - Fixed a bug that made it so locking doors toggled the lock instead.
 - Teleporting a player now applies the correct audio reverb preset.
+- The apparatus teleport button now correctly targets an apparatus inside the facility.
 
 ## Imperium v1.2.3 - Hotfix
 
