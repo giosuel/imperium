@@ -152,7 +152,7 @@ internal class InfoWindow : ImperiumWindow
 
         var increasedMapHazardIndex = Imperium.RoundManager.increasedMapHazardSpawnRateIndex;
         mapHazard.text = increasedMapHazardIndex != -1 && Imperium.IsSceneLoaded.Value
-            ? Imperium.StartOfRound.currentLevel.spawnableMapObjects[increasedMapHazardIndex].prefabToSpawn.name
+            ? Imperium.StartOfRound.currentLevel.indoorMapHazards[increasedMapHazardIndex].hazardType.prefabToSpawn.name
             : "-";
 
         scrapAmount.text = Imperium.ObjectManager.CurrentLevelItems.Value.Count(item => item.itemProperties.isScrap)
