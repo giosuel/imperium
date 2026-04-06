@@ -53,6 +53,11 @@
 
         <PackageReference Include="mrov.WeatherRegistry" Version="*-*"/>
 
+        <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.26.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+
         <PackageReference Include="MinVer" Version="4.3.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
