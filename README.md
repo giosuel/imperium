@@ -33,7 +33,6 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Noise detection overlay that marks recently played noises with temporary markers.
 - Option to toggle the employee HUD overlay.
 - Enabling / Disabling of various render layers, post-processing effects, render passes and more.
-- Built-in save file editor for save files (Level options, Furniture location, Player XP, etc.)
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
 - Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (Including mouse look fix).
 
@@ -50,7 +49,7 @@ Imperium is divided into several main interfaces which can be opened directly wi
 The main interface, called the "Imperium UI" is further divided into floating windows which contain Imperium's main settings and functionalities. These windows can be toggled on and off through the Imperium dock at the top of the screen. Altenatively, some of them can be opened through functional keys (e.g. `F3` to open the teleportation window).
 
 | Default Keybind | Action                                                      |
-| --------------- | ----------------------------------------------------------- |
+|-----------------|-------------------------------------------------------------|
 | F1              | Opens the Imperium UI.                                      |
 | F2              | Opens Imperium's spawn UI.                                  |
 | F3              | Opens the teleportation window within the Imperium UI.      |
@@ -58,6 +57,7 @@ The main interface, called the "Imperium UI" is further divided into floating wi
 | F8              | Opens the full-screen map UI.                               |
 | T               | Toggles interactive teleportation.                          |
 | F               | Opens the Imperium freecam.                                 |
+| L               | Toggles the UI while in the freecam.                        |
 | M               | Toggles the Imperium minimap.                               |
 | X               | Toggles the freecam's picture-in-picture mode.              |
 | F11             | Toggles the freecam's picture-in-picture mode's fullscreen. |
@@ -138,22 +138,9 @@ The event log allows you to track specific game events such as entity spawns, no
 
 ![moon-information](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/moon-info.png?raw=true)
 
-## The Save File Editor
+## Imperium Preferences
 
-Imperium's built-in save file editor can edit any non-vector data fields from the general save file (`LCGeneralSaveData`) and the individual game saves (`LCSaveFileX`).
-
-![save-file-editor](https://raw.githubusercontent.com/giosuel/imperium/refs/heads/main/assets/save-file-editor.png?raw=true)
-
-> [!CAUTION]
-> It is not recommended to use the save file editor unless you know what you are doing.
->
-> To provide maximum control over the save files, Imperium doesn't implement any input validation, meaning it is very easy to screw up the saves and render the game **completely unplayable**!
->
-> Always make sure to have a backup before changing anything!
-
-## Imperium Settings
-
-The Imperium settings interface provides access to various preferences of Imperium.
+The Imperium preferences interface provides access to various preferences of Imperium.
 
 <img src="https://github.com/giosuel/imperium/blob/main/assets/imperium-settings.png?raw=true" alt="imperium-settings" style="zoom: 67%;" />
 
