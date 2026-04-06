@@ -310,16 +310,16 @@ internal class ObjectExplorerWindow : ImperiumWindow
             }
         }
 
-        playersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Players, 0).ToString()})";
-        entitiesCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Entities, 0).ToString()})";
-        vehiclesCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vehicles, 0).ToString()})";
-        hazardsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Hazards, 0).ToString()})";
-        itemsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Items, 0).ToString()})";
-        ventsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vents, 0).ToString()})";
-        vainShroudsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0).ToString()})";
-        storyLogsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.StoryLogs, 0).ToString()})";
-        othersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Other, 0).ToString()})";
-        outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0).ToString()})";
+        playersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Players, 0)})";
+        entitiesCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Entities, 0)})";
+        vehiclesCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vehicles, 0)})";
+        hazardsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Hazards, 0)})";
+        itemsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Items, 0)})";
+        ventsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vents, 0)})";
+        vainShroudsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0)})";
+        storyLogsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.StoryLogs, 0)})";
+        othersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Other, 0)})";
+        outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0)})";
     }
 
     private void OnScroll(Vector2 _) => StartCoroutine(refreshEntries(useCache: true));
