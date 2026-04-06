@@ -1,5 +1,17 @@
 # Changelog
 
+## Imperium v1.2.4 - Hotfix
+
+### General Changes
+
+- Reworked the map obstacle section in the moon control window.
+- Added a button to flicker the lights.
+- Added a button to remove the slippery surfaces / gunk from the stingray.
+
+### Bug Fixes
+
+- Fixed a bug that made it so locking doors toggled the lock instead.
+
 ## Imperium v1.2.3 - Hotfix
 
 ### Bug Fixes
