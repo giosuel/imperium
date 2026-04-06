@@ -148,11 +148,11 @@ internal class ObjectManager : ImpLifecycleObject
         "ObjectTeleportation", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<LocalObjectTeleportRequest> localObjectTeleportationRequest = new(
+    private readonly ImpNetMessage<LocalObjectTeleportRequest> localObjectTeleportationMessage = new(
         "LocalObjectTeleportation", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<BurstCadaverBloomRequest> burstCadaverBloom = new(
+    private readonly ImpNetMessage<BurstCadaverBloomRequest> burstCadaverBloomMessage = new(
         "BurstCadaverBloom", Imperium.Networking
     );
 
@@ -225,14 +225,14 @@ internal class ObjectManager : ImpLifecycleObject
 
         objectsChangedEvent.OnClientRecive += RefreshLevelObjects;
         burstSteamValve.OnClientRecive += OnSteamValveBurst;
-        burstCadaverBloom.OnClientRecive += OnCadaverBloomBurst;
+        burstCadaverBloomMessage.OnClientRecive += OnCadaverBloomMessageBurst;
         vehicleSpawnResponseMessage.OnClientRecive += OnSpawnVehicleClient;
         objectTeleportationRequest.OnClientRecive += OnObjectTeleportationRequestClient;
 
         localObjectDespawnMessage.OnClientRecive += OnDespawnLocalObject;
         localStaticPrefabSpawnMessage.OnClientRecive += OnSpawnLocalStaticPrefabClient;
         outsideObjectPrefabSpawnMessage.OnClientRecive += OnSpawnOutsideObjectClient;
-        localObjectTeleportationRequest.OnClientRecive += OnLocalObjectTeleportationRequestClient;
+        localObjectTeleportationMessage.OnClientRecive += OnLocalObjectTeleportationMessageClient;
 
         if (NetworkManager.Singleton.IsHost)
         {
@@ -338,7 +338,7 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.RemoteMethod]
     internal void TeleportLocalObject(LocalObjectTeleportRequest request)
     {
-        localObjectTeleportationRequest.DispatchToClients(request);
+        localObjectTeleportationMessage.DispatchToClients(request);
     }
 
     [ImpAttributes.RemoteMethod]
@@ -771,7 +771,7 @@ internal class ObjectManager : ImpLifecycleObject
                 IEnumerator Routine()
                 {
                     yield return new WaitForSeconds(0.2f);
-                    burstCadaverBloom.DispatchToClients(new BurstCadaverBloomRequest
+                    burstCadaverBloomMessage.DispatchToClients(new BurstCadaverBloomRequest
                     {
                         NetObj = netObject,
                         PlayerId = clientId,
@@ -1224,7 +1224,7 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private void OnLocalObjectTeleportationRequestClient(LocalObjectTeleportRequest request)
+    private void OnLocalObjectTeleportationMessageClient(LocalObjectTeleportRequest request)
     {
         switch (request.Type)
         {
@@ -1367,7 +1367,7 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private static void OnCadaverBloomBurst(BurstCadaverBloomRequest request)
+    private static void OnCadaverBloomMessageBurst(BurstCadaverBloomRequest request)
     {
         if (!request.NetObj.TryGet(out var networkObject))
         {
