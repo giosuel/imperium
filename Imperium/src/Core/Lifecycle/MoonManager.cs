@@ -15,17 +15,34 @@ namespace Imperium.Core.Lifecycle;
 
 internal class MoonManager : ImpLifecycleObject
 {
-    private readonly ImpEvent WeatherEvent = new();
-
-    private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new("ChangeWeather", Imperium.Networking);
-
     public int ScrapAmount;
     public int ChallengeScrapAmount;
+
+    private readonly ImpEvent WeatherEvent = new();
+
+    private readonly ImpNetMessage<ChangeWeatherRequest> changeWeatherMessage = new(
+        "ChangeWeather", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<ToggleDoorLocksRequest> toggleDoorLocksMessage = new(
+        "ToggleDoorLocks", Imperium.Networking
+    );
+
+    private readonly ImpNetEvent flickerLightsEvent = new(
+        "FlickerLights", Imperium.Networking
+    );
+
+    private readonly ImpNetEvent cleanFloorEvent = new(
+        "CleanFloor", Imperium.Networking
+    );
 
     protected override void Init()
     {
         changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
         changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
+        flickerLightsEvent.OnClientRecive += OnFlickerLightsEvent;
+        cleanFloorEvent.OnClientRecive += OnCleanFloorEvent;
+        toggleDoorLocksMessage.OnClientRecive += OnToggleDoorsLocks;
     }
 
     internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToServer(request);
@@ -162,6 +179,74 @@ internal class MoonManager : ImpLifecycleObject
         WeatherVariable2.Sync(Imperium.TimeOfDay.currentWeatherVariable2);
     }
 
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleDoors(bool isOpen)
+    {
+        Imperium.ObjectManager.CurrentLevelDoors.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(door => ToggleDoor(door, isOpen));
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleDoor(DoorLock door, bool isOpen)
+    {
+        if (door.isDoorOpened != isOpen)
+        {
+            door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimation(Imperium.Player);
+        }
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void ToggleDoorLocks(bool isLocked)
+    {
+        toggleDoorLocksMessage.DispatchToClients(new ToggleDoorLocksRequest
+        {
+            Lock = isLocked
+        });
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleSecurityDoors(bool isOn)
+    {
+        Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(door => door.SetDoorOpenServerRpc(isOn));
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleBreakers(bool isOn)
+    {
+        Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(box => ToggleBreaker(box, isOn));
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleBreaker(BreakerBox box, bool isOn)
+    {
+        foreach (var breakerSwitch in box.breakerSwitches)
+        {
+            var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
+            if (animation.boolValue != isOn)
+            {
+                animation.boolValue = isOn;
+                animation.setInitialState = isOn;
+                // ReSharper disable once Unity.PreferAddressByIdToGraphicsParams
+                breakerSwitch.SetBool("turnedLeft", isOn);
+                box.SwitchBreaker(isOn);
+            }
+        }
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void FlickerLights() => flickerLightsEvent.DispatchToClients();
+
+    [ImpAttributes.RemoteMethod]
+    internal void CleanFloor() => cleanFloorEvent.DispatchToClients();
+
     [ImpAttributes.HostOnly]
     private void OnWeatherChangeServer(ChangeWeatherRequest request, ulong clientId)
     {
@@ -171,6 +256,36 @@ internal class MoonManager : ImpLifecycleObject
         {
             WeatherRegistryIntegration.ChangeWeather(Imperium.StartOfRound.levels[request.LevelIndex], request.WeatherType);
         }
+    }
+
+    [ImpAttributes.LocalMethod]
+    private static void OnFlickerLightsEvent()
+    {
+        Imperium.RoundManager.FlickerLights(true);
+    }
+
+    [ImpAttributes.LocalMethod]
+    private static void OnCleanFloorEvent()
+    {
+        // copied from StartOfRound.ResetPooledObjects
+        if (Imperium.StartOfRound.slimeDecals != null)
+        {
+            for (var i = Imperium.StartOfRound.slimeDecals.Count - 1; i >= 0; i--)
+            {
+                if (Imperium.StartOfRound.slimeDecals[i] != null)
+                {
+                    Destroy(Imperium.StartOfRound.slimeDecals[i]);
+                }
+
+                Imperium.StartOfRound.slimeDecals.RemoveAt(i);
+            }
+
+            Imperium.StartOfRound.slimeFadingInDecalIndex = 0;
+        }
+
+        // clean up screen filters. See HUDManager.DisplaySpitOnHelmet and HUDManager.SetScreenFilters
+        Imperium.HUDManager.helmetGoop.SetActive(value: false);
+        // let vanilla deal with spitOnCameraAlpha
     }
 
     [ImpAttributes.LocalMethod]
@@ -188,6 +303,25 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.StartOfRound.SetMapScreenInfoToCurrentLevel();
         RefreshWeatherEffects();
         WeatherEvent.Trigger();
+    }
+
+    [ImpAttributes.LocalMethod]
+    private static void OnToggleDoorsLocks(ToggleDoorLocksRequest locksRequest)
+    {
+        Imperium.ObjectManager.CurrentLevelDoors.Value
+            .Where(obj => obj)
+            .ToList()
+            .ForEach(door =>
+            {
+                if (locksRequest.Lock)
+                {
+                    door.LockDoor();
+                }
+                else
+                {
+                    door.UnlockDoor();
+                }
+            });
     }
 
     [ImpAttributes.LocalMethod]
@@ -233,92 +367,6 @@ internal class MoonManager : ImpLifecycleObject
             Imperium.Player.sourcesCausingSinking = Mathf.Clamp(Imperium.Player.sourcesCausingSinking - 1, 0, 100);
             Imperium.Player.isMovementHindered = Mathf.Clamp(Imperium.Player.isMovementHindered - 1, 0, 100);
             Imperium.Player.hinderedMultiplier = 1;
-        }
-    }
-
-    [ImpAttributes.RemoteMethod]
-    internal static void ToggleDoors(bool isOpen)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => ToggleDoor(door, isOpen));
-    }
-
-    [ImpAttributes.RemoteMethod]
-    internal static void ToggleDoor(DoorLock door, bool isOpen)
-    {
-        if (door.isDoorOpened != isOpen)
-        {
-            door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimation(Imperium.Player);
-        }
-    }
-
-    [ImpAttributes.RemoteMethod]
-    internal static void ToggleDoorLocks(bool isLocked)
-    {
-        Imperium.ObjectManager.CurrentLevelDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door =>
-            {
-                if (isLocked && !door.isLocked)
-                {
-                    // TODO(giosuel): Sync over network
-                    door.LockDoor();
-                }
-                else if (door.isLocked)
-                {
-                    door.UnlockDoorSyncWithServer();
-                }
-            });
-    }
-
-    internal static void ToggleSecurityDoors(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(door => door.OnPowerSwitch(!isOn));
-    }
-
-    internal static void ToggleTurrets(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelTurrets.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(turret => turret.ToggleTurretEnabled(isOn));
-    }
-
-    internal static void ToggleLandmines(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelLandmines.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(mine => mine.ToggleMine(isOn));
-    }
-
-    internal static void ToggleBreakers(bool isOn)
-    {
-        Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
-            .Where(obj => obj)
-            .ToList()
-            .ForEach(box => ToggleBreaker(box, isOn));
-    }
-
-    internal static void ToggleBreaker(BreakerBox box, bool isOn)
-    {
-        foreach (var breakerSwitch in box.breakerSwitches)
-        {
-            var animation = breakerSwitch.gameObject.GetComponent<AnimatedObjectTrigger>();
-            if (animation.boolValue != isOn)
-            {
-                animation.boolValue = isOn;
-                animation.setInitialState = isOn;
-                // ReSharper disable once Unity.PreferAddressByIdToGraphicsParams
-                breakerSwitch.SetBool("turnedLeft", isOn);
-                box.SwitchBreaker(isOn);
-            }
         }
     }
 }

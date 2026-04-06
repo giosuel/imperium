@@ -1,10 +1,18 @@
 # Changelog
 
-## Unreleased
+## Imperium v1.2.4 - Hotfix
+
+### General Changes
+
+- Reworked the map obstacle section in the moon control window.
+- Added a button to flicker the lights.
+- Added a button to remove the slippery surfaces / gunk from the stingray.
 
 ### Bug Fixes
 
-- Teleport to Apparatus button now correctly targets an apparatus dock machinery inside facility instead of collected apparatuses on the ship.
+- Fixed a bug that made it so locking doors toggled the lock instead.
+- Teleporting a player now applies the correct audio reverb preset.
+- The apparatus teleport button now correctly targets an apparatus inside the facility.
 
 ## Imperium v1.2.3 - Hotfix
 
