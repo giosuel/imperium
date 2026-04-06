@@ -35,6 +35,7 @@ internal static class ObjectEntryGenerator
         ObjectType.Vent => false,
         ObjectType.Player => false,
         ObjectType.SteamValve => false,
+        ObjectType.SpiderWeb => false,
         ObjectType.SecurityDoor => false,
         ObjectType.VainShroud => false,
         ObjectType.StoryLog => false,
@@ -116,10 +117,17 @@ internal static class ObjectEntryGenerator
                     IsRespawn = isRespawn
                 });
                 return true;
+            case ObjectType.SpiderWeb:
+                var spiderWeb = (SandSpiderWebTrap)entry.component;
+                Imperium.ObjectManager.DespawnSpiderWeb(new SpiderWebDespawnRequest
+                {
+                    SpiderNetObj = spiderWeb.mainScript.GetComponent<NetworkObject>(),
+                    TrapId = spiderWeb.trapID
+                });
+                break;
             case ObjectType.BreakerBox:
             case ObjectType.Landmine:
             case ObjectType.Turret:
-            case ObjectType.SpiderWeb:
             case ObjectType.SpikeTrap:
             case ObjectType.SteamValve:
             case ObjectType.Vent:
@@ -185,17 +193,6 @@ internal static class ObjectEntryGenerator
                 }
 
                 break;
-            case ObjectType.SpiderWeb:
-                if (DespawnObject(entry, isRespawn: true))
-                {
-                    Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
-                    {
-                        Name = "SpiderWeb",
-                        SpawnPosition = entry.containerObject.transform.position
-                    });
-                }
-
-                break;
             case ObjectType.SpikeTrap:
                 if (DespawnObject(entry, isRespawn: true))
                 {
@@ -221,6 +218,7 @@ internal static class ObjectEntryGenerator
                 break;
             case ObjectType.Vent:
             case ObjectType.SteamValve:
+            case ObjectType.SpiderWeb:
             case ObjectType.Player:
             case ObjectType.BreakerBox:
             case ObjectType.Item:
@@ -441,12 +439,23 @@ internal static class ObjectEntryGenerator
                     });
                 }, origin, castGround: true);
                 break;
+            case ObjectType.SpiderWeb:
+                Imperium.ImpPositionIndicator.Activate(position =>
+                {
+                    var spiderWeb = (SandSpiderWebTrap)entry.component;
+                    Imperium.ObjectManager.TeleportSpiderWeb(new SpiderWebTeleportRequest
+                    {
+                        SpiderNetObj = spiderWeb.mainScript.GetComponent<NetworkObject>(),
+                        TrapId = spiderWeb.trapID,
+                        Position = position
+                    });
+                }, origin, castGround: true);
+                break;
             case ObjectType.Entity:
             case ObjectType.BreakerBox:
             case ObjectType.Item:
             case ObjectType.Landmine:
             case ObjectType.SpikeTrap:
-            case ObjectType.SpiderWeb:
             case ObjectType.Turret:
             case ObjectType.SteamValve:
             case ObjectType.Vent:

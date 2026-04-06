@@ -144,12 +144,16 @@ internal class ObjectManager : ImpLifecycleObject
         "OutsideObjectSpawn", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<ObjectTeleportRequest> objectTeleportationRequest = new(
+    private readonly ImpNetMessage<ObjectTeleportRequest> objectTeleportationMessage = new(
         "ObjectTeleportation", Imperium.Networking
     );
 
     private readonly ImpNetMessage<LocalObjectTeleportRequest> localObjectTeleportationMessage = new(
         "LocalObjectTeleportation", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<SpiderWebTeleportRequest> spiderWebTeleportationMessage = new(
+        "SpiderWebTeleportation", Imperium.Networking
     );
 
     private readonly ImpNetMessage<BurstCadaverBloomRequest> burstCadaverBloomMessage = new(
@@ -174,6 +178,10 @@ internal class ObjectManager : ImpLifecycleObject
 
     private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new(
         "DespawnObstacle", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<SpiderWebDespawnRequest> spiderWebDespawnMessage = new(
+        "DespawnSpiderWeb", Imperium.Networking
     );
 
     private readonly ImpNetMessage<LocalObjectDespawnRequest> localObjectDespawnMessage = new(
@@ -223,31 +231,40 @@ internal class ObjectManager : ImpLifecycleObject
 
         LogObjects();
 
-        objectsChangedEvent.OnClientRecive += RefreshLevelObjects;
         burstSteamValve.OnClientRecive += OnSteamValveBurst;
-        burstCadaverBloomMessage.OnClientRecive += OnCadaverBloomMessageBurst;
+        objectsChangedEvent.OnClientRecive += RefreshLevelObjects;
         vehicleSpawnResponseMessage.OnClientRecive += OnSpawnVehicleClient;
-        objectTeleportationRequest.OnClientRecive += OnObjectTeleportationRequestClient;
+        burstCadaverBloomMessage.OnClientRecive += OnCadaverBloomMessageBurst;
 
-        localObjectDespawnMessage.OnClientRecive += OnDespawnLocalObject;
-        localStaticPrefabSpawnMessage.OnClientRecive += OnSpawnLocalStaticPrefabClient;
         outsideObjectPrefabSpawnMessage.OnClientRecive += OnSpawnOutsideObjectClient;
-        localObjectTeleportationMessage.OnClientRecive += OnLocalObjectTeleportationMessageClient;
+        localStaticPrefabSpawnMessage.OnClientRecive += OnSpawnLocalStaticPrefabClient;
+
+        localObjectDespawnMessage.OnClientRecive += OnDespawnLocalObjectClient;
+
+        objectTeleportationMessage.OnClientRecive += OnObjectTeleportationClient;
+        spiderWebTeleportationMessage.OnClientRecive += OnSpiderWebTeleportationClient;
+        localObjectTeleportationMessage.OnClientRecive += OnLocalObjectTeleportationClient;
 
         if (NetworkManager.Singleton.IsHost)
         {
-            entitySpawnMessage.OnServerReceive += OnSpawnEntity;
             itemSpawnMessage.OnServerReceive += OnSpawnItem;
+            entitySpawnMessage.OnServerReceive += OnSpawnEntity;
             vehicleSpawnMessage.OnServerReceive += OnSpawnVehicle;
             mapHazardSpawnMessage.OnServerReceive += OnSpawnMapHazard;
             staticPrefabSpawnMessage.OnServerReceive += OnSpawnStaticPrefabServer;
+            outsideObjectPrefabSpawnMessage.OnServerReceive += OnSpawnOutsideObjectServer;
+            localStaticPrefabSpawnMessage.OnServerReceive += OnSpawnLocalStaticPrefabServer;
 
+            itemDespawnMessage.OnServerReceive += OnDespawnItem;
             entityDespawnMessage.OnServerReceive += OnDespawnEntity;
             vehicleDespawnMessage.OnServerReceive += OnDespawnVehicle;
-            itemDespawnMessage.OnServerReceive += OnDespawnItem;
             obstacleDespawnMessage.OnServerReceive += OnDespawnObstacle;
+            spiderWebDespawnMessage.OnServerReceive += OnDespawnSpiderWeb;
+            localObjectDespawnMessage.OnServerReceive += OnDespawnLocalObjectServer;
 
-            objectTeleportationRequest.OnServerReceive += OnObjectTeleportationRequestServer;
+            objectTeleportationMessage.OnServerReceive += OnObjectTeleportationServer;
+            spiderWebTeleportationMessage.OnServerReceive += OnSpiderWebTeleportationServer;
+            localObjectTeleportationMessage.OnServerReceive += OnLocalObjectTeleportationServer;
         }
 
         terrainMask = LayerMask.NameToLayer("Terrain");
@@ -299,7 +316,7 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
-        localStaticPrefabSpawnMessage.DispatchToClients(request);
+        localStaticPrefabSpawnMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
@@ -311,7 +328,7 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
-        outsideObjectPrefabSpawnMessage.DispatchToClients(request);
+        outsideObjectPrefabSpawnMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
@@ -327,22 +344,28 @@ internal class ObjectManager : ImpLifecycleObject
     internal void DespawnObstacle(ulong obstacleNetId) => obstacleDespawnMessage.DispatchToServer(obstacleNetId);
 
     [ImpAttributes.RemoteMethod]
+    internal void DespawnSpiderWeb(SpiderWebDespawnRequest request) => spiderWebDespawnMessage.DispatchToServer(request);
+
+    [ImpAttributes.RemoteMethod]
     internal void DespawnLocalObject(LocalObjectDespawnRequest request)
     {
-        localObjectDespawnMessage.DispatchToClients(request);
+        localObjectDespawnMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void TeleportObject(ObjectTeleportRequest request) => objectTeleportationRequest.DispatchToServer(request);
+    internal void TeleportObject(ObjectTeleportRequest request) => objectTeleportationMessage.DispatchToServer(request);
 
     [ImpAttributes.RemoteMethod]
     internal void TeleportLocalObject(LocalObjectTeleportRequest request)
     {
-        localObjectTeleportationMessage.DispatchToClients(request);
+        localObjectTeleportationMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void InvokeObjectsChanged() => objectsChangedEvent.DispatchToClients();
+    internal void TeleportSpiderWeb(SpiderWebTeleportRequest request)
+    {
+        spiderWebTeleportationMessage.DispatchToServer(request);
+    }
 
     [ImpAttributes.RemoteMethod]
     internal void BurstSteamValve(ulong valveNetId) => burstSteamValve.DispatchToClients(valveNetId);
@@ -613,30 +636,47 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        CurrentLevelItems.Set(currentLevelItems);
-        CurrentLevelDoors.Set(currentLevelDoors);
-        CurrentLevelVents.Set(currentLevelVents);
-        CurrentLevelTurrets.Set(currentLevelTurrets);
-        CurrentLevelVehicles.Set(currentLevelVehicles);
-        CurrentLevelEntities.Set(currentLevelEntities);
-        CurrentLevelLandmines.Set(currentLevelLandmines);
-        CurrentLevelStoryLogs.Set(currentLevelStoryLogs);
-        CurrentLevelSpiderWebs.Set(currentLevelSpiderWebs);
-        CurrentLevelSpikeTraps.Set(currentLevelSpikeTraps);
-        CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
-        CurrentLevelSteamValves.Set(currentLevelSteamValves);
-        CurrentScrapSpawnPoints.Set(currentScrapSpawnPoints);
-        CurrentLevelBreakerBoxes.Set(currentLevelBreakerBoxes);
-        CurrentLevelSecurityDoors.Set(currentLevelSecurityDoors);
-        CurrentLevelOutsideObjects.Set(currentLevelOutsideObjects);
+        var hasSomethingChanged = false;
+
+        SetIfChanged(CurrentLevelItems, currentLevelItems, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelDoors, currentLevelDoors, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelVents, currentLevelVents, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelTurrets, currentLevelTurrets, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelVehicles, currentLevelVehicles, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelEntities, currentLevelEntities, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelLandmines, currentLevelLandmines, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelStoryLogs, currentLevelStoryLogs, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelSpiderWebs, currentLevelSpiderWebs, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelSpikeTraps, currentLevelSpikeTraps, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelVainShrouds, currentLevelVainShrouds, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelSteamValves, currentLevelSteamValves, ref hasSomethingChanged);
+        SetIfChanged(CurrentScrapSpawnPoints, currentScrapSpawnPoints, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelBreakerBoxes, currentLevelBreakerBoxes, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelSecurityDoors, currentLevelSecurityDoors, ref hasSomethingChanged);
+        SetIfChanged(CurrentLevelOutsideObjects, currentLevelOutsideObjects, ref hasSomethingChanged);
 
         stopwatch.Stop();
         Imperium.IO.LogDebug($"[PROFILE] Objects refresh time : {stopwatch.ElapsedMilliseconds}");
 
-        CurrentLevelObjectsChanged?.Invoke();
+        if (hasSomethingChanged)
+        {
+            Imperium.IO.LogInfo("SOMETHING HAS CHANGED");
+            CurrentLevelObjectsChanged?.Invoke();
+        }
 
         stopwatch2.Stop();
         Imperium.IO.LogDebug($"[PROFILE] Total objects refresh time : {stopwatch2.ElapsedMilliseconds}");
+    }
+
+    private static void SetIfChanged<T>(ImpBinding<IReadOnlyCollection<T>> current, HashSet<T> updated, ref bool hasChanged)
+    {
+        if (current.Value is HashSet<T> currentHashSet && currentHashSet.SetEquals(updated))
+        {
+            return;
+        }
+
+        current.Set(updated);
+        hasChanged = true;
     }
 
     private void GenerateDisplayNameMaps()
@@ -1027,6 +1067,18 @@ internal class ObjectManager : ImpLifecycleObject
         RefreshLevelObjects();
     }
 
+    [ImpAttributes.HostOnly]
+    private void OnSpawnLocalStaticPrefabServer(StaticPrefabSpawnRequest request, ulong clientId)
+    {
+        localStaticPrefabSpawnMessage.DispatchToClients(request);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnSpawnOutsideObjectServer(StaticPrefabSpawnRequest request, ulong clientId)
+    {
+        outsideObjectPrefabSpawnMessage.DispatchToClients(request);
+    }
+
     [ImpAttributes.LocalMethod]
     private void OnSpawnLocalStaticPrefabClient(StaticPrefabSpawnRequest request)
     {
@@ -1186,13 +1238,25 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnObjectTeleportationRequestServer(ObjectTeleportRequest request, ulong clientId)
+    private void OnObjectTeleportationServer(ObjectTeleportRequest request, ulong clientId)
     {
-        objectTeleportationRequest.DispatchToClients(request);
+        objectTeleportationMessage.DispatchToClients(request);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnLocalObjectTeleportationServer(LocalObjectTeleportRequest request, ulong clientId)
+    {
+        localObjectTeleportationMessage.DispatchToClients(request);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnSpiderWebTeleportationServer(SpiderWebTeleportRequest request, ulong clientId)
+    {
+        spiderWebTeleportationMessage.DispatchToClients(request);
     }
 
     [ImpAttributes.LocalMethod]
-    private void OnObjectTeleportationRequestClient(ObjectTeleportRequest request)
+    private void OnObjectTeleportationClient(ObjectTeleportRequest request)
     {
         if (!CurrentLevelObjects.TryGetValue(request.NetworkId, out var obj) || !obj)
         {
@@ -1224,7 +1288,27 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private void OnLocalObjectTeleportationMessageClient(LocalObjectTeleportRequest request)
+    private void OnSpiderWebTeleportationClient(SpiderWebTeleportRequest request)
+    {
+        if (
+            !request.SpiderNetObj.TryGet(out var spiderNetObj) ||
+            !spiderNetObj.TryGetComponent<SandSpiderAI>(out var sandSpider)
+        )
+        {
+            Imperium.IO.LogError(
+                $"[SPAWN] [R] Failed to teleport spider web with ID {request.TrapId}. Spider does not exist."
+            );
+            return;
+        }
+
+        if (request.TrapId < sandSpider.webTraps.Count)
+        {
+            sandSpider.webTraps[request.TrapId].transform.position = request.Position + Vector3.up;
+        }
+    }
+
+    [ImpAttributes.LocalMethod]
+    private void OnLocalObjectTeleportationClient(LocalObjectTeleportRequest request)
     {
         switch (request.Type)
         {
@@ -1287,11 +1371,12 @@ internal class ObjectManager : ImpLifecycleObject
             return;
         }
 
+        // Remove all web traps if the destroyed entity was a spider
         if (obj.TryGetComponent<SandSpiderAI>(out var sandSpider))
         {
-            for (var i = 0; i < sandSpider.webTraps.Count; i++)
+            foreach (var webTrap in sandSpider.webTraps.ToList())
             {
-                sandSpider.BreakWebServerRpc(i, (int)clientId);
+                sandSpider.BreakWebClientRpc(webTrap.transform.position, webTrap.trapID);
             }
         }
 
@@ -1325,17 +1410,43 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnDespawnObstacle(ulong obstacleNetId, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(obstacleNetId, out var obj))
+        if (!CurrentLevelObjects.TryGetValue(obstacleNetId, out var netObj))
         {
             Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn obstacle with net ID {obstacleNetId}");
             return;
         }
 
-        DespawnObject(obj.gameObject);
+        DespawnObject(netObj.gameObject);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnDespawnLocalObjectServer(LocalObjectDespawnRequest request, ulong clientId)
+    {
+        localObjectDespawnMessage.DispatchToClients(request);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnDespawnSpiderWeb(SpiderWebDespawnRequest request, ulong clientId)
+    {
+        if (
+            !request.SpiderNetObj.TryGet(out var spiderNetObj) ||
+            !spiderNetObj.TryGetComponent<SandSpiderAI>(out var sandSpider)
+        )
+        {
+            Imperium.IO.LogError(
+                $"[SPAWN] [R] Failed to despawn spider web with ID {request.TrapId}. Spider does not exist."
+            );
+            return;
+        }
+
+        if (request.TrapId < sandSpider.webTraps.Count)
+        {
+            sandSpider.BreakWebClientRpc(sandSpider.transform.position, request.TrapId);
+        }
     }
 
     [ImpAttributes.LocalMethod]
-    private void OnDespawnLocalObject(LocalObjectDespawnRequest request)
+    private void OnDespawnLocalObjectClient(LocalObjectDespawnRequest request)
     {
         switch (request.Type)
         {

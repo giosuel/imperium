@@ -16,11 +16,17 @@
 - Fixed a bug that caused Imperium's lock blocks to misalign sometimes.
 - Fixed a bug that caused speedy shovel to not work anymore.
 - Fixed outdated information about indoor map hazards in the info window.
+- Fixed a bug that made spider webs impossible to teleport or destroy in the object explorer.
+- Spider webs are now cleaned up properly when a spider is destroyed in the object explorer.
 
 ### QoL Improvements
 
 - Added terminal codes to landmines, turrets and security doors in the object explorer.
 - Made it so the position / teleport indicator points exactly to the screen center.
+- The object explorer is now updating periodically to account for desync and network latency.
+- The object manager now only sends object updates when objects have actually changed.
+- Removed the respawn button for spider webs as it didn't do anything.
+- Object RPCs are now more consistently routed through the host, improving access control.
 
 ### Compatibility
 

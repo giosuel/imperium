@@ -7,6 +7,7 @@ using System.Linq;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -75,6 +76,8 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
     private List<ObjectCategory> categoryOrder;
     private Dictionary<ObjectCategory, CategoryDefinition> objectCategories;
+
+    private readonly ImpTimer periodicUpdateTimer = ImpTimer.ForInterval(1);
 
     private float previousScrollValue;
 
@@ -320,4 +323,12 @@ internal class ObjectExplorerWindow : ImperiumWindow
     }
 
     private void OnScroll(Vector2 _) => StartCoroutine(refreshEntries(useCache: true));
+
+    private void Update()
+    {
+        if (periodicUpdateTimer.Tick())
+        {
+            Imperium.ObjectManager.RefreshLevelObjects();
+        }
+    }
 }
