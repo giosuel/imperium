@@ -1,5 +1,12 @@
 # Changelog
 
+<<<<<<< work/ratijas/obj-explorer/terminal-codes
+## Unreleased
+
+### QoL Improvements
+
+- Added terminal codes to landmines, turrets and security doors in the object explorer.
+=======
 ## Imperium v1.2.4 - Hotfix
 
 ### General Changes
@@ -14,6 +21,15 @@
 - Teleporting a player now applies the correct audio reverb preset.
 - The apparatus teleport button now correctly targets an apparatus inside the facility.
 - Fixed a bug that caused Imperium's lock blocks to misalign sometimes.
+>>>>>>> development
+
+### QoL Improvements
+
+- Added terminal codes to landmines, turrets and security doors in the object explorer.
+
+### Compatibility
+
+This version is compatible with the [v80](https://steamdb.info/changelist/34734266/) public beta of Lethal Company.
 
 ## Imperium v1.2.3 - Hotfix
 
