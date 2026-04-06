@@ -20,6 +20,7 @@
 ### QoL Improvements
 
 - Added terminal codes to landmines, turrets and security doors in the object explorer.
+- Made it so the position / teleport indicator points exactly to the screen center.
 
 ### Compatibility
 

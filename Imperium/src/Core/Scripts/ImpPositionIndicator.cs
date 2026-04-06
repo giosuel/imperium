@@ -87,7 +87,7 @@ public class ImpPositionIndicator : MonoBehaviour
         var forward = origin.forward;
         var rotateDegrees = Imperium.Settings.Preferences.LeftHandedMode.Value ? -90 : 90;
         var startPosition = origin.position + Quaternion.AngleAxis(rotateDegrees, Vector3.up) * forward;
-        var ray = new Ray(startPosition, forward);
+        var ray = new Ray(origin.position, forward);
 
         // Raycast to player look position
         Physics.Raycast(ray, out var hitInfo, 1000, ImpConstants.IndicatorMask);
