@@ -21,7 +21,6 @@
 - Teleporting a player now applies the correct audio reverb preset.
 - The apparatus teleport button now correctly targets an apparatus inside the facility.
 - Fixed a bug that caused Imperium's lock blocks to misalign sometimes.
->>>>>>> development
 
 ### QoL Improvements
 
