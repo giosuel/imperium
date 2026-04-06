@@ -823,7 +823,7 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+        var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
         var verbString = request.Amount == 1 ? "has" : "have";
 
         if (request.SendNotification)
@@ -981,7 +981,7 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+        var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
         var verbString = request.Amount == 1 ? "has" : "have";
 
         if (request.SendNotification)
@@ -1017,7 +1017,7 @@ internal class ObjectManager : ImpLifecycleObject
             CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
         }
 
-        var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+        var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
         var verbString = request.Amount == 1 ? "has" : "have";
 
         if (request.SendNotification)
@@ -1051,7 +1051,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         if (request.SendNotification)
         {
-            var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+            var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
             var verbString = request.Amount == 1 ? "has" : "have";
 
             var objectName = overrideDisplayNameMap.GetValueOrDefault(request.Name)
@@ -1106,7 +1106,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         if (request.SendNotification)
         {
-            var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+            var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
             var verbString = request.Amount == 1 ? "has" : "have";
 
             var objectName = overrideDisplayNameMap.GetValueOrDefault(request.Name)
@@ -1224,7 +1224,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         if (request.SendNotification)
         {
-            var mountString = request.Amount == 1 ? "A" : $"{request.Amount.ToString()}x";
+            var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
             var verbString = request.Amount == 1 ? "has" : "have";
 
             Imperium.Networking.SendLog(new NetworkNotification

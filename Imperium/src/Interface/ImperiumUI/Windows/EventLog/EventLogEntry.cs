@@ -60,7 +60,7 @@ internal class EventLogEntry : MonoBehaviour
         time.text = $"[{log.Time}]";
         objectName.text = log.ObjectName;
         message.text = log.Message;
-        count.text = log.Count > 0 ? $"({log.Count.ToString()}x)" : "";
+        count.text = log.Count > 0 ? $"({log.Count}x)" : "";
 
         tooltip = impTooltip;
         currentLog = log;
