@@ -106,11 +106,6 @@ internal class ObjectManager : ImpLifecycleObject
         "DisabledObjects", Imperium.Networking, []
     );
 
-    /*
-     * Used by the server to execute a despawn request from a client via network ID
-     */
-    private readonly Dictionary<ulong, NetworkObject> CurrentLevelObjects = [];
-
     private readonly Dictionary<string, string> displayNameMap = [];
     private readonly Dictionary<string, string> overrideDisplayNameMap = [];
 
@@ -556,9 +551,6 @@ internal class ObjectManager : ImpLifecycleObject
             if (obj.gameObject.scene == SceneManager.GetSceneByName("HideAndDontSave")) continue;
 
             currentLevelEntities.Add(obj);
-
-            var entityNetObj = obj.GetComponent<NetworkObject>();
-            CurrentLevelObjects[entityNetObj.NetworkObjectId] = entityNetObj;
         }
 
         CurrentLevelEntities.Set(currentLevelEntities);
@@ -651,9 +643,6 @@ internal class ObjectManager : ImpLifecycleObject
                         break;
                     case ImpOutsideObjectTag outsideObjectTag:
                         currentLevelOutsideObjects.Add(outsideObjectTag);
-                        break;
-                    case NetworkObject netObj:
-                        CurrentLevelObjects[netObj.NetworkObjectId] = netObj;
                         break;
                 }
             }
@@ -818,9 +807,8 @@ internal class ObjectManager : ImpLifecycleObject
 
             if (request.Health > 0) entity.enemyHP = request.Health;
 
-            var netObject = entityObj.gameObject.GetComponentInChildren<NetworkObject>();
+            var netObject = entityObj.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
-            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
 
             // Checked if spawned entity is a masked and the masked parameters are set
             if (
@@ -965,9 +953,8 @@ internal class ObjectManager : ImpLifecycleObject
             // Execute start immediately to initialize random generator for animated objects
             grabbableItem.Start();
 
-            var netObject = itemObj.gameObject.GetComponentInChildren<NetworkObject>();
+            var netObject = itemObj.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
-            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
 
             // If player has free slot, place it in hand, otherwise leave it on the ground and play sound
             var spawnedInInventory = false;
@@ -1037,9 +1024,8 @@ internal class ObjectManager : ImpLifecycleObject
                 request.SpawnPosition, Quaternion.identity
             );
 
-            var netObject = hazardObj.gameObject.GetComponentInChildren<NetworkObject>();
+            var netObject = hazardObj.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
-            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
         }
 
         var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
@@ -1223,7 +1209,6 @@ internal class ObjectManager : ImpLifecycleObject
 
         var vehicleNetObject = vehicleObj.GetComponentInChildren<NetworkObject>();
         vehicleNetObject.Spawn();
-        CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = vehicleNetObject;
 
         if (spawningVehicle.secondaryPrefab)
         {
@@ -1234,9 +1219,8 @@ internal class ObjectManager : ImpLifecycleObject
                 RoundManager.Instance.VehiclesContainer
             );
 
-            var secondaryNetObj = secondaryObj.gameObject.GetComponentInChildren<NetworkObject>();
+            var secondaryNetObj = secondaryObj.GetComponentInChildren<NetworkObject>();
             secondaryNetObj.Spawn();
-            CurrentLevelObjects[secondaryNetObj.NetworkObjectId] = secondaryNetObj;
         }
 
         if (request.SendNotification)
@@ -1284,10 +1268,8 @@ internal class ObjectManager : ImpLifecycleObject
         {
             var staticObj = Instantiate(staticPrefab.gameObject, request.SpawnPosition, Quaternion.Euler(Vector3.zero));
 
-            var netObject = staticObj.gameObject.GetComponent<NetworkObject>();
+            var netObject = staticObj.GetComponent<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
-
-            CurrentLevelObjects[netObject.NetworkObjectId] = netObject;
         }
 
         if (request.SendNotification)

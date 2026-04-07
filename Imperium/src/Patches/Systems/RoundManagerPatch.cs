@@ -232,7 +232,5 @@ internal static class RoundManagerPatch
         {
             Imperium.StartOfRound.occlusionCuller.enabled = false;
         }
-
-        Imperium.MoonManager.FogEnabledThisRound = __instance.indoorFog.gameObject.activeSelf;
     }
 }

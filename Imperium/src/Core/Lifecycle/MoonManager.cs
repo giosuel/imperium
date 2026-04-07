@@ -17,7 +17,6 @@ internal class MoonManager : ImpLifecycleObject
 {
     public int ScrapAmount;
     public int ChallengeScrapAmount;
-    public bool FogEnabledThisRound;
 
     private readonly ImpEvent WeatherEvent = new();
 
@@ -37,13 +36,23 @@ internal class MoonManager : ImpLifecycleObject
         "CleanFloor", Imperium.Networking
     );
 
+    private readonly ImpNetMessage<bool> toggleIndoorFog = new(
+        "ToggleIndoorFog", Imperium.Networking
+    );
+
+
     protected override void Init()
     {
-        changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
-        changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
-        flickerLightsEvent.OnClientRecive += OnFlickerLightsEvent;
+        if (NetworkManager.Singleton.IsHost)
+        {
+            changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
+        }
+
         cleanFloorEvent.OnClientRecive += OnCleanFloorEvent;
+        toggleIndoorFog.OnClientRecive += OnToggleIndoorFog;
+        flickerLightsEvent.OnClientRecive += OnFlickerLightsEvent;
         toggleDoorLocksMessage.OnClientRecive += OnToggleDoorsLocks;
+        changeWeatherMessage.OnClientRecive += OnWeatherChangeClient;
     }
 
     internal void ChangeWeather(ChangeWeatherRequest request) => changeWeatherMessage.DispatchToServer(request);
@@ -66,15 +75,6 @@ internal class MoonManager : ImpLifecycleObject
     internal readonly ImpNetworkBinding<bool> DaytimeSpawningPaused = new(
         "DaytimeSpawningPaused",
         Imperium.Networking
-    );
-
-    internal readonly ImpNetworkBinding<bool> ForceIndoorFog = new(
-        "ForceIndoorFog",
-        Imperium.Networking,
-        onUpdateClient: value =>
-        {
-            RoundManager.Instance.indoorFog.gameObject.SetActive(value || Imperium.MoonManager.FogEnabledThisRound);
-        }
     );
 
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
@@ -191,6 +191,12 @@ internal class MoonManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
+    internal void ToggleIndoorFog(bool isEnabled)
+    {
+        toggleIndoorFog.DispatchToClients(isEnabled);
+    }
+
+    [ImpAttributes.RemoteMethod]
     internal static void ToggleDoors(bool isOpen)
     {
         Imperium.ObjectManager.CurrentLevelDoors.Value
@@ -224,6 +230,12 @@ internal class MoonManager : ImpLifecycleObject
             .Where(obj => obj)
             .ToList()
             .ForEach(door => ToggleSecurityDoor(door, isOn, true));
+    }
+
+    [ImpAttributes.LocalMethod]
+    private static void OnToggleIndoorFog(bool isOn)
+    {
+        Imperium.RoundManager.indoorFog.gameObject.SetActive(isOn);
     }
 
     [ImpAttributes.RemoteMethod]
