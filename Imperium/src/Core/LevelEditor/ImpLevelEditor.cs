@@ -34,7 +34,7 @@ internal class ImpLevelEditor : MonoBehaviour
     private ComponentManager componentManager;
 
     private readonly PlacedDungeon dungeon = new();
-    private PlacedTile currentTile;
+    // private PlacedTile currentTile;
 
     private BuildingTool buildingTool;
 

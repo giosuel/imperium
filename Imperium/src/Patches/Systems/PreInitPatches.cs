@@ -68,10 +68,10 @@ internal static class PreInitPatches
         {
             if (GameNetworkManager.Instance != null && __instance.versionNumberText != null)
             {
-                if (!__instance.versionNumberText.text.Contains(Imperium.PLUGIN_NAME))
+                if (!__instance.versionNumberText.text.Contains(PluginInfo.PLUGIN_NAME))
                 {
                     __instance.versionNumberText.text =
-                        $"{__instance.versionNumberText.text} ({Imperium.PLUGIN_NAME} {Imperium.PLUGIN_VERSION})";
+                        $"{__instance.versionNumberText.text} ({PluginInfo.PLUGIN_NAME} {PluginInfo.PLUGIN_VERSION})";
                     __instance.versionNumberText.margin = new Vector4(0, 0, -300, 0);
                     var launchedInLanText = __instance.launchedInLanModeText.GetComponent<RectTransform>();
                     launchedInLanText.anchoredPosition = launchedInLanText.anchoredPosition with
@@ -88,6 +88,6 @@ internal static class PreInitPatches
     {
         [HarmonyPostfix]
         [HarmonyPatch("SteamMatchmaking_OnLobbyCreated")]
-        private static void SteamMatchmaking_OnLobbyCreatedPatch(ref Steamworks.Data.Lobby lobby) => lobby.SetData("imperium", Imperium.PLUGIN_VERSION);
+        private static void SteamMatchmaking_OnLobbyCreatedPatch(ref Steamworks.Data.Lobby lobby) => lobby.SetData("imperium", PluginInfo.PLUGIN_VERSION);
     }
 }

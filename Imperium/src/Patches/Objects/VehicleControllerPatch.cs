@@ -75,7 +75,7 @@ public static class VehicleControllerPatch
         if (Imperium.Settings.Cruiser.InstantIgnite.Value) __instance.chanceToStartIgnition = 100;
     }
 
-    internal static readonly Harmony InstantIgnitionHarmony = new(Imperium.PLUGIN_GUID + ".InstantIgnition");
+    internal static readonly Harmony InstantIgnitionHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantIgnition");
 
     internal static class InstantIgnitionPatches
     {

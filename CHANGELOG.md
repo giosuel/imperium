@@ -36,6 +36,7 @@
 - The object manager now only sends object updates when objects have actually changed.
 - Removed the respawn button for spider webs as it didn't do anything.
 - Object RPCs are now more consistently routed through the host, improving access control.
+- Renamed "Full Auto" shotgun option to "No Cooldown".
 
 ### Compatibility
 

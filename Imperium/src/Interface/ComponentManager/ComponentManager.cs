@@ -27,7 +27,7 @@ public class ComponentManager : BaseUI
 
     private GameObject buttonTemplate;
 
-    private RawImage cameraCanvas;
+    // private RawImage cameraCanvas;
 
     private ComponentPreview preview;
 

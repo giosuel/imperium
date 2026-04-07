@@ -16,7 +16,6 @@ public struct ImpTheme
     internal Color backgroundColor;
     internal Color primaryColor;
     // Secondary color is currently unused
-    internal Color? secondaryColor;
     internal Color textColor;
 }
 
@@ -113,24 +112,15 @@ public static class ImpThemeManager
     {
         Color.RGBToHSV(theme.primaryColor, out var primaryHue, out var primarySaturation, out var primaryValue);
         Color.RGBToHSV(theme.backgroundColor, out var backgroundHue, out var backgroundSaturation, out var backgroundValue);
-        float secondaryHue = 0;
-        float secondarySaturation = 0;
-        float secondaryValue = 0;
-        if (theme.secondaryColor.HasValue)
-        {
-            Color.RGBToHSV(theme.secondaryColor.Value, out secondaryHue, out secondarySaturation, out secondaryValue);
-        }
 
         var textColor = theme.textColor;
         return variant switch
         {
             Variant.BACKGROUND => theme.backgroundColor,
             Variant.BACKGROUND_DARKER => Color.HSVToRGB(backgroundHue, backgroundSaturation, backgroundValue * 0.9f),
-            Variant.FOREGROUND => theme.secondaryColor ?? theme.primaryColor,
+            Variant.FOREGROUND => theme.primaryColor,
             Variant.LIGHTEST => Color.HSVToRGB(primarySaturation, primarySaturation, primaryValue * 1.6f),
-            Variant.LIGHTER => theme.secondaryColor.HasValue
-                ? Color.HSVToRGB(secondaryHue, secondarySaturation, secondaryValue * 1.2f)
-                : Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 1.2f),
+            Variant.LIGHTER =>  Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 1.2f),
             Variant.DARKER => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 0.8f),
             Variant.DARKEST => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 0.4f),
             Variant.FADED => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 0.8f),

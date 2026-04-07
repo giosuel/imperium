@@ -81,8 +81,8 @@ public class StartOfRoundPatch
         }
     }
 
-    internal static readonly Harmony InstantLandingHarmony = new(Imperium.PLUGIN_GUID + ".InstantLanding");
-    internal static readonly Harmony InstantTakeoffHarmony = new(Imperium.PLUGIN_GUID + ".InstantTakeoff");
+    internal static readonly Harmony InstantLandingHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantLanding");
+    internal static readonly Harmony InstantTakeoffHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantTakeoff");
 
     internal static class InstantLandingPatches
     {

@@ -24,7 +24,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects.NoiseOverlay;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 #endregion
 
@@ -40,13 +39,9 @@ namespace Imperium;
 [BepInDependency("com.github.teamxiaolan.dawnlib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
-[BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Imperium : BaseUnityPlugin
 {
-    public const string PLUGIN_GUID = "giosuel.Imperium";
-    public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "1.2.3";
-
     private static Harmony Harmony;
     private static ManualLogSource Log;
     private static ConfigFile configFile;
@@ -145,7 +140,7 @@ public class Imperium : BaseUnityPlugin
 
         if (!ImpAssets.Load()) return;
 
-        Harmony = new Harmony(PLUGIN_GUID);
+        Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         PreLaunchPatches();
 
         IO.LogInfo("[INIT] Imperium has been successfully initialized \\o/");
