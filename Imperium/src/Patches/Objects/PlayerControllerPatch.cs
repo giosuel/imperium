@@ -228,6 +228,11 @@ internal static class PlayerControllerPatch
                 Imperium.PlayerManager.IsFlying.SetFalse();
             }
         }
+
+        if (!Imperium.Settings.Rendering.IndoorFog.Value)
+        {
+            RoundManager.Instance.indoorFog.enabled = false;
+        }
     }
 
     // Temporarily stores gameHasStarted if patch overwrites it for pickup check

@@ -8,6 +8,7 @@
 - Added a button to flicker the lights.
 - Added a button to remove the slippery surfaces / gunk from the stingray.
 - Added an option to disable culling in the rendering window.
+- Added an optiont to disable the new indoor fog in the rendering window.
 
 ### Bug Fixes
 

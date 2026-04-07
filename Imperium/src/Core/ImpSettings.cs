@@ -745,6 +745,13 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.ObjectManager.ToggleObject("Local Volumetric Fog", value)
         );
 
+        internal readonly ImpConfig<bool> IndoorFog = new(
+            config,
+            "Rendering.Volumes",
+            "IndoorFog",
+            true
+        );
+
         internal readonly ImpConfig<bool> GroundFog = new(
             config,
             "Rendering.Volumes",
