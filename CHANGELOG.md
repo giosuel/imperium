@@ -1,6 +1,6 @@
 # Changelog
 
-## Imperium v1.2.4 - Bug Fixes and Moon Control Rework
+## Imperium v1.2.4 - Bug Fixes and V81 Compatibility
 
 ### General Changes
 
@@ -9,6 +9,7 @@
 - Added a button to remove the slippery surfaces / gunk from the stingray.
 - Added an option to disable culling in the rendering window.
 - Added an optiont to disable the new indoor fog in the rendering window.
+- Updated oracle to correctly predict entities in v81.
 
 ### Bug Fixes
 

@@ -297,7 +297,11 @@ internal class Oracle : ImpLifecycleObject
         }
 
         var specialEntity = roundManager.currentLevel.specialEnemyRarity;
-        if (specialEntity.overrideEnemy != null && specialEntity.percentageChance >= 1f)
+        if (
+            specialEntity.overrideEnemy != null &&
+            specialEntity.overrideEnemy.numberSpawned < specialEntity.overrideEnemy.MaxCount &&
+            specialEntity.percentageChance >= 1f
+        )
         {
             entityAmount = Mathf.Max(entityAmount, 1);
         }
@@ -358,21 +362,33 @@ internal class Oracle : ImpLifecycleObject
 
                 var currentTime = Imperium.TimeOfDay.lengthOfHours * currentHour / Imperium.TimeOfDay.totalTime;
 
-                var probability = roundManager.enemyRushIndex != -1
-                    ? roundManager.enemyRushIndex != j ? 1 : 100
-                    : roundManager.increasedInsideEnemySpawnRateIndex == j
-                        ? 100
-                        : !enemyType.useNumberSpawnedFalloff
-                            ? (int)(roundManager.currentLevel.Enemies[j].rarity *
-                                    enemyType.probabilityCurve.Evaluate(currentTime)
+                int probability;
+
+                if (
+                    roundManager.enemyRushIndex != -1 && roundManager.enemyRushIndex == j ||
+                    roundManager.increasedInsideEnemySpawnRateIndex == j
+                )
+                {
+                    probability = 100;
+                }
+                else if (enemyType.useNumberSpawnedFalloff)
+                {
+                    probability = (int)(
+                        roundManager.currentLevel.Enemies[j].rarity * (
+                            enemyType.probabilityCurve.Evaluate(currentTime) *
+                            enemyType.numberSpawnedFalloff.Evaluate(
+                                Mathf.Clamp(entitySpawnCounts[enemyType] / 10f, 0, 1)
                             )
-                            : (int)(roundManager.currentLevel.Enemies[j].rarity * (
-                                    enemyType.probabilityCurve.Evaluate(currentTime) *
-                                    enemyType.numberSpawnedFalloff.Evaluate(
-                                        Mathf.Clamp(entitySpawnCounts[enemyType] / 10f, 0, 1)
-                                    )
-                                )
-                            );
+                        )
+                    );
+                }
+                else
+                {
+                    probability = (int)(
+                        roundManager.currentLevel.Enemies[j].rarity *
+                        enemyType.probabilityCurve.Evaluate(currentTime)
+                    );
+                }
 
                 if (
                     enemyType.increasedChanceInterior != -1 &&
@@ -380,6 +396,11 @@ internal class Oracle : ImpLifecycleObject
                 )
                 {
                     probability = (int)Mathf.Min(probability * 1.5f, probability + 50);
+                }
+
+                if (roundManager.enemyRushIndex == -1 && roundManager.enemyRushIndex != j)
+                {
+                    probability = Mathf.RoundToInt(probability * 0.075f);
                 }
 
                 probabilities.Add(probability);
@@ -742,9 +763,6 @@ internal class Oracle : ImpLifecycleObject
 
                 entitySpawnCounts[spawningEntity]++;
 
-                // This is currently not executed (bug)
-                // entitySpawnedAtLeastOne[spawningEntity] = true;
-
                 spawning.Add(new SpawnReport
                 {
                     Entity = spawningEntity,
@@ -758,6 +776,7 @@ internal class Oracle : ImpLifecycleObject
             if (spawnedAtLeastOne && !spawnedBefore)
             {
                 currentDiversityLevel += spawningEntity.DiversityPowerLevel;
+                entitySpawnedAtLeastOne[spawningEntity] = true;
             }
         }
 
