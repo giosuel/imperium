@@ -8,12 +8,10 @@ using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
-using UnityEngine.UIElements;
 
 #endregion
 
@@ -328,7 +326,7 @@ internal class PlayerManager : ImpLifecycleObject
             // [1] = Ship
             // [2] = Inside
             // [3] = Outside
-            int preset = isInShip ? 1 : isInFactory ? 2 : 3;
+            var preset = isInShip ? 1 : isInFactory ? 2 : 3;
             audioReverbPresets.audioPresets[preset].ChangeAudioReverbForPlayer(player);
         }
 

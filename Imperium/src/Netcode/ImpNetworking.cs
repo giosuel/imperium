@@ -100,7 +100,7 @@ public class ImpNetworking
         // Always grant Imperium access if the request comes from the host
         if (clientId == NetworkManager.ServerClientId)
         {
-            authenticateEvent.DispatchToClients([NetworkManager.ServerClientId]);
+            authenticateEvent.DispatchToClients(NetworkManager.ServerClientId);
             return;
         }
 
@@ -113,7 +113,7 @@ public class ImpNetworking
             );
             Imperium.IO.LogInfo($"[NET] Client #{clientId} successfully requested Imperium access ({playerName})!");
 
-            authenticateEvent.DispatchToClients([clientId]);
+            authenticateEvent.DispatchToClients(clientId);
             ImperiumUsers.Set(ImperiumUsers.Value.Concat([clientId]).ToList());
         }
         else

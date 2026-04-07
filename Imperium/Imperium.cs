@@ -5,7 +5,6 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Core.EventLogging;
 using Imperium.Core.Input;
@@ -114,9 +113,8 @@ public class Imperium : BaseUnityPlugin
     internal static ImpBinaryBinding IsSceneLoaded { get; private set; }
 
     /// <summary>
-    /// Imperium initialization (Stage 1)
-    ///
-    /// This happens as soon as BepInEx loads the Imperium plugin.
+    ///     Imperium initialization (Stage 1)
+    ///     This happens as soon as BepInEx loads the Imperium plugin.
     /// </summary>
     private void Awake()
     {
@@ -179,9 +177,8 @@ public class Imperium : BaseUnityPlugin
     }
 
     /// <summary>
-    /// Imperium launch (Stage 2)
-    ///
-    /// This is executed after Imperium access has been granted by the host.
+    ///     Imperium launch (Stage 2)
+    ///     This is executed after Imperium access has been granted by the host.
     /// </summary>
     internal static void Launch()
     {
@@ -235,7 +232,7 @@ public class Imperium : BaseUnityPlugin
         UnityExplorerIntegration.PatchFunctions(Harmony);
 
         IsImperiumLaunched = true;
-        
+
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
         {

@@ -3,7 +3,6 @@
 using HarmonyLib;
 using Imperium.API.Types;
 using Imperium.Util;
-using Imperium.Visualizers;
 
 #endregion
 

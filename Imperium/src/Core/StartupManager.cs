@@ -1,8 +1,12 @@
+#region
+
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
+
+#endregion
 
 namespace Imperium.Core;
 

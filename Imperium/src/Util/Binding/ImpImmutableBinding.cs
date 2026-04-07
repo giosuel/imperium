@@ -8,7 +8,6 @@ namespace Imperium.Util.Binding;
 
 /// <summary>
 ///     A ImpBinding that can eb subscribed to, but cannot be updated.
-///
 ///     Imperium uses this in the API, to make sure that clients can't update internal values.
 /// </summary>
 /// <typeparam name="T"></typeparam>

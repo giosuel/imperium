@@ -2,9 +2,7 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
-using Imperium.Core.Scripts.Tags;
 using Imperium.Util.Binding;
-using UnityEngine;
 
 #endregion
 
@@ -178,7 +176,8 @@ public static class Resources
         {
             APIHelpers.AssertImperiumReady();
 
-            return ImpImmutableBinding<IReadOnlyCollection<SpikeRoofTrap>>.Wrap(Imperium.ObjectManager.CurrentLevelSpikeTraps);
+            return ImpImmutableBinding<IReadOnlyCollection<SpikeRoofTrap>>.Wrap(Imperium.ObjectManager
+                .CurrentLevelSpikeTraps);
         }
     }
 
@@ -192,7 +191,8 @@ public static class Resources
         {
             APIHelpers.AssertImperiumReady();
 
-            return ImpImmutableBinding<IReadOnlyCollection<BreakerBox>>.Wrap(Imperium.ObjectManager.CurrentLevelBreakerBoxes);
+            return ImpImmutableBinding<IReadOnlyCollection<BreakerBox>>.Wrap(
+                Imperium.ObjectManager.CurrentLevelBreakerBoxes);
         }
     }
 

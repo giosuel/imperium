@@ -76,9 +76,9 @@ public class ShovelGizmo : MonoBehaviour
             {
                 color = Color.white;
             }
-            else if ((hit.point != Vector3.zero
-                      && Physics.Linecast(position, hit.point, out _,
-                          Imperium.StartOfRound.collidersAndRoomMaskAndDefault))
+            else if (hit.point != Vector3.zero
+                     && Physics.Linecast(position, hit.point, out _,
+                         Imperium.StartOfRound.collidersAndRoomMaskAndDefault)
                      || !hit.transform.TryGetComponent<IHittable>(out _)
                      || hit.transform == playerTransform.transform)
             {

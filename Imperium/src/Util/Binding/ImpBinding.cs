@@ -19,7 +19,7 @@ public class ImpBinding<T> : IBinding<T>
     public event Action onTriggerSecondary;
 
     /// <summary>
-    /// If this is set to true, calls to <see cref="Refresh"/> won't invoke any events.
+    ///     If this is set to true, calls to <see cref="Refresh" /> won't invoke any events.
     /// </summary>
     private readonly bool ignoreRefresh;
 
@@ -45,7 +45,7 @@ public class ImpBinding<T> : IBinding<T>
 
         this.ignoreRefresh = ignoreRefresh;
 
-        this.onUpdate += primaryUpdate;
+        onUpdate += primaryUpdate;
         this.onUpdateSecondary += onUpdateSecondary;
     }
 

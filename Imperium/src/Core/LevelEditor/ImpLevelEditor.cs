@@ -40,7 +40,6 @@ internal class ImpLevelEditor : MonoBehaviour
 
     private void Awake()
     {
-
         Imperium.IsSceneLoaded.onUpdate += OnSceneChange;
 
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed += OnLeftClick;

@@ -1,13 +1,11 @@
 #region
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Types;
-using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;

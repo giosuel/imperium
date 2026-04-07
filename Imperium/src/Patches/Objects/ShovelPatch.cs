@@ -2,7 +2,6 @@
 
 using System.Collections;
 using HarmonyLib;
-using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -67,6 +66,7 @@ internal static class ShovelPatch
             {
                 continue;
             }
+
             yield return it;
         }
     }

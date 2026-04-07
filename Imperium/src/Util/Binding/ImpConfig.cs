@@ -9,7 +9,6 @@ namespace Imperium.Util.Binding;
 
 /// <summary>
 ///     An ImpBingind that is linked to a BepInEx config.
-///
 ///     It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
 ///     e.g. PlayerManager.UpdateCameras()
 /// </summary>
@@ -18,10 +17,9 @@ public sealed class ImpConfig<T> : ImpBinding<T>
     private readonly ConfigEntry<T> config;
 
     /// <summary>
-    /// If set to true, this config will be active even if Imperium is not currently enabled.
-    ///
-    /// This allows to selectively activate / deactivate certain configs when Imperium is currently not
-    /// enabled (e.g. Night Vision, God Mode).
+    ///     If set to true, this config will be active even if Imperium is not currently enabled.
+    ///     This allows to selectively activate / deactivate certain configs when Imperium is currently not
+    ///     enabled (e.g. Night Vision, God Mode).
     /// </summary>
     private readonly bool allowWhenDisabled;
 

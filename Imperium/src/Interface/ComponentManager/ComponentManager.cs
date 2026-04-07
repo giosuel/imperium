@@ -10,7 +10,6 @@ using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using Tile = Imperium.Core.LevelEditor.Tile;
 
 #endregion

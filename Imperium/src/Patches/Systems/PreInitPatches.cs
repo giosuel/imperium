@@ -1,8 +1,8 @@
 #region
 
 using HarmonyLib;
+using Steamworks.Data;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 #endregion
 
@@ -41,7 +41,8 @@ internal static class PreInitPatches
         {
             if (!Imperium.Settings.Preferences.QuickloadAutoLoad.Value || HasLoaded) return;
 
-            if (__instance.menuButtons != null && __instance.menuButtons.name == "MainButtons") {
+            if (__instance.menuButtons != null && __instance.menuButtons.name == "MainButtons")
+            {
                 __instance.lobbyNameInputField.text = "Imperium Test Environment";
 
                 var saveNum = Imperium.Settings.Preferences.QuickloadSaveNumber.Value;
@@ -88,6 +89,7 @@ internal static class PreInitPatches
     {
         [HarmonyPostfix]
         [HarmonyPatch("SteamMatchmaking_OnLobbyCreated")]
-        private static void SteamMatchmaking_OnLobbyCreatedPatch(ref Steamworks.Data.Lobby lobby) => lobby.SetData("imperium", PluginInfo.PLUGIN_VERSION);
+        private static void SteamMatchmaking_OnLobbyCreatedPatch(ref Lobby lobby) =>
+            lobby.SetData("imperium", PluginInfo.PLUGIN_VERSION);
     }
 }

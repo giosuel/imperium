@@ -26,7 +26,7 @@ using Random = UnityEngine.Random;
 namespace Imperium.Core.Lifecycle;
 
 /// <summary>
-/// Lifecycle object that manages all object-related functionality. Keeps track of loaded and currently active objects.
+///     Lifecycle object that manages all object-related functionality. Keeps track of loaded and currently active objects.
 /// </summary>
 internal class ObjectManager : ImpLifecycleObject
 {

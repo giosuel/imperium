@@ -12,7 +12,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 #endregion
 

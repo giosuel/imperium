@@ -14,7 +14,9 @@ namespace Imperium.Types;
 public struct ImpTheme
 {
     internal Color backgroundColor;
+
     internal Color primaryColor;
+
     // Secondary color is currently unused
     internal Color textColor;
 }
@@ -120,7 +122,7 @@ public static class ImpThemeManager
             Variant.BACKGROUND_DARKER => Color.HSVToRGB(backgroundHue, backgroundSaturation, backgroundValue * 0.9f),
             Variant.FOREGROUND => theme.primaryColor,
             Variant.LIGHTEST => Color.HSVToRGB(primarySaturation, primarySaturation, primaryValue * 1.6f),
-            Variant.LIGHTER =>  Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 1.2f),
+            Variant.LIGHTER => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 1.2f),
             Variant.DARKER => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 0.8f),
             Variant.DARKEST => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 0.4f),
             Variant.FADED => Color.HSVToRGB(primaryHue, primarySaturation, primaryValue * 0.8f),

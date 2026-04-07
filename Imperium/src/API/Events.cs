@@ -17,5 +17,6 @@ public static class Events
     /// <summary>
     ///     The amount of players, including the host, that are currently connected to the game.
     /// </summary>
-    public static ImpImmutableBinding<int> ConnectedPlayers => ImpImmutableBinding<int>.Wrap(ImpNetworking.ConnectedPlayers);
+    public static ImpImmutableBinding<int> ConnectedPlayers =>
+        ImpImmutableBinding<int>.Wrap(ImpNetworking.ConnectedPlayers);
 }

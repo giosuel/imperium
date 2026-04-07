@@ -40,7 +40,7 @@ internal class LayerToggle : MonoBehaviour
 
     internal void UpdateIsOn(int layerMask)
     {
-        var isEnabled = (layerMask & (1 << currentLayer)) != 0;
+        var isEnabled = (layerMask & 1 << currentLayer) != 0;
         buttonCross.gameObject.SetActive(isEnabled);
         buttonCheck.gameObject.SetActive(!isEnabled);
     }

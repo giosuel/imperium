@@ -5,7 +5,6 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
-using Imperium.Core.Scripts.Tags;
 using Imperium.Interface.Common;
 using Imperium.Util;
 using Unity.Netcode;
@@ -179,6 +178,7 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
+
                 break;
             case ObjectType.Turret:
                 if (DespawnObject(entry, isRespawn: true))
@@ -189,6 +189,7 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
+
                 break;
             case ObjectType.SpikeTrap:
                 if (DespawnObject(entry, isRespawn: true))
@@ -199,6 +200,7 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
+
                 break;
             case ObjectType.Entity:
                 if (DespawnObject(entry, isRespawn: true))
@@ -210,6 +212,7 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
+
                 break;
             case ObjectType.Vent:
             case ObjectType.SteamValve:
@@ -494,6 +497,7 @@ internal static class ObjectEntryActions
                     ImpButton.ToggleButton(entry.dropButton, isHeld);
                     ImpButton.ToggleButton(entry.teleportHereButton, !isHeld);
                 }
+
                 break;
             case ObjectType.StoryLog:
                 var storyLog = (StoryLog)entry.component;
@@ -604,11 +608,12 @@ internal static class ObjectEntryActions
 
     private static string GetTerminalAccessibleName(string name, Component obj)
     {
-        string code = "??";
+        var code = "??";
         if (obj.TryGetComponent<TerminalAccessibleObject>(out var terminalComponent))
         {
             code = terminalComponent.objectCode;
         }
+
         return $"{name} [{code}] (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
     }
 

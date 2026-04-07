@@ -41,9 +41,8 @@ public class ImpBinaryBinding : ImpBinding<bool>
     }
 
     /// <summary>
-    /// Creates a combined binary binding from two or more provided bindings.
-    ///
-    /// The new binding's value is true if any of the source bindings' values is true.
+    ///     Creates a combined binary binding from two or more provided bindings.
+    ///     The new binding's value is true if any of the source bindings' values is true.
     /// </summary>
     /// <param name="bindingPairs">A list of bindings to combine</param>
     public static ImpBinaryBinding CreateAnd((IBinding<bool>, bool)[] bindingPairs)
@@ -62,9 +61,8 @@ public class ImpBinaryBinding : ImpBinding<bool>
     }
 
     /// <summary>
-    /// Creates a combined binary binding from two or more provided bindings.
-    ///
-    /// The new binding's value is true if all the source bindings' values are true.
+    ///     Creates a combined binary binding from two or more provided bindings.
+    ///     The new binding's value is true if all the source bindings' values are true.
     /// </summary>
     /// <param name="bindingPairs">A list of bindings to combine</param>
     public static ImpBinaryBinding CreateOr((IBinding<bool>, bool)[] bindingPairs)

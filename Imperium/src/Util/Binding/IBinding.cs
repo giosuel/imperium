@@ -10,17 +10,14 @@ public interface IBinding<T> : IResettable, IRefreshable
 {
     /// <summary>
     ///     Primary action that is invoked every time the binding state is updated. Provides the updated state.
-    ///
     ///     The binding's internal
     /// </summary>
     public event Action<T> onUpdate;
 
     /// <summary>
     ///     Secondary action that is invoked everytime the binding state is updated, except if explicitly skipped.
-    ///
     ///     Provides the updated state.
-    ///
-    ///     When invoking a binding update via <see cref="Set"/>, the caller can specify to skip the secondary update.
+    ///     When invoking a binding update via <see cref="Set" />, the caller can specify to skip the secondary update.
     ///     This can be useful to avoid circular updates or skip certain callbacks when invoking an update.
     /// </summary>
     public event Action<T> onUpdateSecondary;
@@ -32,10 +29,8 @@ public interface IBinding<T> : IResettable, IRefreshable
 
     /// <summary>
     ///     Secondary action that is invoked everytime the binding state is updated, except if explicitly skipped.
-    ///
     ///     Does not provide the updated state.
-    ///
-    ///     When invoking a binding update via <see cref="Set"/>, the caller can specify to skip the secondary update.
+    ///     When invoking a binding update via <see cref="Set" />, the caller can specify to skip the secondary update.
     ///     This can be useful to avoid circular updates or skip certain callbacks when invoking an update.
     /// </summary>
     public event Action onTriggerSecondary;
@@ -52,7 +47,7 @@ public interface IBinding<T> : IResettable, IRefreshable
     public void Set(T updatedValue, bool invokePrimary = true, bool invokeSecondary = true);
 
     /// <summary>
-    ///     Same as calling <see cref="Set"/> with the current state and default arguments.
+    ///     Same as calling <see cref="Set" /> with the current state and default arguments.
     /// </summary>
     public new void Refresh();
 

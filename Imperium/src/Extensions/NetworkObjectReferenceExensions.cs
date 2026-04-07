@@ -1,4 +1,8 @@
+#region
+
 using Unity.Netcode;
+
+#endregion
 
 namespace Imperium.Extensions;
 

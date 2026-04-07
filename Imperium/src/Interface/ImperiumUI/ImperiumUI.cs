@@ -20,9 +20,11 @@ using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
@@ -229,7 +231,7 @@ public class ImperiumUI : BaseUI
 
         var settings = new JsonSerializerSettings
         {
-            Error = delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
+            Error = delegate(object sender, ErrorEventArgs args)
             {
                 if (Equals(args.ErrorContext.Member, nameof(WindowDefinition.WindowType)) &&
                     args.ErrorContext.OriginalObject?.GetType() == typeof(WindowDefinition))
@@ -253,7 +255,8 @@ public class ImperiumUI : BaseUI
 
         foreach (var windowDefinition in configList)
         {
-            if (windowDefinition.WindowType == null || !windowControllers.TryGetValue(windowDefinition.WindowType, out var existingDefinition))
+            if (windowDefinition.WindowType == null ||
+                !windowControllers.TryGetValue(windowDefinition.WindowType, out var existingDefinition))
             {
                 // Ignore non-registered window types
                 // BUG: https://github.com/giosuel/imperium/issues/111
@@ -261,6 +264,7 @@ public class ImperiumUI : BaseUI
                 Imperium.IO.LogInfo($"[UI] Ignoring unknown window definition of type {debugType}");
                 continue;
             }
+
             if (!controllers.Add(existingDefinition.WindowType)) continue;
 
             // Propagate data from config to existing definition and add it to the stack
@@ -286,7 +290,7 @@ public record WindowDefinition
 {
     internal ImperiumWindow Controller { get; init; }
     public Type WindowType { get; init; }
-    public System.Numerics.Vector2 Position { get; set; }
+    public Vector2 Position { get; set; }
     public float ScaleFactor { get; set; } = 1;
     public bool IsOpen { get; set; }
 }
