@@ -488,8 +488,12 @@ internal static class ObjectEntryActions
             case ObjectType.Item:
                 var item = (GrabbableObject)entry.component;
                 var isHeld = item.isHeld || item.heldByPlayerOnServer;
-                entry.dropButton.interactable = isHeld;
-                entry.teleportHereButton.interactable = !isHeld;
+
+                if (entry.dropButton.interactable != isHeld)
+                {
+                    ImpButton.ToggleButton(entry.dropButton, isHeld);
+                    ImpButton.ToggleButton(entry.teleportHereButton, !isHeld);
+                }
                 break;
             case ObjectType.StoryLog:
                 var storyLog = (StoryLog)entry.component;
