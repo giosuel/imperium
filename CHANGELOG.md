@@ -1,6 +1,10 @@
 # Changelog
 
-## Imperium v1.2.4 - Bug Fixes and V81 Compatibility
+## Imperium v1.3.0 - Regular Update
+
+This update tackles a number of long-standing bugs alongside several frequently requested features. The biggest change under the hood is a rework of the object explorer's multiplayer functionality, which is now far more robust against desync and network latency: updates are only sent when objects actually change, the explorer refreshes periodically to stay in sync, and RPCs are more consistently routed through the host for better access control.
+
+Modded outdoor and indoor hazards added by LLL and DawnLib are now fully supported as well, so network-aware modded hazards will work out of the box. Oracle has also been updated to correctly predict entities in v81.
 
 ### General Changes
 
@@ -27,7 +31,7 @@
 - Fixed a bug that made it possible for the resolution slider to go below 0.
 - Fixed a bug that caused the game's resolution to ignore the resolution slider in the object explorer.
 - Fixed object explorer related bugs that prevented certain items from being toggled or toggle desync in general.
-- Fixed a bug that caused brackens to break indoors.
+- Fixed a bug that caused brackens to break when spawned indoors.
 - Spawned entities are now properly added to `RoundManager.SpawnedEnemies`.
 
 ### QoL Improvements
@@ -121,13 +125,13 @@ Note: *Due to a lot of changes in the entity spawning, Oracle entity spawn predi
 
 This version is compatible with the [v80](https://steamdb.info/changelist/34734266/) public beta of Lethal Company.
 
-## Imperium v1.1 - Bug Fixes
+## Imperium v1.1.0 - Bug Fixes
 
 ### Bug Fixes
 
 - Fixed a bug that made Imperium crash when some mods are adding outside objects without a prefab.
 
-## Imperium v1.0 - The Release
+## Imperium v1.0.0 - The Release
 
 > We've come a long way since the release of the first Imperium prototype in early April 2024 to where we are today. Imperium was my first modding project for any game and it was just meant to be a fun little tool to explore the wonderful mechanics of this amazing game.
 >
