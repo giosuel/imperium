@@ -44,7 +44,7 @@ internal static class PlayerControllerPatch
             __instance.health = 100;
 
             Imperium.IO.Send(
-                $"God mode negated {damageNumber} damage from '{(causeOfDeath).ToString()}'",
+                $"God mode negated {damageNumber} damage from '{causeOfDeath}'",
                 type: NotificationType.GodMode
             );
         }
@@ -65,7 +65,7 @@ internal static class PlayerControllerPatch
         if (Imperium.Settings.Player.GodMode.Value)
         {
             Imperium.IO.Send(
-                $"God mode saved you from death by '{causeOfDeath.ToString()}'",
+                $"God mode saved you from death by '{causeOfDeath}'",
                 type: NotificationType.GodMode
             );
         }

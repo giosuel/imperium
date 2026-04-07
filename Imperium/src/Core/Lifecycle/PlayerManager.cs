@@ -89,8 +89,12 @@ internal class PlayerManager : ImpLifecycleObject
         );
 
         ApparatusTPAnchor = new ImpExternalBinding<Vector3?, bool>(
-            () => GameObject.Find("LungApparatus(Clone)")?.transform.position
-        );
+            () =>
+            {
+                var apps = FindObjectsByType<LungProp>(findObjectsInactive: FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.None);
+                var docked = apps.FirstOrDefault(app => app.isLungDocked);
+                return docked?.transform.position;
+            });
     }
 
     protected override void OnSceneLoad()
@@ -303,19 +307,29 @@ internal class PlayerManager : ImpLifecycleObject
         var isInFactory = request.Destination.y < -100;
         player.isInsideFactory = isInFactory;
 
-        // There is no easy way to check this, so it will just be off by default for now
+        // There is no easy way to check this, so these are best-effort guesses
         var isInElevator = Imperium.StartOfRound.shipBounds.bounds.Contains(request.Destination);
         player.isInElevator = isInElevator;
 
         var isInShip = Imperium.StartOfRound.shipInnerRoomBounds.bounds.Contains(request.Destination);
         player.isInHangarShipRoom = isInShip;
 
+        var audioReverbPresets = FindObjectOfType<AudioReverbPresets>();
+        if (audioReverbPresets != null && audioReverbPresets.audioPresets.Length >= 4)
+        {
+            // audio reverb presets:
+            // [1] = Ship
+            // [2] = Inside
+            // [3] = Outside
+            int preset = isInShip ? 1 : isInFactory ? 2 : 3;
+            audioReverbPresets.audioPresets[preset].ChangeAudioReverbForPlayer(player);
+        }
+
         foreach (var heldItem in player.ItemSlots)
         {
             if (!heldItem) continue;
             heldItem.isInFactory = isInFactory;
             heldItem.isInShipRoom = isInShip;
-            heldItem.isInFactory = isInFactory;
         }
 
         if (request.PlayerId == NetworkManager.Singleton.LocalClientId) TimeOfDay.Instance.DisableAllWeather();

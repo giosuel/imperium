@@ -219,9 +219,18 @@ internal static class RoundManagerPatch
     }
 
     /// <summary>
-    ///     Level is finished generating, all scrap and map obstacles have been placed, no entities yet
+    ///     Level is finished generating, all scrap and map obstacles have been placed, no entities yet.
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("RefreshEnemiesList")]
-    private static void RefreshEnemiesListPostfixPatch() => Imperium.IsSceneLoaded.SetTrue();
+    private static void RefreshEnemiesListPostfixPatch()
+    {
+        Imperium.IsSceneLoaded.SetTrue();
+
+        // We need to do this here because the occlusion culler always needs to be active at the start.
+        if (Imperium.Settings.Rendering.DisableCulling.Value)
+        {
+            Imperium.StartOfRound.occlusionCuller.enabled = false;
+        }
+    }
 }

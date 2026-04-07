@@ -36,8 +36,8 @@ internal class PlayerEventLogger(ImpEventLog log)
     )
     {
         var message = Imperium.Settings.Player.GodMode.Value
-            ? $"Took {damageNumber} damage from {causeOfDeath.ToString()} (negated)."
-            : $"Took {damageNumber} damage from {causeOfDeath.ToString()}.";
+            ? $"Took {damageNumber} damage from {causeOfDeath} (negated)."
+            : $"Took {damageNumber} damage from {causeOfDeath}.";
 
         LogPlayerEvent(
             instance, message,
@@ -84,8 +84,8 @@ internal class PlayerEventLogger(ImpEventLog log)
     )
     {
         var message = Imperium.Settings.Player.GodMode.Value
-            ? $"Died to {causeOfDeath.ToString()} (negated)."
-            : $"Died to {causeOfDeath.ToString()}.";
+            ? $"Died to {causeOfDeath} (negated)."
+            : $"Died to {causeOfDeath}.";
 
         LogPlayerEvent(
             instance, message,

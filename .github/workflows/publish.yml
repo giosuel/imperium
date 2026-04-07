@@ -1,104 +1,54 @@
 name: Publish
 
 on:
-  release:
-    types: [ released, prereleased ]
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
 
 jobs:
-  build:
-    name: build
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch Sources
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
           fetch-depth: 0
           filter: tree:0
 
-      - name: Setup .NET Env
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: "8.0.100"
+      - name: Init Submodules
+        uses: snickerbockers/submodules-init@v4
 
-      - name: Restore Solution
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.x"
+
+      - name: Restore
         run: |
-          dotnet restore
+          dotnet restore --locked-mode
           dotnet tool restore
 
-      - name: Pack Solution
+      - name: Build
         run: |
-          dotnet pack --configuration Release
+          dotnet build -c Release --no-restore
 
-      - name: Upload Thunderstore Artifact
+      - name: Pack and Publish to Thunderstore
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
+        run: |
+          dotnet pack -c Release --no-build -target:PublishThunderstore
+
+      - name: Upload Thunderstore artifact
         uses: actions/upload-artifact@v4
         with:
           name: thunderstore-build
-          path: dist/*.zip
+          path: ./artifacts/thunderstore/*.zip
 
-      - name: Upload NuPkg Artifact
+      - name: Upload nupkg artifact
         uses: actions/upload-artifact@v4
         with:
           name: nupkg-build
-          path: Imperium/bin/Release/*.nupkg
-          
-  upload-release-artifacts:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions: write-all
-    steps:
-      - uses: actions/checkout@v4
-        
-      - name: Download all Artifacts
-        uses: actions/download-artifact@v4
-        
-      - name: Upload artifacts to Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*.zip nupkg-build/*.nupkg
-  
-  deploy-nuget:
-    name: Deploy to NuGet
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fetch Sources
-        uses: actions/checkout@v4
-
-      - name: Download nupkg artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: nupkg-build
-          path: ./Imperium/bin/Release
-
-      - name: Setup .NET environment
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: "8.0.100"
+          path: ./artifacts/package/release/*.nupkg
 
       - name: Publish to NuGet.org
         run: |
-          dotnet nuget push ./Imperium/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_TOKEN }} --source https://api.nuget.org/v3/index.json
-  
-  deploy-thunderstore:
-    if: ${{ github.event.release.prerelease == false }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        
-      - name: Download Thunderstore Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: thunderstore-build
-          path: ./dist
-          
-      - name: Restore Tools
-        run: |
-          dotnet tool restore
-
-      - name: Publishing to Thunderstore
-        env:
-          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_API_TOKEN }}
-        run: |
-          dotnet tcli publish --config-path assets/thunderstore.toml --file dist/*.zip
+          dotnet nuget push ./artifacts/package/*/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

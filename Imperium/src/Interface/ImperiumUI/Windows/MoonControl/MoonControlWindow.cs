@@ -4,6 +4,7 @@ using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl.Widgets;
 using Imperium.Types;
+using TMPro;
 
 #endregion
 
@@ -35,19 +36,19 @@ internal class MoonControlWindow : ImperiumWindow
     private void InitEntitySpawning()
     {
         ImpToggle.Bind(
-            "Left/PauseIndoorSpawning", transform,
+            "Left/PauseSpawning/Indoor", transform,
             Imperium.MoonManager.IndoorSpawningPaused,
             theme
         );
 
         ImpToggle.Bind(
-            "Left/PauseOutdoorSpawning", transform,
+            "Left/PauseSpawning/Outdoor", transform,
             Imperium.MoonManager.OutdoorSpawningPaused,
             theme
         );
 
         ImpToggle.Bind(
-            "Left/PauseDaytimeSpawning", transform,
+            "Left/PauseSpawning/Daytime", transform,
             Imperium.MoonManager.DaytimeSpawningPaused,
             theme
         );
@@ -111,7 +112,7 @@ internal class MoonControlWindow : ImperiumWindow
     private void InitMapObstacleButtons()
     {
         ImpButton.Bind(
-            "Left/MapObstacles/Doors/Left/OpenDoors",
+            "Left/MapObstacles/Doors/Open",
             transform,
             () => MoonManager.ToggleDoors(true),
             interactableBindings: Imperium.IsSceneLoaded,
@@ -119,7 +120,7 @@ internal class MoonControlWindow : ImperiumWindow
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/Doors/Left/CloseDoors",
+            "Left/MapObstacles/Doors/Close",
             transform,
             () => MoonManager.ToggleDoors(false),
             interactableBindings: Imperium.IsSceneLoaded,
@@ -127,38 +128,23 @@ internal class MoonControlWindow : ImperiumWindow
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/Doors/Right/LockDoors",
+            "Left/MapObstacles/Doors/Lock",
             transform,
-            () => MoonManager.ToggleDoorLocks(true),
+            () => Imperium.MoonManager.ToggleDoorLocks(true),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/Doors/Right/UnlockDoors",
+            "Left/MapObstacles/Doors/Unlock",
             transform,
-            () => MoonManager.ToggleDoorLocks(false),
+            () => Imperium.MoonManager.ToggleDoorLocks(false),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/Electronics/Left/OpenSecurity",
-            transform,
-            () => MoonManager.ToggleSecurityDoors(true),
-            interactableBindings: Imperium.IsSceneLoaded,
-            theme: theme
-        );
-        ImpButton.Bind(
-            "Left/MapObstacles/Electronics/Left/CloseSecurity",
-            transform,
-            () => MoonManager.ToggleSecurityDoors(false),
-            interactableBindings: Imperium.IsSceneLoaded,
-            theme: theme
-        );
-
-        ImpButton.Bind(
-            "Left/MapObstacles/Electronics/Right/TurnOnBreakers",
+            "Left/MapObstacles/Breakers/On",
             transform,
             () => MoonManager.ToggleBreakers(true),
             interactableBindings: Imperium.IsSceneLoaded,
@@ -166,7 +152,7 @@ internal class MoonControlWindow : ImperiumWindow
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/Electronics/Right/TurnOffBreakers",
+            "Left/MapObstacles/Breakers/Off",
             transform,
             () => MoonManager.ToggleBreakers(false),
             interactableBindings: Imperium.IsSceneLoaded,
@@ -174,33 +160,33 @@ internal class MoonControlWindow : ImperiumWindow
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/MapHazards/Left/EnableTurrets",
+            "Left/MapObstacles/Breakers/Flicker",
             transform,
-            () => MoonManager.ToggleTurrets(true),
+            () => Imperium.MoonManager.FlickerLights(),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/MapHazards/Left/DisableTurrets",
+            "Left/MapObstacles/Security/Open",
             transform,
-            () => MoonManager.ToggleTurrets(false),
+            () => MoonManager.ToggleSecurityDoors(true),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/MapHazards/Right/EnableLandmines",
+            "Left/MapObstacles/Security/Close",
             transform,
-            () => MoonManager.ToggleLandmines(true),
+            () => MoonManager.ToggleSecurityDoors(false),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
 
         ImpButton.Bind(
-            "Left/MapObstacles/MapHazards/Right/DisableLandmines",
+            "Left/MapObstacles/Gunk/Clean",
             transform,
-            () => MoonManager.ToggleLandmines(false),
+            () => Imperium.MoonManager.CleanFloor(),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );

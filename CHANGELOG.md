@@ -1,5 +1,39 @@
 # Changelog
 
+## Imperium v1.2.4 - Bug Fixes and Moon Control Rework
+
+### General Changes
+
+- Reworked the map obstacle section in the moon control window.
+- Added a button to flicker the lights.
+- Added a button to remove the slippery surfaces / gunk from the stingray.
+- Added an option to disable culling in the rendering window.
+
+### Bug Fixes
+
+- Fixed a bug that made it so locking doors toggled the lock instead.
+- Teleporting a player now applies the correct audio reverb preset.
+- The apparatus teleport button now correctly targets an apparatus inside the facility.
+- Fixed a bug that caused Imperium's lock blocks to misalign sometimes.
+- Fixed a bug that caused speedy shovel to not work anymore.
+- Fixed outdated information about indoor map hazards in the info window.
+- Fixed a bug that made spider webs impossible to teleport or destroy in the object explorer.
+- Spider webs are now cleaned up properly when a spider is destroyed in the object explorer.
+- Fixed a bug that made it possible for the resolution slider to go below 0.
+
+### QoL Improvements
+
+- Added terminal codes to landmines, turrets and security doors in the object explorer.
+- Made it so the position / teleport indicator points exactly to the screen center.
+- The object explorer is now updating periodically to account for desync and network latency.
+- The object manager now only sends object updates when objects have actually changed.
+- Removed the respawn button for spider webs as it didn't do anything.
+- Object RPCs are now more consistently routed through the host, improving access control.
+
+### Compatibility
+
+This version is compatible with [v81](https://steamdb.info/changelist/35045101/) of Lethal Company.
+
 ## Imperium v1.2.3 - Hotfix
 
 ### Bug Fixes

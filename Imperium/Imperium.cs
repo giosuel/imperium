@@ -191,6 +191,8 @@ public class Imperium : BaseUnityPlugin
     {
         if (!IsImperiumInitialized) return;
 
+        IsSceneLoaded = new ImpBinaryBinding(false);
+
         // Re-instantiate settings to get rid of existing bindings
         Settings = new ImpSettings(configFile);
         IO.BindNotificationSettings(Settings);
@@ -198,8 +200,6 @@ public class Imperium : BaseUnityPlugin
 
         Terminal = GameObject.Find("TerminalScript").GetComponent<Terminal>();
         HUDManager = FindObjectOfType<HUDManager>();
-
-        IsSceneLoaded = new ImpBinaryBinding(false);
 
         Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
 

@@ -13,3 +13,8 @@ public readonly struct ChangeWeatherRequest
     [SerializeField] public int LevelIndex { get; init; }
     [SerializeField] public LevelWeatherType WeatherType { get; init; }
 }
+
+public readonly struct ToggleDoorLocksRequest
+{
+    [SerializeField] public bool Lock { get; init; }
+}

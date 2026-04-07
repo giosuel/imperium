@@ -22,6 +22,8 @@ internal class RenderingWindow : ImperiumWindow
             theme: theme
         );
 
+        ImpToggle.Bind("General/CullingToggle", content, Imperium.Settings.Rendering.DisableCulling, theme);
+
         ImpToggle.Bind("Lighting/SunlightToggle", content, Imperium.Settings.Rendering.Sunlight, theme);
         ImpToggle.Bind("Lighting/SpaceSunToggle", content, Imperium.Settings.Rendering.SpaceSun, theme);
         ImpToggle.Bind("Lighting/IndirectLightToggle", content, Imperium.Settings.Rendering.IndirectLighting, theme);

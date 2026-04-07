@@ -74,6 +74,12 @@ public readonly struct VehicleDespawnRequest
     [SerializeField] public bool IsRespawn { get; init; }
 }
 
+public readonly struct SpiderWebDespawnRequest
+{
+    [SerializeField] public NetworkObjectReference SpiderNetObj { get; init; }
+    [SerializeField] public int TrapId { get; init; }
+}
+
 public readonly struct ObjectTeleportRequest()
 {
     // This can be either the network ID or the imperium unique identifier assigned when spawning.
@@ -92,6 +98,13 @@ public readonly struct LocalObjectTeleportRequest
     [SerializeField] public LocalObjectType Type { get; init; }
     [SerializeField] public Vector3 Position { get; init; }
     [SerializeField] public Vector3 Destination { get; init; }
+}
+
+public readonly struct SpiderWebTeleportRequest
+{
+    [SerializeField] public NetworkObjectReference SpiderNetObj { get; init; }
+    [SerializeField] public int TrapId { get; init; }
+    [SerializeField] public Vector3 Position { get; init; }
 }
 
 public readonly struct VentToggleRequest
