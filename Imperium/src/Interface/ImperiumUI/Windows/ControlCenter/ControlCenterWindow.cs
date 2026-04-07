@@ -262,12 +262,12 @@ internal class ControlCenterWindow : ImperiumWindow
             theme
         );
 
-        ImpToggle.Bind(
-            "Right/PlayerSettings/Permadrunk",
-            content,
-            Imperium.Settings.Player.Permadrunk,
-            theme
-        );
+        // ImpToggle.Bind(
+        //     "Right/PlayerSettings/Permadrunk",
+        //     content,
+        //     Imperium.Settings.Player.Permadrunk,
+        //     theme
+        // );
 
         ImpToggle.Bind(
             "Right/PlayerSettings/FlyingNoClip",

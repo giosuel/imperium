@@ -80,21 +80,27 @@ internal class PlayerManager : ImpLifecycleObject
 
         Imperium.InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
 
-        ShipTPAnchor = new ImpExternalBinding<Vector3?, bool>(
-            () => GameObject.Find("CatwalkShip")?.transform.position
+        ShipTPAnchor = new ImpExternalBinding<Vector3?, bool>(() => GameObject.Find("CatwalkShip")?.transform.position
         );
 
-        MainEntranceTPAnchor = new ImpExternalBinding<Vector3?, bool>(
-            () => GameObject.Find("EntranceTeleportA")?.transform.position
+        MainEntranceTPAnchor = new ImpExternalBinding<Vector3?, bool>(() =>
+            GameObject.Find("EntranceTeleportA")?.transform.position
         );
 
-        ApparatusTPAnchor = new ImpExternalBinding<Vector3?, bool>(
-            () =>
-            {
-                var apps = FindObjectsByType<LungProp>(findObjectsInactive: FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.None);
-                var docked = apps.FirstOrDefault(app => app.isLungDocked);
-                return docked?.transform.position;
-            });
+        ApparatusTPAnchor = new ImpExternalBinding<Vector3?, bool>(() =>
+        {
+            var apps = FindObjectsByType<LungProp>(
+                findObjectsInactive: FindObjectsInactive.Exclude, sortMode: FindObjectsSortMode.None
+            );
+            var docked = apps.FirstOrDefault(app => app.isLungDocked);
+            return docked?.transform.position;
+        });
+
+        // Disable noclip whenever exiting flight mode
+        IsFlying.onFalse += () =>
+        {
+            Imperium.Player.thisController.excludeLayers = 0;
+        };
     }
 
     protected override void OnSceneLoad()

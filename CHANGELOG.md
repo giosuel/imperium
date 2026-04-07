@@ -10,6 +10,8 @@
 - Added an option to disable culling in the rendering window.
 - Added an optiont to disable the new indoor fog in the rendering window.
 - Updated oracle to correctly predict entities in v81.
+- Removed permadrunk functionality.
+- Added button to enable noclip while flying.
 
 ### Bug Fixes
 

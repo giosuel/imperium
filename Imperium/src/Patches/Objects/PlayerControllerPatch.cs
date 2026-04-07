@@ -177,6 +177,7 @@ internal static class PlayerControllerPatch
 
                 var forceVector = new Vector3(moveVector.x * flyingSpeed, upInput - downInput, moveVector.y * flyingSpeed);
                 forceVector = Quaternion.AngleAxis(Imperium.Player.transform.eulerAngles.y, Vector3.up) * forceVector;
+
                 __instance.externalForces += forceVector;
             }
 
@@ -189,6 +190,8 @@ internal static class PlayerControllerPatch
             __instance.playerBodyAnimator.SetBool(Crouching, value: false);
             __instance.playerBodyAnimator.SetBool(Jumping, value: true);
             __instance.isCrouching = false;
+
+            __instance.thisController.excludeLayers = Imperium.Settings.Player.FlyingNoClip.Value ? -1 : 0;
         }
     }
 

@@ -62,7 +62,13 @@ public class ImpSettings(ConfigFile config)
             }
         );
 
-        internal readonly ImpConfig<bool> FlyingNoClip = new(config, "Player", "FlyingNoClip", false);
+        internal readonly ImpConfig<bool> FlyingNoClip = new(
+            config,
+            "Player",
+            "FlyingNoClip",
+            false
+        );
+
         internal readonly ImpConfig<bool> Permadrunk = new(config, "Player", "Permadrunk", false);
 
         internal readonly ImpConfig<float> CustomFieldOfView = new(
