@@ -5,6 +5,7 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
+using Imperium.Core.Scripts.Tags;
 using Imperium.Interface.Common;
 using Imperium.Util;
 using Unity.Netcode;
@@ -68,15 +69,16 @@ internal static class ObjectEntryActions
 
     internal static bool CanToggle(ObjectEntry entry) => entry.Type switch
     {
-        ObjectType.Vehicle => false,
         ObjectType.Player => false,
+        ObjectType.Vehicle => false,
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
         ObjectType.Vent => false,
         ObjectType.StoryLog => false,
         ObjectType.VainShroud => false,
         ObjectType.OutsideObject => false,
-        _ => true
+        _ when entry.netObj.HasValue => true,
+        _ => false,
     };
 
     internal static bool DespawnObject(ObjectEntry entry, bool isRespawn = false)
@@ -94,16 +96,14 @@ internal static class ObjectEntryActions
                 Imperium.ObjectManager.DespawnItem(entry.netObj!.Value);
                 break;
             case ObjectType.OutsideObject:
-                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                Imperium.ObjectManager.DespawnOutsideObject(new OutsideObjectDespawnRequest
                 {
-                    Type = LocalObjectType.OutsideObject,
                     Position = entry.containerObject.transform.position
                 });
                 return true;
             case ObjectType.VainShroud:
-                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                Imperium.ObjectManager.DespawnVainShroud(new VainShroudDespawnRequest
                 {
-                    Type = LocalObjectType.VainShroud,
                     Position = entry.containerObject.transform.position
                 });
                 return true;
@@ -179,7 +179,6 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
-
                 break;
             case ObjectType.Turret:
                 if (DespawnObject(entry, isRespawn: true))
@@ -190,7 +189,6 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
-
                 break;
             case ObjectType.SpikeTrap:
                 if (DespawnObject(entry, isRespawn: true))
@@ -201,7 +199,6 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
-
                 break;
             case ObjectType.Entity:
                 if (DespawnObject(entry, isRespawn: true))
@@ -213,7 +210,6 @@ internal static class ObjectEntryActions
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
-
                 break;
             case ObjectType.Vent:
             case ObjectType.SteamValve:
@@ -419,9 +415,8 @@ internal static class ObjectEntryActions
             case ObjectType.VainShroud:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
-                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    Imperium.ObjectManager.TeleportVainShroud(new VainShroudTeleportRequest
                     {
-                        Type = LocalObjectType.VainShroud,
                         Position = entry.containerObject.transform.position,
                         Destination = position
                     });
@@ -430,9 +425,8 @@ internal static class ObjectEntryActions
             case ObjectType.OutsideObject:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
-                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    Imperium.ObjectManager.TeleportOutsideObject(new OutsideObjectTeleportRequest
                     {
-                        Type = LocalObjectType.OutsideObject,
                         Position = entry.containerObject.transform.position,
                         Destination = position
                     });
@@ -616,7 +610,7 @@ internal static class ObjectEntryActions
 
     private static string GetOutsideObjectName(GameObject obj)
     {
-        var displayName = Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name;
+        var displayName = Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name.Replace("(Clone)", "");
         return $"{displayName} (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
     }
 

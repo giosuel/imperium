@@ -87,15 +87,30 @@ public readonly struct ObjectTeleportRequest
     [SerializeField] public Vector3 Destination { get; init; }
 }
 
-public readonly struct LocalObjectDespawnRequest
+public readonly struct OutsideObjectSpawnRequest
 {
-    [SerializeField] public LocalObjectType Type { get; init; }
+    [SerializeField] public string Name { get; init; }
     [SerializeField] public Vector3 Position { get; init; }
 }
 
-public readonly struct LocalObjectTeleportRequest
+public readonly struct OutsideObjectDespawnRequest
 {
-    [SerializeField] public LocalObjectType Type { get; init; }
+    [SerializeField] public Vector3 Position { get; init; }
+}
+
+public readonly struct OutsideObjectTeleportRequest
+{
+    [SerializeField] public Vector3 Position { get; init; }
+    [SerializeField] public Vector3 Destination { get; init; }
+}
+
+public readonly struct VainShroudDespawnRequest
+{
+    [SerializeField] public Vector3 Position { get; init; }
+}
+
+public readonly struct VainShroudTeleportRequest
+{
     [SerializeField] public Vector3 Position { get; init; }
     [SerializeField] public Vector3 Destination { get; init; }
 }
@@ -112,12 +127,6 @@ public readonly struct BurstCadaverBloomRequest
     [SerializeField] public ulong PlayerId { get; init; }
     [SerializeField] public Vector3 Position { get; init; }
     [SerializeField] public NetworkObjectReference NetworkObj { get; init; }
-}
-
-public enum LocalObjectType
-{
-    OutsideObject,
-    VainShroud
 }
 
 public enum ObjectType

@@ -8,6 +8,7 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
+using Imperium.Core.Scripts.Tags;
 using Imperium.Extensions;
 using Imperium.Netcode;
 using Imperium.Util;
@@ -70,16 +71,16 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<GrabbableObject>> CurrentLevelItems = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<BreakerBox>> CurrentLevelBreakerBoxes = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SpikeRoofTrap>> CurrentLevelSpikeTraps = new([]);
-    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelVehicles = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SteamValveHazard>> CurrentLevelSteamValves = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<VehicleController>> CurrentLevelVehicles = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
 
     /*
      * Lists of local objects that don't have a network object or script to reference
      */
-    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelOutsideObjects = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds = new([]);
+    internal readonly ImpBinding<IReadOnlyCollection<ImpOutsideObjectTag>> CurrentLevelOutsideObjects = new([]);
 
     /*
      * Event that signalizes a change in any of the object lists
@@ -149,8 +150,12 @@ internal class ObjectManager : ImpLifecycleObject
         "ObjectTeleportation", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<LocalObjectTeleportRequest> localObjectTeleportationMessage = new(
-        "LocalObjectTeleportation", Imperium.Networking
+    private readonly ImpNetMessage<OutsideObjectTeleportRequest> outsideObjectTeleportationMessage = new(
+        "OutsideObjectTeleportation", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<VainShroudTeleportRequest> vainShroudTeleportationMessage = new(
+        "VainShroudTeleportation", Imperium.Networking
     );
 
     private readonly ImpNetMessage<SpiderWebTeleportRequest> spiderWebTeleportationMessage = new(
@@ -185,8 +190,12 @@ internal class ObjectManager : ImpLifecycleObject
         "DespawnSpiderWeb", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<LocalObjectDespawnRequest> localObjectDespawnMessage = new(
-        "DespawnLocalObject", Imperium.Networking
+    private readonly ImpNetMessage<OutsideObjectDespawnRequest> outsideObjectDespawnMessage = new(
+        "DespawnOutsideObject", Imperium.Networking
+    );
+
+    private readonly ImpNetMessage<VainShroudDespawnRequest> vainShroudDespawnMessage = new(
+        "DespawnVainShroud", Imperium.Networking
     );
 
     private readonly ImpNetEvent objectsChangedEvent = new(
@@ -194,22 +203,6 @@ internal class ObjectManager : ImpLifecycleObject
     );
 
     private readonly ImpTimer periodicUpdateTimer = ImpTimer.ForInterval(1);
-
-    // List of prefab names of outside objects. Used to identify outside objects.
-    private readonly HashSet<string> OutsideObjectPrefabNameMap =
-    [
-        "GiantPumpkin(Clone)",
-        "LargeRock1(Clone)",
-        "LargeRock2(Clone)",
-        "LargeRock3(Clone)",
-        "LargeRock4(Clone)",
-        "GreyRockGrouping2(Clone)",
-        "GreyRockGrouping4(Clone)",
-        "tree(Clone)",
-        "treeLeaflessBrown.001 Variant(Clone)",
-        "treeLeafless.002_LOD0(Clone)",
-        "treeLeafless.003_LOD0(Clone)"
-    ];
 
     /*
      * Collections for the entity name system.
@@ -223,8 +216,6 @@ internal class ObjectManager : ImpLifecycleObject
      */
     internal AudioClip BeaconDrop;
 
-    private LayerMask terrainMask;
-
     protected override void Init()
     {
         FetchGlobalSpawnLists();
@@ -234,19 +225,22 @@ internal class ObjectManager : ImpLifecycleObject
 
         LogObjects();
 
-        burstSteamValve.OnClientRecive += OnSteamValveBurstClient;
         objectsChangedEvent.OnClientRecive += TriggerRefresh;
+
+        burstSteamValve.OnClientRecive += OnSteamValveBurstClient;
         vehicleSpawnResponseMessage.OnClientRecive += OnSpawnVehicleClient;
         burstCadaverBloomMessage.OnClientRecive += OnCadaverBloomMessageBurstClient;
 
         outsideObjectPrefabSpawnMessage.OnClientRecive += OnSpawnOutsideObjectClient;
         localStaticPrefabSpawnMessage.OnClientRecive += OnSpawnLocalStaticPrefabClient;
 
-        localObjectDespawnMessage.OnClientRecive += OnDespawnLocalObjectClient;
+        vainShroudDespawnMessage.OnClientRecive += OnDespawnVainShroudClient;
+        outsideObjectDespawnMessage.OnClientRecive += OnDespawnOutsideObjectClient;
 
         objectTeleportationMessage.OnClientRecive += OnObjectTeleportationClient;
         spiderWebTeleportationMessage.OnClientRecive += OnSpiderWebTeleportationClient;
-        localObjectTeleportationMessage.OnClientRecive += OnLocalObjectTeleportationClient;
+        vainShroudTeleportationMessage.OnClientRecive += OnVainShroudTeleportationClient;
+        outsideObjectTeleportationMessage.OnClientRecive += OnOutsideObjectTeleportationClient;
 
         if (NetworkManager.Singleton.IsHost)
         {
@@ -263,14 +257,14 @@ internal class ObjectManager : ImpLifecycleObject
             vehicleDespawnMessage.OnServerReceive += OnDespawnVehicle;
             obstacleDespawnMessage.OnServerReceive += OnDespawnObstacle;
             spiderWebDespawnMessage.OnServerReceive += OnDespawnSpiderWeb;
-            localObjectDespawnMessage.OnServerReceive += OnDespawnLocalObjectServer;
+            vainShroudDespawnMessage.OnServerReceive += OnDespawnVainShroudServer;
+            outsideObjectDespawnMessage.OnServerReceive += OnDespawnOutsideObjectServer;
 
             objectTeleportationMessage.OnServerReceive += OnObjectTeleportationServer;
             spiderWebTeleportationMessage.OnServerReceive += OnSpiderWebTeleportationServer;
-            localObjectTeleportationMessage.OnServerReceive += OnLocalObjectTeleportationServer;
+            vainShroudTeleportationMessage.OnServerReceive += OnVainShroudTeleportationServer;
+            outsideObjectTeleportationMessage.OnServerReceive += OnOutsideObjectTeleportationServer;
         }
-
-        terrainMask = LayerMask.NameToLayer("Terrain");
     }
 
     protected override void OnSceneLoad()
@@ -287,84 +281,63 @@ internal class ObjectManager : ImpLifecycleObject
     protected override void OnPlayersUpdate(int playersConnected) => FetchPlayers();
 
     [ImpAttributes.RemoteMethod]
-    internal void SpawnEntity(EntitySpawnRequest request) => entitySpawnMessage.DispatchToServer(request);
+    internal void SpawnEntity(EntitySpawnRequest request)
+    {
+        entitySpawnMessage.DispatchToServer(request);
+    }
 
     [ImpAttributes.RemoteMethod]
-    internal void SpawnItem(ItemSpawnRequest request) => itemSpawnMessage.DispatchToServer(request);
+    internal void SpawnItem(ItemSpawnRequest request)
+    {
+        itemSpawnMessage.DispatchToServer(request);
+    }
 
     [ImpAttributes.RemoteMethod]
-    internal void SpawnVehicle(VehicleSpawnRequest request) => vehicleSpawnMessage.DispatchToServer(request);
+    internal void SpawnVehicle(VehicleSpawnRequest request)
+    {
+        vehicleSpawnMessage.DispatchToServer(request);
+    }
 
     [ImpAttributes.RemoteMethod]
-    internal void SpawnMapHazard(MapHazardSpawnRequest request) => mapHazardSpawnMessage.DispatchToServer(request);
+    internal void SpawnMapHazard(MapHazardSpawnRequest request)
+    {
+        mapHazardSpawnMessage.DispatchToServer(request);
+    }
 
     [ImpAttributes.RemoteMethod]
     internal void SpawnStaticPrefab(StaticPrefabSpawnRequest request)
     {
-        if (!LoadedStaticPrefabs.Value.ContainsKey(request.Name))
-        {
-            Imperium.IO.LogError($"[SPAWN] Unable to find requested static prefab '{request.Name}'.");
-            return;
-        }
-
         staticPrefabSpawnMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
     internal void SpawnLocalStaticPrefab(StaticPrefabSpawnRequest request)
     {
-        if (!LoadedLocalStaticPrefabs.Value.ContainsKey(request.Name))
-        {
-            Imperium.IO.LogError($"[SPAWN] Unable to find requested local static prefab '{request.Name}'.");
-            return;
-        }
-
         localStaticPrefabSpawnMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
     internal void SpawnOutsideObject(StaticPrefabSpawnRequest request)
     {
-        if (!LoadedOutsideObjects.Value.ContainsKey(request.Name))
-        {
-            Imperium.IO.LogError($"[SPAWN] Unable to find requested outside object '{request.Name}'.");
-            return;
-        }
-
         outsideObjectPrefabSpawnMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void DespawnItem(NetworkObjectReference itemNetObj) => itemDespawnMessage.DispatchToServer(itemNetObj);
-
-    [ImpAttributes.RemoteMethod]
-    internal void DespawnEntity(EntityDespawnRequest request) => entityDespawnMessage.DispatchToServer(request);
-
-    [ImpAttributes.RemoteMethod]
-    internal void DespawnVehicle(VehicleDespawnRequest request) => vehicleDespawnMessage.DispatchToServer(request);
-
-    [ImpAttributes.RemoteMethod]
-    internal void DespawnObstacle(NetworkObjectReference obstacleNetId)
+    internal void TeleportObject(ObjectTeleportRequest request)
     {
-        obstacleDespawnMessage.DispatchToServer(obstacleNetId);
+        objectTeleportationMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void DespawnSpiderWeb(SpiderWebDespawnRequest request) => spiderWebDespawnMessage.DispatchToServer(request);
-
-    [ImpAttributes.RemoteMethod]
-    internal void DespawnLocalObject(LocalObjectDespawnRequest request)
+    internal void TeleportOutsideObject(OutsideObjectTeleportRequest request)
     {
-        localObjectDespawnMessage.DispatchToServer(request);
+        outsideObjectTeleportationMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void TeleportObject(ObjectTeleportRequest request) => objectTeleportationMessage.DispatchToServer(request);
-
-    [ImpAttributes.RemoteMethod]
-    internal void TeleportLocalObject(LocalObjectTeleportRequest request)
+    internal void TeleportVainShroud(VainShroudTeleportRequest request)
     {
-        localObjectTeleportationMessage.DispatchToServer(request);
+        vainShroudTeleportationMessage.DispatchToServer(request);
     }
 
     [ImpAttributes.RemoteMethod]
@@ -374,7 +347,52 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void BurstSteamValve(NetworkObjectReference valveNetObj) => burstSteamValve.DispatchToClients(valveNetObj);
+    internal void DespawnItem(NetworkObjectReference itemNetObj)
+    {
+        itemDespawnMessage.DispatchToServer(itemNetObj);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnEntity(EntityDespawnRequest request)
+    {
+        entityDespawnMessage.DispatchToServer(request);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnVehicle(VehicleDespawnRequest request)
+    {
+        vehicleDespawnMessage.DispatchToServer(request);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnObstacle(NetworkObjectReference obstacleNetId)
+    {
+        obstacleDespawnMessage.DispatchToServer(obstacleNetId);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnOutsideObject(OutsideObjectDespawnRequest request)
+    {
+        outsideObjectDespawnMessage.DispatchToServer(request);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnVainShroud(VainShroudDespawnRequest request)
+    {
+        vainShroudDespawnMessage.DispatchToServer(request);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void DespawnSpiderWeb(SpiderWebDespawnRequest request)
+    {
+        spiderWebDespawnMessage.DispatchToServer(request);
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal void BurstSteamValve(NetworkObjectReference valveNetObj)
+    {
+        burstSteamValve.DispatchToClients(valveNetObj);
+    }
 
     internal string GetDisplayName(string inGameName) => displayNameMap.GetValueOrDefault(inGameName, inGameName);
     internal string GetOverrideDisplayName(string inGameName) => overrideDisplayNameMap.GetValueOrDefault(inGameName);
@@ -451,6 +469,12 @@ internal class ObjectManager : ImpLifecycleObject
             .GroupBy(obj => obj.prefabToSpawn.name)
             .Select(obj => obj.First())
             .ToDictionary(obj => obj.prefabToSpawn.name);
+
+        // Add tag script to outside objects
+        foreach (var obj in allOutsideObjects.Values)
+        {
+            obj.prefabToSpawn.AddComponent<ImpOutsideObjectTag>();
+        }
 
         var allStaticPrefabs = new Dictionary<string, NetworkObject>();
         var allLocalStaticPrefabs = new Dictionary<string, GameObject>();
@@ -559,7 +583,7 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<GameObject> currentLevelVainShrouds = [];
         HashSet<BreakerBox> currentLevelBreakerBoxes = [];
         HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
-        HashSet<GameObject> currentLevelOutsideObjects = [];
+        HashSet<ImpOutsideObjectTag> currentLevelOutsideObjects = [];
         HashSet<VehicleController> currentLevelVehicles = [];
         HashSet<SteamValveHazard> currentLevelSteamValves = [];
         HashSet<SandSpiderWebTrap> currentLevelSpiderWebs = [];
@@ -571,13 +595,13 @@ internal class ObjectManager : ImpLifecycleObject
             // This is cursed but there is no other way
             if (obj.name.Contains("MoldSpore 1") && currentLevelVainShrouds.Add(obj)) continue;
 
-            if (obj.layer == terrainMask
-                && OutsideObjectPrefabNameMap.Contains(obj.name)
-                && currentLevelOutsideObjects.Add(obj)
-               )
-            {
-                continue;
-            }
+            // if (obj.layer == terrainMask
+            //     && OutsideObjectPrefabNameMap.Contains(obj.name)
+            //     && currentLevelOutsideObjects.Add(obj)
+            //    )
+            // {
+            //     continue;
+            // }
 
             foreach (var component in obj.GetComponents<Component>())
             {
@@ -613,9 +637,6 @@ internal class ObjectManager : ImpLifecycleObject
                     case RandomScrapSpawn scrapSpawn:
                         currentScrapSpawnPoints.Add(scrapSpawn);
                         break;
-                    case VehicleController vehicleController:
-                        currentLevelVehicles.Add(vehicleController);
-                        break;
                     case GrabbableObject item:
                         currentLevelItems.Add(item);
                         break;
@@ -624,6 +645,12 @@ internal class ObjectManager : ImpLifecycleObject
                         break;
                     case StoryLog storyLog:
                         currentLevelStoryLogs.Add(storyLog);
+                        break;
+                    case VehicleController vehicleController:
+                        currentLevelVehicles.Add(vehicleController);
+                        break;
+                    case ImpOutsideObjectTag outsideObjectTag:
+                        currentLevelOutsideObjects.Add(outsideObjectTag);
                         break;
                     case NetworkObject netObj:
                         CurrentLevelObjects[netObj.NetworkObjectId] = netObj;
@@ -695,6 +722,7 @@ internal class ObjectManager : ImpLifecycleObject
         displayNameMap["Maneater"] = "Cave Dweller";
         displayNameMap["Cadaver Bloom"] = "Cadaver Bloom";
         displayNameMap["TurretContainer"] = "Turret";
+        displayNameMap["SpikeRoofTrapHazard"] = "Spike Trap";
 
         overrideDisplayNameMap["StickyNote"] = "Sticky Note";
         overrideDisplayNameMap["Clipboard"] = "Clipboard";
@@ -873,12 +901,12 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private void DespawnLocalObject(LocalObjectType type, Vector3 position, GameObject obj)
+    private void DespawnLocalObject(GameObject obj, Vector3 position)
     {
         if (!obj)
         {
             Imperium.IO.LogError(
-                $"[OBJ] Failed to despawn local object of type '{type}' at {Formatting.FormatVector(position)}."
+                $"[OBJ] Failed to despawn local object at {Formatting.FormatVector(position)}."
             );
             return;
         }
@@ -888,12 +916,12 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private static void TeleportLocalObject(LocalObjectType type, Vector3 position, GameObject obj, Vector3 destination)
+    private static void TeleportLocalObject(GameObject obj, Vector3 position, Vector3 destination)
     {
         if (!obj)
         {
             Imperium.IO.LogError(
-                $"[OBJ] Failed to local teleport object of type '{type}' at {Formatting.FormatVector(position)}."
+                $"[OBJ] Failed to teleport local object at {Formatting.FormatVector(position)}."
             );
             return;
         }
@@ -1042,7 +1070,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var obj = Instantiate(outsideObject.prefabToSpawn, mapPropsContainer.transform);
+            var obj = Instantiate(outsideObject.prefabToSpawn, mapPropsContainer?.transform);
             obj.transform.position = request.SpawnPosition;
         }
 
@@ -1073,7 +1101,50 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnSpawnOutsideObjectServer(StaticPrefabSpawnRequest request, ulong clientId)
     {
-        outsideObjectPrefabSpawnMessage.DispatchToClients(request);
+        if (!LoadedOutsideObjects.Value.TryGetValue(request.Name, out var outsideObject))
+        {
+            Imperium.IO.LogError($"[SPAWN] [R] Unable to find outside object '{request.Name}'.");
+            return;
+        }
+
+        /*
+         * It is possible for outside objects to be a network object, if they have been added by DawnLib.
+         * In this case, we want to spawn the network object. Otherwise, we want every client to instantiate it individually.
+         */
+        if (outsideObject.prefabToSpawn.TryGetComponent<NetworkObject>(out _))
+        {
+            var mapPropsContainer = GameObject.FindGameObjectWithTag("MapPropsContainer");
+
+            for (var i = 0; i < request.Amount; i++)
+            {
+                var obj = Instantiate(outsideObject.prefabToSpawn, mapPropsContainer?.transform);
+                obj.transform.position = request.SpawnPosition;
+
+                obj.GetComponent<NetworkObject>().Spawn();
+            }
+
+            if (request.SendNotification)
+            {
+                var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
+                var verbString = request.Amount == 1 ? "has" : "have";
+
+                var objectName = overrideDisplayNameMap.GetValueOrDefault(request.Name)
+                                 ?? displayNameMap.GetValueOrDefault(request.Name)
+                                 ?? request.Name;
+
+                Imperium.Networking.SendLog(new NetworkNotification
+                {
+                    Message = $"{mountString} {objectName} {verbString} been spawned!",
+                    Type = NotificationType.Spawning
+                });
+            }
+
+            objectsChangedEvent.DispatchToClients();
+        }
+        else
+        {
+            outsideObjectPrefabSpawnMessage.DispatchToClients(request);
+        }
     }
 
     [ImpAttributes.LocalMethod]
@@ -1096,7 +1167,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         for (var i = 0; i < request.Amount; i++)
         {
-            var obj = Instantiate(staticPrefab, mapPropsContainer.transform);
+            var obj = Instantiate(staticPrefab, mapPropsContainer?.transform);
             obj.transform.position = request.SpawnPosition;
             obj.transform.rotation = rotationOffset;
         }
@@ -1241,9 +1312,15 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnLocalObjectTeleportationServer(LocalObjectTeleportRequest request, ulong clientId)
+    private void OnOutsideObjectTeleportationServer(OutsideObjectTeleportRequest request, ulong clientId)
     {
-        localObjectTeleportationMessage.DispatchToClients(request);
+        outsideObjectTeleportationMessage.DispatchToClients(request);
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnVainShroudTeleportationServer(VainShroudTeleportRequest request, ulong clientId)
+    {
+        vainShroudTeleportationMessage.DispatchToClients(request);
     }
 
     [ImpAttributes.HostOnly]
@@ -1304,34 +1381,27 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private void OnLocalObjectTeleportationClient(LocalObjectTeleportRequest request)
+    private void OnOutsideObjectTeleportationClient(OutsideObjectTeleportRequest request)
     {
-        switch (request.Type)
-        {
-            case LocalObjectType.VainShroud:
-                TeleportLocalObject(
-                    request.Type,
-                    request.Position,
-                    CurrentLevelVainShrouds.Value
-                        .Where(obj => obj)
-                        .FirstOrDefault(obj => obj.transform.position == request.Position),
-                    request.Destination
-                );
-                break;
-            case LocalObjectType.OutsideObject:
-                TeleportLocalObject(
-                    request.Type,
-                    request.Position,
-                    CurrentLevelOutsideObjects.Value
-                        .Where(obj => obj)
-                        .FirstOrDefault(obj => obj.transform.position == request.Position),
-                    request.Destination
-                );
-                break;
-            default:
-                Imperium.IO.LogError($"[NET] Local teleportation request has invalid outside object type '{request.Type}'");
-                break;
-        }
+        TeleportLocalObject(
+            CurrentLevelOutsideObjects.Value
+                .Where(obj => obj)
+                .FirstOrDefault(obj => obj.transform.position == request.Position)?.gameObject,
+            request.Position,
+            request.Destination
+        );
+    }
+
+    [ImpAttributes.LocalMethod]
+    private void OnVainShroudTeleportationClient(VainShroudTeleportRequest request)
+    {
+        TeleportLocalObject(
+            CurrentLevelVainShrouds.Value
+                .Where(obj => obj)
+                .FirstOrDefault(obj => obj.transform.position == request.Position),
+            request.Position,
+            request.Destination
+        );
     }
 
     [ImpAttributes.HostOnly]
@@ -1422,9 +1492,31 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnDespawnLocalObjectServer(LocalObjectDespawnRequest request, ulong clientId)
+    private void OnDespawnOutsideObjectServer(OutsideObjectDespawnRequest request, ulong clientId)
     {
-        localObjectDespawnMessage.DispatchToClients(request);
+        var obj = CurrentLevelOutsideObjects.Value
+            .Where(obj => obj)
+            .FirstOrDefault(obj => obj.transform.position == request.Position)?.gameObject;
+
+        /*
+         * It is possible for outside objects to be a network object, if they have been added by DawnLib.
+         * In this case, we want to despawn the network object. Otherwise, we want every client to destroy it individually.
+         */
+        if (obj && obj.TryGetComponent<NetworkObject>(out var netObj))
+        {
+            netObj.Despawn();
+            objectsChangedEvent.DispatchToClients();
+        }
+        else
+        {
+            outsideObjectDespawnMessage.DispatchToClients(request);
+        }
+    }
+
+    [ImpAttributes.HostOnly]
+    private void OnDespawnVainShroudServer(VainShroudDespawnRequest request, ulong clientId)
+    {
+        vainShroudDespawnMessage.DispatchToClients(request);
     }
 
     [ImpAttributes.HostOnly]
@@ -1445,26 +1537,25 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private void OnDespawnLocalObjectClient(LocalObjectDespawnRequest request)
+    private void OnDespawnOutsideObjectClient(OutsideObjectDespawnRequest request)
     {
-        switch (request.Type)
-        {
-            case LocalObjectType.VainShroud:
-                DespawnLocalObject(request.Type, request.Position, CurrentLevelVainShrouds.Value
-                    .Where(obj => obj)
-                    .FirstOrDefault(obj => obj.transform.position == request.Position)
-                );
-                break;
-            case LocalObjectType.OutsideObject:
-                DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value
-                    .Where(obj => obj)
-                    .FirstOrDefault(obj => obj.transform.position == request.Position)
-                );
-                break;
-            default:
-                Imperium.IO.LogError($"[OBJ] Despawn request contained invalid outside object type '{request.Type}'");
-                break;
-        }
+        DespawnLocalObject(
+            CurrentLevelOutsideObjects.Value
+                .Where(obj => obj)
+                .FirstOrDefault(obj => obj.transform.position == request.Position)?.gameObject,
+            request.Position
+        );
+    }
+
+    [ImpAttributes.LocalMethod]
+    private void OnDespawnVainShroudClient(VainShroudDespawnRequest request)
+    {
+        DespawnLocalObject(
+            CurrentLevelVainShrouds.Value
+                .Where(obj => obj)
+                .FirstOrDefault(obj => obj.transform.position == request.Position),
+            request.Position
+        );
     }
 
     [ImpAttributes.LocalMethod]

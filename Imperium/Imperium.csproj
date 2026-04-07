@@ -66,14 +66,6 @@
         <Reference Include="UnityExplorer.BIE5.Mono" HintPath="..\deps\UnityExplorer.BIE5.Mono.dll" />
     </ItemGroup>
 
-    <!-- Enable debug symbols. This will show source code line numbers in stack traces. -->
-    <PropertyGroup>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>embedded</DebugType>
-        <!-- Substitute full path to this directory with ./, hiding it from debug symbols. -->
-        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
-    </PropertyGroup>
-
     <!-- MinVer -->
     <PropertyGroup>
         <MinVerDefaultPreReleaseIdentifiers>dev</MinVerDefaultPreReleaseIdentifiers>

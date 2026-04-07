@@ -37,6 +37,7 @@ namespace Imperium;
 [BepInDependency("com.fumiko.CullFactory", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.github.teamxiaolan.dawnlib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]

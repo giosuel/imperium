@@ -222,7 +222,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             var obj = Instantiate(entryTemplate, contentRect);
             obj.gameObject.SetActive(true);
             var entry = obj.AddComponent<ObjectEntry>();
-            entry.InitItem(theme);
+            entry.Init(theme);
             entryInstances.Add(entry);
         }
 
@@ -240,8 +240,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private void RefreshEntries(bool useCache)
     {
         if (!gameObject.activeInHierarchy) return;
-
-        Imperium.IO.LogError($"REFRESH OBJECT EXPLORER. Caching: {useCache}");
 
         // Skip element calculation when the scroll value remains the same and cached values are used
         var currentScrollValue = scrollRect.verticalNormalizedPosition;
@@ -319,9 +317,5 @@ internal class ObjectExplorerWindow : ImperiumWindow
         outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0)})";
     }
 
-    private void OnScroll(Vector2 _)
-    {
-        RefreshEntries(true);
-        // StartCoroutine(refreshEntries(useCache: true));
-    }
+    private void OnScroll(Vector2 _) => RefreshEntries(true);
 }

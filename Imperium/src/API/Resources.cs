@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using GameNetcodeStuff;
+using Imperium.Core.Scripts.Tags;
 using Imperium.Util.Binding;
 using UnityEngine;
 

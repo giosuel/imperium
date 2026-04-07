@@ -1,9 +1,7 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using Imperium.API.Types.Networking;
-using Imperium.Extensions;
 using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util;
@@ -48,7 +46,7 @@ internal class ObjectEntry : MonoBehaviour
 
     private readonly ImpTimer intervalUpdateTimer = ImpTimer.ForInterval(0.2f);
 
-    internal void InitItem(ImpBinding<ImpTheme> theme)
+    internal void Init(ImpBinding<ImpTheme> theme)
     {
         rect = gameObject.GetComponent<RectTransform>();
 
@@ -150,25 +148,9 @@ internal class ObjectEntry : MonoBehaviour
         ObjectEntryActions.ToggleObject(this, isActive);
     }
 
-    internal void ClearItem(float positionY)
-    {
-        component = null;
-        tooltip = null;
-
-        objectNameText.text = "";
-        teleportHereButton.gameObject.SetActive(false);
-        teleportToButton.gameObject.SetActive(false);
-        destroyButton.gameObject.SetActive(false);
-        activeToggle.gameObject.SetActive(false);
-        respawnButton.gameObject.SetActive(false);
-        dropButton.gameObject.SetActive(false);
-        unlockButton.gameObject.SetActive(false);
-        killButton.gameObject.SetActive(false);
-        reviveButton.gameObject.SetActive(false);
-
-        rect.anchoredPosition = new Vector2(0, -positionY);
-    }
-
+    /**
+     * Called when the object entry engine assigns a new virtual to this entry.
+     */
     internal void SetItem([CanBeNull] Component entryComponent, ObjectType type, ImpTooltip tooltipObj, float positionY)
     {
         if (!entryComponent) return;
@@ -198,7 +180,7 @@ internal class ObjectEntry : MonoBehaviour
         teleportToButton.gameObject.SetActive(true);
         teleportHereButton.gameObject.SetActive(true);
         destroyButton.gameObject.SetActive(ObjectEntryActions.CanDestroy(this));
-        activeToggle.gameObject.SetActive(ObjectEntryActions.CanToggle(this) && netObj.HasValue);
+        activeToggle.gameObject.SetActive(ObjectEntryActions.CanToggle(this));
         respawnButton.gameObject.SetActive(ObjectEntryActions.CanRespawn(this));
         dropButton.gameObject.SetActive(ObjectEntryActions.CanDrop(this));
         unlockButton.gameObject.SetActive(ObjectEntryActions.CanUnlock(this));
@@ -206,6 +188,28 @@ internal class ObjectEntry : MonoBehaviour
         reviveButton.gameObject.SetActive(ObjectEntryActions.CanRevive(this));
 
         ObjectEntryActions.InitObject(this);
+    }
+
+    /**
+     * Called when this entry doesn't need to represent any virtual item. The entry will be cleared and hidden.
+     */
+    internal void ClearItem(float positionY)
+    {
+        component = null;
+        tooltip = null;
+
+        objectNameText.text = "";
+        teleportHereButton.gameObject.SetActive(false);
+        teleportToButton.gameObject.SetActive(false);
+        destroyButton.gameObject.SetActive(false);
+        activeToggle.gameObject.SetActive(false);
+        respawnButton.gameObject.SetActive(false);
+        dropButton.gameObject.SetActive(false);
+        unlockButton.gameObject.SetActive(false);
+        killButton.gameObject.SetActive(false);
+        reviveButton.gameObject.SetActive(false);
+
+        rect.anchoredPosition = new Vector2(0, -positionY);
     }
 
     private void OnEnable()

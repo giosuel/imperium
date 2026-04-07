@@ -80,7 +80,8 @@ internal class PlayerManager : ImpLifecycleObject
 
         Imperium.InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
 
-        ShipTPAnchor = new ImpExternalBinding<Vector3?, bool>(() => GameObject.Find("CatwalkShip")?.transform.position
+        ShipTPAnchor = new ImpExternalBinding<Vector3?, bool>(() =>
+            GameObject.Find("CatwalkShip")?.transform.position
         );
 
         MainEntranceTPAnchor = new ImpExternalBinding<Vector3?, bool>(() =>
