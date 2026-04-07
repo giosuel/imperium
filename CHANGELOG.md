@@ -21,6 +21,7 @@
 - Fixed a bug that made spider webs impossible to teleport or destroy in the object explorer.
 - Spider webs are now cleaned up properly when a spider is destroyed in the object explorer.
 - Fixed a bug that made it possible for the resolution slider to go below 0.
+- Fixed a bug that caused the game's resolution to ignore the resolution slider in the object explorer.
 
 ### QoL Improvements
 
