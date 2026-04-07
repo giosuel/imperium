@@ -27,6 +27,7 @@
 - Fixed a bug that made it possible for the resolution slider to go below 0.
 - Fixed a bug that caused the game's resolution to ignore the resolution slider in the object explorer.
 - Fixed object explorer related bugs that prevented certain items from being toggled or toggle desync in general.
+- Fixed a bug that caused brackens to break indoors.
 
 ### QoL Improvements
 

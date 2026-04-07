@@ -54,8 +54,6 @@ internal class Visualization : ImpLifecycleObject
 
     protected override void Init()
     {
-        base.Init();
-
         // Static visualizers are updated by object lists
         LandmineGizmos = new LandmineGizmos(
             Imperium.ObjectManager.CurrentLevelLandmines,
