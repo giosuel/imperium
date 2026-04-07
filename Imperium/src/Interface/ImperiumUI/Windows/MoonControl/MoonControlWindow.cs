@@ -17,6 +17,7 @@ internal class MoonControlWindow : ImperiumWindow
         InitSpawnPropertyFields();
         InitMapObstacleButtons();
         InitEntitySpawning();
+        InitGeneral();
 
         RegisterWidget<WeatherForecaster>(transform, "Right/Weather");
         RegisterWidget<TimeManipulation>(transform, "Right/Time");
@@ -189,6 +190,16 @@ internal class MoonControlWindow : ImperiumWindow
             () => Imperium.MoonManager.CleanFloor(),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
+        );
+    }
+
+    private void InitGeneral()
+    {
+        ImpToggle.Bind(
+            "Right/General/GeneralSettings/ForceIndoorFog",
+            transform,
+            Imperium.MoonManager.ForceIndoorFog,
+            theme
         );
     }
 

@@ -223,7 +223,7 @@ internal static class RoundManagerPatch
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("RefreshEnemiesList")]
-    private static void RefreshEnemiesListPostfixPatch()
+    private static void RefreshEnemiesListPostfixPatch(RoundManager __instance)
     {
         Imperium.IsSceneLoaded.SetTrue();
 
@@ -232,5 +232,7 @@ internal static class RoundManagerPatch
         {
             Imperium.StartOfRound.occlusionCuller.enabled = false;
         }
+
+        Imperium.MoonManager.FogEnabledThisRound = __instance.indoorFog.gameObject.activeSelf;
     }
 }

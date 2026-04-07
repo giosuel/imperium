@@ -17,6 +17,7 @@ internal class MoonManager : ImpLifecycleObject
 {
     public int ScrapAmount;
     public int ChallengeScrapAmount;
+    public bool FogEnabledThisRound;
 
     private readonly ImpEvent WeatherEvent = new();
 
@@ -67,6 +68,15 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.Networking
     );
 
+    internal readonly ImpNetworkBinding<bool> ForceIndoorFog = new(
+        "ForceIndoorFog",
+        Imperium.Networking,
+        onUpdateClient: value =>
+        {
+            RoundManager.Instance.indoorFog.gameObject.SetActive(value || Imperium.MoonManager.FogEnabledThisRound);
+        }
+    );
+
     internal readonly ImpNetworkBinding<bool> TimeIsPaused = new(
         "TimeIsPaused",
         Imperium.Networking,
@@ -91,7 +101,8 @@ internal class MoonManager : ImpLifecycleObject
         {
             if (Imperium.IsSceneLoaded.Value) Imperium.RoundManager.currentLevel.maxEnemyPowerCount = (int)value;
             Imperium.RoundManager.currentMaxInsidePower = value;
-        });
+        }
+    );
 
     internal readonly ImpNetworkBinding<float> MaxOutdoorPower = new(
         "MaxOutdoorPower",
@@ -212,7 +223,7 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.ObjectManager.CurrentLevelSecurityDoors.Value
             .Where(obj => obj)
             .ToList()
-            .ForEach(door => door.SetDoorOpenServerRpc(isOn));
+            .ForEach(door => ToggleSecurityDoor(door, isOn, true));
     }
 
     [ImpAttributes.RemoteMethod]
@@ -221,11 +232,33 @@ internal class MoonManager : ImpLifecycleObject
         Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
             .Where(obj => obj)
             .ToList()
-            .ForEach(box => ToggleBreaker(box, isOn));
+            .ForEach(box => ToggleBreaker(box, isOn, true));
     }
 
     [ImpAttributes.RemoteMethod]
-    internal static void ToggleBreaker(BreakerBox box, bool isOn)
+    internal static void ToggleSecurityDoor(TerminalAccessibleObject door, bool isOn, bool toggleDisabled)
+    {
+        door.SetDoorOpenServerRpc(isOn);
+
+        if (toggleDisabled)
+        {
+            var doorNetObj = door.GetComponent<NetworkObject>();
+
+            if (isOn)
+            {
+                Imperium.ObjectManager.DisabledObjects.Value.Remove(doorNetObj);
+            }
+            else
+            {
+                Imperium.ObjectManager.DisabledObjects.Value.Add(doorNetObj);
+            }
+
+            Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value);
+        }
+    }
+
+    [ImpAttributes.RemoteMethod]
+    internal static void ToggleBreaker(BreakerBox box, bool isOn, bool toggleDisabled)
     {
         foreach (var breakerSwitch in box.breakerSwitches)
         {
@@ -238,6 +271,22 @@ internal class MoonManager : ImpLifecycleObject
                 breakerSwitch.SetBool("turnedLeft", isOn);
                 box.SwitchBreaker(isOn);
             }
+        }
+
+        if (toggleDisabled)
+        {
+            var boxNetObj = box.GetComponent<NetworkObject>();
+
+            if (isOn)
+            {
+                Imperium.ObjectManager.DisabledObjects.Value.Remove(boxNetObj);
+            }
+            else
+            {
+                Imperium.ObjectManager.DisabledObjects.Value.Add(boxNetObj);
+            }
+
+            Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value);
         }
     }
 

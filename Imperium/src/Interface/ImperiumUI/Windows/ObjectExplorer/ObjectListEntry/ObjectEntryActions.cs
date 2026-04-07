@@ -363,10 +363,10 @@ internal static class ObjectEntryActions
                 if (entity.creatureAnimator) entity.creatureAnimator.enabled = isActive;
                 break;
             case ObjectType.BreakerBox:
-                MoonManager.ToggleBreaker((BreakerBox)entry.component, isActive);
+                MoonManager.ToggleBreaker((BreakerBox)entry.component, isActive, false);
                 break;
             case ObjectType.SecurityDoor:
-                ((TerminalAccessibleObject)entry.component).SetDoorToggleLocalClient();
+                MoonManager.ToggleSecurityDoor((TerminalAccessibleObject)entry.component, isActive, false);
                 break;
             case ObjectType.SpikeTrap:
                 ((SpikeRoofTrap)entry.component).slamOnIntervals = isActive;
@@ -477,10 +477,10 @@ internal static class ObjectEntryActions
                 switch (steamValve.valveHasBeenRepaired)
                 {
                     case false when steamValve.valveHasBurst && entry.IsObjectActive.Value:
-                        entry.IsObjectActive.Set(false);
+                        entry.IsObjectActive.Set(false, invokeSecondary: false);
                         break;
                     case true when !entry.IsObjectActive.Value:
-                        entry.IsObjectActive.Set(true);
+                        entry.IsObjectActive.Set(true, invokeSecondary: false);
                         break;
                 }
 
