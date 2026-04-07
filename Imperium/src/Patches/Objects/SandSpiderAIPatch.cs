@@ -14,6 +14,5 @@ internal static class SandSpiderAIPatch
     private static void SpawnWebTrapClientRpcPatch()
     {
         Imperium.Visualization.RefreshOverlays();
-        Imperium.ObjectManager.RefreshLevelObjects();
     }
 }

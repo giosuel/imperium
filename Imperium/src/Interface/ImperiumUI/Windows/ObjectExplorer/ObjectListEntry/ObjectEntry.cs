@@ -1,5 +1,7 @@
 #region
 
+using System;
+using System.Collections.Generic;
 using Imperium.API.Types.Networking;
 using Imperium.Extensions;
 using Imperium.Interface.Common;
@@ -34,7 +36,7 @@ internal class ObjectEntry : MonoBehaviour
     internal GameObject containerObject { get; private set; }
     internal Component component { get; private set; }
 
-    internal ulong? objectNetId { get; private set; }
+    internal NetworkObjectReference? netObj { get; private set; }
 
     internal ImpBinding<bool> IsObjectActive { get; private set; }
 
@@ -51,23 +53,16 @@ internal class ObjectEntry : MonoBehaviour
         rect = gameObject.GetComponent<RectTransform>();
 
         IsObjectActive = new ImpBinding<bool>(true);
-        Imperium.ObjectManager.DisabledObjects.onUpdate += disabledObjects =>
-        {
-            if (!objectNetId.HasValue) return;
-            ObjectEntryGenerator.ToggleObject(this, !disabledObjects.Contains(objectNetId.Value));
-        };
+        IsObjectActive.onUpdateSecondary += ToggleObject;
 
         objectNameText = transform.Find("Name").GetComponent<TMP_Text>();
-
         activeToggle = ImpToggle.Bind("Active", transform, IsObjectActive, theme);
-        IsObjectActive.onUpdate += isOn => ObjectEntryGenerator.ToggleObject(this, isOn);
-        IsObjectActive.onTrigger += ToggleDisabledObject;
 
         // Teleport to button
         teleportToButton = ImpButton.Bind("TeleportTo", transform,
             () =>
             {
-                Imperium.PlayerManager.TeleportLocalPlayer(ObjectEntryGenerator.GetTeleportPosition(this));
+                Imperium.PlayerManager.TeleportLocalPlayer(ObjectEntryActions.GetTeleportPosition(this));
                 Imperium.Interface.Close();
             },
             theme,
@@ -78,7 +73,7 @@ internal class ObjectEntry : MonoBehaviour
         teleportHereButton = ImpButton.Bind(
             "TeleportHere",
             transform,
-            () => ObjectEntryGenerator.TeleportObjectHere(this),
+            () => ObjectEntryActions.TeleportObjectHere(this),
             theme,
             isIconButton: true
         );
@@ -87,18 +82,13 @@ internal class ObjectEntry : MonoBehaviour
         destroyButton = ImpButton.Bind(
             "Destroy",
             transform,
-            () =>
-            {
-                ObjectEntryGenerator.DespawnObject(this);
-                Destroy(this);
-            }
-        );
+            () => ObjectEntryActions.DespawnObject(this));
 
         // Respawn button
         respawnButton = ImpButton.Bind(
             "Respawn",
             transform,
-            () => ObjectEntryGenerator.RespawnObject(this),
+            () => ObjectEntryActions.RespawnObject(this),
             theme,
             isIconButton: true
         );
@@ -107,7 +97,7 @@ internal class ObjectEntry : MonoBehaviour
         dropButton = ImpButton.Bind(
             "Drop",
             transform,
-            () => ObjectEntryGenerator.DropObject(this),
+            () => ObjectEntryActions.DropObject(this),
             theme,
             isIconButton: true
         );
@@ -116,22 +106,48 @@ internal class ObjectEntry : MonoBehaviour
         unlockButton = ImpButton.Bind(
             "Unlock",
             transform,
-            () => ObjectEntryGenerator.UnlockObject(this),
+            () => ObjectEntryActions.UnlockObject(this),
             theme,
             isIconButton: true
         );
 
         // Kill button (Unthemes, as it is red in every theme)
-        killButton = ImpButton.Bind("Kill", transform, () => ObjectEntryGenerator.KillObject(this));
+        killButton = ImpButton.Bind("Kill", transform, () => ObjectEntryActions.KillObject(this));
 
         // Revive button (Unthemed, as it is blue in every theme)
-        reviveButton = ImpButton.Bind("Revive", transform, () => ObjectEntryGenerator.ReviveObject(this));
+        reviveButton = ImpButton.Bind("Revive", transform, () => ObjectEntryActions.ReviveObject(this));
     }
 
-    private void ToggleDisabledObject()
+    private void OnDisabledObjectsUpdate(HashSet<NetworkObjectReference> disabledObjects)
     {
-        if (!objectNetId.HasValue) return;
-        Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value.Toggle(objectNetId.Value));
+        if (!netObj.HasValue) return;
+
+        var isActive = !disabledObjects.Contains(netObj.Value);
+
+        // Only update if value has not been changed locally already
+        if (IsObjectActive.Value == isActive) return;
+
+        ObjectEntryActions.ToggleObject(this, isActive);
+        IsObjectActive.Set(isActive, invokeSecondary: false);
+    }
+
+    private void ToggleObject(bool isActive)
+    {
+        if (!netObj.HasValue) return;
+
+        if (isActive)
+        {
+            Imperium.ObjectManager.DisabledObjects.Value.Remove(netObj.Value);
+        }
+        else
+        {
+            Imperium.ObjectManager.DisabledObjects.Value.Add(netObj.Value);
+        }
+
+        Imperium.ObjectManager.DisabledObjects.Set(Imperium.ObjectManager.DisabledObjects.Value);
+
+        // Toggle manually on local client
+        ObjectEntryActions.ToggleObject(this, isActive);
     }
 
     internal void ClearItem(float positionY)
@@ -156,40 +172,50 @@ internal class ObjectEntry : MonoBehaviour
     internal void SetItem([CanBeNull] Component entryComponent, ObjectType type, ImpTooltip tooltipObj, float positionY)
     {
         if (!entryComponent) return;
+        rect.anchoredPosition = new Vector2(0, -positionY);
+
+        if (entryComponent == component) return;
 
         Type = type;
         component = entryComponent;
-
         tooltip = tooltipObj;
 
-        rect.anchoredPosition = new Vector2(0, -positionY);
-
-        objectName = ObjectEntryGenerator.GetObjectName(this);
-        containerObject = ObjectEntryGenerator.GetContainerObject(this);
+        objectName = ObjectEntryActions.GetObjectName(this);
+        containerObject = ObjectEntryActions.GetContainerObject(this);
         objectNameText.text = objectName;
 
-        objectNetId = containerObject.gameObject.GetComponent<NetworkObject>()?.NetworkObjectId;
+        netObj = containerObject.GetComponent<NetworkObject>();
 
-        if (objectNetId.HasValue)
+        if (netObj.HasValue)
         {
             // Silently change binding to be consistent with the new object's active status
-            if (IsObjectActive.Value == Imperium.ObjectManager.DisabledObjects.Value.Contains(objectNetId.Value))
-            {
-                IsObjectActive.Set(!Imperium.ObjectManager.DisabledObjects.Value.Contains(objectNetId.Value), false);
-            }
+            IsObjectActive.Set(
+                !Imperium.ObjectManager.DisabledObjects.Value.Contains(netObj.Value),
+                invokeSecondary: false
+            );
         }
 
         teleportToButton.gameObject.SetActive(true);
         teleportHereButton.gameObject.SetActive(true);
-        destroyButton.gameObject.SetActive(ObjectEntryGenerator.CanDestroy(this));
-        activeToggle.gameObject.SetActive(ObjectEntryGenerator.CanToggle(this) && objectNetId.HasValue);
-        respawnButton.gameObject.SetActive(ObjectEntryGenerator.CanRespawn(this));
-        dropButton.gameObject.SetActive(ObjectEntryGenerator.CanDrop(this));
-        unlockButton.gameObject.SetActive(ObjectEntryGenerator.CanUnlock(this));
-        killButton.gameObject.SetActive(ObjectEntryGenerator.CanKill(this));
-        reviveButton.gameObject.SetActive(ObjectEntryGenerator.CanRevive(this));
+        destroyButton.gameObject.SetActive(ObjectEntryActions.CanDestroy(this));
+        activeToggle.gameObject.SetActive(ObjectEntryActions.CanToggle(this) && netObj.HasValue);
+        respawnButton.gameObject.SetActive(ObjectEntryActions.CanRespawn(this));
+        dropButton.gameObject.SetActive(ObjectEntryActions.CanDrop(this));
+        unlockButton.gameObject.SetActive(ObjectEntryActions.CanUnlock(this));
+        killButton.gameObject.SetActive(ObjectEntryActions.CanKill(this));
+        reviveButton.gameObject.SetActive(ObjectEntryActions.CanRevive(this));
 
-        ObjectEntryGenerator.InitObject(this);
+        ObjectEntryActions.InitObject(this);
+    }
+
+    private void OnEnable()
+    {
+        Imperium.ObjectManager.DisabledObjects.onUpdate += OnDisabledObjectsUpdate;
+    }
+
+    private void OnDisable()
+    {
+        Imperium.ObjectManager.DisabledObjects.onUpdate -= OnDisabledObjectsUpdate;
     }
 
     private void Update()
@@ -197,10 +223,10 @@ internal class ObjectEntry : MonoBehaviour
         if (intervalUpdateTimer.Tick() && component)
         {
             // Update kill and revive buttons since they switch based on the player's alive status
-            killButton.gameObject.SetActive(ObjectEntryGenerator.CanKill(this));
-            reviveButton.gameObject.SetActive(ObjectEntryGenerator.CanRevive(this));
+            killButton.gameObject.SetActive(ObjectEntryActions.CanKill(this));
+            reviveButton.gameObject.SetActive(ObjectEntryActions.CanRevive(this));
 
-            ObjectEntryGenerator.IntervalUpdate(this);
+            ObjectEntryActions.IntervalUpdate(this);
         }
     }
 }

@@ -7,7 +7,6 @@ using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Util;
-using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ using UnityEngine;
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
-internal static class ObjectEntryGenerator
+internal static class ObjectEntryActions
 {
     internal static bool CanDestroy(ObjectEntry entry) => entry.Type switch
     {
@@ -87,12 +86,12 @@ internal static class ObjectEntryGenerator
             case ObjectType.Entity:
                 Imperium.ObjectManager.DespawnEntity(new EntityDespawnRequest
                 {
-                    NetId = entry.objectNetId!.Value,
+                    EntityNetObj = entry.netObj!.Value,
                     IsRespawn = isRespawn
                 });
                 return true;
             case ObjectType.Item:
-                Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
+                Imperium.ObjectManager.DespawnItem(entry.netObj!.Value);
                 break;
             case ObjectType.OutsideObject:
                 Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
@@ -113,7 +112,7 @@ internal static class ObjectEntryGenerator
                 if (cruiser.currentDriver || cruiser.currentPassenger) return false;
                 Imperium.ObjectManager.DespawnVehicle(new VehicleDespawnRequest
                 {
-                    NetId = entry.objectNetId!.Value,
+                    VehicleNetObj = entry.netObj!.Value,
                     IsRespawn = isRespawn
                 });
                 return true;
@@ -133,7 +132,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Vent:
             case ObjectType.StoryLog:
             case ObjectType.SecurityDoor:
-                Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
+                Imperium.ObjectManager.DespawnObstacle(entry.netObj!.Value);
                 return true;
             case ObjectType.Player:
             default:
@@ -187,7 +186,7 @@ internal static class ObjectEntryGenerator
                 {
                     Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                     {
-                        Name = "Turret",
+                        Name = "TurretContainer",
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
@@ -353,7 +352,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
                 if (!isActive)
                 {
-                    Imperium.ObjectManager.BurstSteamValve(entry.objectNetId!.Value);
+                    Imperium.ObjectManager.BurstSteamValve(entry.netObj!.Value);
                 }
                 else
                 {
@@ -402,7 +401,7 @@ internal static class ObjectEntryGenerator
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
                     {
                         Destination = position + Vector3.up * 5f,
-                        NetworkId = entry.objectNetId!.Value
+                        NetworkObj = entry.netObj!.Value
                     });
                 }, origin, castGround: true);
                 break;
@@ -466,7 +465,7 @@ internal static class ObjectEntryGenerator
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
                     {
                         Destination = position,
-                        NetworkId = entry.objectNetId!.Value
+                        NetworkObj = entry.netObj!.Value
                     });
                 }, origin, castGround: false);
                 break;

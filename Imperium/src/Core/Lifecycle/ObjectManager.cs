@@ -8,6 +8,7 @@ using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Scripts;
+using Imperium.Extensions;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -100,7 +101,7 @@ internal class ObjectManager : ImpLifecycleObject
     /*
      * List of Network IDs of disabled objects. Used to sync object active status over the network.
      */
-    internal readonly ImpNetworkBinding<HashSet<ulong>> DisabledObjects = new(
+    internal readonly ImpNetworkBinding<HashSet<NetworkObjectReference>> DisabledObjects = new(
         "DisabledObjects", Imperium.Networking, []
     );
 
@@ -160,7 +161,7 @@ internal class ObjectManager : ImpLifecycleObject
         "BurstCadaverBloom", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<ulong> burstSteamValve = new(
+    private readonly ImpNetMessage<NetworkObjectReference> burstSteamValve = new(
         "BurstSteamValve", Imperium.Networking
     );
 
@@ -172,11 +173,11 @@ internal class ObjectManager : ImpLifecycleObject
         "DespawnVehicle", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<ulong> itemDespawnMessage = new(
+    private readonly ImpNetMessage<NetworkObjectReference> itemDespawnMessage = new(
         "DespawnItem", Imperium.Networking
     );
 
-    private readonly ImpNetMessage<ulong> obstacleDespawnMessage = new(
+    private readonly ImpNetMessage<NetworkObjectReference> obstacleDespawnMessage = new(
         "DespawnObstacle", Imperium.Networking
     );
 
@@ -191,6 +192,8 @@ internal class ObjectManager : ImpLifecycleObject
     private readonly ImpNetEvent objectsChangedEvent = new(
         "ObjectsChanged", Imperium.Networking
     );
+
+    private readonly ImpTimer periodicUpdateTimer = ImpTimer.ForInterval(1);
 
     // List of prefab names of outside objects. Used to identify outside objects.
     private readonly HashSet<string> OutsideObjectPrefabNameMap =
@@ -227,14 +230,14 @@ internal class ObjectManager : ImpLifecycleObject
         FetchGlobalSpawnLists();
         FetchPlayers();
 
-        RefreshLevelObjects();
+        TriggerRefresh();
 
         LogObjects();
 
-        burstSteamValve.OnClientRecive += OnSteamValveBurst;
-        objectsChangedEvent.OnClientRecive += RefreshLevelObjects;
+        burstSteamValve.OnClientRecive += OnSteamValveBurstClient;
+        objectsChangedEvent.OnClientRecive += TriggerRefresh;
         vehicleSpawnResponseMessage.OnClientRecive += OnSpawnVehicleClient;
-        burstCadaverBloomMessage.OnClientRecive += OnCadaverBloomMessageBurst;
+        burstCadaverBloomMessage.OnClientRecive += OnCadaverBloomMessageBurstClient;
 
         outsideObjectPrefabSpawnMessage.OnClientRecive += OnSpawnOutsideObjectClient;
         localStaticPrefabSpawnMessage.OnClientRecive += OnSpawnLocalStaticPrefabClient;
@@ -272,7 +275,7 @@ internal class ObjectManager : ImpLifecycleObject
 
     protected override void OnSceneLoad()
     {
-        RefreshLevelObjects();
+        TriggerRefresh();
 
         LogObjects();
 
@@ -332,7 +335,7 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void DespawnItem(ulong itemNetId) => itemDespawnMessage.DispatchToServer(itemNetId);
+    internal void DespawnItem(NetworkObjectReference itemNetObj) => itemDespawnMessage.DispatchToServer(itemNetObj);
 
     [ImpAttributes.RemoteMethod]
     internal void DespawnEntity(EntityDespawnRequest request) => entityDespawnMessage.DispatchToServer(request);
@@ -341,7 +344,10 @@ internal class ObjectManager : ImpLifecycleObject
     internal void DespawnVehicle(VehicleDespawnRequest request) => vehicleDespawnMessage.DispatchToServer(request);
 
     [ImpAttributes.RemoteMethod]
-    internal void DespawnObstacle(ulong obstacleNetId) => obstacleDespawnMessage.DispatchToServer(obstacleNetId);
+    internal void DespawnObstacle(NetworkObjectReference obstacleNetId)
+    {
+        obstacleDespawnMessage.DispatchToServer(obstacleNetId);
+    }
 
     [ImpAttributes.RemoteMethod]
     internal void DespawnSpiderWeb(SpiderWebDespawnRequest request) => spiderWebDespawnMessage.DispatchToServer(request);
@@ -368,23 +374,10 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.RemoteMethod]
-    internal void BurstSteamValve(ulong valveNetId) => burstSteamValve.DispatchToClients(valveNetId);
+    internal void BurstSteamValve(NetworkObjectReference valveNetObj) => burstSteamValve.DispatchToClients(valveNetObj);
 
     internal string GetDisplayName(string inGameName) => displayNameMap.GetValueOrDefault(inGameName, inGameName);
     internal string GetOverrideDisplayName(string inGameName) => overrideDisplayNameMap.GetValueOrDefault(inGameName);
-
-    [ImpAttributes.LocalMethod]
-    internal void EmptyVent(ulong netId)
-    {
-        if (!CurrentLevelObjects.TryGetValue(netId, out var obj) ||
-            !obj.TryGetComponent<EnemyVent>(out var enemyVent))
-        {
-            Imperium.IO.LogError($"Failed to empty vent with net ID {netId}");
-            return;
-        }
-
-        enemyVent.occupied = false;
-    }
 
     internal GameObject FindObject(string objName)
     {
@@ -548,7 +541,10 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelObjectsChanged?.Invoke();
     }
 
-    internal void RefreshLevelObjects()
+    // Trigger object refresh in 100ms. This way newly spawned / despawned objects have time to register.
+    internal void TriggerRefresh() => periodicUpdateTimer.SetCountdownTo(0.1f);
+
+    private void RefreshLevelObjects()
     {
         var stopwatch = Stopwatch.StartNew();
         var stopwatch2 = Stopwatch.StartNew();
@@ -698,6 +694,7 @@ internal class ObjectManager : ImpLifecycleObject
         displayNameMap["MoldSpore"] = "Vain Shroud";
         displayNameMap["Maneater"] = "Cave Dweller";
         displayNameMap["Cadaver Bloom"] = "Cadaver Bloom";
+        displayNameMap["TurretContainer"] = "Turret";
 
         overrideDisplayNameMap["StickyNote"] = "Sticky Note";
         overrideDisplayNameMap["Clipboard"] = "Clipboard";
@@ -813,7 +810,7 @@ internal class ObjectManager : ImpLifecycleObject
                     yield return new WaitForSeconds(0.2f);
                     burstCadaverBloomMessage.DispatchToClients(new BurstCadaverBloomRequest
                     {
-                        NetObj = netObject,
+                        NetworkObj = netObject,
                         PlayerId = clientId,
                         Position = actualSpawnPosition
                     });
@@ -881,13 +878,13 @@ internal class ObjectManager : ImpLifecycleObject
         if (!obj)
         {
             Imperium.IO.LogError(
-                $"[SPAWN] [R] Failed to despawn local object of type '{type}' at {Formatting.FormatVector(position)}."
+                $"[OBJ] Failed to despawn local object of type '{type}' at {Formatting.FormatVector(position)}."
             );
             return;
         }
 
         Destroy(obj);
-        RefreshLevelObjects();
+        TriggerRefresh();
     }
 
     [ImpAttributes.LocalMethod]
@@ -896,7 +893,7 @@ internal class ObjectManager : ImpLifecycleObject
         if (!obj)
         {
             Imperium.IO.LogError(
-                $"[SPAWN] [R] Failed to local teleport object of type '{type}' at {Formatting.FormatVector(position)}."
+                $"[OBJ] Failed to local teleport object of type '{type}' at {Formatting.FormatVector(position)}."
             );
             return;
         }
@@ -1064,7 +1061,7 @@ internal class ObjectManager : ImpLifecycleObject
             );
         }
 
-        RefreshLevelObjects();
+        TriggerRefresh();
     }
 
     [ImpAttributes.HostOnly]
@@ -1119,7 +1116,7 @@ internal class ObjectManager : ImpLifecycleObject
             );
         }
 
-        RefreshLevelObjects();
+        TriggerRefresh();
     }
 
     [ImpAttributes.HostOnly]
@@ -1153,7 +1150,7 @@ internal class ObjectManager : ImpLifecycleObject
             RoundManager.Instance.VehiclesContainer
         );
 
-        var vehicleNetObject = vehicleObj.gameObject.GetComponentInChildren<NetworkObject>();
+        var vehicleNetObject = vehicleObj.GetComponentInChildren<NetworkObject>();
         vehicleNetObject.Spawn();
         CurrentLevelObjects[vehicleNetObject.NetworkObjectId] = vehicleNetObject;
 
@@ -1258,13 +1255,15 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private void OnObjectTeleportationClient(ObjectTeleportRequest request)
     {
-        if (!CurrentLevelObjects.TryGetValue(request.NetworkId, out var obj) || !obj)
+        if (!request.NetworkObj.TryGet(out var networkObj))
         {
-            Imperium.IO.LogError($"[NET] Failed to teleport object item with net ID {request.NetworkId}");
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to teleport object. Invalid network object. ID: {request.NetworkObj.NetworkObjectId}"
+            );
             return;
         }
 
-        if (obj.TryGetComponent<GrabbableObject>(out var item))
+        if (networkObj.TryGetComponent<GrabbableObject>(out var item))
         {
             var itemTransform = item.transform;
             itemTransform.position = request.Destination + Vector3.up;
@@ -1277,26 +1276,23 @@ internal class ObjectManager : ImpLifecycleObject
             item.FallToGround();
             item.PlayDropSFX();
         }
-        else if (obj.TryGetComponent<Landmine>(out _))
+        else if (networkObj.TryGetComponent<Landmine>(out _))
         {
-            obj.transform.parent.position = request.Destination;
+            networkObj.transform.parent.position = request.Destination;
         }
         else
         {
-            obj.transform.position = request.Destination;
+            networkObj.transform.position = request.Destination;
         }
     }
 
     [ImpAttributes.LocalMethod]
     private void OnSpiderWebTeleportationClient(SpiderWebTeleportRequest request)
     {
-        if (
-            !request.SpiderNetObj.TryGet(out var spiderNetObj) ||
-            !spiderNetObj.TryGetComponent<SandSpiderAI>(out var sandSpider)
-        )
+        if (!request.SpiderNetObj.TryGetComponent<SandSpiderAI>(out _, out var sandSpider))
         {
             Imperium.IO.LogError(
-                $"[SPAWN] [R] Failed to teleport spider web with ID {request.TrapId}. Spider does not exist."
+                $"[OBJ] Failed to teleport spider web. Invalid spider object. ID: {request.SpiderNetObj.NetworkObjectId}"
             );
             return;
         }
@@ -1339,40 +1335,42 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnDespawnItem(ulong itemNetId, ulong clientId)
+    private void OnDespawnItem(NetworkObjectReference itemNetObj, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(itemNetId, out var obj))
+        if (!itemNetObj.TryGetComponent<GrabbableObject>(out var netObj, out var grabbableObject))
         {
-            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn item with net ID {itemNetId}");
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to despawn item. Invalid network object. ID: {itemNetObj.NetworkObjectId}"
+            );
             return;
         }
 
-        if (obj.TryGetComponent<GrabbableObject>(out var grabbableObject))
+        if (grabbableObject.isHeld && grabbableObject.playerHeldBy != null)
         {
-            if (grabbableObject.isHeld && grabbableObject.playerHeldBy is not null)
+            Imperium.PlayerManager.DropItem(new DropItemRequest
             {
-                Imperium.PlayerManager.DropItem(new DropItemRequest
-                {
-                    PlayerId = grabbableObject.playerHeldBy.playerClientId,
-                    ItemIndex = PlayerManager.GetItemHolderSlot(grabbableObject)
-                });
-            }
+                PlayerId = grabbableObject.playerHeldBy.playerClientId,
+                ItemIndex = PlayerManager.GetItemHolderSlot(grabbableObject)
+            });
         }
 
-        DespawnObject(obj.gameObject);
+        netObj.Despawn();
+        objectsChangedEvent.DispatchToClients();
     }
 
     [ImpAttributes.HostOnly]
     private void OnDespawnEntity(EntityDespawnRequest request, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(request.NetId, out var obj) || !obj)
+        if (!request.EntityNetObj.TryGetComponent<EnemyAI>(out var netObj, out var entity))
         {
-            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn entity with net ID {request.NetId}");
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to despawn entity. Invalid network object. ID: {request.EntityNetObj.NetworkObjectId}"
+            );
             return;
         }
 
         // Remove all web traps if the destroyed entity was a spider
-        if (obj.TryGetComponent<SandSpiderAI>(out var sandSpider))
+        if (entity.TryGetComponent<SandSpiderAI>(out var sandSpider))
         {
             foreach (var webTrap in sandSpider.webTraps.ToList())
             {
@@ -1380,24 +1378,25 @@ internal class ObjectManager : ImpLifecycleObject
             }
         }
 
-        DespawnObject(obj.gameObject, request.IsRespawn);
+        netObj.Despawn();
+        if (!request.IsRespawn) objectsChangedEvent.DispatchToClients();
     }
 
     [ImpAttributes.HostOnly]
     private void OnDespawnVehicle(VehicleDespawnRequest request, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(request.NetId, out var obj) || !obj)
+        if (!request.VehicleNetObj.TryGetComponent<VehicleController>(out var netObj, out var vehicle))
         {
-            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn vehicle with net ID {request.NetId}");
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to despawn vehicle. Invalid network object. ID: {request.VehicleNetObj.NetworkObjectId}"
+            );
             return;
         }
-
-        var vehicle = obj.GetComponent<VehicleController>();
 
         // Despawn vehicle but don't destroy local object. Local object will destroy itself on each client.
         if (request.IsRespawn || vehicle.carDestroyed)
         {
-            obj.Despawn(destroy: false);
+            netObj.Despawn(destroy: false);
         }
         else
         {
@@ -1408,15 +1407,18 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.HostOnly]
-    private void OnDespawnObstacle(ulong obstacleNetId, ulong clientId)
+    private void OnDespawnObstacle(NetworkObjectReference obstacleNetObj, ulong clientId)
     {
-        if (!CurrentLevelObjects.TryGetValue(obstacleNetId, out var netObj))
+        if (!obstacleNetObj.TryGet(out var netObj))
         {
-            Imperium.IO.LogError($"[SPAWN] [R] Failed to despawn obstacle with net ID {obstacleNetId}");
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to despawn obstacle. Invalid network object. ID: {obstacleNetObj.NetworkObjectId}"
+            );
             return;
         }
 
-        DespawnObject(netObj.gameObject);
+        netObj.Despawn();
+        objectsChangedEvent.DispatchToClients();
     }
 
     [ImpAttributes.HostOnly]
@@ -1428,13 +1430,10 @@ internal class ObjectManager : ImpLifecycleObject
     [ImpAttributes.HostOnly]
     private void OnDespawnSpiderWeb(SpiderWebDespawnRequest request, ulong clientId)
     {
-        if (
-            !request.SpiderNetObj.TryGet(out var spiderNetObj) ||
-            !spiderNetObj.TryGetComponent<SandSpiderAI>(out var sandSpider)
-        )
+        if (!request.SpiderNetObj.TryGetComponent<SandSpiderAI>(out var netObj, out var sandSpider))
         {
             Imperium.IO.LogError(
-                $"[SPAWN] [R] Failed to despawn spider web with ID {request.TrapId}. Spider does not exist."
+                $"[OBJ] Failed to despawn spider web. Invalid spider object. ID: {request.SpiderNetObj.NetworkObjectId}"
             );
             return;
         }
@@ -1463,32 +1462,35 @@ internal class ObjectManager : ImpLifecycleObject
                 );
                 break;
             default:
-                Imperium.IO.LogError($"[NET] Despawn request has invalid outside object type '{request.Type}'");
+                Imperium.IO.LogError($"[OBJ] Despawn request contained invalid outside object type '{request.Type}'");
                 break;
         }
     }
 
     [ImpAttributes.LocalMethod]
-    private static void OnSteamValveBurst(ulong valveNetId)
+    private static void OnSteamValveBurstClient(NetworkObjectReference valveNetObj)
     {
-        var steamValve = Imperium.ObjectManager.CurrentLevelObjects[valveNetId].GetComponent<SteamValveHazard>();
+        if (!valveNetObj.TryGetComponent<SteamValveHazard>(out _, out var steamValve))
+        {
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to burst steam valve. Invalid network object. ID: {valveNetObj.NetworkObjectId}"
+            );
+            return;
+        }
+
         steamValve.valveHasBurst = true;
         steamValve.valveHasBeenRepaired = false;
         steamValve.BurstValve();
     }
 
     [ImpAttributes.LocalMethod]
-    private static void OnCadaverBloomMessageBurst(BurstCadaverBloomRequest request)
+    private static void OnCadaverBloomMessageBurstClient(BurstCadaverBloomRequest request)
     {
-        if (!request.NetObj.TryGet(out var networkObject))
+        if (!request.NetworkObj.TryGetComponent<CadaverBloomAI>(out _, out var cadaverBloom))
         {
-            Imperium.IO.LogError("Failed to burst cadaver bloom. Network object not found.");
-            return;
-        }
-
-        if (!networkObject.TryGetComponent<CadaverBloomAI>(out var cadaverBloom))
-        {
-            Imperium.IO.LogError("Failed to burst cadaver bloom. Network object does not have enemy script.");
+            Imperium.IO.LogError(
+                $"[OBJ] Failed to burst cadaver bloom. Invalid network object. ID: {request.NetworkObj.NetworkObjectId}"
+            );
             return;
         }
 
@@ -1501,19 +1503,8 @@ internal class ObjectManager : ImpLifecycleObject
 
     #endregion
 
-    [ImpAttributes.HostOnly]
-    private void DespawnObject(GameObject obj, bool isRespawn = false)
+    private void Update()
     {
-        if (!obj) return;
-
-        try
-        {
-            if (obj.TryGetComponent<NetworkObject>(out var networkObject)) networkObject.Despawn();
-        }
-        finally
-        {
-            Destroy(obj);
-            if (!isRespawn) objectsChangedEvent.DispatchToClients();
-        }
+        if (periodicUpdateTimer.Tick()) RefreshLevelObjects();
     }
 }
