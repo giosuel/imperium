@@ -23,7 +23,7 @@ internal static class ShotgunItemPatch
     {
         if (__instance.isHeld)
         {
-            __instance.useCooldown = Imperium.Settings.Shotgun.FullAuto.Value && __instance.playerHeldBy != null
+            __instance.useCooldown = Imperium.Settings.Shotgun.NoCooldown.Value && __instance.playerHeldBy != null
                 ? 0
                 // Get default use cooldown from the shotgun spawn prefab
                 : __instance.itemProperties.spawnPrefab.GetComponent<ShotgunItem>().useCooldown;

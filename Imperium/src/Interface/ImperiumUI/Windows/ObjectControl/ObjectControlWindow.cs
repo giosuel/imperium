@@ -24,7 +24,7 @@ internal class ObjectControlWindow : ImperiumWindow
     private void InitShotgun()
     {
         ImpToggle.Bind("Shotgun/InfiniteAmmo", content, Imperium.Settings.Shotgun.InfiniteAmmo, theme: theme);
-        ImpToggle.Bind("Shotgun/FullAuto", content, Imperium.Settings.Shotgun.FullAuto, theme: theme);
+        ImpToggle.Bind("Shotgun/NoCooldown", content, Imperium.Settings.Shotgun.NoCooldown, theme: theme);
     }
 
     private void InitShovel()

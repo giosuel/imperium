@@ -124,7 +124,7 @@ public class ImpSettings(ConfigFile config)
     internal class ShotgunSettings(ConfigFile config) : SettingBase(config)
     {
         internal readonly ImpConfig<bool> InfiniteAmmo = new(config, "Items.Shotgun", "InfiniteAmmo", false);
-        internal readonly ImpConfig<bool> FullAuto = new(config, "Items.Shotgun", "FullAuto", false);
+        internal readonly ImpConfig<bool> NoCooldown = new(config, "Items.Shotgun", "NoCooldown", false);
     }
 
     internal class ShovelSettings(ConfigFile config) : SettingBase(config)
