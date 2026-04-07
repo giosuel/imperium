@@ -717,6 +717,18 @@ public class ImpSettings(ConfigFile config)
             ignoreRefresh: true
         );
 
+        internal readonly ImpConfig<bool> DisableCulling = new(
+            config,
+            "Rendering.General",
+            "DisableCulling",
+            false,
+            value =>
+            {
+                // Only toggle this after the scene has loaded
+                if (Imperium.IsSceneLoaded.Value) Imperium.StartOfRound.occlusionCuller.enabled = !value;
+            }
+        );
+
         internal readonly ImpConfig<bool> GlobalVolume = new(
             config,
             "Rendering.Volumes",

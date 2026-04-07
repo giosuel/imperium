@@ -7,6 +7,7 @@
 - Reworked the map obstacle section in the moon control window.
 - Added a button to flicker the lights.
 - Added a button to remove the slippery surfaces / gunk from the stingray.
+- Added an option to disable culling in the rendering window.
 
 ### Bug Fixes
 
@@ -18,6 +19,7 @@
 - Fixed outdated information about indoor map hazards in the info window.
 - Fixed a bug that made spider webs impossible to teleport or destroy in the object explorer.
 - Spider webs are now cleaned up properly when a spider is destroyed in the object explorer.
+- Fixed a bug that made it possible for the resolution slider to go below 0.
 
 ### QoL Improvements
 
