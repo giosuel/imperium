@@ -33,6 +33,7 @@ Modded outdoor and indoor hazards added by LLL and DawnLib are now fully support
 - Fixed object explorer related bugs that prevented certain items from being toggled or toggle desync in general.
 - Fixed a bug that caused brackens to break when spawned indoors.
 - Spawned entities are now properly added to `RoundManager.SpawnedEnemies`.
+- Fixed Infinite Battery that caused Weed Killer to fill up Cruiser slower.
 
 ### QoL Improvements
 
