@@ -834,6 +834,8 @@ internal class ObjectManager : ImpLifecycleObject
 
                 StartCoroutine(Routine());
             }
+
+            Imperium.RoundManager.SpawnedEnemies.Add(entity);
         }
 
         var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
