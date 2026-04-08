@@ -35,6 +35,7 @@ internal static class RoundManagerPatch
         Imperium.ObjectManager.RefreshLevelEntities();
     }
 
+    /// see also <see cref="StartOfRoundPatch.EndOfGamePatch"/>
     [HarmonyPostfix]
     [HarmonyPatch("DetectElevatorRunning")]
     private static void DetectElevatorRunningPostfixPatch(RoundManager __instance)

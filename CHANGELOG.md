@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed Instant Landing & Instant Takeoff toggles.
+
 ## Imperium v1.3.0 - Regular Update
 
 This update tackles a number of long-standing bugs alongside several frequently requested features. The biggest change under the hood is a rework of the object explorer's multiplayer functionality, which is now far more robust against desync and network latency: updates are only sent when objects actually change, the explorer refreshes periodically to stay in sync, and RPCs are more consistently routed through the host for better access control.
