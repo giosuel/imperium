@@ -75,16 +75,17 @@ public static class VehicleControllerPatch
         if (Imperium.Settings.Cruiser.InstantIgnite.Value) __instance.chanceToStartIgnition = 100;
     }
 
-    internal static readonly Harmony InstantIgnitionHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantIgnition");
-
-    [HarmonyPatch(typeof(VehicleController))]
-    internal static class InstantIgnitionPatches
+    [HarmonyPostfix]
+    [HarmonyPatch("TryIgnition")]
+    private static IEnumerator TryIgnitionPatch(IEnumerator __result)
     {
-        [HarmonyPostfix]
-        [HarmonyPatch("TryIgnition")]
-        private static IEnumerator TryIgnitionPatch(IEnumerator __result)
+        if (Imperium.Settings.Cruiser.InstantIgnite.Value)
         {
             return ImpUtils.SkipWaitingForSeconds(__result);
+        }
+        else
+        {
+            return __result; // pure pass-through
         }
     }
 }
