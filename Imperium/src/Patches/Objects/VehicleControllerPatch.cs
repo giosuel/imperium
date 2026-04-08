@@ -1,5 +1,6 @@
 #region
 
+using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
 using Imperium.Util;
@@ -76,13 +77,14 @@ public static class VehicleControllerPatch
 
     internal static readonly Harmony InstantIgnitionHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantIgnition");
 
+    [HarmonyPatch(typeof(VehicleController))]
     internal static class InstantIgnitionPatches
     {
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(VehicleController), "TryIgnition", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> TryIgnitionTranspiler(IEnumerable<CodeInstruction> instructions)
+        [HarmonyPostfix]
+        [HarmonyPatch("TryIgnition")]
+        private static IEnumerator TryIgnitionPatch(IEnumerator __result)
         {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
+            return ImpUtils.SkipWaitingForSeconds(__result);
         }
     }
 }
