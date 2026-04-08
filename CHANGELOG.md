@@ -33,6 +33,7 @@ Modded outdoor and indoor hazards added by LLL and DawnLib are now fully support
 - Fixed object explorer related bugs that prevented certain items from being toggled or toggle desync in general.
 - Fixed a bug that caused brackens to break when spawned indoors.
 - Fixed Infinite Battery causing the weed killer to fill up the cruiser slower.
+- Despawning a bee hive now also despawns the bees the hive belongs to.
 
 ### QoL Improvements
 

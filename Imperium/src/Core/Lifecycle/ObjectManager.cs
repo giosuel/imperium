@@ -1409,6 +1409,12 @@ internal class ObjectManager : ImpLifecycleObject
             });
         }
 
+        // Check if the grabbable object is a bee hive. If so, despawn the bees as well.
+        FindObjectsByType<RedLocustBees>(FindObjectsSortMode.None)
+            .FirstOrDefault(bees => bees.hive == grabbableObject)
+            ?.GetComponent<NetworkObject>()
+            ?.Despawn();
+
         netObj.Despawn();
         objectsChangedEvent.DispatchToClients();
     }
