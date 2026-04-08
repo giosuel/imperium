@@ -1,13 +1,11 @@
 #region
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 using Imperium.Types;
-using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -75,8 +73,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
     private List<ObjectCategory> categoryOrder;
     private Dictionary<ObjectCategory, CategoryDefinition> objectCategories;
-
-    private readonly ImpTimer periodicUpdateTimer = ImpTimer.ForInterval(1);
 
     private float previousScrollValue;
 
@@ -224,7 +220,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             var obj = Instantiate(entryTemplate, contentRect);
             obj.gameObject.SetActive(true);
             var entry = obj.AddComponent<ObjectEntry>();
-            entry.InitItem(theme);
+            entry.Init(theme);
             entryInstances.Add(entry);
         }
 
@@ -236,21 +232,19 @@ internal class ObjectExplorerWindow : ImperiumWindow
     internal void RefreshEntries()
     {
         if (!gameObject.activeInHierarchy) return;
-        StartCoroutine(refreshEntries(useCache: false));
+        RefreshEntries(false);
     }
 
-    private IEnumerator refreshEntries(bool useCache)
+    private void RefreshEntries(bool useCache)
     {
+        if (!gameObject.activeInHierarchy) return;
+
         // Skip element calculation when the scroll value remains the same and cached values are used
         var currentScrollValue = scrollRect.verticalNormalizedPosition;
-        if (useCache && Mathf.Approximately(currentScrollValue, previousScrollValue)) yield break;
+        if (useCache && Mathf.Approximately(currentScrollValue, previousScrollValue)) return;
         previousScrollValue = currentScrollValue;
 
-        if (!useCache) yield return 0;
-
         var (objects, categoryCounts, incrementalCategoryCounts) = objectEntryEngine.Generate(useCache);
-
-        if (!useCache) yield return 0;
 
         // Calculate title positions based on the amount of entries in each category
         var titlePositions = new List<float>();
@@ -321,13 +315,5 @@ internal class ObjectExplorerWindow : ImperiumWindow
         outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0)})";
     }
 
-    private void OnScroll(Vector2 _) => StartCoroutine(refreshEntries(useCache: true));
-
-    private void Update()
-    {
-        if (periodicUpdateTimer.Tick())
-        {
-            Imperium.ObjectManager.RefreshLevelObjects();
-        }
-    }
+    private void OnScroll(Vector2 _) => RefreshEntries(true);
 }

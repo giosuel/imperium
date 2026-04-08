@@ -3,8 +3,6 @@
 using HarmonyLib;
 using Imperium.API.Types;
 using Imperium.Util;
-using Imperium.Visualizers;
-using UnityEngine;
 
 #endregion
 
@@ -17,12 +15,15 @@ public static class FlowermanPatch
     [HarmonyPatch("DoAIInterval")]
     private static void DoAIIntervalPatch(FlowermanAI __instance)
     {
-        Imperium.Visualization.EntityGizmos.StaticSphereVisualizerUpdate(
-            __instance,
-            __instance.favoriteSpot.position,
-            material: ImpAssets.WireframeYellow,
-            id: 1,
-            gizmoType: GizmoType.Custom
-        );
+        if (__instance.favoriteSpot)
+        {
+            Imperium.Visualization.EntityGizmos.StaticSphereVisualizerUpdate(
+                __instance,
+                __instance.favoriteSpot.position,
+                material: ImpAssets.WireframeYellow,
+                id: 1,
+                gizmoType: GizmoType.Custom
+            );
+        }
     }
 }

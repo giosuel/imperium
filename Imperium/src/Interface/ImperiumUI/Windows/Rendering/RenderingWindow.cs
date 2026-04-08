@@ -27,6 +27,7 @@ internal class RenderingWindow : ImperiumWindow
         ImpToggle.Bind("Lighting/SunlightToggle", content, Imperium.Settings.Rendering.Sunlight, theme);
         ImpToggle.Bind("Lighting/SpaceSunToggle", content, Imperium.Settings.Rendering.SpaceSun, theme);
         ImpToggle.Bind("Lighting/IndirectLightToggle", content, Imperium.Settings.Rendering.IndirectLighting, theme);
+        ImpToggle.Bind("Volumetrics/IndoorFogToggle", content, Imperium.Settings.Rendering.IndoorFog, theme);
         ImpToggle.Bind("Volumetrics/VolumetricFogToggle", content, Imperium.Settings.Rendering.VolumetricFog, theme);
         ImpToggle.Bind("Volumetrics/GroundFogToggle", content, Imperium.Settings.Rendering.GroundFog, theme);
         ImpToggle.Bind("Volumetrics/StormyVolumeToggle", content, Imperium.Settings.Rendering.StormyVolume, theme);

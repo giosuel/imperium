@@ -186,7 +186,7 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
 
         InsightsFor<SandSpiderAI>()
             .RegisterInsight("On Wall", spider => spider.onWall ? "Yes" : "No")
-            .RegisterInsight("Web Count", spider => $"({spider.webTraps.Count}/{spider.maxWebTrapsToPlace})")
+            .RegisterInsight("Web Count", spider => $"({spider.webTraps.Count}/{spider.maxWebTrapsToPlace + 1})")
             .RegisterInsight("Chase Timer", spider => $"{spider.chaseTimer:0.0}s")
             .RegisterInsight("Wall Timer", spider => $"{spider.waitOnWallTimer:0.0}s");
 

@@ -7,7 +7,6 @@ using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Util;
-using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ using UnityEngine;
 
 namespace Imperium.Interface.ImperiumUI.Windows.ObjectExplorer.ObjectListEntry;
 
-internal static class ObjectEntryGenerator
+internal static class ObjectEntryActions
 {
     internal static bool CanDestroy(ObjectEntry entry) => entry.Type switch
     {
@@ -69,15 +68,16 @@ internal static class ObjectEntryGenerator
 
     internal static bool CanToggle(ObjectEntry entry) => entry.Type switch
     {
-        ObjectType.Vehicle => false,
         ObjectType.Player => false,
+        ObjectType.Vehicle => false,
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
         ObjectType.Vent => false,
         ObjectType.StoryLog => false,
         ObjectType.VainShroud => false,
         ObjectType.OutsideObject => false,
-        _ => true
+        _ when entry.netObj.HasValue => true,
+        _ => false,
     };
 
     internal static bool DespawnObject(ObjectEntry entry, bool isRespawn = false)
@@ -87,24 +87,22 @@ internal static class ObjectEntryGenerator
             case ObjectType.Entity:
                 Imperium.ObjectManager.DespawnEntity(new EntityDespawnRequest
                 {
-                    NetId = entry.objectNetId!.Value,
+                    EntityNetObj = entry.netObj!.Value,
                     IsRespawn = isRespawn
                 });
                 return true;
             case ObjectType.Item:
-                Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
+                Imperium.ObjectManager.DespawnItem(entry.netObj!.Value);
                 break;
             case ObjectType.OutsideObject:
-                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                Imperium.ObjectManager.DespawnOutsideObject(new OutsideObjectDespawnRequest
                 {
-                    Type = LocalObjectType.OutsideObject,
                     Position = entry.containerObject.transform.position
                 });
                 return true;
             case ObjectType.VainShroud:
-                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
+                Imperium.ObjectManager.DespawnVainShroud(new VainShroudDespawnRequest
                 {
-                    Type = LocalObjectType.VainShroud,
                     Position = entry.containerObject.transform.position
                 });
                 return true;
@@ -113,7 +111,7 @@ internal static class ObjectEntryGenerator
                 if (cruiser.currentDriver || cruiser.currentPassenger) return false;
                 Imperium.ObjectManager.DespawnVehicle(new VehicleDespawnRequest
                 {
-                    NetId = entry.objectNetId!.Value,
+                    VehicleNetObj = entry.netObj!.Value,
                     IsRespawn = isRespawn
                 });
                 return true;
@@ -133,7 +131,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Vent:
             case ObjectType.StoryLog:
             case ObjectType.SecurityDoor:
-                Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
+                Imperium.ObjectManager.DespawnObstacle(entry.netObj!.Value);
                 return true;
             case ObjectType.Player:
             default:
@@ -187,7 +185,7 @@ internal static class ObjectEntryGenerator
                 {
                     Imperium.ObjectManager.SpawnMapHazard(new MapHazardSpawnRequest
                     {
-                        Name = "Turret",
+                        Name = "TurretContainer",
                         SpawnPosition = entry.containerObject.transform.position
                     });
                 }
@@ -353,7 +351,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
                 if (!isActive)
                 {
-                    Imperium.ObjectManager.BurstSteamValve(entry.objectNetId!.Value);
+                    Imperium.ObjectManager.BurstSteamValve(entry.netObj!.Value);
                 }
                 else
                 {
@@ -368,10 +366,10 @@ internal static class ObjectEntryGenerator
                 if (entity.creatureAnimator) entity.creatureAnimator.enabled = isActive;
                 break;
             case ObjectType.BreakerBox:
-                MoonManager.ToggleBreaker((BreakerBox)entry.component, isActive);
+                MoonManager.ToggleBreaker((BreakerBox)entry.component, isActive, false);
                 break;
             case ObjectType.SecurityDoor:
-                ((TerminalAccessibleObject)entry.component).SetDoorToggleLocalClient();
+                MoonManager.ToggleSecurityDoor((TerminalAccessibleObject)entry.component, isActive, false);
                 break;
             case ObjectType.SpikeTrap:
                 ((SpikeRoofTrap)entry.component).slamOnIntervals = isActive;
@@ -402,7 +400,7 @@ internal static class ObjectEntryGenerator
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
                     {
                         Destination = position + Vector3.up * 5f,
-                        NetworkId = entry.objectNetId!.Value
+                        NetworkObj = entry.netObj!.Value
                     });
                 }, origin, castGround: true);
                 break;
@@ -420,9 +418,8 @@ internal static class ObjectEntryGenerator
             case ObjectType.VainShroud:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
-                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    Imperium.ObjectManager.TeleportVainShroud(new VainShroudTeleportRequest
                     {
-                        Type = LocalObjectType.VainShroud,
                         Position = entry.containerObject.transform.position,
                         Destination = position
                     });
@@ -431,9 +428,8 @@ internal static class ObjectEntryGenerator
             case ObjectType.OutsideObject:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
-                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
+                    Imperium.ObjectManager.TeleportOutsideObject(new OutsideObjectTeleportRequest
                     {
-                        Type = LocalObjectType.OutsideObject,
                         Position = entry.containerObject.transform.position,
                         Destination = position
                     });
@@ -466,7 +462,7 @@ internal static class ObjectEntryGenerator
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
                     {
                         Destination = position,
-                        NetworkId = entry.objectNetId!.Value
+                        NetworkObj = entry.netObj!.Value
                     });
                 }, origin, castGround: false);
                 break;
@@ -484,10 +480,10 @@ internal static class ObjectEntryGenerator
                 switch (steamValve.valveHasBeenRepaired)
                 {
                     case false when steamValve.valveHasBurst && entry.IsObjectActive.Value:
-                        entry.IsObjectActive.Set(false);
+                        entry.IsObjectActive.Set(false, invokeSecondary: false);
                         break;
                     case true when !entry.IsObjectActive.Value:
-                        entry.IsObjectActive.Set(true);
+                        entry.IsObjectActive.Set(true, invokeSecondary: false);
                         break;
                 }
 
@@ -495,8 +491,13 @@ internal static class ObjectEntryGenerator
             case ObjectType.Item:
                 var item = (GrabbableObject)entry.component;
                 var isHeld = item.isHeld || item.heldByPlayerOnServer;
-                entry.dropButton.interactable = isHeld;
-                entry.teleportHereButton.interactable = !isHeld;
+
+                if (entry.dropButton.interactable != isHeld)
+                {
+                    ImpButton.ToggleButton(entry.dropButton, isHeld);
+                    ImpButton.ToggleButton(entry.teleportHereButton, !isHeld);
+                }
+
                 break;
             case ObjectType.StoryLog:
                 var storyLog = (StoryLog)entry.component;
@@ -607,17 +608,18 @@ internal static class ObjectEntryGenerator
 
     private static string GetTerminalAccessibleName(string name, Component obj)
     {
-        string code = "??";
+        var code = "??";
         if (obj.TryGetComponent<TerminalAccessibleObject>(out var terminalComponent))
         {
             code = terminalComponent.objectCode;
         }
+
         return $"{name} [{code}] (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
     }
 
     private static string GetOutsideObjectName(GameObject obj)
     {
-        var displayName = Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name;
+        var displayName = Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name.Replace("(Clone)", "");
         return $"{displayName} (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
     }
 

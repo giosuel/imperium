@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
 using Imperium.Core.Lifecycle;
-using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Patches.Objects;
 using Imperium.Types;
 using Imperium.Util;
@@ -62,7 +61,13 @@ public class ImpSettings(ConfigFile config)
             }
         );
 
-        internal readonly ImpConfig<bool> FlyingNoClip = new(config, "Player", "FlyingNoClip", false);
+        internal readonly ImpConfig<bool> FlyingNoClip = new(
+            config,
+            "Player",
+            "FlyingNoClip",
+            false
+        );
+
         internal readonly ImpConfig<bool> Permadrunk = new(config, "Player", "Permadrunk", false);
 
         internal readonly ImpConfig<float> CustomFieldOfView = new(
@@ -118,7 +123,7 @@ public class ImpSettings(ConfigFile config)
     internal class ShotgunSettings(ConfigFile config) : SettingBase(config)
     {
         internal readonly ImpConfig<bool> InfiniteAmmo = new(config, "Items.Shotgun", "InfiniteAmmo", false);
-        internal readonly ImpConfig<bool> FullAuto = new(config, "Items.Shotgun", "FullAuto", false);
+        internal readonly ImpConfig<bool> NoCooldown = new(config, "Items.Shotgun", "NoCooldown", false);
     }
 
     internal class ShovelSettings(ConfigFile config) : SettingBase(config)
@@ -743,6 +748,13 @@ public class ImpSettings(ConfigFile config)
             "VolumetricFog",
             true,
             value => Imperium.ObjectManager.ToggleObject("Local Volumetric Fog", value)
+        );
+
+        internal readonly ImpConfig<bool> IndoorFog = new(
+            config,
+            "Rendering.Volumes",
+            "IndoorFog",
+            true
         );
 
         internal readonly ImpConfig<bool> GroundFog = new(

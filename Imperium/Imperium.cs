@@ -5,7 +5,6 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Core.EventLogging;
 using Imperium.Core.Input;
@@ -24,7 +23,6 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects.NoiseOverlay;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 #endregion
 
@@ -37,15 +35,12 @@ namespace Imperium;
 [BepInDependency("com.fumiko.CullFactory", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("imabatby.lethallevelloader", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.github.teamxiaolan.dawnlib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
-[BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Imperium : BaseUnityPlugin
 {
-    public const string PLUGIN_GUID = "giosuel.Imperium";
-    public const string PLUGIN_NAME = "Imperium";
-    public const string PLUGIN_VERSION = "1.2.3";
-
     private static Harmony Harmony;
     private static ManualLogSource Log;
     private static ConfigFile configFile;
@@ -118,9 +113,8 @@ public class Imperium : BaseUnityPlugin
     internal static ImpBinaryBinding IsSceneLoaded { get; private set; }
 
     /// <summary>
-    /// Imperium initialization (Stage 1)
-    ///
-    /// This happens as soon as BepInEx loads the Imperium plugin.
+    ///     Imperium initialization (Stage 1)
+    ///     This happens as soon as BepInEx loads the Imperium plugin.
     /// </summary>
     private void Awake()
     {
@@ -144,7 +138,7 @@ public class Imperium : BaseUnityPlugin
 
         if (!ImpAssets.Load()) return;
 
-        Harmony = new Harmony(PLUGIN_GUID);
+        Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         PreLaunchPatches();
 
         IO.LogInfo("[INIT] Imperium has been successfully initialized \\o/");
@@ -183,9 +177,8 @@ public class Imperium : BaseUnityPlugin
     }
 
     /// <summary>
-    /// Imperium launch (Stage 2)
-    ///
-    /// This is executed after Imperium access has been granted by the host.
+    ///     Imperium launch (Stage 2)
+    ///     This is executed after Imperium access has been granted by the host.
     /// </summary>
     internal static void Launch()
     {
@@ -239,7 +232,7 @@ public class Imperium : BaseUnityPlugin
         UnityExplorerIntegration.PatchFunctions(Harmony);
 
         IsImperiumLaunched = true;
-        
+
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
         {

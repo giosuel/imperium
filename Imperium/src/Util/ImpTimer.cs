@@ -42,5 +42,7 @@ internal class ImpTimer
         return false;
     }
 
+    internal void SetCountdownTo(float seconds) => countdown = seconds;
+
     internal void Reset() => countdown = initialTime;
 }

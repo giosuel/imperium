@@ -1,9 +1,5 @@
 #region
 
-#endregion
-
-#region
-
 using System.Globalization;
 using System.Linq;
 using Imperium.Types;

@@ -34,13 +34,12 @@ internal class ImpLevelEditor : MonoBehaviour
     private ComponentManager componentManager;
 
     private readonly PlacedDungeon dungeon = new();
-    private PlacedTile currentTile;
+    // private PlacedTile currentTile;
 
     private BuildingTool buildingTool;
 
     private void Awake()
     {
-
         Imperium.IsSceneLoaded.onUpdate += OnSceneChange;
 
         Imperium.IngamePlayerSettings.playerInput.actions["ActivateItem"].performed += OnLeftClick;

@@ -160,8 +160,8 @@ internal class ObjectVisualizers : ImpWidget
     private static void TogglePlayerConfigs(Func<PlayerGizmoConfig, ImpBinding<bool>> configGetter)
     {
         var total = Imperium.Visualization.PlayerGizmos.PlayerInfoConfigs.Count;
-        var activated = Imperium.Visualization.PlayerGizmos.PlayerInfoConfigs.Values.Count(
-            config => configGetter(config).Value
+        var activated = Imperium.Visualization.PlayerGizmos.PlayerInfoConfigs.Values.Count(config =>
+            configGetter(config).Value
         );
 
         // Set all active if at least half are inactive and vice-versa
@@ -175,8 +175,8 @@ internal class ObjectVisualizers : ImpWidget
     private static void ToggleEntityConfigs(Func<EntityGizmoConfig, ImpBinding<bool>> configGetter)
     {
         var total = Imperium.Visualization.EntityGizmos.EntityInfoConfigs.Count;
-        var activated = Imperium.Visualization.EntityGizmos.EntityInfoConfigs.Values.Count(
-            config => configGetter(config).Value
+        var activated = Imperium.Visualization.EntityGizmos.EntityInfoConfigs.Values.Count(config =>
+            configGetter(config).Value
         );
 
         // Set all active if at least half are inactive and vice-versa

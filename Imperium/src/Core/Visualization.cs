@@ -4,14 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using BepInEx.Configuration;
 using DunGen;
-using Imperium.API.Types;
-using Imperium.Core.Lifecycle;
 using Imperium.Patches.Systems;
 using Imperium.Types;
 using Imperium.Util;
-using Imperium.Util.Binding;
 using Imperium.Visualizers;
 using UnityEngine;
 using UnityEngine.AI;
@@ -54,8 +50,6 @@ internal class Visualization : ImpLifecycleObject
 
     protected override void Init()
     {
-        base.Init();
-
         // Static visualizers are updated by object lists
         LandmineGizmos = new LandmineGizmos(
             Imperium.ObjectManager.CurrentLevelLandmines,
@@ -291,7 +285,7 @@ internal class Visualization : ImpLifecycleObject
                 objectDict = [];
             }
 
-            foreach (var obj in Object.FindObjectsOfType<T>())
+            foreach (var obj in FindObjectsOfType<T>())
             {
                 if (!objectDict.ContainsKey(obj.GetInstanceID()))
                 {
@@ -365,7 +359,7 @@ internal class Visualization : ImpLifecycleObject
         return type switch
         {
             IdentifierType.TAG => FindGameObjectsWithTag(identifier),
-            IdentifierType.LAYER => Object.FindObjectsOfType<GameObject>()
+            IdentifierType.LAYER => FindObjectsOfType<GameObject>()
                 .Where(obj => obj.layer == LayerMask.NameToLayer(identifier))
                 .ToArray(),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
@@ -431,7 +425,7 @@ internal class Visualization : ImpLifecycleObject
         verts[0] = new Vector3(0f, 0f, 1f);
         verts[vertCount - 1] = new Vector3(0f, 0f, 0f);
 
-        for (var ring = 1; ring < (ringsCount + 1); ring++)
+        for (var ring = 1; ring < ringsCount + 1; ring++)
         {
             // Figure out where in the array to edit for this ring
             var vertOffset = (ring - 1) * (int)SPHERE_LINES_COUNT + 1;

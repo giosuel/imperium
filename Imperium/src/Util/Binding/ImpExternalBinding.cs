@@ -9,7 +9,6 @@ namespace Imperium.Util.Binding;
 /// <summary>
 ///     Intermediate binding for when the value can't be easily bound due to external changes
 ///     Whenever the refresher binding is updated, the child refreshes it's value based on the provided getter function.
-///
 ///     For example, Imperium uses external bindings when a value depends on a game objects availability that depends on if
 ///     the ship has landed or is in space. The getter in this case would be GameObject.Find and the parent binding would
 ///     be <see cref="Imperium.IsSceneLoaded" />.

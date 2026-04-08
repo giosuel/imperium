@@ -1,7 +1,6 @@
 #region
 
 using HarmonyLib;
-using Imperium.Core;
 using Imperium.Interface.MapUI;
 using Imperium.Util;
 
@@ -28,6 +27,7 @@ internal static class HUDManagerPatch
                 __instance.Clock.targetAlpha = 1f;
                 Imperium.TimeOfDay.RefreshClockUI();
             }
+
             return false;
         }
 

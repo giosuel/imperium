@@ -14,8 +14,6 @@ namespace Imperium.Interface.Common;
 
 internal abstract class ImpMultiSelectEntry : MonoBehaviour
 {
-    private ImpBinding<ImpTheme> theme;
-
     /// <summary>
     ///     MultiSelectEntry ImpUI Component - Represents an entry in a <see cref="ImpMultiSelect" />.
     ///     Note: This can also be used without ImpMultiSelect.

@@ -79,7 +79,8 @@ internal class ShipControlWindow : ImperiumWindow
             tooltipDefinition: new TooltipDefinition
             {
                 Title = "Disable Abandoned",
-                Description = "Prevents the game from killing abandoned players.\nAll players will be teleported into the ship instead.",
+                Description =
+                    "Prevents the game from killing abandoned players.\nAll players will be teleported into the ship instead.",
                 Tooltip = tooltip
             }
         );

@@ -19,7 +19,7 @@ public static class Objects
 
         Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
         {
-            NetworkId = item.GetComponent<NetworkObject>().NetworkObjectId,
+            NetworkObj = item.GetComponent<NetworkObject>(),
             Destination = position
         });
     }
@@ -33,7 +33,7 @@ public static class Objects
 
         Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
         {
-            NetworkId = entity.GetComponent<NetworkObject>().NetworkObjectId,
+            NetworkObj = entity.GetComponent<NetworkObject>(),
             Destination = position
         });
     }

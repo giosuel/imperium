@@ -1,7 +1,11 @@
+#region
+
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using WeatherRegistry;
+
+#endregion
 
 namespace Imperium.Integration;
 
@@ -16,7 +20,7 @@ public static class WeatherRegistryIntegration
             return null;
 
         List<LevelWeatherType> weatherTypes = [];
-        foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
+        foreach (var weather in WeatherManager.Weathers)
         {
             weatherTypes.Add(weather.VanillaWeatherType);
         }
@@ -30,6 +34,6 @@ public static class WeatherRegistryIntegration
         if (!IsEnabled)
             return;
 
-        WeatherRegistry.WeatherController.ChangeWeather(level, weather);
+        WeatherController.ChangeWeather(level, weather);
     }
 }

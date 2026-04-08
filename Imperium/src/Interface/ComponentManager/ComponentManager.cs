@@ -10,7 +10,6 @@ using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using Tile = Imperium.Core.LevelEditor.Tile;
 
 #endregion
@@ -27,7 +26,7 @@ public class ComponentManager : BaseUI
 
     private GameObject buttonTemplate;
 
-    private RawImage cameraCanvas;
+    // private RawImage cameraCanvas;
 
     private ComponentPreview preview;
 

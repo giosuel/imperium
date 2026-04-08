@@ -4,7 +4,6 @@ using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl.Widgets;
 using Imperium.Types;
-using TMPro;
 
 #endregion
 
@@ -179,6 +178,22 @@ internal class MoonControlWindow : ImperiumWindow
             "Left/MapObstacles/Security/Close",
             transform,
             () => MoonManager.ToggleSecurityDoors(false),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: theme
+        );
+
+        ImpButton.Bind(
+            "Left/MapObstacles/IndoorFog/On",
+            transform,
+            () => Imperium.MoonManager.ToggleIndoorFog(true),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: theme
+        );
+
+        ImpButton.Bind(
+            "Left/MapObstacles/IndoorFog/Off",
+            transform,
+            () => Imperium.MoonManager.ToggleIndoorFog(false),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );

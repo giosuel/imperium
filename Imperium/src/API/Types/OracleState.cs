@@ -32,11 +32,11 @@ public record OracleState
 
     public IReadOnlyList<CycleInformation> Cycles { get; } =
     [
-        new CycleInformation(), new CycleInformation(),
-        new CycleInformation(), new CycleInformation(),
-        new CycleInformation(), new CycleInformation(),
-        new CycleInformation(), new CycleInformation(),
-        new CycleInformation(), new CycleInformation()
+        new(), new(),
+        new(), new(),
+        new(), new(),
+        new(), new(),
+        new(), new()
     ];
 
     public List<SpawnReport>[] IndoorCycles { get; } = [[], [], [], [], [], [], [], [], [], []];

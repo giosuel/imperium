@@ -11,8 +11,6 @@ using Imperium.Util.Binding;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 using Image = UnityEngine.UI.Image;
 using Random = System.Random;
@@ -87,12 +85,12 @@ public abstract class ImpUtils
 
     public static int ToggleLayerInMask(int layerMask, int layer)
     {
-        if ((layerMask & (1 << layer)) != 0)
+        if ((layerMask & 1 << layer) != 0)
         {
             return layerMask & ~(1 << layer);
         }
 
-        return layerMask | (1 << layer);
+        return layerMask | 1 << layer;
     }
 
     public static int ToggleLayersInMask(int layerMask, params int[] layers)
@@ -272,7 +270,7 @@ public abstract class ImpUtils
                 if (text) ToggleTextActive(text, inverted ? !isActive : isActive);
             };
         }
-        
+
         internal static void ToggleImageActive(Image image, bool isActive)
         {
             image.color = ChangeAlpha(
@@ -308,7 +306,7 @@ public abstract class ImpUtils
     internal abstract class Bindings
     {
         /// <summary>
-        /// Adds or removes a value to / from a set in a binding and updates the binding.
+        ///     Adds or removes a value to / from a set in a binding and updates the binding.
         /// </summary>
         /// <param name="binding"></param>
         /// <param name="key">The key of the object to add to or remove from the set.</param>

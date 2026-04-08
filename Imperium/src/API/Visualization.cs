@@ -28,9 +28,8 @@ public static class Visualization
     }
 
     /// <summary>
-    /// Draws a dynamic cone gizmo for an entity. This gizmo is positioned relative to the entity transform.
-    ///
-    /// This can be used to visualize line of sight for example.
+    ///     Draws a dynamic cone gizmo for an entity. This gizmo is positioned relative to the entity transform.
+    ///     This can be used to visualize line of sight for example.
     /// </summary>
     /// <param name="instance">The entity that owns the gizmo.</param>
     /// <param name="coneAngle">The angle of the cone.</param>
@@ -64,9 +63,8 @@ public static class Visualization
     }
 
     /// <summary>
-    /// Draws a dynamic sphere gizmo for an entity. This gizmo is positioned relative to the entity transform.
-    ///
-    /// This can be used to visualize scan ranges or proximity awareness, for example.
+    ///     Draws a dynamic sphere gizmo for an entity. This gizmo is positioned relative to the entity transform.
+    ///     This can be used to visualize scan ranges or proximity awareness, for example.
     /// </summary>
     /// <param name="instance">The entity that owns the gizmo.</param>
     /// <param name="radius">The radius of the sphere.</param>
@@ -98,9 +96,8 @@ public static class Visualization
     }
 
     /// <summary>
-    /// Draws a static sphere gizmo for an entity. This gizmo is not positioned relative to the entity transform.
-    ///
-    /// This can be used to visualize nest positions, for example.
+    ///     Draws a static sphere gizmo for an entity. This gizmo is not positioned relative to the entity transform.
+    ///     This can be used to visualize nest positions, for example.
     /// </summary>
     /// <param name="instance">The entity that owns the gizmo.</param>
     /// <param name="position">The position of the sphere.</param>
@@ -127,7 +124,7 @@ public static class Visualization
     }
 
     /// <summary>
-    /// Draws a noise attention line from the entity to the noise origin.
+    ///     Draws a noise attention line from the entity to the noise origin.
     /// </summary>
     /// <param name="instance">The source entity.</param>
     /// <param name="origin">The origin of the noise.</param>

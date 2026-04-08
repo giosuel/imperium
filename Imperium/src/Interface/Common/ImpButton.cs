@@ -69,7 +69,7 @@ public abstract class ImpButton
             );
             foreach (var interactableBinding in interactableBindings)
             {
-                interactableBinding.onUpdate += _ => ToggleInteractable(
+                interactableBinding.onTrigger += () => ToggleInteractable(
                     button, icon, text,
                     interactableBindings.All(entry => entry.Value),
                     interactableInvert
@@ -216,6 +216,15 @@ public abstract class ImpButton
             theme.onUpdate += value => OnThemeUpdate(value, buttonObject, true);
             OnThemeUpdate(theme.Value, buttonObject, true);
         }
+    }
+
+    internal static void ToggleButton(Button button, bool isOn, bool inverted = false)
+    {
+        var icon = button.transform.Find("Icon")?.GetComponent<Image>();
+        var text = button.transform.Find("Text")?.GetComponent<TMP_Text>() ??
+                   button.transform.Find("Text (TMP)")?.GetComponent<TMP_Text>();
+
+        ToggleInteractable(button, icon, text, isOn, inverted);
     }
 
     private static void ToggleInteractable(

@@ -1,3 +1,5 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
@@ -5,6 +7,8 @@ using Imperium.Core.Scripts;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+#endregion
 
 namespace Imperium.Core.Lifecycle;
 
@@ -36,9 +40,8 @@ public class WaypointManager : ImpLifecycleObject
     }
 
     /// <summary>
-    /// Gets the list of waypoints for a certain location.
-    ///
-    /// Returns true if the list has already existed.
+    ///     Gets the list of waypoints for a certain location.
+    ///     Returns true if the list has already existed.
     /// </summary>
     internal bool GetLocationWaypoints(string locationName, out HashSet<Waypoint> waypoints)
     {

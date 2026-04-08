@@ -76,14 +76,14 @@ internal static class RoundManagerPatch
     [HarmonyPatch("SpawnScrapInLevel")]
     private static void SpawnScrapInLevelPostfixPatch()
     {
-        Imperium.ObjectManager.RefreshLevelObjects();
+        Imperium.ObjectManager.TriggerRefresh();
     }
 
     [HarmonyPostfix]
     [HarmonyPatch("SpawnOutsideHazards")]
     private static void SpawnOutsideHazardsPostfixPatch()
     {
-        Imperium.ObjectManager.RefreshLevelObjects();
+        Imperium.ObjectManager.TriggerRefresh();
     }
 
     internal static readonly ImpBinding<HashSet<HazardIndicator>> MapHazardPositions = new([]);
@@ -190,7 +190,7 @@ internal static class RoundManagerPatch
     [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
     private static void AdvanceHourAndSpawnNewBatchOfEnemiesPostfixPatch(RoundManager __instance)
     {
-        Imperium.ObjectManager.RefreshLevelObjects();
+        Imperium.ObjectManager.TriggerRefresh();
 
         ImpSpawnTracker.EndCycle(__instance);
 
@@ -223,7 +223,7 @@ internal static class RoundManagerPatch
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("RefreshEnemiesList")]
-    private static void RefreshEnemiesListPostfixPatch()
+    private static void RefreshEnemiesListPostfixPatch(RoundManager __instance)
     {
         Imperium.IsSceneLoaded.SetTrue();
 

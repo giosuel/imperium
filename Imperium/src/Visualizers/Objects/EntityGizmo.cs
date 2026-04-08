@@ -31,7 +31,7 @@ public class EntityGizmo : MonoBehaviour
     private readonly LineRenderer[] pathLines = new LineRenderer[20];
 
     private readonly Dictionary<string, GameObject> VisualizerObjects = [];
-    private readonly Dictionary<string, ulong> VisualizerObjectNetIds = [];
+    private readonly Dictionary<string, NetworkObjectReference> VisualizerObjectNetIds = [];
     private readonly Dictionary<string, float> VisualizerTimers = [];
 
     private Vector3 lastHeardNoisePosition;
@@ -86,8 +86,7 @@ public class EntityGizmo : MonoBehaviour
             visualizer.AddComponent<MeshFilter>().mesh = visualization.GetOrGenerateCone(angle);
 
             VisualizerObjects[identifier] = visualizer;
-            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>()?.NetworkObjectId
-                                                 ?? (ulong)entityController.GetInstanceID();
+            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>();
         }
 
         visualizer.transform.localScale = Vector3.one * length;
@@ -193,8 +192,7 @@ public class EntityGizmo : MonoBehaviour
             );
 
             VisualizerObjects[identifier] = visualizer;
-            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>()?.NetworkObjectId
-                                                 ?? (ulong)entityController.GetInstanceID();
+            VisualizerObjectNetIds[identifier] = entityController.GetComponent<NetworkObject>();
         }
 
         return visualizer;

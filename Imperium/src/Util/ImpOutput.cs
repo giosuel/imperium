@@ -69,7 +69,7 @@ internal class ImpOutput(ManualLogSource logger)
     private static void Repeat(StringBuilder stringBuilder, char c, int count)
     {
         if (count <= 0) return;
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             stringBuilder.Append(c);
         }
@@ -82,28 +82,28 @@ internal class ImpOutput(ManualLogSource logger)
             // No space at all
             return 0;
         }
+
         if (value.Length <= maxLength)
         {
             // Everything fits
             stringBuilder.Append(value);
             return value.Length;
         }
+
+        // width of the visible text before the ellipsys...
+        var elidedLength = maxLength - ELLIPSIS_WIDTH;
+        if (elidedLength <= 0)
+        {
+            // Not enough space to elide
+            stringBuilder.Append(value.AsSpan(0, maxLength));
+        }
         else
         {
-            // width of the visible text before the ellipsys...
-            var elidedLength = maxLength - ELLIPSIS_WIDTH;
-            if (elidedLength <= 0)
-            {
-                // Not enough space to elide
-                stringBuilder.Append(value.AsSpan(0, maxLength));
-            }
-            else
-            {
-                stringBuilder.Append(value.AsSpan(0, elidedLength));
-                stringBuilder.Append(ELLIPSIS);
-            }
-            return maxLength;
+            stringBuilder.Append(value.AsSpan(0, elidedLength));
+            stringBuilder.Append(ELLIPSIS);
         }
+
+        return maxLength;
     }
 
     // Calculate left and right padding around content.
@@ -111,13 +111,14 @@ internal class ImpOutput(ManualLogSource logger)
     // Returned padding is non-negative, even if the content overflows.
     private static (int, int) SplitPadding(int contentSize, int maxSize)
     {
-        int padding = maxSize - contentSize;
+        var padding = maxSize - contentSize;
         if (padding <= 0)
         {
             return (0, 0);
         }
-        int before = padding / 2;
-        int after = padding % 2 == 0 ? before : before + 1;
+
+        var before = padding / 2;
+        var after = padding % 2 == 0 ? before : before + 1;
         return (before, after);
     }
 
@@ -179,25 +180,26 @@ internal class ImpOutput(ManualLogSource logger)
         const int CONTENT_TEXT_MAX_WIDTH = PADDED_TITLE_MAX_WIDTH - 2 * CONTENT_PADDING;
 
         // First pass: estimate box width
-        int paddedWidth = title.Length + 2 * TITLE_PADDING;
+        var paddedWidth = title.Length + 2 * TITLE_PADDING;
         // Note: lines.Max() would crash if empty
         foreach (var line in lines)
         {
             paddedWidth = Math.Max(paddedWidth, line.Length + 2 * CONTENT_PADDING);
         }
+
         paddedWidth = Math.Min(paddedWidth, PADDED_MAX_WIDTH);
-        int boxWidth = paddedWidth + 2 * BOX_BORDER_WIDTH;
-        string paddedWidthHorizontalBorder = string.Concat(Enumerable.Repeat('\u2550', paddedWidth));
-        string boxBorderTop = '\u2552' + paddedWidthHorizontalBorder + '\u2555';
-        string boxBorderMiddle = '\u255e' + paddedWidthHorizontalBorder + '\u2561';
-        string boxBorderBottom = '\u2558' + paddedWidthHorizontalBorder + '\u255b';
+        var boxWidth = paddedWidth + 2 * BOX_BORDER_WIDTH;
+        var paddedWidthHorizontalBorder = string.Concat(Enumerable.Repeat('\u2550', paddedWidth));
+        var boxBorderTop = '\u2552' + paddedWidthHorizontalBorder + '\u2555';
+        var boxBorderMiddle = '\u255e' + paddedWidthHorizontalBorder + '\u2561';
+        var boxBorderBottom = '\u2558' + paddedWidthHorizontalBorder + '\u255b';
 
         // Second pass: elide and pad lines
         List<string> table = new(lines.Count + 4); // 4 = 3 borders + 1 title line
         table.Add(boxBorderTop);
         {
-            int titleTextWidth = Math.Min(title.Length, TITLE_TEXT_MAX_WIDTH);
-            int paddedTitleWidth = titleTextWidth + 2 * TITLE_PADDING;
+            var titleTextWidth = Math.Min(title.Length, TITLE_TEXT_MAX_WIDTH);
+            var paddedTitleWidth = titleTextWidth + 2 * TITLE_PADDING;
             var (paddingLeft, paddingRight) = SplitPadding(paddedTitleWidth, paddedWidth);
 
             StringBuilder row = new(boxWidth);
@@ -215,18 +217,19 @@ internal class ImpOutput(ManualLogSource logger)
         table.Add(boxBorderMiddle);
         foreach (var line in lines)
         {
-            int availableWidth = paddedWidth - 2 * CONTENT_PADDING;
+            var availableWidth = paddedWidth - 2 * CONTENT_PADDING;
             StringBuilder row = new(boxWidth);
 
             row.Append(BOX_DRAWINGS_LIGHT_VERTICAL);
             row.Append(' ');
-            int usedWidth = Elide(row, line, CONTENT_TEXT_MAX_WIDTH);
+            var usedWidth = Elide(row, line, CONTENT_TEXT_MAX_WIDTH);
             Repeat(row, ' ', availableWidth - usedWidth);
             row.Append(' ');
             row.Append(BOX_DRAWINGS_LIGHT_VERTICAL);
 
             table.Add(row.ToString());
         }
+
         table.Add(boxBorderBottom);
 
         foreach (var row in table)

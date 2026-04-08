@@ -26,7 +26,7 @@ public readonly struct EntitySpawnRequest()
 
 public readonly struct EntityDespawnRequest
 {
-    [SerializeField] public ulong NetId { get; init; }
+    [SerializeField] public NetworkObjectReference EntityNetObj { get; init; }
     [SerializeField] public bool IsRespawn { get; init; }
 }
 
@@ -70,7 +70,7 @@ public readonly struct VehicleSpawnResponse
 
 public readonly struct VehicleDespawnRequest
 {
-    [SerializeField] public ulong NetId { get; init; }
+    [SerializeField] public NetworkObjectReference VehicleNetObj { get; init; }
     [SerializeField] public bool IsRespawn { get; init; }
 }
 
@@ -80,22 +80,37 @@ public readonly struct SpiderWebDespawnRequest
     [SerializeField] public int TrapId { get; init; }
 }
 
-public readonly struct ObjectTeleportRequest()
+public readonly struct ObjectTeleportRequest
 {
     // This can be either the network ID or the imperium unique identifier assigned when spawning.
-    [SerializeField] public ulong NetworkId { get; init; } = 0;
+    [SerializeField] public NetworkObjectReference NetworkObj { get; init; }
     [SerializeField] public Vector3 Destination { get; init; }
 }
 
-public readonly struct LocalObjectDespawnRequest
+public readonly struct OutsideObjectSpawnRequest
 {
-    [SerializeField] public LocalObjectType Type { get; init; }
+    [SerializeField] public string Name { get; init; }
     [SerializeField] public Vector3 Position { get; init; }
 }
 
-public readonly struct LocalObjectTeleportRequest
+public readonly struct OutsideObjectDespawnRequest
 {
-    [SerializeField] public LocalObjectType Type { get; init; }
+    [SerializeField] public Vector3 Position { get; init; }
+}
+
+public readonly struct OutsideObjectTeleportRequest
+{
+    [SerializeField] public Vector3 Position { get; init; }
+    [SerializeField] public Vector3 Destination { get; init; }
+}
+
+public readonly struct VainShroudDespawnRequest
+{
+    [SerializeField] public Vector3 Position { get; init; }
+}
+
+public readonly struct VainShroudTeleportRequest
+{
     [SerializeField] public Vector3 Position { get; init; }
     [SerializeField] public Vector3 Destination { get; init; }
 }
@@ -107,23 +122,11 @@ public readonly struct SpiderWebTeleportRequest
     [SerializeField] public Vector3 Position { get; init; }
 }
 
-public readonly struct VentToggleRequest
-{
-    [SerializeField] public ulong NetworkId { get; init; }
-    [SerializeField] public bool IsEnabled { get; init; }
-}
-
 public readonly struct BurstCadaverBloomRequest
 {
     [SerializeField] public ulong PlayerId { get; init; }
     [SerializeField] public Vector3 Position { get; init; }
-    [SerializeField] public NetworkObjectReference NetObj { get; init; }
-}
-
-public enum LocalObjectType
-{
-    OutsideObject,
-    VainShroud
+    [SerializeField] public NetworkObjectReference NetworkObj { get; init; }
 }
 
 public enum ObjectType
