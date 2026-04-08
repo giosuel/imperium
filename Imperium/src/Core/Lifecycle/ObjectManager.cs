@@ -468,7 +468,10 @@ internal class ObjectManager : ImpLifecycleObject
         // Add tag script to outside objects
         foreach (var obj in allOutsideObjects.Values)
         {
-            obj.prefabToSpawn.AddComponent<ImpOutsideObjectTag>();
+            if (!obj.prefabToSpawn.TryGetComponent<ImpOutsideObjectTag>(out _))
+            {
+                obj.prefabToSpawn.AddComponent<ImpOutsideObjectTag>();
+            }
         }
 
         var allStaticPrefabs = new Dictionary<string, NetworkObject>();
@@ -834,8 +837,6 @@ internal class ObjectManager : ImpLifecycleObject
 
                 StartCoroutine(Routine());
             }
-
-            Imperium.RoundManager.SpawnedEnemies.Add(entity);
         }
 
         var mountString = request.Amount == 1 ? "A" : $"{request.Amount}x";
