@@ -565,9 +565,6 @@ internal class ObjectManager : ImpLifecycleObject
 
     private void RefreshLevelObjects()
     {
-        var stopwatch = Stopwatch.StartNew();
-        var stopwatch2 = Stopwatch.StartNew();
-
         HashSet<DoorLock> currentLevelDoors = [];
         HashSet<Turret> currentLevelTurrets = [];
         HashSet<EnemyVent> currentLevelVents = [];
@@ -589,14 +586,6 @@ internal class ObjectManager : ImpLifecycleObject
         {
             // This is cursed but there is no other way
             if (obj.name.Contains("MoldSpore 1") && currentLevelVainShrouds.Add(obj)) continue;
-
-            // if (obj.layer == terrainMask
-            //     && OutsideObjectPrefabNameMap.Contains(obj.name)
-            //     && currentLevelOutsideObjects.Add(obj)
-            //    )
-            // {
-            //     continue;
-            // }
 
             foreach (var component in obj.GetComponents<Component>())
             {
@@ -670,17 +659,10 @@ internal class ObjectManager : ImpLifecycleObject
         SetIfChanged(CurrentLevelSecurityDoors, currentLevelSecurityDoors, ref hasSomethingChanged);
         SetIfChanged(CurrentLevelOutsideObjects, currentLevelOutsideObjects, ref hasSomethingChanged);
 
-        stopwatch.Stop();
-        Imperium.IO.LogDebug($"[PROFILE] Objects refresh time : {stopwatch.ElapsedMilliseconds}");
-
         if (hasSomethingChanged)
         {
-            Imperium.IO.LogInfo("SOMETHING HAS CHANGED");
             CurrentLevelObjectsChanged?.Invoke();
         }
-
-        stopwatch2.Stop();
-        Imperium.IO.LogDebug($"[PROFILE] Total objects refresh time : {stopwatch2.ElapsedMilliseconds}");
     }
 
     private static void SetIfChanged<T>(ImpBinding<IReadOnlyCollection<T>> current, HashSet<T> updated, ref bool hasChanged)

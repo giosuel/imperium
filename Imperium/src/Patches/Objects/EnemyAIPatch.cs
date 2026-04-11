@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
@@ -19,7 +20,7 @@ internal static class EnemyAIPatch
     private static void KillEnemyPatch(EnemyAI __instance)
     {
         Imperium.ObjectManager.CurrentLevelEntities.Refresh();
-        Imperium.IO.LogInfo("Oracle has to resimulate to entity killed");
+        Imperium.IO.LogDebug("[ORACLE] Oracle has to resimulate to entity killed");
         Imperium.Oracle.Resimulate(
             $"Entity {Imperium.ObjectManager.GetDisplayName(__instance.enemyType.enemyName)} was killed."
         );
@@ -55,6 +56,83 @@ internal static class EnemyAIPatch
         if (Imperium.PlayerManager.untargetablePlayers.Value.Contains(playerScript.actualClientId))
         {
             __result = false;
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(
+        "GetAllPlayersInLineOfSightNonAlloc",
+        typeof(float), typeof(int), typeof(Transform), typeof(float), typeof(int)
+    )]
+    private static void GetAllPlayersInLineOfSightNonAlloc1PostfixPatch(
+        EnemyAI __instance, float width, int range, Transform eyeObject, float proximityCheck
+    )
+    {
+        // Line of sight visualization
+        var coneSize = range;
+
+        if (__instance.isOutside
+            && !__instance.enemyType.canSeeThroughFog
+            && Imperium.TimeOfDay.currentLevelWeather == LevelWeatherType.Foggy)
+        {
+            coneSize = Mathf.Clamp(range, 0, 30);
+        }
+
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
+            __instance,
+            eyeObject ? eyeObject : __instance.eye,
+            width,
+            coneSize,
+            material: ImpAssets.WireframeRed
+        );
+
+        if (proximityCheck > 0)
+        {
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
+                __instance,
+                null,
+                proximityCheck,
+                material: ImpAssets.WireframeRed
+            );
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(
+        "GetAllPlayersInLineOfSightNonAlloc",
+        typeof(PlayerControllerB[]), typeof(float), typeof(int), typeof(Transform), typeof(float), typeof(int)
+    )]
+    private static void GetAllPlayersInLineOfSightNonAlloc2PostfixPatch(
+        EnemyAI __instance, PlayerControllerB[] playersArray,
+        float width, int range, Transform eyeObject, float proximityCheck
+    )
+    {
+        // Line of sight visualization
+        var coneSize = range;
+
+        if (__instance.isOutside
+            && !__instance.enemyType.canSeeThroughFog
+            && Imperium.TimeOfDay.currentLevelWeather == LevelWeatherType.Foggy)
+        {
+            coneSize = Mathf.Clamp(range, 0, 30);
+        }
+
+        Imperium.Visualization.EntityGizmos.ConeVisualizerUpdate(
+            __instance,
+            eyeObject ? eyeObject : __instance.eye,
+            width,
+            coneSize,
+            material: ImpAssets.WireframeRed
+        );
+
+        if (proximityCheck > 0)
+        {
+            Imperium.Visualization.EntityGizmos.SphereVisualizerUpdate(
+                __instance,
+                null,
+                proximityCheck,
+                material: ImpAssets.WireframeRed
+            );
         }
     }
 

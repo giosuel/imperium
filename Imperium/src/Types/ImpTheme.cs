@@ -166,10 +166,10 @@ public static class ImpThemeManager
             }
         },
         {
-            "Prismarine", new ImpTheme
+            "Shade", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#061C14FB"),
-                primaryColor = HEXToRGB("#24C69E"),
+                backgroundColor = HEXToRGB("#111621"),
+                primaryColor = HEXToRGB("#464e6b"),
                 textColor = HEXToRGB("#FFFFFF")
             }
         },
@@ -190,15 +190,15 @@ public static class ImpThemeManager
             }
         },
         {
-            "Nordic", new ImpTheme
+            "Prismarine", new ImpTheme
             {
-                backgroundColor = HEXToRGB("#12131CFB"),
-                primaryColor = HEXToRGB("#84A7BC"),
+                backgroundColor = HEXToRGB("#061C14FB"),
+                primaryColor = HEXToRGB("#24C69E"),
                 textColor = HEXToRGB("#FFFFFF")
             }
         },
         {
-            "Breeze", new ImpTheme
+            "Repo", new ImpTheme
             {
                 backgroundColor = HEXToRGB("#090B1CFB"),
                 primaryColor = HEXToRGB("#3088BE"),
