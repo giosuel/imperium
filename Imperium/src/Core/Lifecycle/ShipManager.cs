@@ -1,7 +1,6 @@
 #region
 
 using Imperium.Netcode;
-using Imperium.Patches.Systems;
 using Imperium.Util;
 using Unity.Netcode;
 
@@ -39,37 +38,13 @@ internal class ShipManager : ImpLifecycleObject
     internal readonly ImpNetworkBinding<bool> InstantTakeoff = new(
         "InstantTakeoff",
         Imperium.Networking,
-        masterBinding: Imperium.Settings.Ship.InstantTakeoff,
-        onUpdateClient: value =>
-        {
-            if (value)
-            {
-                StartOfRoundPatch.InstantTakeoffHarmony.PatchAll(typeof(StartOfRoundPatch.InstantTakeoffPatches));
-                if (!Imperium.StartOfRound.inShipPhase) Imperium.StartOfRound.shipAnimator.speed = 1000f;
-            }
-            else
-            {
-                StartOfRoundPatch.InstantTakeoffHarmony.UnpatchSelf();
-            }
-        }
+        masterBinding: Imperium.Settings.Ship.InstantTakeoff
     );
 
     internal readonly ImpNetworkBinding<bool> InstantLanding = new(
         "InstantLanding",
         Imperium.Networking,
-        masterBinding: Imperium.Settings.Ship.InstantLanding,
-        onUpdateClient: value =>
-        {
-            if (value)
-            {
-                StartOfRoundPatch.InstantLandingHarmony.PatchAll(typeof(StartOfRoundPatch.InstantLandingPatches));
-                if (!Imperium.StartOfRound.inShipPhase) Imperium.StartOfRound.shipAnimator.speed = 1000f;
-            }
-            else
-            {
-                StartOfRoundPatch.InstantLandingHarmony.UnpatchSelf();
-            }
-        }
+        masterBinding: Imperium.Settings.Ship.InstantLanding
     );
 
     internal readonly ImpNetworkBinding<bool> UnlockShop = new(

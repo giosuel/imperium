@@ -1,8 +1,9 @@
 #region
 
-using System.Collections.Generic;
+using System.Collections;
 using HarmonyLib;
 using Imperium.API.Types.Networking;
+using Imperium.Netcode;
 using Imperium.Util;
 
 #endregion
@@ -81,37 +82,40 @@ public class StartOfRoundPatch
         }
     }
 
-    internal static readonly Harmony InstantLandingHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantLanding");
-    internal static readonly Harmony InstantTakeoffHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantTakeoff");
-
-    internal static class InstantLandingPatches
+    internal static IEnumerator SkipShipAnimatorIf(IEnumerator result, ImpNetworkBinding<bool> condition)
     {
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(StartOfRound), "openingDoorsSequence", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> openingDoorsSequenceTranspiler(
-            IEnumerable<CodeInstruction> instructions
-        )
+        if (condition.Value)
         {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
+            Imperium.StartOfRound.shipAnimator.speed = 1000f;
+            return ImpUtils.SkipWaitingForSeconds(result);
+        }
+        else
+        {
+            Imperium.StartOfRound.shipAnimator.speed = 1;
+            return result; // pure pass-through
         }
     }
 
-    internal static class InstantTakeoffPatches
+    [HarmonyPostfix]
+    [HarmonyPatch("openingDoorsSequence")]
+    private static IEnumerator openingDoorsSequencePatch(IEnumerator __result)
     {
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(StartOfRound), "EndOfGame", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> EndOfGameTranspiler(IEnumerable<CodeInstruction> instructions)
-        {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
-        }
+        return SkipShipAnimatorIf(__result, Imperium.ShipManager.InstantLanding);
+    }
 
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(RoundManager), "DetectElevatorRunning", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> DetectElevatorRunningTranspiler(
-            IEnumerable<CodeInstruction> instructions
-        )
-        {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
-        }
+    /// see also <see cref="RoundManagerPatch.DetectElevatorRunningPostfixPatch"/>
+    [HarmonyPostfix]
+    [HarmonyPatch("EndOfGame")]
+    private static IEnumerator EndOfGamePatch(IEnumerator __result)
+    {
+        return SkipShipAnimatorIf(__result, Imperium.ShipManager.InstantTakeoff);
+    }
+
+    // TODO: Move to RoundManagerPatch and merge with DetectElevatorRunningPostfixPatch?
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(RoundManager), "DetectElevatorRunning")]
+    private static IEnumerator DetectElevatorRunningPatch(IEnumerator __result)
+    {
+        return SkipShipAnimatorIf(__result, Imperium.ShipManager.InstantTakeoff);
     }
 }

@@ -1,8 +1,22 @@
 # Changelog
 
-## Unreleased
+## Imperium v1.3.1 - Bug Fixes and new Theme
 
-- Never submit score when running challenge moons with Imperium.
+### General Changes
+
+- Fixed Instant Landing and Instant Takeoff options in ship control.
+- Added visualizers for the new LOS functions.
+- Made it so challenge moon scores won't be submitted with Imperium enabled.
+
+### Bug Fixes
+
+- Removed unnecessary log spam.
+- Streamlined various logs' log level to be more consistent.
+
+### QoL Improvements
+
+- Replaced the unpopular 'Nordic' theme with 'Shade' from Imperium for Repo.
+- Renamed the 'Breeze' theme to 'Repo'.
 
 ## Imperium v1.3.0 - Regular Update
 

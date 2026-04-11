@@ -2,6 +2,7 @@
 
 using System.Collections;
 using HarmonyLib;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -59,15 +60,6 @@ internal static class ShovelPatch
     [HarmonyPatch("reelUpShovel")]
     private static IEnumerator reelUpShovelPatch(IEnumerator __result)
     {
-        while (__result.MoveNext())
-        {
-            var it = __result.Current;
-            if (it is WaitForSeconds { })
-            {
-                continue;
-            }
-
-            yield return it;
-        }
+        return ImpUtils.SkipWaitingForSeconds(__result);
     }
 }

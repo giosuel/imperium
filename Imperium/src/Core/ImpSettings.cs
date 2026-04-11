@@ -244,20 +244,7 @@ public class ImpSettings(ConfigFile config)
             config,
             "Game.Cruiser",
             "InstantIgnite",
-            false,
-            primaryUpdate: value =>
-            {
-                if (value)
-                {
-                    VehicleControllerPatch.InstantIgnitionHarmony.PatchAll(
-                        typeof(VehicleControllerPatch.InstantIgnitionPatches)
-                    );
-                }
-                else
-                {
-                    VehicleControllerPatch.InstantIgnitionHarmony.UnpatchSelf();
-                }
-            }
+            false
         );
 
         [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<float> PushForce = new(
