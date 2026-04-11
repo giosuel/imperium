@@ -6,6 +6,7 @@
 
 - Fixed Instant Landing and Instant Takeoff options in ship control.
 - Added visualizers for the new LOS functions.
+- Made it so challenge moon scores won't be submitted with Imperium enabled.
 
 ### Bug Fixes
 
