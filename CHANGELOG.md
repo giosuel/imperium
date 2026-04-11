@@ -1,8 +1,21 @@
 # Changelog
 
-## Unreleased
+## Imperium v1.3.1 - Bug Fixes and new Theme
 
-- Fixed Instant Landing & Instant Takeoff toggles.
+### General Changes
+
+- Added visualizers for the new LOS functions.
+
+### Bug Fixes
+
+- Fixed Instant Landing and Instant Takeoff options in ship control.
+- Removed unnecessary log spam.
+- Streamlined various logs' log level to be more consistent.
+
+### QoL Improvements
+
+- Replaced the unpopular 'Nordic' theme with 'Shade' from Imperium for Repo.
+- Renamed the 'Breeze' theme to 'Repo'.
 
 ## Imperium v1.3.0 - Regular Update
 
