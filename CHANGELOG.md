@@ -4,6 +4,7 @@
 
 ### General Changes
 
+- Fixed Instant Landing and Instant Takeoff options in ship control.
 - Added visualizers for the new LOS functions.
 
 ### Bug Fixes

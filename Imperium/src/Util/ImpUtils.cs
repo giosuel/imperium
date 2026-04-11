@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -323,6 +324,23 @@ public abstract class ImpUtils
             }
 
             binding.Set(binding.Value);
+        }
+    }
+
+    /// <summary>
+    ///     Run original enumerator but remove static waiting times.
+    /// </summary>
+    internal static IEnumerator SkipWaitingForSeconds(IEnumerator result)
+    {
+        while (result.MoveNext())
+        {
+            var it = result.Current;
+            if (it is WaitForSeconds { })
+            {
+                continue;
+            }
+
+            yield return it;
         }
     }
 
