@@ -142,8 +142,6 @@ internal class Visualization : ImpLifecycleObject
     /// </summary>
     internal void RefreshOverlays()
     {
-        var stopwatch = Stopwatch.StartNew();
-
         foreach (var (uniqueIdentifier, definition) in VisualizerDefinitions)
         {
             Visualize(
@@ -156,9 +154,6 @@ internal class Visualization : ImpLifecycleObject
                 definition.material
             );
         }
-
-        stopwatch.Stop();
-        Imperium.IO.LogDebug($"[PROFILE] - SPENT IN VISUALIZATION: {stopwatch.ElapsedMilliseconds}");
     }
 
     public static GameObject VisualizePoint(GameObject obj, float size, Material material = null, string name = null)

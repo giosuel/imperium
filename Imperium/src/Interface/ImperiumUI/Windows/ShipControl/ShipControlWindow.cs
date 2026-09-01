@@ -2,7 +2,10 @@
 
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.ShipControl.Widgets;
+using Imperium.Util;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 #endregion
 
@@ -17,36 +20,13 @@ internal class ShipControlWindow : ImperiumWindow
         content = transform.Find("Content");
 
         InitSettings();
+        InitInstantSettings();
 
         RegisterWidget<Destinations>(content, "Destinations");
     }
 
     private void InitSettings()
     {
-        ImpToggle.Bind(
-            "ShipSettings/InstantLanding",
-            content,
-            Imperium.ShipManager.InstantLanding,
-            theme: theme,
-            tooltipDefinition: new TooltipDefinition
-            {
-                Title = "Instant Landing",
-                Description = "Skips the ship's landing animation.",
-                Tooltip = tooltip
-            }
-        );
-        ImpToggle.Bind(
-            "ShipSettings/InstantTakeoff",
-            content,
-            Imperium.ShipManager.InstantTakeoff,
-            theme: theme,
-            tooltipDefinition: new TooltipDefinition
-            {
-                Title = "Instant Takeoff",
-                Description = "Skips the ship's take-off animation.",
-                Tooltip = tooltip
-            }
-        );
         ImpToggle.Bind(
             "ShipSettings/OverrideDoors",
             content,
@@ -93,6 +73,46 @@ internal class ShipControlWindow : ImperiumWindow
             {
                 Title = "Mute Speaker",
                 Description = "Please just shut up!",
+                Tooltip = tooltip
+            }
+        );
+    }
+    
+    private void InitInstantSettings()
+    {
+        ImpToggle.Bind(
+            "InstantSettings/Takeoff",
+            content,
+            Imperium.ShipManager.InstantTakeoff,
+            theme: theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Skip Takeoff",
+                Description = "Skips the ship's take-off animation.",
+                Tooltip = tooltip
+            }
+        );
+        ImpToggle.Bind(
+            "InstantSettings/Landing",
+            content,
+            Imperium.ShipManager.InstantLanding,
+            theme: theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Skip Landing",
+                Description = "Skips the ship's landing animation.",
+                Tooltip = tooltip
+            }
+        );
+        ImpToggle.Bind(
+            "InstantSettings/Route",
+            content,
+            Imperium.ShipManager.InstantRoute,
+            theme: theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Skip Routing",
+                Description = "Skips the ship's route animation.",
                 Tooltip = tooltip
             }
         );

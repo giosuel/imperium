@@ -117,25 +117,46 @@ internal static class PlayerControllerPatch
     [HarmonyPatch("ClickHoldInteraction")]
     private static void ClickHoldInteractionPrefixPatch(PlayerControllerB __instance)
     {
-        if (!__instance.hoveringOverTrigger) return;
+        var trigger = __instance.hoveringOverTrigger;
+        if (!trigger) return;
+
+        // Certain interaction triggers are not meant to be skipped on hold,
+        // because they are not fixed animations with an end goal/state.
+        // There are only 3 such triggers in the game, and they require special treatment
+        // via two additional checks:
+        //
+        // - Loud Horn (ShipHorn prefab) sets timeToHold to -1,
+        //   and `HUDManager.HoldInteractionFill` specifically checks for it.
+        //
+        // - Cruiser's "Try Ignition" and Honk both set `timeToHoldSpeedMultiplier` to zero,
+        //   and `HUDManager.HoldInteractionFill` multiplies it by `timeDelta`, which results in
+        //   `holdFillAmount` never increasing and never fulfilling.
+        //
+        // Arguably, `timeToHoldSpeedMultiplier` was added specifically for the Cruiser,
+        // and some other interact triggers in the Cruiser also have it set to zero,
+        // however, those other triggers do not set `holdInteraction` flag, thus are not affected,
+        // because without the flag `timeToHoldSpeedMultiplier` does nothing on its own.
+        //
+        // See also: https://github.com/giosuel/imperium/issues/89
+        if (trigger.timeToHold == -1f) return;
+        if (trigger.timeToHoldSpeedMultiplier == 0f) return;
 
         if (Imperium.Settings.AnimationSkipping.InteractHold.Value)
         {
             // Backup original hold
-            if (!OriginalTriggerHold.ContainsKey(__instance.hoveringOverTrigger.GetInstanceID()))
+            if (!OriginalTriggerHold.ContainsKey(trigger.GetInstanceID()))
             {
-                OriginalTriggerHold[__instance.hoveringOverTrigger.GetInstanceID()] =
-                    __instance.hoveringOverTrigger.holdInteraction;
+                OriginalTriggerHold[trigger.GetInstanceID()] = trigger.holdInteraction;
             }
 
-            __instance.hoveringOverTrigger.holdInteraction = false;
+            trigger.holdInteraction = false;
         }
         else
         {
             // Restore original hold if it has been changed before
-            if (OriginalTriggerHold.TryGetValue(__instance.hoveringOverTrigger.GetInstanceID(), out var originalHold))
+            if (OriginalTriggerHold.TryGetValue(trigger.GetInstanceID(), out var originalHold))
             {
-                __instance.hoveringOverTrigger.holdInteraction = originalHold;
+                trigger.holdInteraction = originalHold;
             }
         }
     }

@@ -1,8 +1,9 @@
 #region
 
-using System.Collections.Generic;
+using System.Collections;
 using HarmonyLib;
 using Imperium.API.Types.Networking;
+using Imperium.Core.Scripts;
 using Imperium.Util;
 
 #endregion
@@ -13,45 +14,10 @@ namespace Imperium.Patches.Systems;
 public class StartOfRoundPatch
 {
     [HarmonyPrefix]
-    [HarmonyPatch("StartGame")]
-    private static void StartGamePrefixPatch(StartOfRound __instance)
-    {
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
-        __instance.shipAnimator.speed = Imperium.ShipManager.InstantLanding.Value ? 1000f : 1;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch("ShipLeave")]
-    private static void ShipLeavePrefixPatch(StartOfRound __instance)
-    {
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
-        __instance.shipAnimator.speed = Imperium.ShipManager.InstantTakeoff.Value ? 1000f : 1;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("openingDoorsSequence")]
-    private static void openingDoorsSequencePostfixPatch(StartOfRound __instance)
-    {
-        // Reset ship animator
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
-        __instance.shipAnimator.speed = 1;
-    }
-
-    [HarmonyPrefix]
     [HarmonyPatch("TeleportPlayerInShipIfOutOfRoomBounds")]
     private static bool TeleportPlayerInShipIfOutOfRoomBoundsPatch()
     {
         return !Imperium.Settings.Player.DisableOOB.Value;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("EndOfGame")]
-    private static void EndOfGamePostfixPatch(StartOfRound __instance)
-    {
-        Imperium.IsSceneLoaded.SetFalse();
     }
 
     [HarmonyPrefix]
@@ -81,37 +47,39 @@ public class StartOfRoundPatch
         }
     }
 
-    internal static readonly Harmony InstantLandingHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantLanding");
-    internal static readonly Harmony InstantTakeoffHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantTakeoff");
-
-    internal static class InstantLandingPatches
+    [HarmonyPostfix]
+    [HarmonyPatch("openingDoorsSequence")]
+    private static IEnumerator openingDoorsSequencePostfixPatch(IEnumerator __result)
     {
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(StartOfRound), "openingDoorsSequence", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> openingDoorsSequenceTranspiler(
-            IEnumerable<CodeInstruction> instructions
-        )
-        {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
-        }
+        return ImpShipAnimatorManager.SkipAnimationIf(__result, Imperium.ShipManager.InstantLanding.Value);
     }
 
-    internal static class InstantTakeoffPatches
+    [HarmonyPostfix]
+    [HarmonyPatch("gameOverAnimation")]
+    private static IEnumerator gameOverAnimationPostfixPatch(IEnumerator __result)
     {
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(StartOfRound), "EndOfGame", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> EndOfGameTranspiler(IEnumerable<CodeInstruction> instructions)
-        {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
-        }
+        return ImpUtils.SkipWaitingForSecondsIf(__result, Imperium.ShipManager.InstantTakeoff.Value);
+    }
 
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(RoundManager), "DetectElevatorRunning", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> DetectElevatorRunningTranspiler(
-            IEnumerable<CodeInstruction> instructions
-        )
-        {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
-        }
+    [HarmonyPostfix]
+    [HarmonyPatch("ShipLeave")]
+    private static void ShipLeavePostfixPatch()
+    {
+        ImpShipAnimatorManager.SkipAnimationIf(Imperium.ShipManager.InstantTakeoff.Value);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("EndOfGame")]
+    private static IEnumerator EndOfGamePostfixPatch(IEnumerator __result)
+    {
+        Imperium.IsSceneLoaded.SetFalse();
+        return ImpUtils.SkipWaitingForSecondsIf(__result, Imperium.ShipManager.InstantTakeoff.Value);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("TravelToLevelEffects")]
+    private static IEnumerator TravelToLevelEffectsPostfixPatch(IEnumerator __result)
+    {
+        return ImpShipAnimatorManager.SkipAnimationIf(__result, Imperium.ShipManager.InstantRoute.Value);
     }
 }

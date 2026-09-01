@@ -62,8 +62,6 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
     {
         yield return 0;
 
-        var stopwatch = Stopwatch.StartNew();
-
         // Skip udpating if no insights are visible
         if (InsightVisibilityBindings.Value.All(binding => !binding.Value.Value)) yield break;
 
@@ -98,9 +96,6 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
                 }
             }
         }
-
-        stopwatch.Stop();
-        Imperium.IO.LogDebug($"[PROFILE] - SPENT IN INSIGHTS: {stopwatch.ElapsedMilliseconds}");
     }
 
     /// <summary>

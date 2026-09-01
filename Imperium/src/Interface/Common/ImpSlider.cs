@@ -74,7 +74,7 @@ public class ImpSlider : MonoBehaviour
         var sliderObject = container.Find(path);
         if (!sliderObject)
         {
-            Imperium.IO.LogInfo($"[UI] Failed to bind slider '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogWarning($"[UI] Failed to bind slider '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 

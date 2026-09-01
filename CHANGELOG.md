@@ -1,5 +1,31 @@
 # Changelog
 
+## Imperium v1.4.0 - Bug Fixes and Ship Control Updates
+
+### General Changes
+
+- Fixed Instant Landing and Instant Takeoff options in ship control.
+- Added visualizers for the new LOS functions.
+- Made it so challenge moon scores won't be submitted with Imperium enabled.
+- Added the possibility to change the custom welcome message.
+- Speedy Shovel now resets player animation speed right after hit.
+- Added a button to manually trigger meteor showers in the moon control window.
+- Reworked Instant Takeoff & Landing animation skips, added Instant Route toggle, adjusted Ship Control UI accordingly.
+
+### Bug Fixes
+
+- Removed unnecessary log spam.
+- Streamlined various logs' log level to be more consistent.
+- Fixed Interact Hold setting that prevented interactions with Ship's Loud Horn, Cruiser's "Try Ignition" and Honk triggers.
+
+### QoL Improvements
+
+- Replaced the unpopular 'Nordic' theme with 'Shade' from Imperium for Repo.
+- Renamed the 'Breeze' theme to 'Repo'.
+- Moved the "Disable Le Funni" config to the hidden category.
+- Adjusted most of the themes slightly to make them more consistent.
+- Adjusted Fire Exit teleportation to not teleport out of bounds.
+
 ## Imperium v1.3.0 - Regular Update
 
 This update tackles a number of long-standing bugs alongside several frequently requested features. The biggest change under the hood is a rework of the object explorer's multiplayer functionality, which is now far more robust against desync and network latency: updates are only sent when objects actually change, the explorer refreshes periodically to stay in sync, and RPCs are more consistently routed through the host for better access control.

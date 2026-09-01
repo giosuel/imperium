@@ -45,7 +45,7 @@ public abstract class ImpButton
         var buttonObject = container.Find(path);
         if (!buttonObject || !buttonObject.TryGetComponent<Button>(out var button))
         {
-            Imperium.IO.LogInfo($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogWarning($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 
@@ -112,7 +112,7 @@ public abstract class ImpButton
         var buttonObject = container.Find(path);
         if (!buttonObject)
         {
-            Imperium.IO.LogInfo($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
+            Imperium.IO.LogWarning($"[UI] Failed to bind button '{Debugging.GetTransformPath(container)}/{path}'");
             return null;
         }
 

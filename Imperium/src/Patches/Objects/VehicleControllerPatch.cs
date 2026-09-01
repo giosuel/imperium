@@ -1,5 +1,6 @@
 #region
 
+using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
 using Imperium.Util;
@@ -74,15 +75,17 @@ public static class VehicleControllerPatch
         if (Imperium.Settings.Cruiser.InstantIgnite.Value) __instance.chanceToStartIgnition = 100;
     }
 
-    internal static readonly Harmony InstantIgnitionHarmony = new(PluginInfo.PLUGIN_GUID + ".InstantIgnition");
-
-    internal static class InstantIgnitionPatches
+    [HarmonyPostfix]
+    [HarmonyPatch("TryIgnition")]
+    private static IEnumerator TryIgnitionPatch(IEnumerator __result)
     {
-        [HarmonyTranspiler]
-        [HarmonyPatch(typeof(VehicleController), "TryIgnition", MethodType.Enumerator)]
-        private static IEnumerable<CodeInstruction> TryIgnitionTranspiler(IEnumerable<CodeInstruction> instructions)
+        if (Imperium.Settings.Cruiser.InstantIgnite.Value)
         {
-            return ImpUtils.Transpiling.SkipWaitingForSeconds(instructions);
+            return ImpUtils.SkipWaitingForSeconds(__result);
+        }
+        else
+        {
+            return __result; // pure pass-through
         }
     }
 }

@@ -53,4 +53,18 @@ internal static class HUDManagerPatch
             flip = false;
         }
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("GetRankAndSubmitScore")]
+    private static bool GetRankAndSubmitScorePatch(HUDManager __instance)
+    {
+        if (Imperium.StartOfRound.isChallengeFile)
+        {
+            // Skip the original method execution:
+            // do not submit score when running challenge moons with Imperium
+            __instance.statsUIElements.challengeRankText.text = "---";
+            return false;
+        }
+        return true;
+    }
 }

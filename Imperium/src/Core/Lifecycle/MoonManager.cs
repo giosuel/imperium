@@ -35,6 +35,10 @@ internal class MoonManager : ImpLifecycleObject
     private readonly ImpNetEvent cleanFloorEvent = new(
         "CleanFloor", Imperium.Networking
     );
+    
+    private readonly ImpNetEvent triggerMeteorShower = new(
+        "TriggerMeteorShower", Imperium.Networking
+    );
 
     private readonly ImpNetMessage<bool> toggleIndoorFog = new(
         "ToggleIndoorFog", Imperium.Networking
@@ -46,6 +50,7 @@ internal class MoonManager : ImpLifecycleObject
         if (NetworkManager.Singleton.IsHost)
         {
             changeWeatherMessage.OnServerReceive += OnWeatherChangeServer;
+            triggerMeteorShower.OnServerReceive += OnTriggerMeteorShowerServer;
         }
 
         cleanFloorEvent.OnClientRecive += OnCleanFloorEvent;
@@ -189,6 +194,12 @@ internal class MoonManager : ImpLifecycleObject
         WeatherVariable1.Sync(Imperium.TimeOfDay.currentWeatherVariable);
         WeatherVariable2.Sync(Imperium.TimeOfDay.currentWeatherVariable2);
     }
+    
+    [ImpAttributes.RemoteMethod]
+    internal void TriggerMeteorShower()
+    {
+        triggerMeteorShower.DispatchToServer();
+    }
 
     [ImpAttributes.RemoteMethod]
     internal void ToggleIndoorFog(bool isEnabled)
@@ -317,6 +328,13 @@ internal class MoonManager : ImpLifecycleObject
         {
             WeatherRegistryIntegration.ChangeWeather(Imperium.StartOfRound.levels[request.LevelIndex], request.WeatherType);
         }
+    }
+    
+    [ImpAttributes.HostOnly]
+    private void OnTriggerMeteorShowerServer(ulong _)
+    {
+        Imperium.TimeOfDay.MeteorWeather.ResetMeteorWeather();
+        Imperium.TimeOfDay.MeteorWeather.BeginDay(Imperium.TimeOfDay.normalizedTimeOfDay);
     }
 
     [ImpAttributes.LocalMethod]

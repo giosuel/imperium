@@ -19,7 +19,7 @@ internal class Oracle : ImpLifecycleObject
 
     internal void Simulate()
     {
-        Imperium.IO.LogInfo("[ORACLE] Oracle is simulating...");
+        Imperium.IO.LogDebug("[ORACLE] Oracle is simulating...");
         Simulate(false, null);
     }
 
@@ -126,7 +126,8 @@ internal class Oracle : ImpLifecycleObject
         for (var i = State.Value.CurrentCycle; i <= 9; i++)
         {
             Imperium.IO.LogDebug(
-                $"[ORACLE] Simulating cycle {i} at currentTime: {currentTime}, currentHour: {currentHour}");
+                $"[ORACLE] Simulating cycle {i} at currentTime: {currentTime}, currentHour: {currentHour}"
+                );
 
             State.Value.Cycles[i].CycleTime = currentTime;
 

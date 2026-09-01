@@ -29,7 +29,7 @@ internal class PreferencesWindow : ImperiumWindow
         ImpToggle.Bind("LoggingToggle", general, Imperium.Settings.Preferences.GeneralLogging, theme);
         ImpToggle.Bind("OracleLoggingToggle", general, Imperium.Settings.Preferences.OracleLogging, theme);
         ImpToggle.Bind("LeftHandedToggle", general, Imperium.Settings.Preferences.LeftHandedMode, theme);
-        ImpToggle.Bind("CustomWelcome", general, Imperium.Settings.Preferences.CustomWelcome, theme);
+        ImpToggle.Bind("CustomWelcome", general, Imperium.Settings.Preferences.CustomWelcomeEnabled, theme);
         ImpToggle.Bind("TooltipsToggle", general, Imperium.Settings.Preferences.ShowTooltips, theme);
 
         // Play click sounds needs to be the opposite of the setting here, as we are about to toggle it

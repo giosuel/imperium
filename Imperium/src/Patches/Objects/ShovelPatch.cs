@@ -1,7 +1,9 @@
 #region
 
 using System.Collections;
+using GameNetcodeStuff;
 using HarmonyLib;
+using Imperium.Util;
 using UnityEngine;
 
 #endregion
@@ -11,9 +13,6 @@ namespace Imperium.Patches.Objects;
 [HarmonyPatch(typeof(Shovel))]
 internal static class ShovelPatch
 {
-    private static readonly int ShovelHit = Animator.StringToHash("shovelHit");
-    private static readonly int ReelingUp = Animator.StringToHash("reelingUp");
-
     [HarmonyPostfix]
     [HarmonyPatch("DiscardItem")]
     internal static void DiscardItemPatch(Shovel __instance)
@@ -21,53 +20,118 @@ internal static class ShovelPatch
         Imperium.Visualization.ShovelGizmos.Refresh(__instance, false);
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch("ItemActivate")]
-    internal static bool ItemActivate(Shovel __instance, bool used, bool buttonDown = true)
-    {
-        if (__instance.playerHeldBy == null)
-        {
-            // Vanilla would simply `return;` anyway
-            return true;
-        }
-
-        if (!Imperium.Settings.Shovel.Speedy.Value)
-        {
-            __instance.playerHeldBy.playerBodyAnimator.speed = 1;
-            return true;
-        }
-
-        __instance.isHoldingButton = buttonDown;
-        if (!__instance.reelingUp && buttonDown)
-        {
-            __instance.playerHeldBy.playerBodyAnimator.speed = 3;
-            __instance.reelingUp = true;
-
-            __instance.previousPlayerHeldBy = __instance.playerHeldBy;
-
-            if (__instance.reelingUpCoroutine != null) __instance.StopCoroutine(__instance.reelingUpCoroutine);
-            __instance.reelingUpCoroutine = __instance.StartCoroutine(__instance.reelUpShovel());
-        }
-
-        return false;
-    }
-
     /// <summary>
-    ///     Run original enumerator <see cref="Shovel.reelUpShovel" /> but remove static waiting times.
+    ///     Run the original <see cref="Shovel.reelUpShovel" /> coroutine,
+    ///     but remove static waiting times and setup/reset speed.
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("reelUpShovel")]
-    private static IEnumerator reelUpShovelPatch(IEnumerator __result)
+    internal static IEnumerator reelUpShovelPostfixPatch(IEnumerator __result, Shovel __instance)
     {
-        while (__result.MoveNext())
+        if (Imperium.Settings.Shovel.Speedy.Value)
         {
-            var it = __result.Current;
-            if (it is WaitForSeconds { })
-            {
-                continue;
-            }
-
-            yield return it;
+            return SpeedyShovelPlayerBehaviour.reelUpShovel(__result, __instance);
         }
+        else
+        {
+            // just run vanilla
+            return __result;
+        }
+    }
+}
+
+internal class SpeedyShovelPlayerBehaviour : MonoBehaviour
+{
+    private int LayerIndex;
+
+    private Animator PlayerBodyAnimator;
+
+    private Coroutine Coroutine;
+
+    private const float SPEED_DEFAULT = 1f;
+    private const float SPEED_SPEEDY = 3f;
+
+    /// <summary>
+    ///     Run the original <see cref="Shovel.reelUpShovel" /> coroutine,
+    ///     but remove static waiting times and setup/reset speed.
+    ///
+    ///     Assumes that Speedy Shovel setting is enabled at the call time.
+    /// </summary>
+    internal static IEnumerator reelUpShovel(IEnumerator source, Shovel shovel)
+    {
+        var self = ImpUtils.GetOrAddComponent<SpeedyShovelPlayerBehaviour>(shovel.playerHeldBy);
+        self.ReelUp();
+
+        var wrapper = ImpUtils.SkipWaitingForSeconds(source);
+        while (wrapper.MoveNext())
+        {
+            yield return wrapper.Current;
+        }
+        // reelingUpCoroutine has been reset to null at the end of vanilla method,
+        // so StopCoroutine won't be called for whatever comes next. Hence this custom
+        // MonoBehaviour with our own coroutine management.
+        self.ResetSpeedAfterAnimation();
+    }
+
+    private void Awake()
+    {
+        PlayerBodyAnimator = gameObject.GetComponent<PlayerControllerB>().playerBodyAnimator;
+        LayerIndex = PlayerBodyAnimator.GetLayerIndex(ImpAnimatorHash.Metarig.Layer_HoldingItemsBothHands);
+    }
+
+    private void ReelUp()
+    {
+        StopResetCoroutine();
+        if (Imperium.Settings.Shovel.Speedy.Value)
+        {
+            SpeedUp();
+        }
+        else
+        {
+            ResetSpeed();
+        }
+    }
+
+    private void ResetSpeedAfterAnimation()
+    {
+        StopResetCoroutine();
+        Coroutine = StartCoroutine(ResetSpeedAfterAnimationCoroutine());
+    }
+
+    private void StopResetCoroutine()
+    {
+        if (Coroutine != null)
+        {
+            StopCoroutine(Coroutine);
+        }
+    }
+
+    private IEnumerator ResetSpeedAfterAnimationCoroutine()
+    {
+        // Wait until the (sped up) animation is completed before resetting the speed
+        yield return new WaitUntil(() =>
+        {
+            AnimatorStateInfo stateInfo = PlayerBodyAnimator.GetCurrentAnimatorStateInfo(LayerIndex);
+            var hash = stateInfo.shortNameHash;
+            return hash != ImpAnimatorHash.Metarig.ShovelReelUp
+                && hash != ImpAnimatorHash.Metarig.HitShovel;
+        });
+        ResetSpeed();
+        Coroutine = null;
+    }
+
+    private void SpeedUp()
+    {
+        SetSpeed(SPEED_SPEEDY);
+    }
+
+    private void ResetSpeed()
+    {
+        SetSpeed(SPEED_DEFAULT);
+    }
+
+    private void SetSpeed(float speed)
+    {
+        PlayerBodyAnimator.speed = speed;
     }
 }

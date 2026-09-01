@@ -165,13 +165,15 @@ public class Teleportation : ImpWidget
         foreach (var obj in objs)
         {
             if (obj.name != "FireExitDoor" || obj.transform.position.y > -100) continue;
+            // 'right' is in front of the door, so player won't get pushed out of bounds
+            var indoorTeleportPosition = obj.transform.position + 1 * obj.transform.right;
 
             var newFireExit = Instantiate(fireExitTemplate, fireExitContainer);
             var newFireExitText = newFireExit.transform.Find("Text").GetComponent<TMP_Text>();
             newFireExitText.text = $"Exit #{fireExitCounter + 1}";
 
             var newFireExitButton = newFireExit.transform.GetComponent<Button>();
-            newFireExitButton.onClick.AddListener(() => TeleportTo(obj.transform.position));
+            newFireExitButton.onClick.AddListener(() => TeleportTo(indoorTeleportPosition));
             ImpThemeManager.Style(
                 theme.Value,
                 newFireExitButton.transform,

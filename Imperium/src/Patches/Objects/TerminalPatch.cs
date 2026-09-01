@@ -19,13 +19,13 @@ internal static class TerminalPatch
         [HarmonyPatch("Start")]
         private static void StartPatch()
         {
-            if (!Imperium.Settings.Preferences.CustomWelcome.Value) return;
+            if (string.IsNullOrEmpty(Imperium.Settings.Preferences.CustomWelcome.Value)) return;
 
             var ingamePlayerHud = GameObject.Find("IngamePlayerHUD");
             if (ingamePlayerHud)
             {
                 var tipText = ingamePlayerHud.transform.Find("BottomMiddle/SystemsOnline/TipLeft1");
-                tipText.GetComponent<TMP_Text>().text = "GREETINGS, PADAWAN";
+                tipText.GetComponent<TMP_Text>().text = Imperium.Settings.Preferences.CustomWelcome.Value;
                 tipText.GetComponent<TMP_Text>().fontSize = 30;
             }
         }

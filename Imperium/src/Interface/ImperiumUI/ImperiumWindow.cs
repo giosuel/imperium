@@ -258,7 +258,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         if (windowGroup)
         {
             if (fadeAnimation != null) StopCoroutine(fadeAnimation);
-            fadeAnimation = StartCoroutine(animateOpacityTo(0.15f, 0.9f));
+            fadeAnimation = StartCoroutine(animateOpacityTo(0.15f, 0.95f));
         }
     }
 

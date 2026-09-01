@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -326,25 +327,42 @@ public abstract class ImpUtils
         }
     }
 
-    internal abstract class Transpiling
+    /// <summary>
+    ///     Run original enumerator but remove static waiting times.
+    /// </summary>
+    internal static IEnumerator SkipWaitingForSeconds(IEnumerator result)
     {
-        internal static IEnumerable<CodeInstruction> SkipWaitingForSeconds(IEnumerable<CodeInstruction> instructions)
+        while (result.MoveNext())
         {
-            var codes = new List<CodeInstruction>(instructions);
-
-            for (var i = 0; i < codes.Count; i++)
+            var it = result.Current;
+            if (it is WaitForSeconds { })
             {
-                if (i >= 2
-                    && codes[i].opcode == OpCodes.Stfld
-                    && codes[i - 1].opcode == OpCodes.Newobj
-                    && codes[i - 2].opcode == OpCodes.Ldc_R4
-                   )
-                {
-                    codes[i - 2].operand = 0f;
-                }
+                continue;
             }
 
-            return codes.AsEnumerable();
+            yield return it;
         }
+    }
+
+    /// <summary>
+    ///     Wrap original enumerator in <see cref="SkipWaitingForSeconds" /> if condition is true, otherwise act as a pass-through.
+    /// </summary>
+    internal static IEnumerator SkipWaitingForSecondsIf(IEnumerator result, bool condition)
+    {
+        return condition ? SkipWaitingForSeconds(result) : result;
+    }
+
+    internal static T GetOrAddComponent<T>(Component self) where T : Component
+    {
+        return GetOrAddComponent<T>(self.gameObject);
+    }
+
+    internal static T GetOrAddComponent<T>(GameObject self) where T : Component
+    {
+        if (!self.TryGetComponent<T>(out var component))
+        {
+            component = self.AddComponent<T>();
+        }
+        return component;
     }
 }

@@ -16,6 +16,7 @@ internal class MoonControlWindow : ImperiumWindow
         InitSpawnPropertyFields();
         InitMapObstacleButtons();
         InitEntitySpawning();
+        InitEventControls();
 
         RegisterWidget<WeatherForecaster>(transform, "Right/Weather");
         RegisterWidget<TimeManipulation>(transform, "Right/Time");
@@ -202,6 +203,17 @@ internal class MoonControlWindow : ImperiumWindow
             "Left/MapObstacles/Gunk/Clean",
             transform,
             () => Imperium.MoonManager.CleanFloor(),
+            interactableBindings: Imperium.IsSceneLoaded,
+            theme: theme
+        );
+    }
+
+    private void InitEventControls()
+    {
+        ImpButton.Bind(
+            "Right/Events/MeteorShower",
+            transform,
+            () => Imperium.MoonManager.TriggerMeteorShower(),
             interactableBindings: Imperium.IsSceneLoaded,
             theme: theme
         );
