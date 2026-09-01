@@ -3,7 +3,7 @@
 using System.Collections;
 using HarmonyLib;
 using Imperium.API.Types.Networking;
-using Imperium.Netcode;
+using Imperium.Core.Scripts;
 using Imperium.Util;
 
 #endregion
@@ -14,45 +14,10 @@ namespace Imperium.Patches.Systems;
 public class StartOfRoundPatch
 {
     [HarmonyPrefix]
-    [HarmonyPatch("StartGame")]
-    private static void StartGamePrefixPatch(StartOfRound __instance)
-    {
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
-        __instance.shipAnimator.speed = Imperium.ShipManager.InstantLanding.Value ? 1000f : 1;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch("ShipLeave")]
-    private static void ShipLeavePrefixPatch(StartOfRound __instance)
-    {
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = true;
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = true;
-        __instance.shipAnimator.speed = Imperium.ShipManager.InstantTakeoff.Value ? 1000f : 1;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("openingDoorsSequence")]
-    private static void openingDoorsSequencePostfixPatch(StartOfRound __instance)
-    {
-        // Reset ship animator
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
-        __instance.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
-        __instance.shipAnimator.speed = 1;
-    }
-
-    [HarmonyPrefix]
     [HarmonyPatch("TeleportPlayerInShipIfOutOfRoomBounds")]
     private static bool TeleportPlayerInShipIfOutOfRoomBoundsPatch()
     {
         return !Imperium.Settings.Player.DisableOOB.Value;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("EndOfGame")]
-    private static void EndOfGamePostfixPatch(StartOfRound __instance)
-    {
-        Imperium.IsSceneLoaded.SetFalse();
     }
 
     [HarmonyPrefix]
@@ -82,40 +47,39 @@ public class StartOfRoundPatch
         }
     }
 
-    internal static IEnumerator SkipShipAnimatorIf(IEnumerator result, ImpNetworkBinding<bool> condition)
-    {
-        if (condition.Value)
-        {
-            Imperium.StartOfRound.shipAnimator.speed = 1000f;
-            return ImpUtils.SkipWaitingForSeconds(result);
-        }
-        else
-        {
-            Imperium.StartOfRound.shipAnimator.speed = 1;
-            return result; // pure pass-through
-        }
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch("openingDoorsSequence")]
-    private static IEnumerator openingDoorsSequencePatch(IEnumerator __result)
+    private static IEnumerator openingDoorsSequencePostfixPatch(IEnumerator __result)
     {
-        return SkipShipAnimatorIf(__result, Imperium.ShipManager.InstantLanding);
+        return ImpShipAnimatorManager.SkipAnimationIf(__result, Imperium.ShipManager.InstantLanding.Value);
     }
 
-    /// see also <see cref="RoundManagerPatch.DetectElevatorRunningPostfixPatch"/>
+    [HarmonyPostfix]
+    [HarmonyPatch("gameOverAnimation")]
+    private static IEnumerator gameOverAnimationPostfixPatch(IEnumerator __result)
+    {
+        return ImpUtils.SkipWaitingForSecondsIf(__result, Imperium.ShipManager.InstantTakeoff.Value);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("ShipLeave")]
+    private static void ShipLeavePostfixPatch()
+    {
+        ImpShipAnimatorManager.SkipAnimationIf(Imperium.ShipManager.InstantTakeoff.Value);
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("EndOfGame")]
-    private static IEnumerator EndOfGamePatch(IEnumerator __result)
+    private static IEnumerator EndOfGamePostfixPatch(IEnumerator __result)
     {
-        return SkipShipAnimatorIf(__result, Imperium.ShipManager.InstantTakeoff);
+        Imperium.IsSceneLoaded.SetFalse();
+        return ImpUtils.SkipWaitingForSecondsIf(__result, Imperium.ShipManager.InstantTakeoff.Value);
     }
 
-    // TODO: Move to RoundManagerPatch and merge with DetectElevatorRunningPostfixPatch?
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(RoundManager), "DetectElevatorRunning")]
-    private static IEnumerator DetectElevatorRunningPatch(IEnumerator __result)
+    [HarmonyPatch("TravelToLevelEffects")]
+    private static IEnumerator TravelToLevelEffectsPostfixPatch(IEnumerator __result)
     {
-        return SkipShipAnimatorIf(__result, Imperium.ShipManager.InstantTakeoff);
+        return ImpShipAnimatorManager.SkipAnimationIf(__result, Imperium.ShipManager.InstantRoute.Value);
     }
 }

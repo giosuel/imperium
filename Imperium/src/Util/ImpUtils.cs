@@ -344,12 +344,20 @@ public abstract class ImpUtils
         }
     }
 
-    internal static T GetOrAddComponent<T>(MonoBehaviour self) where T : MonoBehaviour
+    /// <summary>
+    ///     Wrap original enumerator in <see cref="SkipWaitingForSeconds" /> if condition is true, otherwise act as a pass-through.
+    /// </summary>
+    internal static IEnumerator SkipWaitingForSecondsIf(IEnumerator result, bool condition)
+    {
+        return condition ? SkipWaitingForSeconds(result) : result;
+    }
+
+    internal static T GetOrAddComponent<T>(Component self) where T : Component
     {
         return GetOrAddComponent<T>(self.gameObject);
     }
 
-    internal static T GetOrAddComponent<T>(GameObject self) where T : MonoBehaviour
+    internal static T GetOrAddComponent<T>(GameObject self) where T : Component
     {
         if (!self.TryGetComponent<T>(out var component))
         {

@@ -47,6 +47,12 @@ internal class ShipManager : ImpLifecycleObject
         masterBinding: Imperium.Settings.Ship.InstantLanding
     );
 
+    internal readonly ImpNetworkBinding<bool> InstantRoute = new(
+        "InstantRoute",
+        Imperium.Networking,
+        masterBinding: Imperium.Settings.Ship.InstantRoute
+    );
+
     internal readonly ImpNetworkBinding<bool> UnlockShop = new(
         "UnlockShop",
         Imperium.Networking,

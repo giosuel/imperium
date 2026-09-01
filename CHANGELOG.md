@@ -10,6 +10,7 @@
 - Added the possibility to change the custom welcome message.
 - Speedy Shovel now resets player animation speed right after hit.
 - Added a button to manually trigger meteor showers in the moon control window.
+- Reworked Instant Takeoff & Landing animation skips, added Instant Route toggle, adjusted Ship Control UI accordingly.
 
 ### Bug Fixes
 

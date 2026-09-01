@@ -1,5 +1,6 @@
 #region
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -35,15 +36,20 @@ internal static class RoundManagerPatch
         Imperium.ObjectManager.RefreshLevelEntities();
     }
 
-    /// see also <see cref="StartOfRoundPatch.EndOfGamePatch"/>
+    /// <summary>
+    ///     See other animation skips:
+    ///     <list type="bullet">
+    ///         <item><see cref="StartOfRoundPatch.openingDoorsSequencePostfixPatch" /></item>
+    ///         <item><see cref="StartOfRoundPatch.gameOverAnimationPostfixPatch" /></item>
+    ///         <item><see cref="StartOfRoundPatch.ShipLeavePostfixPatch" /></item>
+    ///         <item><see cref="StartOfRoundPatch.EndOfGamePostfixPatch" /></item>
+    ///     </list>
+    /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch("DetectElevatorRunning")]
-    private static void DetectElevatorRunningPostfixPatch(RoundManager __instance)
+    private static IEnumerator DetectElevatorRunningPostfixPatch(IEnumerator __result)
     {
-        // Reset ship animator
-        Imperium.StartOfRound.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlay.mute = false;
-        Imperium.StartOfRound.shipAnimator.gameObject.GetComponent<PlayAudioAnimationEvent>().audioToPlayB.mute = false;
-        Imperium.StartOfRound.shipAnimator.speed = 1;
+        return ImpUtils.SkipWaitingForSecondsIf(__result, Imperium.ShipManager.InstantTakeoff.Value);
     }
 
     [HarmonyPrefix]
