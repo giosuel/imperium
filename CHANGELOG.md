@@ -1,6 +1,6 @@
 # Changelog
 
-## Imperium v1.3.1 - Bug Fixes and new Theme
+## Imperium v1.3.1 - Bug Fixes and Ship Control Updates
 
 ### General Changes
 
