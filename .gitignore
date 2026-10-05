@@ -7,6 +7,7 @@ artifacts/
 out/
 *.DotSettings*
 Imperium.props.user
+.vs/
 
 # Output Stuff
 giosuel.Imperium.dll
