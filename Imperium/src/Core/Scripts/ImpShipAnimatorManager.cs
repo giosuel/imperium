@@ -85,6 +85,8 @@ internal class ImpShipAnimatorManager : MonoBehaviour
 
     private IEnumerator ResetSpeedAfterAnimationCoroutine()
     {
+        yield return new WaitForFixedUpdate();
+
         // Wait until the (sped up) animation is completed before resetting the speed
         yield return new WaitUntil(() =>
         {
