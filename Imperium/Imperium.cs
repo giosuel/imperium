@@ -22,6 +22,7 @@ using Imperium.Patches.Systems;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects.NoiseOverlay;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 #endregion
@@ -137,6 +138,9 @@ public class Imperium : BaseUnityPlugin
         InputBindings.InterfaceMap.Disable();
 
         if (!ImpAssets.Load()) return;
+
+        // Disable inlining to make ship instant landing working with LLL
+        DetourHelper.Runtime.Pin(AccessTools.Method(typeof(StartOfRound), nameof(StartOfRound.openingDoorsSequence)));
 
         Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         PreLaunchPatches();
